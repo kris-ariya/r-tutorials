@@ -1,4 +1,4 @@
-name: "R-website"
+name: "r-tutorials site"
 output_dir: "docs"
 navbar:
   title: "R Tutorials"

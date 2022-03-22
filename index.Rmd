@@ -1,5 +1,7 @@
 ---
-title: "PSY Chula-R Tutorials"
+title: "R Tutorials"
 ---
 
 Hello, World!
+
+Welcome to PSY Chula's R tutorial pages!
