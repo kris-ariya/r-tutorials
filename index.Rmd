@@ -1,5 +1,5 @@
 ---
-title: "Kris's Website"
+title: "PSY Chula-R Tutorials"
 ---
 
 Hello, World!

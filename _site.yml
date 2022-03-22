@@ -7,17 +7,17 @@ navbar:
       href: index.html
     - text: "RES MTHD/STAT PSY Lab"
       menu:
-        - text: "Lab 4: Descriptive Statistics"
+        - text: "Lab 04: Descriptive Statistics"
           href: RES_STAT_Lab04.html
-        - text: "Lab 5: Standard Score"
+        - text: "Lab 05: Standard Score"
           href: RES_STAT_Lab05.html
-        - text: "Lab 6: Visualizing Distribution"
+        - text: "Lab 06: Visualizing Distribution"
           href: RES_STAT_Lab06.html
-        - text: "Lab 7: Sampling Distribution"
+        - text: "Lab 07: Sampling Distribution"
           href: RES_STAT_Lab07.html
-        - text: "Lab 8: Confidence Interval and t Test"
+        - text: "Lab 08: Confidence Interval and t Test"
           href: RES_STAT_Lab08.html
-        - text: "Lab 9: Correlation"
+        - text: "Lab 09: Correlation"
           href: RES_STAT_Lab09.html
         - text: "Lab 10: Simple Regression"
           href: RES_STAT_Lab10.html
@@ -29,17 +29,17 @@ navbar:
           href: RES_STAT_Lab14.html
     - text: "EXPRM DESIGN/ANA Lab"
       menu: 
-        - text: "Lab 2: Randomization"
+        - text: "Lab 02: Randomization"
           href: EXPRM_Lab02.html
-        - text: "Lab 3: Power and Sample Size"
+        - text: "Lab 03: Power and Sample Size"
           href: EXPRM_Lab03.html
-        - text: "Lab 4: One-way ANOVA"
+        - text: "Lab 04: One-way ANOVA"
           href: EXPRM_Lab04.html
-        - text: "Lab 5: Multiple Comparisons"
+        - text: "Lab 05: Multiple Comparisons"
           href: EXPRM_Lab05.html
-        - text: "Lab 7: Factorial ANOVA"
+        - text: "Lab 07: Factorial ANOVA"
           href: EXPRM_Lab07.html
-        - text: "Lab 9: Data Visualization with ggplot2"
+        - text: "Lab 09: Data Visualization with ggplot2"
           href: EXPRM_Lab09.html
         - text: "Lab 10: Repeated-Measures ANOVA"
           href: EXPRM_Lab10.html
