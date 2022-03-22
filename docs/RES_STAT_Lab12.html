@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 12: Paired-Sample t-Test</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Tutorials</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    RES MTHD/STAT PSY Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="RES_STAT_Lab04.html">Lab 4: Descriptive Statistics</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab05.html">Lab 5: Standard Score</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab06.html">Lab 6: Visualizing Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab07.html">Lab 7: Sampling Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab08.html">Lab 8: Confidence Interval and t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab09.html">Lab 9: Correlation</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab10.html">Lab 10: Simple Regression</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab12.html">Lab 12: Dependent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab13.html">Lab 13: Independent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab14.html">Lab 14: Chi-Squared Test</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    EXPRM DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="EXPRM_Lab02.html">Lab 2: Randomization</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab03.html">Lab 3: Power and Sample Size</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab04.html">Lab 4: One-way ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab05.html">Lab 5: Multiple Comparisons</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab07.html">Lab 7: Factorial ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab09.html">Lab 9: Data Visualization with ggplot2</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab10.html">Lab 10: Repeated-Measures ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab11.html">Lab 11: Factorial ANOVA in Repeated-Measures Design</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab12.html">Lab 12: Means Comparison in Regression</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab13.html">Lab 13: ANCOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab14.html">Lab 14: Moderation Analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    SURVEY DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="SURVEY_Lab08.html">Lab 08: Data Cleaning</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Lab 12: Paired-Sample <em>t</em>-Test</h1>
+
+</div>
+
+
+<div id="basic-concepts" class="section level1">
+<h1>Basic Concepts</h1>
+<p>Paired-sample <em>t</em>-test (also called, dependent-sample <em>t</em>-test) compares means between two groups of observations that are NOT independent. For example, when you collected pre-test and post-test scores from the same group of students, the pre-test and post-test scores came from the same person (i.e., a within-subject design). Individuals with high pre-test scores were also likely to get high post-test scores, and those with lower pre-test scores were likely to have low post-test scores. In other words, the pre-test and post-test scores were correlated; they were NOT independent. Therefore, the assumption of <em>independence observation</em> was violated. We cannot just compare the means of pre- and post-test. Instead, we need to <em>pair up</em> the pre- and post-test scores and calcualte a difference (<em>D</em>) score for each person.</p>
+<p>Let’s consider an example</p>
+<pre class="r"><code>p_id &lt;- c(1:10) # participant&#39;s ID
+pre &lt;-  c(3, 5, 8,  8, 6, 9, 2, 3,  7, 5) #pre-test scores
+post &lt;- c(5, 8, 9, 10, 5, 9, 4, 2, 10, 7) #post-test scores
+dat &lt;- data.frame(p_id, pre, post) # create a data frame
+dat</code></pre>
+<pre><code>##    p_id pre post
+## 1     1   3    5
+## 2     2   5    8
+## 3     3   8    9
+## 4     4   8   10
+## 5     5   6    5
+## 6     6   9    9
+## 7     7   2    4
+## 8     8   3    2
+## 9     9   7   10
+## 10   10   5    7</code></pre>
+<p>We calculate the difference score (<em>D</em> = post - pre) for each person.</p>
+<pre class="r"><code>dat$D &lt;- dat$post - dat$pre # calculate D score for each participant
+dat</code></pre>
+<pre><code>##    p_id pre post  D
+## 1     1   3    5  2
+## 2     2   5    8  3
+## 3     3   8    9  1
+## 4     4   8   10  2
+## 5     5   6    5 -1
+## 6     6   9    9  0
+## 7     7   2    4  2
+## 8     8   3    2 -1
+## 9     9   7   10  3
+## 10   10   5    7  2</code></pre>
+<pre class="r"><code>library(psych)
+describe(dat$D)</code></pre>
+<pre><code>## dat$D 
+##        n  missing distinct     Info     Mean      Gmd 
+##       10        0        5    0.927      1.3    1.711 
+## 
+## lowest : -1  0  1  2  3, highest: -1  0  1  2  3
+##                               
+## Value       -1   0   1   2   3
+## Frequency    2   1   1   4   2
+## Proportion 0.2 0.1 0.1 0.4 0.2</code></pre>
+<p>On average, the scores went up by 1.3 points (<em>SD</em> = 1.4944341). We would like to test whether this score increase was statistically significant. The null hypothesis for this test was that pre- and post-test were not different, i.e., <em>pre</em> - <em>post</em> = <em>D</em> = 0. Therefore, <span class="math display">\[H_0: \mu_d = 0\]</span>.</p>
+<p>At this point, we only need to test one variable, <em>D</em>, whether it is different from zero. Therefore, we can use the formula <span class="math display">\[\begin{aligned} 
+t &amp;= \frac{\bar{D} - \mu_d}{SE_D} \\ 
+&amp;= \frac{\bar{D} - 0}{SE_D} \\ 
+&amp;=\frac{\bar{D}}{SE_D} 
+\end{aligned}\]</span>.</p>
+</div>
+<div id="manual-calculation" class="section level1">
+<h1>Manual Calculation</h1>
+<p>We will need <span class="math inline">\(\bar{D}\)</span> and its standard error. Recall that <span class="math inline">\(SE = SD/\sqrt{N}\)</span></p>
+<pre class="r"><code>n &lt;- nrow(dat) # get sample size N
+n</code></pre>
+<pre><code>## [1] 10</code></pre>
+<pre class="r"><code>se_D &lt;- sd(dat$D)/sqrt(n) # calculate SE
+se_D</code></pre>
+<pre><code>## [1] 0.4725816</code></pre>
+<pre class="r"><code>t &lt;- mean(dat$D)/se_D # calculate t
+t</code></pre>
+<pre><code>## [1] 2.750848</code></pre>
+<p>Now we have the <em>t</em> value. To test whether it is significant, we would compare it the <span class="math inline">\(t_{critical}\)</span> at a corresponding <em>df</em>, which is <em>N</em> -1 = 9. You can do this by looking up the <em>t</em> table or use <em>t</em>-test calculator on the internet.</p>
+</div>
+<div id="t.test" class="section level1">
+<h1><code>t.test()</code></h1>
+<p>The base R provides the <code>t.test()</code>function to make it easier for us to conduct <em>t</em>-tests. For paired t-test, you would use <code>t.test(score1, score2, paired = TRUE)</code>. The function will subtract <code>score2</code> from <code>score1</code> (i.e., <code>score1</code> - <code>score2</code>). Therefore, it would make sense to the post-test in the <code>score1</code> position.</p>
+<pre class="r"><code>t.test(dat$post, dat$pre, paired = TRUE)</code></pre>
+<pre><code>## 
+##  Paired t-test
+## 
+## data:  dat$post and dat$pre
+## t = 2.7508, df = 9, p-value = 0.02245
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  0.2309462 2.3690538
+## sample estimates:
+## mean of the differences 
+##                     1.3</code></pre>
+<p>The output includes the <em>t</em> value, its degrees of freedom (<em>df</em>), and the <em>p</em>-value to help determine whether it is statistically significantly different from 0. The function also gives use the 95% CI for the difference scores. The interval [0.23, 2.37] has a very high chance to capture the population mean of the difference scores. Note that the 95% CI does not include zero.</p>
+<p>Looking at the <em>p</em>-value and 95% CI, we conclude that the difference between pre- and post-test was more than zero. <strong>That is, the post-test was significant higher than the pre-test.</strong></p>
+<p><strong>Note</strong>: Paired-sample <em>t</em>-test is not limited to pre- vs. post-testing. It can be used with other dependent samples. For example, when we are studying twins, their genetics, personality, childhood background, etc. are not independent. We could use a paired-sample <em>t</em>-test to test, for example, whether older twins are more responsible than younger twins or not.</p>
+</div>
+<div id="wide-vs.-long-format-data" class="section level1">
+<h1>Wide vs. Long Format Data</h1>
+<p>When each person is represented in one row and all repeated observation are recorded as a new variable, such as <code>pre</code> and <code>post</code>. The dataset grows in columns or <em>width</em> with repeated observations. We call the data organized this way a <em>wide</em> formatted data.</p>
+<pre class="r"><code>p_id &lt;- c(1:10) # participant&#39;s ID
+time1 &lt;-  c(3, 5, 8,  8, 6, 9, 2, 3,  7, 5)
+time2 &lt;- c(5, 8, 9, 10, 5, 9, 4, 2, 10, 7)
+dat2 &lt;- data.frame(p_id, pre, post)
+dat2</code></pre>
+<pre><code>##    p_id pre post
+## 1     1   3    5
+## 2     2   5    8
+## 3     3   8    9
+## 4     4   8   10
+## 5     5   6    5
+## 6     6   9    9
+## 7     7   2    4
+## 8     8   3    2
+## 9     9   7   10
+## 10   10   5    7</code></pre>
+<pre class="r"><code>t.test(dat2$post, dat2$pre, paired = TRUE)</code></pre>
+<pre><code>## 
+##  Paired t-test
+## 
+## data:  dat2$post and dat2$pre
+## t = 2.7508, df = 9, p-value = 0.02245
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  0.2309462 2.3690538
+## sample estimates:
+## mean of the differences 
+##                     1.3</code></pre>
+<p>However, there is another way to organize the data, where each observation is recorded as a row. A repeated observations will create a new row. In this scheme, we will need variables to identify <em>when</em> the data was observed and who it belongs to.</p>
+<pre class="r"><code>ob_id &lt;- c(1:20) # observation ID
+p_id &lt;- c(1:10, 1:10) # participant ID
+score &lt;-  c(3, 5, 8,  8, 6, 9, 2, 3,  7, 5, 5, 8, 9, 10, 5, 9, 4, 2, 10, 7) # all test scores.
+time &lt;- c(rep(&quot;pre&quot;, 10), rep(&quot;post&quot;, 10)) # First 10 were pre-test, last 10 were post-test.
+dat2.long &lt;- data.frame(ob_id, p_id, time, score)
+knitr::kable(dat2.long)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">ob_id</th>
+<th align="right">p_id</th>
+<th align="left">time</th>
+<th align="right">score</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">pre</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">pre</td>
+<td align="right">5</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">pre</td>
+<td align="right">8</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">pre</td>
+<td align="right">8</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="left">pre</td>
+<td align="right">6</td>
+</tr>
+<tr class="even">
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="left">pre</td>
+<td align="right">9</td>
+</tr>
+<tr class="odd">
+<td align="right">7</td>
+<td align="right">7</td>
+<td align="left">pre</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="right">8</td>
+<td align="right">8</td>
+<td align="left">pre</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="right">9</td>
+<td align="right">9</td>
+<td align="left">pre</td>
+<td align="right">7</td>
+</tr>
+<tr class="even">
+<td align="right">10</td>
+<td align="right">10</td>
+<td align="left">pre</td>
+<td align="right">5</td>
+</tr>
+<tr class="odd">
+<td align="right">11</td>
+<td align="right">1</td>
+<td align="left">post</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="right">12</td>
+<td align="right">2</td>
+<td align="left">post</td>
+<td align="right">8</td>
+</tr>
+<tr class="odd">
+<td align="right">13</td>
+<td align="right">3</td>
+<td align="left">post</td>
+<td align="right">9</td>
+</tr>
+<tr class="even">
+<td align="right">14</td>
+<td align="right">4</td>
+<td align="left">post</td>
+<td align="right">10</td>
+</tr>
+<tr class="odd">
+<td align="right">15</td>
+<td align="right">5</td>
+<td align="left">post</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="right">16</td>
+<td align="right">6</td>
+<td align="left">post</td>
+<td align="right">9</td>
+</tr>
+<tr class="odd">
+<td align="right">17</td>
+<td align="right">7</td>
+<td align="left">post</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="right">18</td>
+<td align="right">8</td>
+<td align="left">post</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="right">19</td>
+<td align="right">9</td>
+<td align="left">post</td>
+<td align="right">10</td>
+</tr>
+<tr class="even">
+<td align="right">20</td>
+<td align="right">10</td>
+<td align="left">post</td>
+<td align="right">7</td>
+</tr>
+</tbody>
+</table>
+<p>In this long formatted data, the first 10 rows were the pre-test <code>scores</code>, and the last 10 rows were from the post-test. The <code>time</code> column was used to identify when the observation happened. The <code>p_id</code> identified which observations belonged to which participants. Repeated observation makes the data grows in rows or <em>length</em>. Hence, it is called a <em>long</em> format.</p>
+<p>You can also use <code>t.test()</code> even if you data is in a long format. However, you will need to change the code to <code>t.test(y ~ x, data, paired = TRUE)</code>, where <code>y</code> is your dependent variable and <code>x</code> is your independent variable (i.e., the testing time: pre vs. post).</p>
+<pre class="r"><code>dat2.long$time &lt;- factor(dat2.long$time) #convert time into a factor
+t.test(score ~ time, data = dat2.long, paired = TRUE)</code></pre>
+<pre><code>## 
+##  Paired t-test
+## 
+## data:  score by time
+## t = 2.7508, df = 9, p-value = 0.02245
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  0.2309462 2.3690538
+## sample estimates:
+## mean of the differences 
+##                     1.3</code></pre>
+</div>
+<div id="effect-size" class="section level1">
+<h1>Effect size</h1>
+<p>The effect size can be calculated with Cohen’s <span class="math inline">\(d = \frac{\bar{D}}{s_D}\)</span></p>
+<pre class="r"><code># Let&#39;s go back to the &quot;dat&quot; dataset. 
+d.manual &lt;- mean(dat$D)/sd(dat$D)
+d.manual</code></pre>
+<pre><code>## [1] 0.8698945</code></pre>
+<div id="effectsize-package" class="section level2">
+<h2><code>effectsize</code> package</h2>
+<p>The <code>effectsize</code> package provides a function to calculate Cohen’s <em>d</em>.</p>
+<pre class="r"><code>library(effectsize)
+effectsize::cohens_d(dat$post, dat$pre, paired = TRUE)</code></pre>
+<pre><code>## Cohen&#39;s d |       95% CI
+## ------------------------
+## 0.87      | [0.12, 1.67]</code></pre>
+<pre class="r"><code># OR save a t-test as an R object and put it into the function. 
+mypair_t.test &lt;- t.test(dat$post, dat$pre, paired = TRUE)
+effectsize::cohens_d(mypair_t.test)</code></pre>
+<pre><code>## Cohen&#39;s d |       95% CI
+## ------------------------
+## 0.87      | [0.12, 1.67]</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

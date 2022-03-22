@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 07: Factorial ANOVA</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Tutorials</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    RES MTHD/STAT PSY Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="RES_STAT_Lab04.html">Lab 4: Descriptive Statistics</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab05.html">Lab 5: Standard Score</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab06.html">Lab 6: Visualizing Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab07.html">Lab 7: Sampling Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab08.html">Lab 8: Confidence Interval and t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab09.html">Lab 9: Correlation</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab10.html">Lab 10: Simple Regression</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab12.html">Lab 12: Dependent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab13.html">Lab 13: Independent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab14.html">Lab 14: Chi-Squared Test</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    EXPRM DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="EXPRM_Lab02.html">Lab 2: Randomization</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab03.html">Lab 3: Power and Sample Size</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab04.html">Lab 4: One-way ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab05.html">Lab 5: Multiple Comparisons</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab07.html">Lab 7: Factorial ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab09.html">Lab 9: Data Visualization with ggplot2</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab10.html">Lab 10: Repeated-Measures ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab11.html">Lab 11: Factorial ANOVA in Repeated-Measures Design</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab12.html">Lab 12: Means Comparison in Regression</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab13.html">Lab 13: ANCOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab14.html">Lab 14: Moderation Analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    SURVEY DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="SURVEY_Lab08.html">Lab 08: Data Cleaning</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Lab 07: Factorial ANOVA</h1>
+
+</div>
+
+
+<pre class="r"><code># load all libraries for this tutorial
+library(car)
+library(ggplot2)
+library(afex)
+library(effectsize)
+library(psych)
+library(apaTables)
+library(jmv)
+library(emmeans)</code></pre>
+<p>เราจะใช้การวิเคราะห์ความแปรปรวนแบบแฟกทอเรียลในกรณีที่มีปัจจัย (factor) ที่ต้องการศึกษาตั้งแต่สองปัจจัยขึ้นไป</p>
+<div id="two-way-anova" class="section level1">
+<h1>Two-way ANOVA</h1>
+<p>การวิเคราะห์ความแปรปรวนสองทางใช้ในกรณีที่มีปัจจัยที่เป็นตัวแปรอิสระสองตัว ในตัวอย่างนี้เราจะใช้ชุดข้อมูล <code>ToothGrowth</code> ที่มีอยู่แล้วใน R</p>
+<p>ชุดข้อมูลนี้มาจากการศึกษาความยาวของเซลล์ที่เกี่ยวข้องกับการเติบโตของฟันในหนูตะเภา ตัวแปรอิสระตัวแรกคือโดสของวิตามินซีที่ได้รับในแต่ละวัน (0.5, 1, และ 2 มิลลิกรัม/วัน) โดยมีตัวแปรอิสระตัวที่สองคือ แหล่งที่มาของวิตามิน ได้แก่ น้ำส้ม (OJ) หรือ กรดแอสคอร์บิกที่มีวิตามินซี (VC)</p>
+<pre class="r"><code>mydata &lt;- ToothGrowth
+mydata$id &lt;- 1:nrow(mydata) #add id column
+mydata</code></pre>
+<pre><code>##     len supp dose id
+## 1   4.2   VC  0.5  1
+## 2  11.5   VC  0.5  2
+## 3   7.3   VC  0.5  3
+## 4   5.8   VC  0.5  4
+## 5   6.4   VC  0.5  5
+## 6  10.0   VC  0.5  6
+## 7  11.2   VC  0.5  7
+## 8  11.2   VC  0.5  8
+## 9   5.2   VC  0.5  9
+## 10  7.0   VC  0.5 10
+## 11 16.5   VC  1.0 11
+## 12 16.5   VC  1.0 12
+## 13 15.2   VC  1.0 13
+## 14 17.3   VC  1.0 14
+## 15 22.5   VC  1.0 15
+## 16 17.3   VC  1.0 16
+## 17 13.6   VC  1.0 17
+## 18 14.5   VC  1.0 18
+## 19 18.8   VC  1.0 19
+## 20 15.5   VC  1.0 20
+## 21 23.6   VC  2.0 21
+## 22 18.5   VC  2.0 22
+## 23 33.9   VC  2.0 23
+## 24 25.5   VC  2.0 24
+## 25 26.4   VC  2.0 25
+## 26 32.5   VC  2.0 26
+## 27 26.7   VC  2.0 27
+## 28 21.5   VC  2.0 28
+## 29 23.3   VC  2.0 29
+## 30 29.5   VC  2.0 30
+## 31 15.2   OJ  0.5 31
+## 32 21.5   OJ  0.5 32
+## 33 17.6   OJ  0.5 33
+## 34  9.7   OJ  0.5 34
+## 35 14.5   OJ  0.5 35
+## 36 10.0   OJ  0.5 36
+## 37  8.2   OJ  0.5 37
+## 38  9.4   OJ  0.5 38
+## 39 16.5   OJ  0.5 39
+## 40  9.7   OJ  0.5 40
+## 41 19.7   OJ  1.0 41
+## 42 23.3   OJ  1.0 42
+## 43 23.6   OJ  1.0 43
+## 44 26.4   OJ  1.0 44
+## 45 20.0   OJ  1.0 45
+## 46 25.2   OJ  1.0 46
+## 47 25.8   OJ  1.0 47
+## 48 21.2   OJ  1.0 48
+## 49 14.5   OJ  1.0 49
+## 50 27.3   OJ  1.0 50
+## 51 25.5   OJ  2.0 51
+## 52 26.4   OJ  2.0 52
+## 53 22.4   OJ  2.0 53
+## 54 24.5   OJ  2.0 54
+## 55 24.8   OJ  2.0 55
+## 56 30.9   OJ  2.0 56
+## 57 26.4   OJ  2.0 57
+## 58 27.3   OJ  2.0 58
+## 59 29.4   OJ  2.0 59
+## 60 23.0   OJ  2.0 60</code></pre>
+</div>
+<div id="data-preparation" class="section level1">
+<h1>Data Preparation</h1>
+<p>ใช้คำสั่ง <code>str()</code> เพื่อตรวจสอบว่าโครงสร้างของข้อมูลเป็นไปตามที่ต้องการหรือไม่</p>
+<p>ในกรณีนี้พบว่าตัวแปร dose นั้นถูกบันทึกเป็น <code>num</code> จึงต้องแปลงให้เป็น <code>factor</code> ให้เรียบร้อย กำหนด <code>levels</code> และ <code>labels</code> ให้ตรงกับที่ต้องการจะให้ปรากฎเวลาวิเคราะห์ข้อมูล</p>
+<pre class="r"><code>str(mydata)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    60 obs. of  4 variables:
+##  $ len : num  4.2 11.5 7.3 5.8 6.4 10 11.2 11.2 5.2 7 ...
+##  $ supp: Factor w/ 2 levels &quot;OJ&quot;,&quot;VC&quot;: 2 2 2 2 2 2 2 2 2 2 ...
+##  $ dose: num  0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 ...
+##  $ id  : int  1 2 3 4 5 6 7 8 9 10 ...</code></pre>
+<pre class="r"><code>mydata$dose &lt;- factor(mydata$dose, levels = c(0.5, 1, 2), labels = c(&quot;D0.5&quot;, &quot;D1&quot;, &quot;D2&quot;))
+str(mydata)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    60 obs. of  4 variables:
+##  $ len : num  4.2 11.5 7.3 5.8 6.4 10 11.2 11.2 5.2 7 ...
+##  $ supp: Factor w/ 2 levels &quot;OJ&quot;,&quot;VC&quot;: 2 2 2 2 2 2 2 2 2 2 ...
+##  $ dose: Factor w/ 3 levels &quot;D0.5&quot;,&quot;D1&quot;,&quot;D2&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ id  : int  1 2 3 4 5 6 7 8 9 10 ...</code></pre>
+</div>
+<div id="descriptive-statistics" class="section level1">
+<h1>Descriptive Statistics</h1>
+<p>ลำดับต่อไปคือการตรวจสอบค่าสถิติพื้นฐาน เช่น ค่าเฉลี่ย ส่วนเบี่ยงเบนมาตรฐาน จำนวนกลุ่มตัวอย่าง เป็นต้น</p>
+<pre class="r"><code># checking sample size
+table(mydata$supp, mydata$dose)</code></pre>
+<pre><code>##     
+##      D0.5 D1 D2
+##   OJ   10 10 10
+##   VC   10 10 10</code></pre>
+<p>ในกรณีนี้เรามีกลุ่มตัวอย่างเท่ากันในทุกช่อง (balanced design)</p>
+<p>สำหรับสถิติเชิงพรรณาให้ใช้คำสั่ง <code>describeBy()</code> จาก package <code>psych</code> เพื่อตรวจสอบค่าต่าง ๆ เช่น ค่าสูงสุดต่ำสุด ว่าข้อมูลมีจุดผิดพลาดอะไรหรือไม่</p>
+<p>ส่วนคำสั่ง <code>apa.2way.table()</code> เหมาะสำหรับใช้สร้างตารางเป็นไฟล์ Word เพื่อนำไปใช้เขียนรายงาน</p>
+<pre class="r"><code>describeBy(len ~ supp * dose, data = mydata) # This will give us detailed descriptive stats by group</code></pre>
+<pre><code>## 
+##  Descriptive statistics by group 
+## supp: OJ
+## dose: D0.5
+##    vars  n  mean   sd median trimmed mad min  max range skew kurtosis   se
+## X1    1 10 13.23 4.46  12.25   12.82 4.3 8.2 21.5  13.3 0.44    -1.37 1.41
+## -------------------------------------------------------------------------------------------- 
+## supp: VC
+## dose: D0.5
+##    vars  n mean   sd median trimmed  mad min  max range skew kurtosis   se
+## X1    1 10 7.98 2.75   7.15    8.01 3.56 4.2 11.5   7.3 0.13    -1.81 0.87
+## -------------------------------------------------------------------------------------------- 
+## supp: OJ
+## dose: D1
+##    vars  n mean   sd median trimmed  mad  min  max range  skew kurtosis   se
+## X1    1 10 22.7 3.91  23.45   23.15 3.93 14.5 27.3  12.8 -0.68    -0.68 1.24
+## -------------------------------------------------------------------------------------------- 
+## supp: VC
+## dose: D1
+##    vars  n  mean   sd median trimmed mad  min  max range skew kurtosis  se
+## X1    1 10 16.77 2.52   16.5   16.45 1.7 13.6 22.5   8.9 0.93     0.08 0.8
+## -------------------------------------------------------------------------------------------- 
+## supp: OJ
+## dose: D2
+##    vars  n  mean   sd median trimmed  mad  min  max range skew kurtosis   se
+## X1    1 10 26.06 2.66  25.95   25.91 2.08 22.4 30.9   8.5 0.37    -1.09 0.84
+## -------------------------------------------------------------------------------------------- 
+## supp: VC
+## dose: D2
+##    vars  n  mean  sd median trimmed mad  min  max range skew kurtosis   se
+## X1    1 10 26.14 4.8  25.95   26.12 4.6 18.5 33.9  15.4 0.16    -1.23 1.52</code></pre>
+<pre class="r"><code>apa.2way.table(dv = len, iv1 = supp, iv2 = dose , data = mydata, filename = &quot;twowaydesciptive.doc&quot;)</code></pre>
+<pre><code>## 
+## 
+## Means and standard deviations for len as a function of a 2(supp) X 3(dose) design 
+## 
+##        dose                           
+##        D0.5         D1         D2     
+##  supp     M   SD     M   SD     M   SD
+##    OJ 13.23 4.46 22.70 3.91 26.06 2.66
+##    VC  7.98 2.75 16.77 2.52 26.14 4.80
+## 
+## Note. M and SD represent mean and standard deviation, respectively.</code></pre>
+</div>
+<div id="quick-visualization" class="section level1">
+<h1>Quick Visualization</h1>
+<p>เพื่อให้เห็นภาพของข้อมูลโดยรวม การใช้วาดกราฟจะช่วยได้เป็นอย่างดี ในจุดนี้เราไม่ต้องการภาพที่สวยงานแค่ใช้พิจารณาข้อมูลได้ก็เพียงพอ</p>
+<p>เราสามาถใช้ <code>boxplot()</code> ใน Base R หรือใช้ <code>ggplot()</code> ก็ได้</p>
+<pre class="r"><code>boxplot(len ~ supp * dose, data = mydata, col = c(&quot;dodgerblue&quot;, &quot;lightyellow&quot;))</code></pre>
+<p><img src="EXPRM_Lab07_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(mydata, aes(x = supp, y = len, fill = dose)) +
+  geom_boxplot()</code></pre>
+<p><img src="EXPRM_Lab07_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+</div>
+<div id="two-way-anova-1" class="section level1">
+<h1>Two-way ANOVA</h1>
+<p>ในขั้นตอนการวิเคราะห์ความแปรปรวนสองทางนี้ เราต้องระมัดระวังว่าจะเลือกใช้คำสั่งใด เพราะแต่ละคำสั่งจะใช้วิธีคำนวณ SS ละคนประเภทกัน</p>
+<p>ในตัวอย่างนี้ ข้อมูลเป็นแบบ balanced ผลของ SS Type I, II, และ III จะเท่ากัน แต่หากกลุ่มตัวอย่างไม่เท่ากัน การเลือกใช้ SS Type ที่แตกต่างกันจะทำให้ได้ผลที่ไม่เหมือนกันไปด้วย</p>
+<div id="base-r-type-i-ss" class="section level2">
+<h2>Base R (Type I SS)</h2>
+<p>สำหรับการวิเคราะห์ที่มีตัวแปรต้นตั้งแต่สองตัวขึ้นไป ควรหลีกเลี่ยงการสร้างโมเดล <code>aov</code> ใน R เพราะเป็นวิธีที่ใช้ Type I SS ซึ่งมักจะไม่เหมาะสมในการทดสอบสมมติฐานใน unbalanced design</p>
+<pre class="r"><code>tooth.aov &lt;- aov(len ~ supp * dose, data = mydata)
+summary(tooth.aov)</code></pre>
+<pre><code>##             Df Sum Sq Mean Sq F value   Pr(&gt;F)    
+## supp         1  205.4   205.4  15.572 0.000231 ***
+## dose         2 2426.4  1213.2  92.000  &lt; 2e-16 ***
+## supp:dose    2  108.3    54.2   4.107 0.021860 *  
+## Residuals   54  712.1    13.2                     
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>หากต้องการคำนวณโดยใช้ Type III SS เรามีทางเลือกหลัก ๆ 3 วิธี</p>
+</div>
+<div id="option-1-car-package" class="section level2">
+<h2>Option 1: <code>car</code> package</h2>
+<p>ใช้คำสั่ง <code>Anova()</code> ใน <code>car</code> (สังเกตว่าใช้ A ตัวพิมพ์ใหญ่)</p>
+<p>เพื่อจะใช้งานคำสั่งนี้ เราจะต้องสร้างโมเดลเชิงเส้นตรง (linear model) ด้วยคำสั่ง <code>lm()</code></p>
+<p>ในส่วนโมเดล เราจะเขียน <code>y ~ x1 * x2</code> หรือ <code>y ~ x1 + x2 + x1:x2</code> ก็ได้ (ได้ผลเหมือนกัน)</p>
+<p>นอกจากนี้ให้กำหนดตัวเลือก <code>contrast</code> เป็น <code>contr.sum</code> สำหรับตัวแปรอิสระทั้งสองตัว เมื่อทำตามนี้แล้วจะได้โมเดลที่ให้ผลเท่ากับการวิเคราะห์ ANOVA (ANOVA เป็นกรณีเฉพาะแบบหนึ่งของ linear model)</p>
+<p>สำหรับคำสั่ง <code>Anova()</code> นั้นจะมี input เป็นโมเดล <code>lm</code> ที่เราสร้างขึ้น และมี option <code>type</code> ให้กำหนดชนิดของ SS</p>
+<p>เราสามารถเรียกคำสั่ง <code>Anova()</code> เพื่อดูผลได้เลย หรือ save เป็นตัวแปรเพื่อใช้งานในอนาคตต่อไปก็ได้</p>
+<pre class="r"><code>tooth.lm &lt;- lm(len ~ supp + dose + supp:dose, data = mydata, 
+               contrast = list(supp = contr.sum, dose = contr.sum)) # same as aov
+
+# Type I
+anova(tooth.lm) # Base R function. Notice the small a.</code></pre>
+<pre><code>## Analysis of Variance Table
+## 
+## Response: len
+##           Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
+## supp       1  205.35  205.35  15.572 0.0002312 ***
+## dose       2 2426.43 1213.22  92.000 &lt; 2.2e-16 ***
+## supp:dose  2  108.32   54.16   4.107 0.0218603 *  
+## Residuals 54  712.11   13.19                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code># Type III
+tooth.Anova &lt;- Anova(tooth.lm, type = 3)
+tooth.Anova # car function. Capital A. </code></pre>
+<pre><code>## Anova Table (Type III tests)
+## 
+## Response: len
+##              Sum Sq Df  F value    Pr(&gt;F)    
+## (Intercept) 21236.5  1 1610.393 &lt; 2.2e-16 ***
+## supp          205.4  1   15.572 0.0002312 ***
+## dose         2426.4  2   92.000 &lt; 2.2e-16 ***
+## supp:dose     108.3  2    4.107 0.0218603 *  
+## Residuals     712.1 54                       
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+</div>
+<div id="option-2-afex-package" class="section level2">
+<h2>Option 2: <code>afex</code> package</h2>
+<p>อีกทางเลือกหนึ่งคือใช้ <code>afex</code> (Analysis of Factorial Experiments) ซึ่งออกแบบมาเพื่อการวิเคราะห์ ANOVA ที่ซับซ้อนโดยเฉพาะ ในระดับโปรแกรมคำสั่ง <code>afex::aov_car()</code> จะดึงคำสั่งจากชุดคำสั่งใน <code>car</code> มาใช้งาน แต่คำสั่งใน <code>afex</code> อาจดูใช้งานง่ายกว่า</p>
+<p>ในคำสั่ง <code>aov_car()</code> จะต้องมีการเขียนโมเดล โดยโมเดลจะอยู่ในรูป <code>y ~ x1 * x2 + Error()</code> จุดที่แตกต่างจากเดิมคือต้องมีการระบุ <code>Error()</code> หรือความคลาดเคลื่อนของโมเดล ในกรณีนี้เป็นการออกแบบระหว่างกลุ่ม ความคลาดเคลื่อนจึงอยู่ที่กลุ่มตัวอย่าง ซึ่งเราระบุตัวได้ด้วยตัวแปร <code>id</code> (ขึ้นไปดูวิธีสร้างด้านบน)</p>
+<pre class="r"><code>tooth.afex &lt;- aov_car(len ~ supp * dose + Error(id), data = mydata)
+summary(tooth.afex)</code></pre>
+<pre><code>## Anova Table (Type 3 tests)
+## 
+## Response: len
+##           num Df den Df    MSE      F     ges    Pr(&gt;F)    
+## supp           1     54 13.187 15.572 0.22383 0.0002312 ***
+## dose           2     54 13.187 92.000 0.77311 &lt; 2.2e-16 ***
+## supp:dose      2     54 13.187  4.107 0.13203 0.0218603 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>Anova(tooth.afex$lm, type = 3)</code></pre>
+<pre><code>## Anova Table (Type III tests)
+## 
+## Response: dv
+##              Sum Sq Df  F value    Pr(&gt;F)    
+## (Intercept) 21236.5  1 1610.393 &lt; 2.2e-16 ***
+## supp          205.4  1   15.572 0.0002312 ***
+## dose         2426.4  2   92.000 &lt; 2.2e-16 ***
+## supp:dose     108.3  2    4.107 0.0218603 *  
+## Residuals     712.1 54                       
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>ข้อความเตือนแสดงให้เราเห็นว่า โปรแกรมได้ปรับ option <code>contrast</code> อัตโนมัติให้เป็น <code>contr.sum</code></p>
+<p>ตาราง ANOVA ของคำสั่ง <code>aov_car()</code> จะไม่เหมือนกับตาราง ANOVA ทั่วไปที่จะแสดง SS หรือ MS ให้ หากต้องการได้ตารางที่มีค่า SS สามารถใช้คำสั่ง <code>car::Anova()</code> เรียกวิเคราะห์โมเดล <code>lm</code> ที่ซ่อนอยู่ใน object ของ <code>aov_car</code> ได้</p>
+</div>
+<div id="option-3-jmv" class="section level2">
+<h2>Option 3: <code>jmv</code></h2>
+<p>คำสั่ง <code>ANOVA()</code> ใน <code>jmv</code> จะวิเคราะห์ด้วย Type III SS เป็นค่าตั้งต้น ลักษณะการใช้งานของคำสั่งใน <code>jmv</code> จะแตกต่างจากคำสั่ง <code>R</code> ทั่วไป ที่จะให้ผู้ใช้เรียกคำสั่งตามที่ต้องการทีละตัว แต่คำสั่งใน <code>jmv</code> จะมีลักษณะเป็นคำสั่งเดียว (เช่น ANOVA) แล้วมี options ให้เลือกจำนวนมาก (เช่น คำนวณ effect size ตัวไหน ต้องการทำ post-hoc หรือไม่ จะดู estimated marginal means ไหม จะ plot estimated marginal means ไหม จะแสดง 95% CI หรือไม่ ฯลฯ) สำหรับ options ในคำสั่ง สามารถดูได้ที่ <code>?ANOVA</code></p>
+<pre class="r"><code>ANOVA(formula = len ~ supp * dose, data = mydata, effectSize = list(&quot;partEta&quot;, &quot;omega&quot;))</code></pre>
+<pre><code>## 
+##  ANOVA
+## 
+##  ANOVA - len                                                                                               
+##  ───────────────────────────────────────────────────────────────────────────────────────────────────────── 
+##                 Sum of Squares    df    Mean Square    F            p             η²p          ω²          
+##  ───────────────────────────────────────────────────────────────────────────────────────────────────────── 
+##    supp               205.3500     1      205.35000    15.571979     0.0002312    0.2238254    0.0554519   
+##    dose              2426.4343     2     1213.21717    91.999965    &lt; .0000001    0.7731092    0.6925788   
+##    supp:dose          108.3190     2       54.15950     4.106991     0.0218603    0.1320279    0.0236466   
+##    Residuals          712.1060    54       13.18715                                                        
+##  ─────────────────────────────────────────────────────────────────────────────────────────────────────────</code></pre>
+</div>
+</div>
+<div id="effect-size" class="section level1">
+<h1>Effect size</h1>
+<p>ในการคำนวณขนาดอิทธิพล สามารถใช้คำสั่งจาก <code>effectsize</code> ได้ เช่น ต้องการ <code>eta_squared()</code> หรือ <code>omega_squared</code> หรือ <code>cohens_f</code></p>
+<p>เนื่องจากการวิเคราะห์ที่เราใช้เป็น Type III SS เราจึงต้องใช้ object ที่เป็น Type III ในคำสั่งของ <code>effectsize</code> ซึ่งสามารถใช้ได้ทั้งโมเดลจาก <code>afex::aov_car()</code> หรือ output ที่ save จาก <code>car::Anova</code></p>
+<pre class="r"><code>eta_squared(tooth.Anova)</code></pre>
+<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with
+##   orthogonal contrasts (such as those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default
+##   &#39;contr.treatment&#39;).</code></pre>
+<pre><code>## # Effect Size for ANOVA (Type III)
+## 
+## Parameter | Eta2 (partial) |       90% CI
+## -----------------------------------------
+## supp      |           0.22 | [0.08, 0.37]
+## dose      |           0.77 | [0.68, 0.83]
+## supp:dose |           0.13 | [0.01, 0.27]</code></pre>
+<pre class="r"><code>eta_squared(tooth.afex) #same as above</code></pre>
+<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with
+##   orthogonal contrasts (such as those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default
+##   &#39;contr.treatment&#39;).</code></pre>
+<pre><code>## # Effect Size for ANOVA (Type III)
+## 
+## Parameter | Eta2 (partial) |       90% CI
+## -----------------------------------------
+## supp      |           0.22 | [0.08, 0.37]
+## dose      |           0.77 | [0.68, 0.83]
+## supp:dose |           0.13 | [0.01, 0.27]</code></pre>
+<pre class="r"><code>omega_squared(tooth.Anova)</code></pre>
+<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with
+##   orthogonal contrasts (such as those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default
+##   &#39;contr.treatment&#39;).</code></pre>
+<pre><code>## # Effect Size for ANOVA (Type III)
+## 
+## Parameter | Omega2 (partial) |       90% CI
+## -------------------------------------------
+## supp      |             0.20 | [0.06, 0.35]
+## dose      |             0.75 | [0.65, 0.81]
+## supp:dose |             0.09 | [0.00, 0.22]</code></pre>
+<pre class="r"><code>omega_squared(tooth.afex) #same as above</code></pre>
+<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with
+##   orthogonal contrasts (such as those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default
+##   &#39;contr.treatment&#39;).</code></pre>
+<pre><code>## # Effect Size for ANOVA (Type III)
+## 
+## Parameter | Omega2 (partial) |       90% CI
+## -------------------------------------------
+## supp      |             0.20 | [0.06, 0.35]
+## dose      |             0.75 | [0.65, 0.81]
+## supp:dose |             0.09 | [0.00, 0.22]</code></pre>
+<pre class="r"><code>cohens_f(tooth.Anova)</code></pre>
+<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with
+##   orthogonal contrasts (such as those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default
+##   &#39;contr.treatment&#39;).</code></pre>
+<pre><code>## # Effect Size for ANOVA (Type III)
+## 
+## Parameter | Cohen&#39;s f (partial) |       90% CI
+## ----------------------------------------------
+## supp      |                0.54 | [0.30, 0.77]
+## dose      |                1.85 | [1.47, 2.20]
+## supp:dose |                0.39 | [0.11, 0.60]</code></pre>
+<pre class="r"><code>cohens_f(tooth.afex) #same as above</code></pre>
+<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with
+##   orthogonal contrasts (such as those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default
+##   &#39;contr.treatment&#39;).</code></pre>
+<pre><code>## # Effect Size for ANOVA (Type III)
+## 
+## Parameter | Cohen&#39;s f (partial) |       90% CI
+## ----------------------------------------------
+## supp      |                0.54 | [0.30, 0.77]
+## dose      |                1.85 | [1.47, 2.20]
+## supp:dose |                0.39 | [0.11, 0.60]</code></pre>
+</div>
+<div id="simple-effect" class="section level1">
+<h1>Simple effect</h1>
+<p>เนื่องจากเราพบว่าตัวแปร <code>supp</code> และ <code>dose</code> มีปฏิสัมพันธ์กัน เราจึงต้องสำรวจต่อในระดับอิทธิพลอย่างง่าย (simple effects)</p>
+<p>ก่อนอื่นเราต้องสร้าง โมเดลค่าเฉลี่ยของแต่ละเงื่อนไขด้วย <code>emmeans()</code> โดยมี input เป็นโมเดลสถิติจากคำสั่ง <code>lm()</code> หรือ <code>afex::aov_car</code> และกำหนดโมเดลว่าเราต้องการดูค่าเฉลี่ยของตัวแปรใน เช่น <code>~ x1 * x2</code> คือ สร้างตารางค่าเฉลี่ยของทุกช่อง (ทุกระดับในตัวแปร 1 และ 2)</p>
+<pre class="r"><code>tooth.emm1 &lt;- emmeans(tooth.lm, ~ supp * dose)
+tooth.emm2 &lt;- emmeans(tooth.afex, ~ supp * dose) #same as above
+tooth.emm1</code></pre>
+<pre><code>##  supp dose emmean   SE df lower.CL upper.CL
+##  OJ   D0.5  13.23 1.15 54    10.93     15.5
+##  VC   D0.5   7.98 1.15 54     5.68     10.3
+##  OJ   D1    22.70 1.15 54    20.40     25.0
+##  VC   D1    16.77 1.15 54    14.47     19.1
+##  OJ   D2    26.06 1.15 54    23.76     28.4
+##  VC   D2    26.14 1.15 54    23.84     28.4
+## 
+## Confidence level used: 0.95</code></pre>
+<pre class="r"><code>tooth.emm2 #same as above</code></pre>
+<pre><code>##  supp dose emmean   SE df lower.CL upper.CL
+##  OJ   D0.5  13.23 1.15 54    10.93     15.5
+##  VC   D0.5   7.98 1.15 54     5.68     10.3
+##  OJ   D1    22.70 1.15 54    20.40     25.0
+##  VC   D1    16.77 1.15 54    14.47     19.1
+##  OJ   D2    26.06 1.15 54    23.76     28.4
+##  VC   D2    26.14 1.15 54    23.84     28.4
+## 
+## Confidence level used: 0.95</code></pre>
+<p>หากผู้วิจัยต้องการศึกษาว่า แหล่งของวิตามิน <code>supp</code> แตกต่างหรือไม่ แยกตามระดับ <code>dose</code></p>
+<p>เราสามารถใช้คำสั่ง <code>emmeans::contrast()</code> โดยให้ input เป็นโมเดลตารางค่าเฉลี่ย (จากคำสั่ง <code>emmeans</code> ด้านบน) และเลือก <code>method = "pairwise"</code> คือให้เปรียบเทียบรายคู่ และ กำหนดให้การทดสอบอิทธิพลอย่างง่าย <code>simple = "supp"</code> ซึ่งเป็นตัวแปรที่ต้องการเปรียบเทียบ (หรือใช้คำสั่ง <code>by</code> = ตัวแปรที่ต้องการแยก ก็ได้)</p>
+<pre class="r"><code>suppBydose &lt;- contrast(tooth.emm1, &quot;pairwise&quot;, simple = &quot;supp&quot;)
+contrast(tooth.emm1, &quot;pairwise&quot;, by = &quot;dose&quot;) #same as above</code></pre>
+<pre><code>## dose = D0.5:
+##  contrast estimate   SE df t.ratio p.value
+##  OJ - VC      5.25 1.62 54   3.233  0.0021
+## 
+## dose = D1:
+##  contrast estimate   SE df t.ratio p.value
+##  OJ - VC      5.93 1.62 54   3.651  0.0006
+## 
+## dose = D2:
+##  contrast estimate   SE df t.ratio p.value
+##  OJ - VC     -0.08 1.62 54  -0.049  0.9609</code></pre>
+<p>เนื่องจากการทดสอบ <code>supp</code> ในแต่ละเงื่อนไข <code>dose</code> จะทำให้มีการทดสอบทั้งสิ้น 3 คู่ เราจึงต้องปรับแก้ค่า <em>p</em> เพื่อป้องกัน <span class="math inline">\(\alpha_{fw}\)</span> ดังนั้นเราจึงต้องรวมการทดสอบทั้ง 3 คู่ให้อยู่ใน family เดียวกันด้วย <code>rbind()</code> จากนั้นใช้คำสั่ง <code>summary()</code> เรียกดูค่าสถิติ โดยกำหนดให้ปรับแก้ <code>adjust = "sidak"</code></p>
+<pre class="r"><code>fam_suppBydose&lt;- rbind(suppBydose)
+summary(fam_suppBydose, adjust = &quot;sidak&quot;, infer = TRUE)</code></pre>
+<pre><code>##  dose contrast estimate   SE df lower.CL upper.CL t.ratio p.value
+##  D0.5 OJ - VC      5.25 1.62 54     1.25     9.25   3.233  0.0063
+##  D1   OJ - VC      5.93 1.62 54     1.93     9.93   3.651  0.0018
+##  D2   OJ - VC     -0.08 1.62 54    -4.08     3.92  -0.049  0.9999
+## 
+## Confidence level used: 0.95 
+## Conf-level adjustment: sidak method for 3 estimates 
+## P value adjustment: sidak method for 3 tests</code></pre>
+<pre class="r"><code>plot(fam_suppBydose, adjust = &quot;sidak&quot;) </code></pre>
+<p><img src="EXPRM_Lab07_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>หากต้องการเปรียบเทียบค่าเฉลี่ยของ <code>dose</code> โดยแบ่งตาม <code>supp</code> ก็สามารถทำได้โดยแก้ไข option <code>simple = "dose"</code> หรือ <code>by = "supp"</code></p>
+<pre class="r"><code>doseBysupp &lt;- contrast(tooth.emm1, &quot;pairwise&quot;, simple = &quot;dose&quot;)
+
+fam_doseBysupp&lt;- rbind(doseBysupp)
+summary(fam_doseBysupp, adjust = &quot;sidak&quot;, infer = TRUE)</code></pre>
+<pre><code>##  supp contrast  estimate   SE df lower.CL upper.CL t.ratio p.value
+##  OJ   D0.5 - D1    -9.47 1.62 54    -13.9    -5.03  -5.831  &lt;.0001
+##  OJ   D0.5 - D2   -12.83 1.62 54    -17.3    -8.39  -7.900  &lt;.0001
+##  OJ   D1 - D2      -3.36 1.62 54     -7.8     1.08  -2.069  0.2335
+##  VC   D0.5 - D1    -8.79 1.62 54    -13.2    -4.35  -5.413  &lt;.0001
+##  VC   D0.5 - D2   -18.16 1.62 54    -22.6   -13.72 -11.182  &lt;.0001
+##  VC   D1 - D2      -9.37 1.62 54    -13.8    -4.93  -5.770  &lt;.0001
+## 
+## Confidence level used: 0.95 
+## Conf-level adjustment: sidak method for 6 estimates 
+## P value adjustment: sidak method for 6 tests</code></pre>
+<pre class="r"><code>plot(fam_doseBysupp, adjust = &quot;sidak&quot;) </code></pre>
+<p><img src="EXPRM_Lab07_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>ในกรณีที่ต้องการดู simple effects ทุกคู่ที่เป็นไปได้ ให้กำหนด <code>simple = "each"</code> โปรแกรมจะคำนวณ simple effects ในทุก ๆ รายคู่ที่เป็นไปได้ให้ เราควรเพิ่มคำสั่ง <code>combine = TRUE</code> เพื่อรวมการวิเคราะห์รายคู่ทั้งหมดอยู่ด้วยกัน แล้วปรับแก้พร้อมกันทีเดียวใน <code>summary()</code> ด้วยวิธีของ <code>sidak</code></p>
+<pre class="r"><code>allsimple &lt;- contrast(tooth.emm1, &quot;pairwise&quot;, simple = &quot;each&quot;, combine = TRUE)
+summary(allsimple, adjust = &quot;sidak&quot;, infer = TRUE)</code></pre>
+<pre><code>##  dose supp contrast  estimate   SE df lower.CL upper.CL t.ratio p.value
+##  D0.5 .    OJ - VC       5.25 1.62 54    0.572     9.93   3.233  0.0187
+##  D1   .    OJ - VC       5.93 1.62 54    1.252    10.61   3.651  0.0053
+##  D2   .    OJ - VC      -0.08 1.62 54   -4.758     4.60  -0.049  1.0000
+##  .    OJ   D0.5 - D1    -9.47 1.62 54  -14.148    -4.79  -5.831  &lt;.0001
+##  .    OJ   D0.5 - D2   -12.83 1.62 54  -17.508    -8.15  -7.900  &lt;.0001
+##  .    OJ   D1 - D2      -3.36 1.62 54   -8.038     1.32  -2.069  0.3289
+##  .    VC   D0.5 - D1    -8.79 1.62 54  -13.468    -4.11  -5.413  &lt;.0001
+##  .    VC   D0.5 - D2   -18.16 1.62 54  -22.838   -13.48 -11.182  &lt;.0001
+##  .    VC   D1 - D2      -9.37 1.62 54  -14.048    -4.69  -5.770  &lt;.0001
+## 
+## Confidence level used: 0.95 
+## Conf-level adjustment: sidak method for 9 estimates 
+## P value adjustment: sidak method for 9 tests</code></pre>
+</div>
+<div id="post-hoc-for-main-effects" class="section level1">
+<h1>Post-hoc for main effects</h1>
+<p>โดยปกติแล้วหากพบผลปฏิสัมพันธ์ ผู้วิจัยมักไม่มีความจำเป็นที่จะต้องวิเคราะห์รายคู่ในระดับ main effect (เนื่องจากวิเคราะห์ simple effect ไปแล้ว)</p>
+<p>แต่ถ้าหากไม่พบปฏิสัมพันธ์ แต่พบอิทธิพลหลัก เราอาจวิเคราะห์ post-hoc ของอิทธิพลหลักได้ด้วยคำสั่งด้านล่างนี้</p>
+<pre class="r"><code>supp.emm &lt;- emmeans(tooth.afex, ~ supp) # use only main effect of interest</code></pre>
+<pre><code>## NOTE: Results may be misleading due to involvement in interactions</code></pre>
+<pre class="r"><code>supp.emm</code></pre>
+<pre><code>##  supp emmean    SE df lower.CL upper.CL
+##  OJ     20.7 0.663 54     19.3     22.0
+##  VC     17.0 0.663 54     15.6     18.3
+## 
+## Results are averaged over the levels of: dose 
+## Confidence level used: 0.95</code></pre>
+<pre class="r"><code>contrast(supp.emm, &quot;pairwise&quot;, infer = TRUE) </code></pre>
+<pre><code>##  contrast estimate    SE df lower.CL upper.CL t.ratio p.value
+##  OJ - VC       3.7 0.938 54     1.82     5.58   3.946  0.0002
+## 
+## Results are averaged over the levels of: dose 
+## Confidence level used: 0.95</code></pre>
+<pre class="r"><code>pairs(supp.emm, infer = TRUE) #same as above</code></pre>
+<pre><code>##  contrast estimate    SE df lower.CL upper.CL t.ratio p.value
+##  OJ - VC       3.7 0.938 54     1.82     5.58   3.946  0.0002
+## 
+## Results are averaged over the levels of: dose 
+## Confidence level used: 0.95</code></pre>
+<pre class="r"><code>dose.emm &lt;- emmeans(tooth.afex, ~ dose) # main effect of dose</code></pre>
+<pre><code>## NOTE: Results may be misleading due to involvement in interactions</code></pre>
+<pre class="r"><code>pairs(dose.emm, infer = TRUE) #for pairwise, default adjust option is &quot;tukey&quot;</code></pre>
+<pre><code>##  contrast  estimate   SE df lower.CL upper.CL t.ratio p.value
+##  D0.5 - D1    -9.13 1.15 54   -11.90    -6.36  -7.951  &lt;.0001
+##  D0.5 - D2   -15.49 1.15 54   -18.26   -12.73 -13.493  &lt;.0001
+##  D1 - D2      -6.37 1.15 54    -9.13    -3.60  -5.543  &lt;.0001
+## 
+## Results are averaged over the levels of: supp 
+## Confidence level used: 0.95 
+## Conf-level adjustment: tukey method for comparing a family of 3 estimates 
+## P value adjustment: tukey method for comparing a family of 3 estimates</code></pre>
+</div>
+<div id="pretty-graphs" class="section level1">
+<h1>Pretty graphs</h1>
+<p>กราฟิกใน R อาจจะใช้เวลาเรียนรู้นานกว่าโปรแกรมอื่น ๆ แต่เมื่อใช้งานเป็นแล้วจะสามารถสร้างกราฟที่สวยงามได้ตามที่ต้องการในเวลาที่รวดเร็ว</p>
+<p>เริ่มแรกให้เราสร้าง dataframe ที่มีค่าเฉลี่ยของแต่ละเงื่อนไขเพื่อเอาไปสร้างกราฟ โดย save ผลจาก <code>summary()</code> ของตัวโมเดลตารางค่าเฉลี่ย (จาก <code>emmeans</code>)</p>
+<p>จากนั้นนำไปใส่ในคำสั่ง <code>ggplot()</code> แล้วกำหนด aestheic <code>aes()</code> ให้</p>
+<p>x เป็นตัวแปรอิสระตัวที่ 1</p>
+<p>y เป็นตัวแปรตาม</p>
+<p>color กำหนดให้ใช้กลุ่มสีแทนตัวแปรอิสระตัวที่ 2</p>
+<p>จากนั้นเพิ่ม geometry ชนิด column <code>geom_col</code> กำหนด <code>aes(fill =)</code> ตัวแปรอิสระตัวที่ 2 (เพื่อให้เติมสีใน column ตามตัวแปร) ส่วน option <code>alpha</code> ใช้กำหนดความโปร่งแสง (transparency) และ option <code>position = position_dodge(.9)</code> กำหนดไว้ให้คอลัมน์วางอยู่ข้างกัน (หากไม่กำหนดคอลัมน์จะทับกัน)</p>
+<p><code>geom_errorbar()</code> ใช้สร้างขีดบอกความคลาดเคลื่อน (ในโมเดลตารางค่าเฉลี่ยมี 95% CI อยู่) ให้กำหนด <code>ymin</code> เป็นตัวแปรที่มีค่าขอบล่างของขีด และ xmin เป็นค่าขอบบนของขีด (เราสามารถเลือกค่า error bar ได้ตามต้องการ เช่น นักวิจัยบางคนใช้ค่า SE แทนค่า 95% CI) ส่วน option <code>width</code> เป็นตัวบอกขนาดของขีด สำหรับ <code>position</code> เราใช้ค่าเดียวกับใน <code>geom_col</code> เพื่อให้ error bar กับ column เรียงตรงกัน</p>
+<p><code>xlab</code> คือ ชื่อของแกน X <code>ylab</code> คือชื่อบนแกน Y ส่วน <code>theme_classic</code> มีลักษณะค่อนข้างใกล้เคียง APA (ผู้ใช้งานระดับสูงมักนิยมสร้าง theme ใหม่ของตัวเองไว้ใช้งาน)</p>
+<p>สำหรับสอง option สุดท้าย คือ สีสำหรับ <code>color</code> (สีเส้นขอบ) และ <code>fill</code> (สีช่องในคอลัมน์) สามารถดูชุดสีได้ด้วยคำสั่ง <code>RColorBrewer::display.brewer.all()</code></p>
+<pre class="r"><code>emm.summary &lt;- summary(tooth.emm1)
+emm.summary</code></pre>
+<pre><code>##  supp dose emmean   SE df lower.CL upper.CL
+##  OJ   D0.5  13.23 1.15 54    10.93     15.5
+##  VC   D0.5   7.98 1.15 54     5.68     10.3
+##  OJ   D1    22.70 1.15 54    20.40     25.0
+##  VC   D1    16.77 1.15 54    14.47     19.1
+##  OJ   D2    26.06 1.15 54    23.76     28.4
+##  VC   D2    26.14 1.15 54    23.84     28.4
+## 
+## Confidence level used: 0.95</code></pre>
+<pre class="r"><code>ggplot(emm.summary, aes(x = dose, y = emmean, color = supp)) + 
+  geom_col(aes(fill = supp), alpha = .5, position = position_dodge(.9)) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = .3, position = position_dodge(.9)) + 
+  xlab(&quot;Dose&quot;) +
+  ylab(&quot;Length&quot;) +
+  theme_classic() +
+  scale_color_brewer(palette=&quot;Accent&quot;) +
+  scale_fill_brewer(palette=&quot;Accent&quot;)</code></pre>
+<p><img src="EXPRM_Lab07_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<pre class="r"><code>emm.summary &lt;- summary(tooth.emm1)
+emm.summary</code></pre>
+<pre><code>##  supp dose emmean   SE df lower.CL upper.CL
+##  OJ   D0.5  13.23 1.15 54    10.93     15.5
+##  VC   D0.5   7.98 1.15 54     5.68     10.3
+##  OJ   D1    22.70 1.15 54    20.40     25.0
+##  VC   D1    16.77 1.15 54    14.47     19.1
+##  OJ   D2    26.06 1.15 54    23.76     28.4
+##  VC   D2    26.14 1.15 54    23.84     28.4
+## 
+## Confidence level used: 0.95</code></pre>
+<pre class="r"><code>ggplot(emm.summary, aes(x = dose, y = emmean, color = supp)) + 
+  geom_point(position = position_dodge(.2)) +
+  geom_line(aes(group = supp), position = position_dodge(.2)) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = .3, position = position_dodge(.2)) + 
+  xlab(&quot;Dose&quot;) +
+  ylab(&quot;Length&quot;) +
+  theme_classic() +
+  scale_color_manual(values=c(&quot;#999999&quot;, &quot;#E69F00&quot;))</code></pre>
+<p><img src="EXPRM_Lab07_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

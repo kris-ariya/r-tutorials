@@ -1,0 +1,249 @@
+---
+title: 'Lab 9: Correlation'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages}
+library(ggplot2)
+```
+
+# Pearson's Correlation Coefficient
+
+Pearson's *r* is a standardized covariance that measures a *direction* and *magnitude* of **linear** relationship between two variables. 
+
+$$ r = \frac{cov_{xy}}{s_x s_y}$$
+We will use a built-in R dataset, `mtcars`, for this demonstration.
+```{r}
+data(mtcars) # Load mtcars into a data frame.
+head(mtcars)
+```
+
+Let's run a correlation analysis on cars' miles per gallon (`mpg`) and horse power (`hp`). 
+
+## Manual Calculation
+First, calculate $cov_{xy}$. 
+$$cov_{xy} = \frac{\sum{(X - \bar{X})(Y - \bar{Y})}}{N - 1}$$
+```{r}
+covxy <- (sum((mtcars$mpg - mean(mtcars$mpg)) * (mtcars$hp - mean(mtcars$hp)))) / (nrow(mtcars) -1)
+covxy
+
+# Or use cov() function
+cov(mtcars$mpg, mtcars$hp)
+```
+Then, divide $cov_{xy}$ by $s_x s_y$
+```{r}
+covxy / (sd(mtcars$mpg) * sd(mtcars$hp))
+```
+
+## `cor()` and `cor.test()` function
+We can use base R `cor()` function. 
+```{r cor}
+cor(mtcars$mpg, mtcars$hp)
+```
+However, `cor()` does not give us a significance testing. If we need a *p*-value and CI, use `cor.test()`.
+```{r cor.test}
+cor.test(mtcars$mpg, mtcars$hp)
+```
+
+## Other types of correlation
+The base R functions can perform three types of correlation by specfiying `method = "pearson"`, `"kendall"` , or `"spearman"` in the `cor()` or `cor.test()` functions. 
+
+* Pearson's correlation (*r*) is suitable to test a *linear* relationship between two continuous variables. Although *r* assumes that the variables are normally distributed, it is very robust against non-normal continuous data. However, *r* is sensitive to outliers. 
+* Spearman's rank correlation or Spearman's rho ($\rho$) is a non-parametric test of association for ordinal (ranked) data. It is suitable for a monotonic relationship (both linear and nonlinear). It is also less sensitive to outliers. 
+* Kendall's rank correlation or Kendall's tau ($\tau$) is a non-parametric test of dependence for ordinal variables. Kendall's tau is usually smaller than Spearman's rho. But it is less sensitive to error and more accurate in small samples. It is generally preferred over Spearmean's rho. 
+
+Let's plot `mpg` and `hp`
+
+```{r echo = FALSE, message=FALSE}
+ggplot(mtcars, aes(x = mpg, y = hp)) + 
+  geom_point() +
+  geom_smooth(method = lm, se = FALSE) +
+  geom_smooth(method = loess, color = "red", se = FALSE)
+```
+
+The relationship shows a negative *monotonic* trend (i.e., when one variable increases, the other decreases), BUT not quite *linear* (blue line). 
+
+```{r}
+cor.test(mtcars$mpg, mtcars$hp, method = "pearson")
+cor.test(mtcars$mpg, mtcars$hp, method = "spearman")
+cor.test(mtcars$mpg, mtcars$hp, method = "kendall")
+```
+
+Because the relationship was not quite linear, Spearman's rho was larger than Pearson's *r*. Nonetheless, *r* was still pretty good at capturing the relationship. Kendall's $\tau$ value may look smaller, but this was because of the way it was calculated. It actually has lower *p*-value than Pearson's *r*. 
+
+The assumption of linearity and the problem of outliers are critical to Pearson's *r*. Therefore, it is important to visualize your data, so that you can select an appropriate correlation test. 
+
+# Scatter Plot
+
+A bivariate analysis can be visualized with a scatter plot. We will learn how to do it in Base R and `ggplot2`.
+
+## Base R
+```{r}
+# Base R: Scatter plot
+plot(mtcars$hp, mtcars$mpg)
+```
+
+## `ggplot2`
+For `ggplot(data =, mapping = aes() )`, we will define a dataset and aesthetic mapping.
+
+* `data = ` is a data frame that contain variables to be plotted. We put `mtcars` here.
+* `mapping = aes()` specifies aesthetics of the plot, i.e., which variables will be plot on which axes. In this plot, we map `hp` on the x-axis and `mpg` on the y-axis.
+* Then we close the `ggplot()` function. However, we are not done yet. We will add a layer (using `+`) of geometry. A geometry function defines how data points are represented. To create a scatter plot, we will use `geom_point()`. 
+ * Then `+` the classic theme to make the plot looks APA-styled.
+ 
+ Note that you can store a `ggplot` object into an R variable (e.g., `p`) for later use.
+
+```{r scatter}
+# GGplot
+library(ggplot2)
+p <- ggplot(mtcars, mapping = aes(x = hp, y = mpg)) + #define data and mapping aesthetics
+  geom_point() + #point geometry for scatter plot
+  theme_classic()
+p 
+```
+
+
+## Grouping with color or shape
+For an advanced plot with another grouping variable (e.g., `am`: automatic = 0; manual transmission = 1), we can use color or shape of the dot to represent the grouping variable. We specify `color` or `shape` in `aes()`.
+Because `am` is a categorical variable, we need to make sure to treat it as a factor with `as.factor()`.
+```{r}
+# Color
+ggplot(data = mtcars, aes(x = hp, y = mpg, color = as.factor(am))) + 
+  geom_point() + 
+  theme_classic()
+
+# Shape
+ggplot(data = mtcars, aes(x = hp, 
+                          y = mpg, 
+                          shape = as.factor(am))) + 
+  geom_point() +
+  theme_classic()
+```
+
+# Correlation Matrix (Table)
+
+If we are looking at multiple pairs of correlation, we can run a correlation matrix. 
+```{r}
+corr_dat <- mtcars[, c("mpg", "cyl", "disp", "hp", "wt", "gear")] # Crate a data frame with variables to be analyzed. 
+cor(corr_dat)
+# Note that the upper half above a diagonal line is a mirror image of the lower half. 
+```
+
+However, `cor()` does not give us significance testing. We will explore several packages that offer a function for correlation table.
+
+## `psych` package
+The `psych` package has a correlation matrix function called `corr.test()`. Note that `psych`'s function use double *r* in `corr.test()`. The options for `method = ` are `"pearson"` (default), `"spearman"`, and `"kendall"`. 
+```{r message = FALSE}
+library("psych")
+psych::corr.test(corr_dat) # Actually, you do not need to include "psych::" before "corr.test"". However, it is a good practice to identify which package you are using.
+```
+Note that values above the diagonal line are identical to values below the diagonal line. 
+
+To make it easier to read the table, we can output only the bottome half with `lowerCor()`. 
+
+```{r message = FALSE}
+psych::lowerCor(corr_dat) # Show only lower half.
+#corr.test(corr_dat, method = "kendall") # For Kendall's tau
+```
+
+## jamovi's `jmv` package
+
+The `jmv` package has a nice correlation matrix function that produce a good looking table. In `corrMatrix()`,   
+`data =` a dataframe,  
+`vars =` a vector of variable names,  
+`pearson =` TRUE (default) or FALSE  
+`spearman =` TRUE or FALSE (default),  
+`kendall =` TRUE or FALSE (default),  
+`n =` TRUE or FALSE (default), show number of cases,  
+`ci =` TRUE or FALSE (default), show confidence interval,  
+`plots =` TRUE or FALSE (default), plot a visualization,  
+`plotStats =` TRUE or FALSE (default), stats in a plot,  
+`plotDens =` TRUE or FALSE (default), plot densities. 
+
+```{r message = FALSE}
+# install.packages("jmv") 
+library("jmv")
+corrMatrix(data = mtcars, vars = c("mpg", "cyl", "disp", "hp", "wt", "gear"))
+```
+Note that the table only shows the bottom half to make it easier to read. 
+
+## `apaTables` package
+The `apaTables` package will help you create a nice looking APA formatted table. Also, the function can save an output table into a document file with a `filename` option.  
+For a correlation table, we will use `apa.cor.table()`.
+```{r}
+# install.packages("apaTables")
+library(apaTables)
+apa.cor.table(corr_dat, filename = "APA_Corr_Table.doc") # This will save a Word doc to the working directory.
+# run getwd() to check your working directory. 
+```
+
+# Visualizing Correlation Matrix
+
+You can also visualize a correlation matrix. The visualization helps you examine the relationship among variables as well as detecting any assumption violations. It serves a diagnostic purpose. Normally, you would not include these plots in your paper. 
+
+There are several packages with a function to visualize a correlation matrix. Here are some of them. 
+
+## Base R
+The `pairs` function will produce a matrix of scatter plots. You could examine whether assumptions of linearity and homoscedasticity hold true for any pairs. 
+```{r}
+pairs(corr_dat)
+```
+
+## `corrplot`
+The `corrplot` package create a nice visulization with a color scheme. The `corrplot(corr, method = , type = , p.mat = )`  first argument, `corr`, must be a correlation matrix, NOT a data frame. Therfore, we need to, first, compute a correlation matrix. We will use `psych::corr.test()` here.
+
+The option `method` refers to how the correlation will be visualized. There are `method = c("circle", "square", "ellipse", "number", "shade", "color", "pie")`. You can see more info in `?corrplot`. 
+
+```{r echo=FALSE, message = FALSE}
+library(corrplot)
+cor_mat <- psych::corr.test(corr_dat) # Use corr.test() to create a list of output matrices.
+par(mfrow=c(2, 4))
+sample_plot <- list()
+sample_plot[[1]] <- corrplot(cor_mat$r, method = "circle") 
+sample_plot[[2]] <- corrplot(cor_mat$r, method = "square")
+sample_plot[[3]] <- corrplot(cor_mat$r, method = "ellipse")
+sample_plot[[4]] <- corrplot(cor_mat$r, method = "number")
+sample_plot[[5]] <- corrplot(cor_mat$r, method = "shade")
+sample_plot[[6]] <- corrplot(cor_mat$r, method = "color")
+sample_plot[[7]] <- corrplot(cor_mat$r, method = "pie")
+```
+
+The option `type = c("full", "lower", "upper")` tells the function whether you want a full matrix, an upper, or a lower half. 
+
+The option `p.mat` takes a *p* value table and show whether correlation coefficients are significant.
+```{r message = FALSE}
+# First, we need to compute a correlation matrix. 
+cor_mat <- psych::corr.test(corr_dat) # Use corr.test() to create a list of output matrices.
+str(cor_mat)
+cor_mat$r # The first element of the list is a correlation matrix.
+cor_mat$p # The fourth element is a p value matrix. 
+
+# install.packages("corrplot")
+library(corrplot)
+corrplot(cor_mat$r, method = "number", type = "upper", p.mat = cor_mat$p) #show cor values.
+corrplot(cor_mat$r, method = "ellipse", type = "lower", p.mat = cor_mat$p) # show ellipses
+```
+
+## `psych`
+The `psych` package's `pairs.panels` function will give you correlation coefficients on an upper half, scatter plots on a lower half, and distribution density plots on a diagonal. The `method` option can be `"pearson"`, `"spearman"`, or `"kendall"`. The plots are useful for detecting assumption violations. 
+```{r}
+library(psych)
+pairs.panels(corr_dat) # input is a data frame.
+```
+
+## `jmv`
+
+Another nice package for plotting is `GGally`. You can read about it at http://ggobi.github.io/ggally/articles/ggpairs.html. However, in this demonstration, we will call a plot from `jmv::corrMatrix`. Because the `jmv` package implements `GGally` for its plotting option, this will save us time to call just one function. The down side of using `jmv` is that you do not have many options to customize your plots. 
+
+```{r}
+corrMatrix(data = mtcars, 
+           vars = c("mpg", "cyl", "disp", "hp", "wt", "gear"),
+           plots = TRUE, # scatter plots on lower half. 
+           plotStats = TRUE, # cor coeff on upper half.
+           plotDens = TRUE) # density plots on diagonal.
+```
+
+

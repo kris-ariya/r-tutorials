@@ -1,0 +1,417 @@
+---
+title: 'Lab 08: Confidence interval and t-test'
+date: "Mar 13, 2022"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: TRUE
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message = FALSE}
+# Load packages for this script.
+library(ggplot2)
+library(BSDA)
+library(psych)
+```
+
+# ช่วงความเชื่อมั่น (Confidence Interval)
+
+ในแบบฝึกหัดที่แล้ว
+เราได้ทำความเข้าใจหลักการของช่วงความเชื่อมั่นจากการสร้างช่วงที่ครอบคลุม
+95% ของการแจกแจงค่าตัวอย่าง (sampling distribution) รอบ ๆ
+ค่าเฉลี่ยประชากร $\mu$ โดยอาศัยความน่าจะเป็นภายใต้โค้งปกติ (normal
+distribution) ช่วงดังกล่าวช่วยให้เรารู้ได้ว่าโดยส่วนใหญ่แล้ว (95%)
+ความคลาดเคลื่อนในการสุ่มจะทำให้เราได้ค่าเฉลี่ยตัวอย่างอยู่ระหว่างค่าใด
+
+แต่ทว่าวิธีการดังกล่าวนั้นไม่สามารถนำมาใช้ได้ในการทดสอบทางสถิติตามปกติ
+เนื่องจากในการศึกษาวิจัยนั้น
+เราแทบจะไม่สามารถทราบได้เลยว่าค่าเฉลี่ยประชากรแท้จริงแล้วมีค่าเท่าใด
+นั่นคือเราไม่รู้ $\mu$ แต่รู้เฉพาะค่าเฉลี่ยของกลุ่มตัวอย่าง $\bar{X}$
+
+เพื่อประมาณค่า $\mu$ เราจะใช้ค่าเฉลี่ยกลุ่มตัวอย่าง $\bar{X}$
+แล้วสร้าง**ช่วงความเชื่อมั่น (confidence interval)** รอบ ๆ ค่า $\bar{X}$
+โดยหวังว่าขนาดของช่วงที่กว้างถึง 95% ของโค้งปกติ (normal หรือ *z*
+distribution) น่าจะครอบคลุมค่า $\mu$
+
+ตามหลักการกระจายตัวใต้โค้งปกติ 95% ของข้อมูลรอบค่าเฉลี่ยจะอยู่ระหว่าง
+±1.96 *SD* ในกรณีของ sampling distribution ก็คือ ±1.96 *SE* นั่นเอง
+เราจึงสามารถคำนวณค่าช่วงความเชื่อมั่นที่ระดับ 95% (95% confidence
+interval) ได้ดังนี้
+
+$$\text{95% CI} = \bar{X} ± 1.96SE$$
+
+นั่นคือ หากเราสุ่มกลุ่มตัวอย่างมาหนึ่งร้อยครับ (แต่ละครั้ง $\bar{X}$
+คลาดเคลื่อนไปมากบ้างน้อยบ้าง) แล้วสร้างช่วงระหว่าง ±1.96 *SE* (นั่นคือ
+95 % ใต้โค้งปกติ) จะมี 95 ครั้งที่ช่วงดังกล่าวจะครอบคลุมค่าเฉลี่ยประชากร
+$\mu$
+
+เราสามารถจำลองข้อมูลเพื่อให้เห็นภาพมากขึ้น
+สมมติว่าเราไปสุ่มกลุ่มตัวอย่าง 900 คน จากประชากรที่มี $\mu = 50$ และ
+$\sigma$ = 9.
+
+1.  เราสุ่มกลุ่มตัวอย่าง 900 คนจากประชากร
+    แล้วคำนวณค่าเฉลี่ยของกลุ่มตัวอย่างแต่ละกลุ่ม
+2.  จากนั้นใช้ค่า $\sigma$ เพื่อคำนวณค่า SE และช่วง 95% CI
+    รอบค่าเฉลี่ยของกลุ่มตัวอย่างแต่ละกลุ่ม
+3.  ทำซ้ำ 100 ครั้งและนำข้อมูลมาสร้างกราฟด้านล่าง
+4.  บันทึกข้อมูลในตัวแปรชื่อ `sim`
+
+กราฟด้านล่างจะแสดงค่าเฉลี่ยและ 95% CI ของกลุ่มตัวอย่างในการจำลองแต่ละรอบ
+(เรียงตั้งแต่ครั้งที่ 1 ถึง 100 จากล่างขึ้นบน)
+เห็นได้ว่าในการสุ่มตัวอย่างแต่ละครั้ง เราจะได้ค่า $\bar{X}$
+ต่างกันไปในแต่ละครั้ง แต่ค่าเฉลี่ยกลุ่มตัวอย่างเหล่านี้ก็กระจายอยู่รอบ ๆ
+ค่าเฉลี่ยประชากร $\mu$
+
+```{r echo = FALSE}
+n <- 900
+contain <- 1
+sim <- matrix(nrow = 100, ncol = 6)
+colnames(sim) <- c("survey_id", "mean","sd","se","LL","UL")
+# run simulation until we get exactly 95%. 
+while (contain != 95) {
+  for (i in 1:100) {
+    s <- rnorm(n, 50, 9)
+    sim[i, "survey_id"] <- i
+    sim[i, "mean"] <- mean(s)
+    sim[i, "sd"] <- sd(s)
+    sim[i, "se"] <- sim[i, "sd"]/sqrt(n)
+    sim[i, "LL"] <- sim[i, "mean"] + (qnorm(.025) * sim[i, "se"])
+    sim[i, "UL"] <- sim[i, "mean"] + (qnorm(.975) * sim[i, "se"])
+  }
+  sim <- data.frame(sim)
+  sim$contain <- !(sim$LL > 50 | sim$UL < 50) #CI that contain mu
+  
+  contain <- sum(sim$contain)
+}
+
+```
+
+```{r }
+head(sim)
+```
+
+```{r echo = FALSE }
+ggplot(sim, aes(x = mean, y = survey_id )) +
+  labs(x = "x", y = "Survey", title = "Confidence intervals for 100 survey samples") +
+  geom_vline(aes(xintercept = 50), color = "forestgreen") +
+  theme_classic() + 
+  geom_errorbarh(aes(xmin = LL, xmax = UL, color = contain ))
+```
+
+ในการจำลอง 100 ครั้ง เส้นสีฟ้าแทนการจำลองครั้งที่ค่า 95% CI ครอบคลุมค่า
+$\mu$ ส่วนเส้นสีแดงแทนครั้งที่กลุ่มตัวอย่างคลาดเคลื่อนไปจน 95% CI
+ไม่ครอบคลุม $\mu$
+
+การจำลอง 100 ครั้งนี้ทำให้เราเห็นได้ว่า
+แม้ว่าเราจะสุ่มกลุ่มตัวอย่างจากประชากรเดียวกัน แต่เราพบ 5 ครั้ง
+(สีแดง)ที่เกิดความคลาดเคลื่อนจากการสุ่มจนทำให้ค่าเฉลี่ยกลุ่มตัวอย่าง
+$\bar{X}$ ที่ได้แตกต่างไปจากค่าเฉลี่ยประชากร $\mu$
+จนถึงระดับนัยสำคัญทางสถิติ (นั่นคือ เราพบว่า $\bar{X}$
+แตกต่างกับค่าที่เราคิดว่าเป็น $\mu$
+มากเสียจนเราเชื่อว่ากลุ่มตัวอย่างนี้แตกต่างจากประชากรที่เราต้องการทดสอบ)
+แต่ในความเป็นจริงแล้วความแตกต่างดังกล่าวเป็นเพียงแค่ความคลาดเคลื่อนทางสถิติ
+ความผิดพลาดนี้เรียกว่า Type I Error ซึ่งเรากำหนดไว้ว่าไม่ควรเกิน 5%
+($\alpha = .05$) นั่นหมายความว่า หากเราเลือกใช้ 95% CI เราจะมั่นใจได้ว่า
+Type I error จะอยู่ที่ไม่เกิน 5% (นั่นคือ
+หากแท้จริงแล้วกลุ่มตัวอย่างของเราไม่ได้แตกต่างจากประชากร จะมีโอกาสเพียง
+5% เท่านั้นที่เราจะบังเอิญได้ $\bar{X}$ ที่แตกต่างไปจาก $\mu$
+จนถึงระดับนัยสำคัญทางสถิติ)
+
+ดังนั้นค่า 95% CI จึงช่วยบอกช่วงที่เรามั่นใจได้ว่า
+ความคลาดเคลื่อนทางสถิติส่วนใหญ่จะอยู่ในช่วงนี้
+เราจึง*อนุมาน*ต่อไปว่าช่วงดังกล่าวน่าจะครอบคลุมค่าเฉลี่ยประชากร $\mu$
+
+## การคำนวณ CI ด้วยมือ
+
+สมมติให้เรามีกลุ่มตัวอย่าง *M* = 50.5, *SD* = 9, *N* = 900.
+
+```{r}
+m <- 50.5
+sd <- 9
+n <- 900
+se <- sd/sqrt(n)
+```
+
+ช่วงความเชื่อมั่น 95% จะอยู่ระหว่าง ±1.96 *SE* รอบค่าเฉลี่ย
+เราสามารถคำนวณหาขอบเขตล่าง (lower limit; *LL*) และขอบเขตบนได้ (upper
+limit; *UL*)
+
+```{r results = "hold"}
+LL <- m - (1.96 * se) # Lower limit
+UL <- m + (1.96 * se) # Upper limit
+print(paste0("95% CI [", LL,", ", UL, "]"))
+```
+
+```{r echo = FALSE}
+p <- ggplot(data = data.frame(x = c(49, 51.5)), aes(x)) +
+  coord_cartesian(ylim = c(0, 1.5), xlim = c(49, 51.5)) +
+  annotate(geom = "point", x = m, y = 0) +
+  theme_classic() + 
+  theme(axis.text.y = element_blank()) +
+  geom_errorbarh(aes(xmin = LL, xmax = UL, y = 0),
+                   height = .1,
+                   color = "steelblue")
+p
+```
+
+หากเราต้องการทดสอบว่ากลุ่มตัวอย่างนี้มาจากประชากรที่มี $\mu = 50$
+หรือไม่ เราสามารถลองเทียบช่วงดังกล่าวกับ sampling distribution ของ
+$\mu = 50$ ได้
+
+```{r echo = FALSE}
+pop_mean <- 50
+p <- p + stat_function(fun = dnorm, n = 1000, args = list(mean = pop_mean, sd = se)) + 
+  geom_vline(aes(xintercept = pop_mean), 
+             color = "forestgreen",
+             linetype = "dashed") +
+  annotate(geom = "text", x = pop_mean, y = .3, 
+           label = paste("mu ==", pop_mean), parse = TRUE,
+           color = "forestgreen") +
+  labs(x = "Sampling Distribution") 
+
+# Extract data from ggplot
+d <- ggplot_build(p)$data[[3]]
+# Area with 95%
+p <- p + geom_area(data = subset(d, x >= pop_mean - (1.96*se) & x <= pop_mean + (1.96*se)), 
+                   aes(x=x, y=y), 
+                   fill="red", alpha = .2)
+p
+```
+
+สังเกตว่า
+
+1.  ช่วงความเชื่อมั่น 95 CI% [`r LL`, `r UL`] นั้นครอบคลุมค่า $\mu = 50$
+2.  ในขณะเดียวกัน หากมองจากมุมของ sampling distribution ของ $\mu = 50$
+    ค่าเฉลี่ยกลุ่มตัวอย่าง $\bar{X}$ ที่ 50.5
+    ก็ยังอยู่ในพื้นที่ใต้กราฟสีแดง
+
+เนื่องจากช่วงความเชื่อมั่นถูกคำนวนมาจาก *SE* เดียวกัน ทั้งมุมมอง 1 และ 2
+ก็คือการทดสอบเดียวกัน ได้ผลลัพธ์ไม่แตกต่างกัน
+
+กล่าวคือ เมื่อเราพบว่าช่วง 95% CI
+ของค่าเฉลี่ยกลุ่มตัวอย่างนั้นครอบคลุมค่าที่เราต้องการทดสอบสมมติฐาน
+($\mu = 50$) แสดงว่า
+*หากกลุ่มตัวอย่างนี้มาจากประชากรที่มีค่าเฉลี่ยเท่ากับ 50 จริง* ค่า 50.5
+นั้นยังอยู่ในช่วง 95% ของความคลาดเคลื่อนทางสถิติ
+เราจึงยัง**ไม่สามารถสรุป**ได้ว่าค่า 50.5 นี้ แตกต่างจาก 50
+อย่างมีนัยสำคัญทางสถิติ (นั่นคือเรา*อนุมาน*ว่าค่า 50.5 นี้เป็นเพียงแค่
+sampling error บน assumption ว่ากลุ่มตัวอย่างไม่ต่างจากประชากร )
+
+การคำนวณค่า 95% CI
+ที่แสดงมาข้างต้นนี้ใช้ค่าความน่าจะเป็นใต้การแจงแจงโค้งปกติ (normal หรือ
+*z*-distribution) ดังนั้นผลการทดสอบนี้ ก็คือการทดสอบด้วย *z*-test
+นั่นเอง
+
+```{r z-test}
+zsum.test(m, sd, n, mu = 50)
+```
+
+# *t*-test
+
+อย่างไรก็ดี การคำนวณค่า 95% CI หรือการใช้ z-test ก็มีข้อจำกัดอยู่
+เนื่องจากการใช้ normal หรือ z-distribution
+นั้นจำเป็นต้องใช้ส่วนเบี่ยงเบนมาตรฐานของประชากร $\sigma$ และค่า z
+เป็นการแจกแจงระดับประชากร
+เมื่อเอามาใช้กับกลุ่มตัวอย่างขนาดเล็กจะทำให้เรา*ประมาณค่าความคลาดเคลื่อนต่ำเกินไป*
+กล่าวคือ ข้อมูลกลุ่มตัวอย่างที่เราศึกษามักจะ
+
+1.  ไม่ทราบความแปรปรวนประชากร (population variance $\sigma^2$)
+2.  กลุ่มตัวอย่างมีขนาดเล็ก
+
+จึงมีการคิดค้นการแจกแจงแบบ t-distribution ขึ้นมาเพื่อแก้ไขปัญหาดังกล่าว
+โดยที่การแจกแจงแบบ t นั้นจะเปลี่ยนรูปร่างไปตามขนาดของ degree of freedom
+(ซึ่งคำนวณมาจากกลุ่มตัวอย่างอีกที)
+
+นั่นคือในกรณีที่กลุ่มตัวอย่างมีขนาดเล็ก ค่าวิกฤติ (critical value)
+ของสถิติ *t* จะถูกปรับเพื่อรองรับความคลาดเคลื่อนที่มากขึ้น
+(เกณฑ์การถึงระดับนัยสำคัญสูงขึ้น) และ เมื่อกลุ่มตัวอย่างมีขนาดใหญ่ขึ้น
+จะค่อย ๆ มีค่าคล้ายกับสถิติ *z* มากขึ้น ดังกราฟการแจกแจงด้านล่าง
+
+```{r echo = FALSE}
+t <- ggplot(data = data.frame(x = c(-4, 4)), aes(x)) +
+  stat_function(fun = dt, n = 1000, args = list(x = 0, df = 3), color = "red") + 
+  stat_function(fun = dt, n = 1000, args = list(x = 0, df = 10), color = "forestgreen") + 
+  stat_function(fun = dt, n = 1000, args = list(x = 0, df = 30), color = "wheat4") +
+  stat_function(fun = dt, n = 1000, args = list(x = 0, df = 300), color = "blue") +
+  stat_function(fun = dnorm, n = 1000, args = list(mean = 0, sd = 1), color = "purple") +
+  annotate(geom = "text", x = 0, y = .2, label = "t df = 3", color = "red" ) +
+  annotate(geom = "text", x = 0, y = .22, label = "t df = 10", color = "forestgreen") +
+  annotate(geom = "text", x = 0, y = .24, label = "t df = 30", color = "wheat4") +
+  annotate(geom = "text", x = 0, y = .26, label = "t df = 300", color = "blue") +
+  annotate(geom = "text", x = 0, y = .28, label = "z-distribution", color = "purple") +
+  geom_vline(aes(xintercept = qt(.025, 3)), color = "red", linetype = "dashed") +
+  geom_vline(aes(xintercept = qt(.025, 10)), color = "forestgreen", linetype = "dashed") +
+  geom_vline(aes(xintercept = qt(.025, 30)), color = "wheat4", linetype = "dashed") +
+  geom_vline(aes(xintercept = qt(.025, 300)), color = "blue", linetype = "dashed") +
+  geom_vline(aes(xintercept = qnorm(.025)), color = "purple", linetype = "dashed") +
+  geom_vline(aes(xintercept = qt(.975, 3)), color = "red", linetype = "dashed") +
+  geom_vline(aes(xintercept = qt(.975, 10)), color = "forestgreen", linetype = "dashed") +
+  geom_vline(aes(xintercept = qt(.975, 30)), color = "wheat4", linetype = "dashed") +
+  geom_vline(aes(xintercept = qt(.975, 300)), color = "blue", linetype = "dashed") +
+  geom_vline(aes(xintercept = qnorm(.975)), color = "purple", linetype = "dashed") +
+  theme_classic()
+t
+```
+
+เห็นได้ว่าการแจกแจงแบบ t นั้นจะแบนราบกว่าการแจกจงแบบ z ส่งผลให้ช่วง 95%
+นั้นกว้างกว่า โดยรูปร่างของการแจกแจง t นั้นจะขึ้นอยู่กับ degrees of
+freedom (*df*) ซึ่งคำนวณมาจากจำนวนกลุ่มตัวอย่าง
+
+กราฟด้านล่างแสดงให้เห็นว่าค่าวิกฤติของ *t* distribution เมื่อ *df*
+น้อยกว่านั้น มีช่วงกว้างกว่า เมื่อ *df* มีจำนวนมาก และเมื่อค่า *df*
+มากขึ้น ค่า critical ก็เข้าใกล้ค่า ±1.96 ของ *z* distribution
+
+```{r echo = FALSE}
+library(gridExtra)
+tt <- list()
+# Area with 95%
+#df = 10
+tt[[1]] <- ggplot(data = data.frame(x = c(-4, 4)), aes(x)) +
+  theme_classic() +
+  stat_function(fun = dt, n = 1000, args = list(x = 0, df = 10), color = "forestgreen") +
+  labs(x = "t distribution, df = 10")
+
+d10 <- ggplot_build(tt[[1]])$data[[1]]
+
+tt[[1]] <- tt[[1]] + geom_area(data = subset(d10, x >= qt(.025, 10) & x <= qt(.975, 10)), 
+                   aes(x=x, y=y), 
+                   fill="forestgreen", alpha = .2) +
+  annotate(geom = "text", x = qt(.025, 10), y = -.02, 
+           label = paste("t[critical](10) ==", round(qt(.025, 10), 3)), parse = TRUE,
+           color = "forestgreen") +
+  annotate(geom = "text", x = qt(.975, 10), y = -.02, 
+           label = paste("t[critical](10) ==", round(qt(.975, 10), 3)), parse = TRUE,
+           color = "forestgreen")
+
+# df = 300
+tt[[2]] <- ggplot(data = data.frame(x = c(-4, 4)), aes(x)) +
+  theme_classic() +
+  stat_function(fun = dt, n = 1000, args = list(x = 0, df = 300), color = "blue") +
+  labs(x = "t distribution, df = 300")
+
+d300 <- ggplot_build(tt[[2]])$data[[1]]
+
+tt[[2]] <- tt[[2]] + geom_area(data = subset(d300, x >= qt(.025, 300) & x <= qt(.975, 300)), 
+                   aes(x=x, y=y), 
+                   fill="blue", alpha = .2) +
+  annotate(geom = "text", x = qt(.025, 300), y = -.02, 
+           label = paste("t[critical](300) ==", round(qt(.025, 300), 3)), parse = TRUE,
+           color = "blue") +
+  annotate(geom = "text", x = qt(.975, 300), y = -.02, 
+           label = paste("t[critical](300) ==", round(qt(.975, 300), 3)), parse = TRUE,
+           color = "blue")
+
+do.call(grid.arrange,tt)
+```
+
+สำหรับ *df* = 10 ค่า *t* วิกฤติ = ±2.228.\
+สำหรับ *df* = 300 ค่า *t* วิกฤติ = ±1.968.\
+เมื่อกลุ่มตัวอย่างมากขึ้น ค่า *t* วิกฤติจะเข้าใกล้ค่า *z* วิกฤติ (±1.96)
+
+## One sample *t*-test
+
+```{r echo = FALSE}
+sig <- FALSE
+while (sig == FALSE) {
+  reading <- round(rnorm(54, 97, 60))
+  reading[reading < 0] <- 0
+  test <- t.test(reading, mu = 120)
+  sig <- test$p.value < .05
+}
+
+```
+
+การทดสอบด้วยสถิติ t แบบกลุ่มตัวอย่างเดียว
+เป็นการทดสอบค่าเฉลี่ยกับค่าที่ต้องการทดสอบ (เช่น 0
+หรือค่าที่เราเชื่อว่าเป็น $\mu$)
+
+ลองสมมติตัวอย่างการวิจัยที่ต้องการทดสอบว่านักเรียนอ่านหนังสือถึง 2
+ชั่วโมงต่อวันหรือไม่
+โดยเก็บข้อมูลว่านักเรียนใช้เวลาอ่านหนังสือจริงเท่าไหร่
+
+ให้ *M*~dailyreading~ = `r round(mean(reading), 2)` นาที, *SD* =
+`r round(sd(reading), 2)`, *N* = `r length(reading)`.
+
+ข้อมูลอยู่ในตัวแปรที่ชื่อว่า `reading`.
+
+```{r}
+reading
+psych::describe(reading)
+```
+
+เราต้องการทดสอบว่าค่าเฉลี่ยกลุ่มตัวอย่างนี้แตกต่างจากค่าที่เราตั้งสมมติฐานไว้
+คือ 2 ชั่วโมงหรือ 120 นาทีต่อวันหรือไม่ $$H_0: \mu = 120$$ หรือ
+$$H_0: \mu - 120 = 0$$
+
+เราทดสอบด้วยสถิติ *t* \
+$$t = \frac{\bar{X} - 120}{SE}$$ โดย $SE = \frac{SD}{\sqrt{N}}$
+
+```{r manual t, collapse=TRUE}
+n <- length(reading)
+se <- sd(reading)/sqrt(n)
+t <- (mean(reading)-120)/se
+se
+t
+```
+
+เราสามารถนำค่า t นี้ไปตรวจกับตาราง t distribution
+หรือนำไปเข้าเครื่องคำนวณค่าสถิติตามเว็บไซต์ต่าง ๆ (ค้นหา t test
+calculator) โดยใช้ค่า $df = N - 1$ หรือ `r length(reading)` - 1 =
+`r length(reading)-1` โดยเราจะพบว่าค่าสถิติดังกล่าวแสดงว่า
+เวลาในการอ่านหนังสือของนักเรียนน้อยกว่า 120
+นาทีอย่างมีนัยสำคัญทางสถิติที่ระดับ *p* \< .05
+
+## Confidence interval
+
+ในการสร้างช่วงความเชื่อมั่น 95% ของค่าเฉลี่ยกลุ่มตัวอย่างใน t-test
+เราไม่สามารถใช้ช่วง ±1.96 SE ของ z-distribution ได้
+เราต้องใช้ค่าวิกฤติของ t distribution แทน
+
+คำสั่ง `qt` จะแสดงค่า *t* ตามค่า *p* ที่เราต้องการ ในการทดสอบแบบสองหาง
+เราต้องการหาค่าวิกฤติ *t* ที่ตรงจุดความน่าจะเป็นที่ *p* = .025 และ *p* =
+.975
+
+```{r t CI, collapse=TRUE}
+df <- n - 1 # degrees of freedom
+LL <- mean(reading) + (qt(.025, df) * se) #Lower limit
+UL <- mean(reading) + (qt(.975, df) * se) #Upper limit
+LL
+UL
+```
+
+```{r echo = FALSE}
+ggplot(data = data.frame(x = c(75, 120)), aes(x)) +
+  coord_cartesian(ylim = c(0, 1.5), xlim = c(75, 120)) +
+  annotate(geom = "point", x = mean(reading), y = 0) +
+  geom_errorbarh(aes(xmin = LL, xmax = UL, y = 0),
+                   height = .1,
+                   color = "steelblue") +
+  geom_vline(aes(xintercept = 120), 
+             color = "forestgreen",
+             linetype = "dashed") +
+  theme_classic()
+```
+
+ช่วงความเชื่อมั่น 95% ไม่ครอบคลุมค่าที่ต้องการทดสอบ (120 นาที)
+ซึ่งสอดคล้องกับผลที่พบว่านักเรียนอ่านหนังสือน้อยกว่า 120
+นาทีอย่างมีนัยสำคัญทางสถิติ
+
+## `t.test` function
+
+เราสามารถใช้คำสั่ง `t.test` เพื่อทดสอบค่าเฉลี่ยได้ สำหรับ t-test
+แบบกลุ่มตัวอย่างเดียว (one sample t-test) ต้องการ input argument สองตัว
+`t.test(x, mu)` คือ `x` ที่เป็นข้อมูล และ `mu`
+ที่เป็นค่าเฉลี่ยตามสมมติฐานที่ต้องการจะทดสอบ
+
+```{r}
+t.test(reading, mu = 120) #default is a two-tailed test. 
+t.test(reading, mu = 120, alternative = "less") #alternative lets you run a one-tailed test with "less" or "greater".
+```

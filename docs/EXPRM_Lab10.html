@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 10: Repeated-Measures ANOVA</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Tutorials</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    RES MTHD/STAT PSY Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="RES_STAT_Lab04.html">Lab 4: Descriptive Statistics</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab05.html">Lab 5: Standard Score</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab06.html">Lab 6: Visualizing Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab07.html">Lab 7: Sampling Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab08.html">Lab 8: Confidence Interval and t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab09.html">Lab 9: Correlation</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab10.html">Lab 10: Simple Regression</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab12.html">Lab 12: Dependent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab13.html">Lab 13: Independent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab14.html">Lab 14: Chi-Squared Test</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    EXPRM DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="EXPRM_Lab02.html">Lab 2: Randomization</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab03.html">Lab 3: Power and Sample Size</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab04.html">Lab 4: One-way ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab05.html">Lab 5: Multiple Comparisons</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab07.html">Lab 7: Factorial ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab09.html">Lab 9: Data Visualization with ggplot2</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab10.html">Lab 10: Repeated-Measures ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab11.html">Lab 11: Factorial ANOVA in Repeated-Measures Design</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab12.html">Lab 12: Means Comparison in Regression</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab13.html">Lab 13: ANCOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab14.html">Lab 14: Moderation Analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    SURVEY DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="SURVEY_Lab08.html">Lab 08: Data Cleaning</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Lab 10: Repeated-Measures ANOVA</h1>
+
+</div>
+
+
+<pre class="r"><code># load all libraries for this tutorial
+#install.packages(&quot;datarium&quot;)
+library(datarium)
+library(jmv)
+library(psych)
+library(car)
+library(tidyverse)
+library(afex)
+library(effectsize)
+library(emmeans)</code></pre>
+<div id="wide-format" class="section level1">
+<h1>Wide Format</h1>
+<p>ข้อมูลแบบวัดซ้ำ (repeated measures) สามารถจัดได้สองแบบ คือ แบบกว้าง (wide format) และแบบยาว (long format)</p>
+<p>ในการจัดข้อมูลแบบกว้าง แต่ละแถว (row) จะแทนกลุ่มตัวอย่างแต่ละคน ข้อมูลตัวแปรตามที่วัดซ้ำจะแทนด้วยคอลัมน์ตามจำนวนการวัด ดังตัวอย่างด้านล่าง</p>
+<pre class="r"><code>data(&quot;selfesteem&quot;, package = &quot;datarium&quot;)
+head(selfesteem)</code></pre>
+<pre><code>## # A tibble: 6 × 4
+##      id    t1    t2    t3
+##   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1     1  4.01  5.18  7.11
+## 2     2  2.56  6.91  6.31
+## 3     3  3.24  4.44  9.78
+## 4     4  3.42  4.71  8.35
+## 5     5  2.87  3.91  6.46
+## 6     6  2.05  5.34  6.65</code></pre>
+<p>ข้อมูลแบบกว้างเป็นการจัดข้อมูลที่นิยมใช้ใน repeated ANOVA ของโปรแกรมสถิติทั่วไป เช่น SPSS, jamovi</p>
+<div id="descriptive-statistics" class="section level2">
+<h2>Descriptive Statistics</h2>
+<p>การเรียกดูค่าสถิติพื้นฐานในข้อมูลแบบกว้างนี้สามารถทำเหมือนกับการเรียกดูข้อมูลของตัวแปร (คอลัมน์) แต่ละตัว</p>
+<pre class="r"><code>psych::describe(selfesteem[,c(&quot;t1&quot;, &quot;t2&quot;, &quot;t3&quot;)])</code></pre>
+<pre><code>##    vars  n mean   sd median trimmed  mad  min  max range  skew kurtosis   se
+## t1    1 10 3.14 0.55   3.21    3.17 0.45 2.05 4.01  1.96 -0.45    -0.67 0.17
+## t2    2 10 4.93 0.86   4.60    4.81 0.60 3.91 6.91  3.00  1.01     0.05 0.27
+## t3    3 10 7.64 1.14   7.46    7.53 1.40 6.31 9.78  3.47  0.40    -1.30 0.36</code></pre>
+</div>
+<div id="boxplot" class="section level2">
+<h2>Boxplot</h2>
+<pre class="r"><code>boxplot(selfesteem[,c(&quot;t1&quot;, &quot;t2&quot;, &quot;t3&quot;)])</code></pre>
+<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="normality-assumption" class="section level2">
+<h2>Normality Assumption</h2>
+<pre class="r"><code>shapiro.test(selfesteem$t1)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  selfesteem$t1
+## W = 0.96669, p-value = 0.8586</code></pre>
+<pre class="r"><code>shapiro.test(selfesteem$t2)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  selfesteem$t2
+## W = 0.87588, p-value = 0.117</code></pre>
+<pre class="r"><code>shapiro.test(selfesteem$t3)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  selfesteem$t3
+## W = 0.92271, p-value = 0.3802</code></pre>
+<p>สำหรับ QQ plot เราจะใช้คำสั่ง <code>qqPlot</code> (P ตัวใหญ่) จาก package <code>car</code></p>
+<pre class="r"><code>car::qqPlot(selfesteem$t1)</code></pre>
+<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre><code>## [1] 6 1</code></pre>
+<pre class="r"><code>qqPlot(selfesteem$t2)</code></pre>
+<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+<pre><code>## [1] 2 5</code></pre>
+<pre class="r"><code>qqPlot(selfesteem$t3)</code></pre>
+<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-6-3.png" width="672" /></p>
+<pre><code>## [1] 3 2</code></pre>
+</div>
+<div id="jmv-package" class="section level2">
+<h2><code>jmv</code> Package</h2>
+<p>การวิเคราะห์ข้อมูลวัดซ้ำใน R นั้นมักจะวิเคราะห์ด้วย long format จึงไม่มีคำสั่ง Base R สำหรับวิเคราะห์ข้อมูลแบบ wide format</p>
+<p>ถ้าต้องการวิเคราะห์ด้วย wide format เราสามารถใช้คำสั่ง <code>anovaRM</code> ใน package <code>jmv</code> ได้</p>
+<p>โดยต้องกำหนด option หลัก 3 ตัว คือ <code>rm</code>, <code>rmCells</code>, และ <code>rmTerms</code></p>
+<p>ใน <code>rm</code> จะกำหนด <code>label</code> = ชื่อตัวแปรวัดซ้ำ เช่น เวลา/เงื่อนไข/ขนาดโดสยา/อื่นๆ และ <code>levels</code> = ชื่อระดับตัวแปรวัดซ้ำ</p>
+<p>ใน <code>rmCells</code> จะกำหนด <code>measure</code> = ชื่อตัวแปรในข้อมูล คู่กับ <code>cell</code> = ชื่อ level ที่ตรงกัน</p>
+<p>ส่วน <code>rmTerms</code> คือการกำหนดว่า effect ตัวไหนจะเป็นอิทธิพลแบบภายในบุคคล (within-subject)</p>
+<pre class="r"><code>jmv::anovaRM(data = selfesteem, 
+            rm = list(
+                      list(
+                          label = &quot;Time&quot;,
+                          levels = c(&quot;Time 1&quot;,&quot;Time 2&quot;,&quot;Time 3&quot;)
+                          )),
+             rmCells=list(
+                       list(
+                           measure=&quot;t1&quot;,
+                           cell = &quot;Time 1&quot;),
+                       list(
+                           measure=&quot;t2&quot;,
+                           cell = &quot;Time 2&quot;),
+                      list(
+                           measure=&quot;t3&quot;,
+                           cell = &quot;Time 3&quot;)),
+             rmTerms = ~ Time,
+             effectSize = &quot;partEta&quot;,
+             spherTest = TRUE)</code></pre>
+<pre><code>## 
+##  REPEATED MEASURES ANOVA
+## 
+##  Within Subjects Effects                                                                    
+##  ────────────────────────────────────────────────────────────────────────────────────────── 
+##                Sum of Squares    df    Mean Square    F           p             η²-p        
+##  ────────────────────────────────────────────────────────────────────────────────────────── 
+##    Time             102.45582     2     51.2279125    55.46903    &lt; .0000001    0.8603981   
+##    Residual          16.62374    18      0.9235409                                          
+##  ────────────────────────────────────────────────────────────────────────────────────────── 
+##    Note. Type 3 Sums of Squares
+## 
+## 
+##  Between Subjects Effects                                                           
+##  ────────────────────────────────────────────────────────────────────────────────── 
+##                Sum of Squares    df    Mean Square    F    p            η²-p        
+##  ────────────────────────────────────────────────────────────────────────────────── 
+##    Residual          4.570442     9      0.5078269                                  
+##  ────────────────────────────────────────────────────────────────────────────────── 
+##    Note. Type 3 Sums of Squares
+## 
+## 
+##  ASSUMPTIONS
+## 
+##  Tests of Sphericity                                                           
+##  ───────────────────────────────────────────────────────────────────────────── 
+##            Mauchly&#39;s W    p            Greenhouse-Geisser ε    Huynh-Feldt ε   
+##  ───────────────────────────────────────────────────────────────────────────── 
+##    Time      0.5508534    0.0920755               0.6900613        0.7743711   
+##  ─────────────────────────────────────────────────────────────────────────────</code></pre>
+<p>หากต้องการค่าสถิติของ Greenhouse-Geisser ที่มีการปรับแก้ค่า df</p>
+<pre class="r"><code>jmv::anovaRM(data = selfesteem, 
+            rm = list(
+                      list(
+                          label = &quot;Time&quot;,
+                          levels = c(&quot;Time 1&quot;,&quot;Time 2&quot;,&quot;Time 3&quot;)
+                          )),
+             rmCells=list(
+                       list(
+                           measure=&quot;t1&quot;,
+                           cell = &quot;Time 1&quot;),
+                       list(
+                           measure=&quot;t2&quot;,
+                           cell = &quot;Time 2&quot;),
+                      list(
+                           measure=&quot;t3&quot;,
+                           cell = &quot;Time 3&quot;)),
+             rmTerms = ~ Time,
+             spherTest = TRUE,
+             spherCorr = &quot;GG&quot;)</code></pre>
+<pre><code>## 
+##  REPEATED MEASURES ANOVA
+## 
+##  Within Subjects Effects                                                                                      
+##  ──────────────────────────────────────────────────────────────────────────────────────────────────────────── 
+##                Sphericity Correction    Sum of Squares    df           Mean Square    F           p           
+##  ──────────────────────────────────────────────────────────────────────────────────────────────────────────── 
+##    Time        Greenhouse-Geisser            102.45582     1.380123      74.236755    55.46903    0.0000022   
+##    Residual    Greenhouse-Geisser             16.62374    12.421104       1.338346                            
+##  ──────────────────────────────────────────────────────────────────────────────────────────────────────────── 
+##    Note. Type 3 Sums of Squares
+## 
+## 
+##  Between Subjects Effects                                              
+##  ───────────────────────────────────────────────────────────────────── 
+##                Sum of Squares    df    Mean Square    F    p           
+##  ───────────────────────────────────────────────────────────────────── 
+##    Residual          4.570442     9      0.5078269                     
+##  ───────────────────────────────────────────────────────────────────── 
+##    Note. Type 3 Sums of Squares
+## 
+## 
+##  ASSUMPTIONS
+## 
+##  Tests of Sphericity                                                           
+##  ───────────────────────────────────────────────────────────────────────────── 
+##            Mauchly&#39;s W    p            Greenhouse-Geisser ε    Huynh-Feldt ε   
+##  ───────────────────────────────────────────────────────────────────────────── 
+##    Time      0.5508534    0.0920755               0.6900613        0.7743711   
+##  ─────────────────────────────────────────────────────────────────────────────</code></pre>
+</div>
+</div>
+<div id="long-format" class="section level1">
+<h1>Long Format</h1>
+<p>ข้อมูลแบบยาวเป็นรูปแบบที่เหมาะสำหรับข้อมูลเชิงซ้อน (nested data) การออกแบบแบบวัดซ้ำก็นับว่าเป็นข้อมูลเชิงซ้อนแบบหนึ่ง นั่นคือ การสังเกตหรือการวัด (observation) แต่ละครั้งซ้อนอยู่ในตัวกลุ่มตัวอย่างแต่ละคน</p>
+<p>ในข้อมูลแบบยาว การสังเกตแต่ละครั้งจะแสดงในแต่ละแถว ข้อมูลจากกลุ่มตัวอย่างคนเดียวกันจะถูกระบุในคอลัมน์ <code>id</code> และการวัดซ้ำแต่ละครั้งจะแสดงด้วยคอลัมน์ <code>Time</code></p>
+<p>ในข้อมูลตัวอย่างนี้ กลุ่มตัวอย่างมีจำนวน 10 คน แต่ละคนถูกวัด 3 ครั้ง ดังนั้นข้อมูลแบบยาวจะมีทั้งหมด 30 แถว</p>
+<p>คำสั่งการวิเคราะห์ใน R เกือบทั้งหมดจะใช้รูปแบบ long format นี้เป็นหลัก</p>
+<pre class="r"><code>se_long &lt;- tidyr::pivot_longer(selfesteem, cols = c(&quot;t1&quot;, &quot;t2&quot;, &quot;t3&quot;), names_to = &quot;Time&quot;, values_to = &quot;selfesteem&quot;)
+
+se_long$Time &lt;- factor(se_long$Time)
+se_long$id &lt;- factor(se_long$id) #very important. If ID is numerical, the results will be incorrect.
+se_long</code></pre>
+<pre><code>## # A tibble: 30 × 3
+##    id    Time  selfesteem
+##    &lt;fct&gt; &lt;fct&gt;      &lt;dbl&gt;
+##  1 1     t1          4.01
+##  2 1     t2          5.18
+##  3 1     t3          7.11
+##  4 2     t1          2.56
+##  5 2     t2          6.91
+##  6 2     t3          6.31
+##  7 3     t1          3.24
+##  8 3     t2          4.44
+##  9 3     t3          9.78
+## 10 4     t1          3.42
+## # … with 20 more rows</code></pre>
+<div id="descriptive-statistics-1" class="section level2">
+<h2>Descriptive Statistics</h2>
+<p>การดูสถิติพื้นฐานทำโดยแบ่งข้อมูลตามตัวแปรวัดซ้ำ <code>Time</code></p>
+<pre class="r"><code>describeBy(se_long$selfesteem, group = se_long$Time)</code></pre>
+<pre><code>## 
+##  Descriptive statistics by group 
+## group: t1
+##    vars  n mean   sd median trimmed  mad  min  max range  skew kurtosis   se
+## X1    1 10 3.14 0.55   3.21    3.17 0.45 2.05 4.01  1.96 -0.45    -0.67 0.17
+## -------------------------------------------------------------------------------------------- 
+## group: t2
+##    vars  n mean   sd median trimmed mad  min  max range skew kurtosis   se
+## X1    1 10 4.93 0.86    4.6    4.81 0.6 3.91 6.91     3 1.01     0.05 0.27
+## -------------------------------------------------------------------------------------------- 
+## group: t3
+##    vars  n mean   sd median trimmed mad  min  max range skew kurtosis   se
+## X1    1 10 7.64 1.14   7.46    7.53 1.4 6.31 9.78  3.47  0.4     -1.3 0.36</code></pre>
+<p>เนื่องจากความคลาดเคลื่อนในข้อมูลมีที่มาจากทั้งภายในบุคคล (within-subject error) และระหว่างบุคคล (between-subject error) การประมาณค่า standard error ด้วยคำสั่งทั่วไปอย่าง <code>psych::describe</code> จึงไม่ได้สะท้อนค่าความคลาดเคลื่อนที่ใช้ในการวิเคราะห์แบบวัดซ้ำ (คือใช้เฉพาะ within error)</p>
+<p>คำสั่ง <code>summarySEwithin()</code> ใน package <code>Rmisc</code> จะแสดงค่า standard error และ CI ที่ปรับแก้ให้เหมาะสมกับการออกแบบแบบวัดซ้ำแล้ว</p>
+<pre class="r"><code>Rmisc::summarySEwithin(se_long, 
+                       measurevar = &quot;selfesteem&quot;,
+                       withinvars = &quot;Time&quot;,
+                       idvar = &quot;id&quot;)</code></pre>
+<pre><code>##   Time  N selfesteem       sd        se        ci
+## 1   t1 10   3.140122 0.553252 0.1749536 0.3957727
+## 2   t2 10   4.933942 1.126689 0.3562904 0.8059850
+## 3   t3 10   7.636342 1.093209 0.3457030 0.7820346</code></pre>
+</div>
+<div id="visualization" class="section level2">
+<h2>Visualization</h2>
+<pre class="r"><code>boxplot(selfesteem ~ Time, data = se_long)</code></pre>
+<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(se_long, aes(x = Time, y = selfesteem)) +
+  geom_boxplot()</code></pre>
+<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
+</div>
+<div id="repeated-measures-anova" class="section level2">
+<h2>Repeated-Measures ANOVA</h2>
+<div id="base-r" class="section level3">
+<h3>Base R</h3>
+<p>โมเดล <code>aov</code> สำหรับข้อมูลวัดซ้ำจะมีรูปแบบทั่วไปคือ <code>y ~ x + Error(id/x)</code></p>
+<p><code>x</code> จะเป็นตัวแปรวัดซ้ำ ในตัวอย่างนี้คือ <code>Time</code></p>
+<p><code>Error()</code> ใช้เพื่อระบุข้อมูลเชิงซ้อน เช่น <code>id/x</code> แสดงว่า ตัวแปร <code>x</code> ซ้อนอยู่ใน <code>id</code> ในที่นี้คือ การวัดแต่ละครั้ง <code>Time</code> ซ้อนอยู่ในกลุ่มตัวอย่างแต่ละคน <code>id</code> แสดงด้วย <code>Error(id/Time)</code></p>
+<pre class="r"><code>se.aov &lt;- aov(selfesteem ~ Time + Error(id/Time), data = se_long)
+summary(se.aov)</code></pre>
+<pre><code>## 
+## Error: id
+##           Df Sum Sq Mean Sq F value Pr(&gt;F)
+## Residuals  9   4.57  0.5078               
+## 
+## Error: id:Time
+##           Df Sum Sq Mean Sq F value   Pr(&gt;F)    
+## Time       2 102.46   51.23   55.47 2.01e-08 ***
+## Residuals 18  16.62    0.92                     
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+</div>
+<div id="afex-package" class="section level3">
+<h3><code>afex</code> package</h3>
+<p>คำสั่งใน <code>afex</code> จะให้รายละเอียดใน output มากกว่า base R</p>
+<p>เราสามารถใช้คำสั่ง <code>aov_car()</code> แล้วตามด้วยสูตรโมเดลเหมือนในคำสั่ง <code>aov()</code> ด้านบน</p>
+<p>ค่าสถิติทดสอบให้ดูที่บรรทัด Time ในบรรทัดนี้จะมีทั้งค่า <em>SS</em><sub>within</sub> และ <em>SS</em><sub>error</sub> ในบรรทัดเดียวกันเลย</p>
+<p>ส่วนค่า <em>SS</em><sub>between</sub> (ความเปลี่ยนแปรที่มาจากความแตกต่างบุคคล) จะอยู่ที่บรรทัด (Intercept) ในส่วนของ <code>Error SS</code></p>
+<p>นอกจากนี้ยังมีการทดสอบ sphericity ให้โดยใช้ Mauchly test รวมไปถึงค่า epsilon ที่ได้จากวิธีประมาณการของ Greenhouse-Geisser และ Huynh-Feldt</p>
+<pre class="r"><code>se.afex &lt;- aov_car(selfesteem ~ Time + Error(id/Time), data = se_long)
+summary(se.afex)</code></pre>
+<pre><code>## 
+## Univariate Type III Repeated-Measures ANOVA Assuming Sphericity
+## 
+##             Sum Sq num Df Error SS den Df  F value    Pr(&gt;F)    
+## (Intercept) 822.72      1   4.5704      9 1620.085 1.795e-11 ***
+## Time        102.46      2  16.6237     18   55.469 2.014e-08 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## 
+## Mauchly Tests for Sphericity
+## 
+##      Test statistic  p-value
+## Time        0.55085 0.092076
+## 
+## 
+## Greenhouse-Geisser and Huynh-Feldt Corrections
+##  for Departure from Sphericity
+## 
+##       GG eps Pr(&gt;F[GG])    
+## Time 0.69006  2.161e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##         HF eps   Pr(&gt;F[HF])
+## Time 0.7743711 6.032582e-07</code></pre>
+<p>หากต้องการค่าสถิติทดสอบที่ปรับแก้แล้วของ Greenhouse-Geisser ให้ใช้คำสั่ง <code>nice()</code> ซึ่งเป็นคำสั่งเฉพาะใน <code>afex</code>คล้ายกับ <code>summary()</code> หากใช้คำสั่งนี้ จะแสดงค่าทดสอบที่ปรับแก้แล้ว</p>
+<pre class="r"><code>nice(se.afex)</code></pre>
+<pre><code>## Anova Table (Type 3 tests)
+## 
+## Response: selfesteem
+##   Effect          df  MSE         F  ges p.value
+## 1   Time 1.38, 12.42 1.34 55.47 *** .829   &lt;.001
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;+&#39; 0.1 &#39; &#39; 1
+## 
+## Sphericity correction method: GG</code></pre>
+</div>
+</div>
+<div id="qq-plot" class="section level2">
+<h2>QQ Plot</h2>
+<pre class="r"><code>qqPlot(residuals(se.afex))</code></pre>
+<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre><code>## [1] 12  8</code></pre>
+</div>
+<div id="effect-size" class="section level2">
+<h2>Effect size</h2>
+<pre class="r"><code>eta_squared(se.aov)</code></pre>
+<pre><code>## # Effect Size for ANOVA (Type I)
+## 
+## Group   | Parameter | Eta2 (partial) |       90% CI
+## ---------------------------------------------------
+## id:Time |      Time |           0.86 | [0.74, 0.91]</code></pre>
+<pre class="r"><code>eta_squared(se.afex) #same as above</code></pre>
+<pre><code>## # Effect Size for ANOVA (Type III)
+## 
+## Parameter | Eta2 (partial) |       90% CI
+## -----------------------------------------
+## Time      |           0.86 | [0.74, 0.91]</code></pre>
+<pre class="r"><code>omega_squared(se.aov)</code></pre>
+<pre><code>## # Effect Size for ANOVA (Type I)
+## 
+## Group   | Parameter | Omega2 (partial) |       90% CI
+## -----------------------------------------------------
+## id:Time |      Time |             0.81 | [0.64, 0.88]</code></pre>
+<pre class="r"><code>omega_squared(se.afex) #same as above</code></pre>
+<pre><code>## # Effect Size for ANOVA (Type III)
+## 
+## Parameter | Omega2 (partial) |       90% CI
+## -------------------------------------------
+## Time      |             0.81 | [0.64, 0.88]</code></pre>
+<pre class="r"><code>cohens_f(se.aov)</code></pre>
+<pre><code>## # Effect Size for ANOVA (Type I)
+## 
+## Group   | Parameter | Cohen&#39;s f (partial) |       90% CI
+## --------------------------------------------------------
+## id:Time |      Time |                2.48 | [1.67, 3.23]</code></pre>
+<pre class="r"><code>cohens_f(se.afex) #same as above</code></pre>
+<pre><code>## # Effect Size for ANOVA (Type III)
+## 
+## Parameter | Cohen&#39;s f (partial) |       90% CI
+## ----------------------------------------------
+## Time      |                2.48 | [1.67, 3.23]</code></pre>
+</div>
+<div id="post-hoc-analysis" class="section level2">
+<h2>Post-Hoc Analysis</h2>
+<p>ใช้คำสั่ง <code>emmeans</code> เพื่อสร้าง estimated marginal means ไว้สำหรับทดสอบรายคู่ โดยให้แบ่งการเปรียบเทียบด้วย <code>Time</code></p>
+<pre class="r"><code>se.emm &lt;- emmeans(se.afex, ~ Time)
+se.emm</code></pre>
+<pre><code>##  Time emmean    SE df lower.CL upper.CL
+##  t1     3.14 0.174  9     2.75     3.53
+##  t2     4.93 0.273  9     4.32     5.55
+##  t3     7.64 0.361  9     6.82     8.45
+## 
+## Confidence level used: 0.95</code></pre>
+<p>คำสั่งเปรียบเทียบรายคู่</p>
+<pre class="r"><code>contrast(se.emm, &quot;pairwise&quot;) </code></pre>
+<pre><code>##  contrast estimate    SE df t.ratio p.value
+##  t1 - t2     -1.79 0.361  9  -4.968  0.0020
+##  t1 - t3     -4.50 0.340  9 -13.228  &lt;.0001
+##  t2 - t3     -2.70 0.555  9  -4.868  0.0023
+## 
+## P value adjustment: tukey method for comparing a family of 3 estimates</code></pre>
+<pre class="r"><code>pairs(se.emm) #same as above</code></pre>
+<pre><code>##  contrast estimate    SE df t.ratio p.value
+##  t1 - t2     -1.79 0.361  9  -4.968  0.0020
+##  t1 - t3     -4.50 0.340  9 -13.228  &lt;.0001
+##  t2 - t3     -2.70 0.555  9  -4.868  0.0023
+## 
+## P value adjustment: tukey method for comparing a family of 3 estimates</code></pre>
+</div>
+<div id="contrast" class="section level2">
+<h2>Contrast</h2>
+<pre class="r"><code>contrast_m &lt;- data.frame(&quot;t1 vs t23&quot;  = c(-1,  1/2, 1/2),
+                         &quot;t1 vs t3&quot;   = c( 1,    0,  -1))
+contrast_m</code></pre>
+<pre><code>##   t1.vs.t23 t1.vs.t3
+## 1      -1.0        1
+## 2       0.5        0
+## 3       0.5       -1</code></pre>
+<pre class="r"><code>contrast(se.emm, method = contrast_m, adjust = &quot;sidak&quot;, infer = TRUE)</code></pre>
+<pre><code>##  contrast  estimate    SE df lower.CL upper.CL t.ratio p.value
+##  t1.vs.t23     3.15 0.214  9     2.57     3.72  14.678  &lt;.0001
+##  t1.vs.t3     -4.50 0.340  9    -5.41    -3.59 -13.228  &lt;.0001
+## 
+## Confidence level used: 0.95 
+## Conf-level adjustment: sidak method for 2 estimates 
+## P value adjustment: sidak method for 2 tests</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

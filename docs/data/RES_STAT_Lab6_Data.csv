@@ -1,0 +1,305 @@
+id,user,deci,sex,age,kno1,kno2,kno3,kno4,kno5,kno6,kno7,kno8,inno,att1,att2,att3,att4,att5,att6,att7,att8,interest,re_att1,re_att2,re_att3,re_att4,re_att5,re_att6,re_att7,re_att8,re_kno1,re_kno2,re_kno3,re_kno4,re_kno5,re_kno6,re_kno7,re_kno8,attitude,knowledge
+1,regular residence,2,female,43,1,1,1,1,1,1,1,1,early majority,2,3,3,1,3,3,3,3,probably not,1,2,2,0,2,2,2,2,0,0,0,0,0,0,0,0,1.625,0
+2,regular residence,2,female,51,1,1,1,1,1,1,1,1,laggards,4,4,3,3,2,2,2,1,definitely not,3,3,2,2,1,1,1,0,0,0,0,0,0,0,0,0,1.625,0
+3,regular residence,2,male,28,4,4,4,4,2,3,4,2,early adopters,2,5,5,3,4,5,4,4,likely to,1,4,4,2,3,4,3,3,3,3,3,3,1,2,3,1,3,2.375
+4,regular residence,2,female,32,1,1,1,1,1,1,1,1,late majority,3,4,4,4,5,5,4,3,probably will,2,3,3,3,4,4,3,2,0,0,0,0,0,0,0,0,3,0
+5,regular residence,2,male,38,4,4,4,3,3,3,3,4,innovators,4,4,4,3,5,5,5,3,likely to,3,3,3,2,4,4,4,2,3,3,3,2,2,2,2,3,3.125,2.5
+6,regular residence,2,male,51,1,1,1,1,1,1,1,1,early adopters,5,5,3,2,5,5,5,4,definitely going to,4,4,2,1,4,4,4,3,0,0,0,0,0,0,0,0,3.25,0
+7,regular residence,2,female,19,1,2,2,2,2,2,2,1,early majority,2,2,3,2,3,4,3,3,definitely not,1,1,2,1,2,3,2,2,0,1,1,1,1,1,1,0,1.75,0.75
+8,regular residence,2,male,37,1,1,1,1,1,1,1,1,laggards,4,4,4,4,5,5,5,5,probably will,3,3,3,3,4,4,4,4,0,0,0,0,0,0,0,0,3.5,0
+10,regular residence,2,female,62,1,1,2,1,1,1,1,1,late majority,3,4,4,2,4,4,3,3,probably will,2,3,3,1,3,3,2,2,0,0,1,0,0,0,0,0,2.375,0.125
+11,regular residence,2,male,44,5,2,2,3,3,2,2,2,early adopters,5,5,5,5,5,5,5,5,probably will,4,4,4,4,4,4,4,4,4,1,1,2,2,1,1,1,4,1.625
+12,regular residence,2,female,24,5,5,4,4,5,5,5,5,early adopters,5,5,5,5,5,5,5,5,definitely not,4,4,4,4,4,4,4,4,4,4,3,3,4,4,4,4,4,3.75
+13,regular residence,2,male,43,4,3,4,3,3,3,4,4,innovators,4,5,5,4,4,4,4,5,likely to,3,4,4,3,3,3,3,4,3,2,3,2,2,2,3,3,3.375,2.5
+15,regular residence,2,male,37,1,1,1,1,1,1,1,1,laggards,4,2,4,4,4,4,4,2,probably not,3,1,3,3,3,3,3,1,0,0,0,0,0,0,0,0,2.5,0
+16,small residence,2,female,25,2,1,1,1,3,1,1,1,late majority,2,5,5,5,4,4,5,3,probably will,1,4,4,4,3,3,4,2,1,0,0,0,2,0,0,0,3.125,0.375
+17,regular residence,2,female,30,1,1,1,1,1,1,1,1,laggards,3,3,3,3,3,3,3,3,definitely not,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,2,0
+19,regular residence,2,female,36,3,2,2,2,2,2,2,1,early majority,3,3,3,3,3,4,3,3,probably not,2,2,2,2,2,3,2,2,2,1,1,1,1,1,1,0,2.125,1
+20,small residence,2,female,40,2,2,3,2,2,2,2,2,late majority,4,4,4,3,4,5,5,4,probably not,3,3,3,2,3,4,4,3,1,1,2,1,1,1,1,1,3.125,1.125
+21,regular residence,2,female,35,1,1,1,1,1,1,1,1,late majority,3,4,5,4,5,4,4,3,probably will,2,3,4,3,4,3,3,2,0,0,0,0,0,0,0,0,3,0
+22,regular residence,2,male,47,3,1,5,5,5,5,5,1,early majority,1,1,1,1,3,1,1,1,definitely not,0,0,0,0,2,0,0,0,2,0,4,4,4,4,4,0,0.25,2.75
+23,regular residence,2,female,31,2,1,1,1,1,1,2,1,laggards,3,4,4,2,5,4,4,5,probably will,2,3,3,1,4,3,3,4,1,0,0,0,0,0,1,0,2.875,0.25
+24,regular residence,2,female,27,2,3,4,3,4,4,4,4,late majority,3,5,3,4,3,4,4,4,probably will,2,4,2,3,2,3,3,3,1,2,3,2,3,3,3,3,2.75,2.5
+25,regular residence,2,male,60,2,1,1,1,2,1,1,1,late majority,2,5,5,2,3,5,5,3,probably will,1,4,4,1,2,4,4,2,1,0,0,0,1,0,0,0,2.75,0.25
+26,small residence,2,female,35,1,1,1,1,1,1,1,1,early majority,3,4,3,3,4,4,4,4,likely to,2,3,2,2,3,3,3,3,0,0,0,0,0,0,0,0,2.625,0
+27,regular residence,2,female,37,1,1,1,1,1,1,1,1,laggards,3,4,4,3,4,4,3,3,probably not,2,3,3,2,3,3,2,2,0,0,0,0,0,0,0,0,2.5,0
+28,regular residence,2,female,45,3,4,4,4,4,4,4,3,early adopters,4,3,4,3,4,4,4,4,probably not,3,2,3,2,3,3,3,3,2,3,3,3,3,3,3,2,2.75,2.75
+29,regular residence,2,female,69,3,2,3,3,3,4,3,3,late majority,3,3,3,3,4,4,4,4,probably will,2,2,2,2,3,3,3,3,2,1,2,2,2,3,2,2,2.5,2
+32,regular residence,2,female,65,1,1,1,1,1,1,1,1,laggards,4,5,5,4,5,4,5,3,probably not,3,4,4,3,4,3,4,2,0,0,0,0,0,0,0,0,3.375,0
+33,regular residence,2,male,50,4,4,4,4,4,4,4,3,early majority,4,4,4,3,4,4,4,3,probably not,3,3,3,2,3,3,3,2,3,3,3,3,3,3,3,2,2.75,2.875
+34,regular residence,2,female,47,2,2,2,2,2,2,2,2,early majority,2,3,3,3,4,4,4,3,probably will,1,2,2,2,3,3,3,2,1,1,1,1,1,1,1,1,2.25,1
+35,small residence,2,female,25,5,5,5,3,4,3,5,4,late majority,4,4,4,3,4,4,5,5,likely to,3,3,3,2,3,3,4,4,4,4,4,2,3,2,4,3,3.125,3.25
+36,small residence,2,female,30,1,1,1,1,1,1,1,1,laggards,2,2,1,2,1,2,3,3,definitely not,1,1,0,1,0,1,2,2,0,0,0,0,0,0,0,0,1,0
+37,small residence,2,female,35,1,1,1,1,1,1,1,1,late majority,3,3,2,2,2,4,4,2,likely to,2,2,1,1,1,3,3,1,0,0,0,0,0,0,0,0,1.75,0
+38,regular residence,2,female,57,2,1,1,1,1,1,1,1,early majority,3,3,4,4,5,5,5,2,probably will,2,2,3,3,4,4,4,1,1,0,0,0,0,0,0,0,2.875,0.125
+39,regular residence,2,male,59,3,1,1,1,1,1,1,1,early majority,2,5,5,4,5,5,5,4,definitely going to,1,4,4,3,4,4,4,3,2,0,0,0,0,0,0,0,3.375,0.25
+41,small residence,2,male,26,1,1,1,1,1,1,1,1,early adopters,2,2,2,2,3,3,3,4,probably will,1,1,1,1,2,2,2,3,0,0,0,0,0,0,0,0,1.625,0
+42,small residence,2,female,43,1,1,1,1,1,1,1,1,late majority,1,5,5,3,5,4,5,4,definitely not,0,4,4,2,4,3,4,3,0,0,0,0,0,0,0,0,3,0
+43,regular residence,2,not answer,23,4,3,3,4,4,4,4,4,early adopters,4,4,5,3,4,4,4,5,probably will,3,3,4,2,3,3,3,4,3,2,2,3,3,3,3,3,3.125,2.75
+44,regular residence,2,female,59,2,2,2,2,2,2,2,2,early adopters,1,1,1,1,1,1,1,1,probably not,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,1
+45,regular residence,2,male,65,4,3,4,3,3,3,4,4,early majority,5,5,4,5,5,5,5,5,definitely going to,4,4,3,4,4,4,4,4,3,2,3,2,2,2,3,3,3.875,2.5
+46,small residence,2,female,33,1,1,1,1,1,1,1,1,late majority,5,5,4,3,5,5,4,4,probably will,4,4,3,2,4,4,3,3,0,0,0,0,0,0,0,0,3.375,0
+47,regular residence,2,female,39,1,1,1,1,3,1,1,1,early majority,4,3,5,1,4,4,4,4,probably not,3,2,4,0,3,3,3,3,0,0,0,0,2,0,0,0,2.625,0.25
+48,regular residence,2,female,31,1,1,1,1,1,1,1,1,early majority,3,3,2,1,1,1,3,1,probably will,2,2,1,0,0,0,2,0,0,0,0,0,0,0,0,0,0.875,0
+49,small residence,2,female,56,1,1,1,1,1,1,1,1,early majority,2,2,2,2,2,2,2,2,probably not,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,0
+50,regular residence,2,female,38,1,1,1,1,4,1,1,2,late majority,5,5,3,3,5,5,5,4,probably will,4,4,2,2,4,4,4,3,0,0,0,0,3,0,0,1,3.375,0.5
+51,small residence,2,female,25,1,3,3,3,4,3,4,4,early majority,4,5,4,3,5,5,4,4,probably will,3,4,3,2,4,4,3,3,0,2,2,2,3,2,3,3,3.25,2.125
+52,regular residence,2,female,50,2,1,2,3,1,1,1,1,laggards,1,5,5,3,3,5,5,5,probably will,0,4,4,2,2,4,4,4,1,0,1,2,0,0,0,0,3,0.5
+54,regular residence,2,male,60,2,1,1,2,1,1,1,1,late majority,3,2,2,2,2,2,3,2,probably will,2,1,1,1,1,1,2,1,1,0,0,1,0,0,0,0,1.25,0.25
+55,small residence,2,female,53,1,1,1,1,1,1,1,1,laggards,1,1,1,1,1,5,4,3,probably will,0,0,0,0,0,4,3,2,0,0,0,0,0,0,0,0,1.125,0
+56,regular residence,2,female,36,1,1,1,1,1,1,1,1,early majority,3,3,4,3,3,4,4,3,definitely not,2,2,3,2,2,3,3,2,0,0,0,0,0,0,0,0,2.375,0
+57,regular residence,2,female,26,3,4,4,4,5,5,5,5,late majority,3,3,3,3,5,3,3,4,definitely not,2,2,2,2,4,2,2,3,2,3,3,3,4,4,4,4,2.375,3.375
+59,small residence,2,female,31,2,1,1,1,3,1,1,2,laggards,4,5,3,1,1,2,5,5,probably will,3,4,2,0,0,1,4,4,1,0,0,0,2,0,0,1,2.25,0.5
+60,regular residence,2,female,50,2,2,2,2,2,2,2,2,late majority,2,3,3,3,3,3,3,3,probably will,1,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1.875,1
+61,regular residence,2,male,70,1,1,1,1,1,1,1,1,early adopters,1,3,3,3,3,3,3,3,likely to,0,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,1.75,0
+62,regular residence,2,female,56,1,1,1,1,1,1,1,1,early majority,4,4,3,3,2,3,4,5,likely to,3,3,2,2,1,2,3,4,0,0,0,0,0,0,0,0,2.5,0
+64,regular residence,2,female,44,1,1,1,1,1,1,1,1,early majority,1,5,5,5,5,5,5,5,probably will,0,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,3.5,0
+66,small residence,2,male,43,2,1,2,1,1,3,1,1,early majority,5,5,5,3,5,5,5,3,definitely not,4,4,4,2,4,4,4,2,1,0,1,0,0,2,0,0,3.5,0.5
+67,regular residence,2,female,35,2,2,2,2,3,3,2,2,early majority,3,4,4,3,5,5,5,5,probably not,2,3,3,2,4,4,4,4,1,1,1,1,2,2,1,1,3.25,1.25
+68,regular residence,2,male,43,4,4,4,4,4,4,4,4,early majority,3,5,5,3,5,5,5,4,likely to,2,4,4,2,4,4,4,3,3,3,3,3,3,3,3,3,3.375,3
+69,regular residence,2,male,24,1,1,1,3,1,1,3,1,early majority,3,4,4,3,4,4,4,4,probably will,2,3,3,2,3,3,3,3,0,0,0,2,0,0,2,0,2.75,0.5
+70,small residence,2,female,36,3,3,3,3,3,3,3,3,late majority,4,4,5,3,4,5,5,5,probably not,3,3,4,2,3,4,4,4,2,2,2,2,2,2,2,2,3.375,2
+71,regular residence,2,female,19,3,2,3,4,4,3,5,3,early majority,3,5,4,3,5,5,5,4,definitely not,2,4,3,2,4,4,4,3,2,1,2,3,3,2,4,2,3.25,2.375
+72,regular residence,2,female,60,3,1,1,1,3,1,2,1,early majority,4,4,4,3,5,4,4,4,probably will,3,3,3,2,4,3,3,3,2,0,0,0,2,0,1,0,3,0.625
+73,small residence,2,female,26,1,1,1,1,1,1,1,1,early adopters,5,5,4,4,5,5,5,4,probably not,4,4,3,3,4,4,4,3,0,0,0,0,0,0,0,0,3.625,0
+74,regular residence,2,male,36,1,1,1,1,1,1,1,1,late majority,5,4,5,1,5,5,5,1,probably will,4,3,4,0,4,4,4,0,0,0,0,0,0,0,0,0,2.875,0
+75,regular residence,2,male,50,3,1,1,1,3,3,3,2,early adopters,1,5,5,1,5,5,5,5,probably will,0,4,4,0,4,4,4,4,2,0,0,0,2,2,2,1,3,1.125
+76,small residence,2,female,65,1,1,2,1,1,2,2,2,laggards,5,4,5,4,5,5,5,4,probably not,4,3,4,3,4,4,4,3,0,0,1,0,0,1,1,1,3.625,0.5
+77,small residence,2,female,80,2,2,2,2,2,2,2,2,laggards,3,3,3,3,3,4,4,4,probably will,2,2,2,2,2,3,3,3,1,1,1,1,1,1,1,1,2.375,1
+78,small residence,2,female,41,1,1,1,1,2,2,1,1,laggards,2,2,2,3,2,3,2,2,probably not,1,1,1,2,1,2,1,1,0,0,0,0,1,1,0,0,1.25,0.25
+79,regular residence,2,female,56,3,2,2,2,2,3,2,2,late majority,3,3,4,3,3,4,4,3,probably not,2,2,3,2,2,3,3,2,2,1,1,1,1,2,1,1,2.375,1.25
+80,regular residence,2,female,61,1,1,1,1,1,1,1,1,late majority,1,2,2,2,3,4,3,2,definitely not,0,1,1,1,2,3,2,1,0,0,0,0,0,0,0,0,1.375,0
+81,regular residence,2,not answer,21,1,1,1,1,1,1,1,1,early majority,5,5,5,4,5,4,5,4,definitely not,4,4,4,3,4,3,4,3,0,0,0,0,0,0,0,0,3.625,0
+82,regular residence,2,male,58,1,1,1,1,1,1,1,1,laggards,4,4,4,3,5,5,5,5,definitely not,3,3,3,2,4,4,4,4,0,0,0,0,0,0,0,0,3.375,0
+83,regular residence,2,female,62,2,3,3,3,2,2,4,2,late majority,4,4,5,3,5,4,3,2,probably will,3,3,4,2,4,3,2,1,1,2,2,2,1,1,3,1,2.75,1.625
+84,regular residence,2,male,70,1,2,2,2,2,1,2,2,late majority,3,3,4,3,4,4,4,4,probably will,2,2,3,2,3,3,3,3,0,1,1,1,1,0,1,1,2.625,0.75
+86,regular residence,2,female,51,3,3,4,4,4,3,4,2,early majority,3,4,4,4,4,4,4,4,definitely going to,2,3,3,3,3,3,3,3,2,2,3,3,3,2,3,1,2.875,2.375
+88,regular residence,2,male,24,1,1,1,1,1,1,1,1,laggards,3,3,5,3,5,5,5,3,probably not,2,2,4,2,4,4,4,2,0,0,0,0,0,0,0,0,3,0
+89,regular residence,2,female,42,1,1,1,2,1,1,1,1,early majority,2,4,3,2,3,4,4,4,likely to,1,3,2,1,2,3,3,3,0,0,0,1,0,0,0,0,2.25,0.125
+90,regular residence,2,female,39,1,1,1,1,1,1,1,1,late majority,3,3,3,3,5,5,4,3,probably will,2,2,2,2,4,4,3,2,0,0,0,0,0,0,0,0,2.625,0
+91,regular residence,2,female,26,2,1,1,1,2,1,1,1,early adopters,3,5,5,2,5,5,5,5,definitely not,2,4,4,1,4,4,4,4,1,0,0,0,1,0,0,0,3.375,0.25
+92,regular residence,2,female,25,1,1,1,1,1,1,1,1,laggards,4,5,5,5,5,5,5,5,definitely not,3,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,3.875,0
+93,regular residence,2,female,59,2,1,1,1,1,1,1,1,laggards,2,4,3,4,5,5,5,3,probably will,1,3,2,3,4,4,4,2,1,0,0,0,0,0,0,0,2.875,0.125
+94,regular residence,2,female,40,2,2,2,3,3,2,2,2,early majority,3,3,3,3,4,4,4,4,probably will,2,2,2,2,3,3,3,3,1,1,1,2,2,1,1,1,2.5,1.25
+96,regular residence,2,male,53,3,1,1,1,1,1,1,2,late majority,4,5,4,5,5,5,5,5,likely to,3,4,3,4,4,4,4,4,2,0,0,0,0,0,0,1,3.75,0.375
+98,regular residence,2,male,27,2,3,3,2,3,2,3,2,early majority,3,4,4,4,4,4,4,4,likely to,2,3,3,3,3,3,3,3,1,2,2,1,2,1,2,1,2.875,1.5
+100,small residence,2,male,42,1,1,1,1,1,1,1,1,early majority,5,4,4,3,4,3,4,3,probably will,4,3,3,2,3,2,3,2,0,0,0,0,0,0,0,0,2.75,0
+101,regular residence,2,male,43,2,2,3,2,3,3,3,2,late majority,3,3,3,3,3,3,3,3,likely to,2,2,2,2,2,2,2,2,1,1,2,1,2,2,2,1,2,1.5
+102,regular residence,2,female,48,1,1,1,1,1,1,1,1,early majority,2,4,3,3,5,5,4,2,probably not,1,3,2,2,4,4,3,1,0,0,0,0,0,0,0,0,2.5,0
+103,regular residence,2,male,40,1,1,2,1,2,1,1,2,early majority,4,4,4,4,5,5,5,5,probably will,3,3,3,3,4,4,4,4,0,0,1,0,1,0,0,1,3.5,0.375
+104,small residence,2,female,34,2,2,2,2,2,2,2,2,early majority,3,5,5,4,5,5,5,4,definitely going to,2,4,4,3,4,4,4,3,1,1,1,1,1,1,1,1,3.5,1
+105,regular residence,2,female,30,1,1,1,1,1,1,1,1,early adopters,2,3,2,1,1,4,4,3,likely to,1,2,1,0,0,3,3,2,0,0,0,0,0,0,0,0,1.5,0
+106,regular residence,2,female,24,1,1,1,1,1,1,1,1,late majority,2,4,4,3,3,3,4,4,probably not,1,3,3,2,2,2,3,3,0,0,0,0,0,0,0,0,2.375,0
+108,regular residence,2,male,27,1,1,1,1,1,1,1,1,late majority,4,3,3,4,3,2,3,4,probably will,3,2,2,3,2,1,2,3,0,0,0,0,0,0,0,0,2.25,0
+109,small residence,2,male,65,3,2,3,2,2,2,2,2,early majority,3,4,4,2,4,4,4,3,probably will,2,3,3,1,3,3,3,2,2,1,2,1,1,1,1,1,2.5,1.25
+110,regular residence,2,female,41,4,3,3,3,3,3,3,3,early majority,3,5,5,3,5,5,3,3,likely to,2,4,4,2,4,4,2,2,3,2,2,2,2,2,2,2,3,2.125
+111,regular residence,2,female,57,1,1,1,1,1,1,1,1,late majority,4,4,2,2,2,4,4,4,probably will,3,3,1,1,1,3,3,3,0,0,0,0,0,0,0,0,2.25,0
+114,small residence,2,male,54,1,1,1,1,1,1,1,1,early majority,4,4,4,2,5,1,3,2,probably not,3,3,3,1,4,0,2,1,0,0,0,0,0,0,0,0,2.125,0
+115,regular residence,2,male,67,1,1,1,1,1,1,1,1,late majority,1,2,2,2,3,4,4,4,probably will,0,1,1,1,2,3,3,3,0,0,0,0,0,0,0,0,1.75,0
+116,regular residence,2,female,65,1,1,1,1,1,1,1,1,early majority,2,1,2,1,2,3,4,5,probably will,1,0,1,0,1,2,3,4,0,0,0,0,0,0,0,0,1.5,0
+117,regular residence,2,female,31,1,1,1,1,1,1,1,1,early majority,3,3,5,1,5,5,5,5,probably will,2,2,4,0,4,4,4,4,0,0,0,0,0,0,0,0,3,0
+121,regular residence,2,female,24,2,2,3,3,3,4,3,2,early adopters,4,4,5,3,3,4,4,4,likely to,3,3,4,2,2,3,3,3,1,1,2,2,2,3,2,1,2.875,1.75
+122,regular residence,2,male,49,4,1,2,3,4,3,3,2,early adopters,4,5,5,5,5,5,5,5,likely to,3,4,4,4,4,4,4,4,3,0,1,2,3,2,2,1,3.875,1.75
+123,regular residence,2,female,28,1,1,1,1,1,1,1,1,early majority,4,4,4,2,3,4,4,4,definitely not,3,3,3,1,2,3,3,3,0,0,0,0,0,0,0,0,2.625,0
+124,regular residence,2,male,25,4,4,5,4,3,3,4,3,early adopters,5,5,5,4,4,4,4,4,likely to,4,4,4,3,3,3,3,3,3,3,4,3,2,2,3,2,3.375,2.75
+125,regular residence,2,female,54,2,2,1,2,2,2,1,2,late majority,4,5,5,5,5,5,5,3,probably will,3,4,4,4,4,4,4,2,1,1,0,1,1,1,0,1,3.625,0.75
+126,regular residence,2,male,41,2,1,1,1,3,2,2,2,early adopters,5,4,4,4,3,4,4,4,likely to,4,3,3,3,2,3,3,3,1,0,0,0,2,1,1,1,3,0.75
+127,regular residence,2,male,42,2,1,1,1,1,1,1,1,early adopters,4,5,5,5,5,5,5,1,definitely going to,3,4,4,4,4,4,4,0,1,0,0,0,0,0,0,0,3.375,0.125
+128,small residence,2,female,61,1,1,1,1,1,1,1,1,early majority,5,5,5,5,5,5,5,5,probably will,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,4,0
+129,small residence,2,female,55,1,1,1,1,1,1,1,1,laggards,2,2,1,2,4,4,4,3,probably not,1,1,0,1,3,3,3,2,0,0,0,0,0,0,0,0,1.75,0
+130,regular residence,2,female,29,1,3,3,1,3,4,1,3,late majority,2,4,4,3,4,4,4,3,probably will,1,3,3,2,3,3,3,2,0,2,2,0,2,3,0,2,2.5,1.375
+131,small residence,2,female,40,2,3,3,2,3,3,3,2,early majority,2,4,4,5,5,5,5,3,probably will,1,3,3,4,4,4,4,2,1,2,2,1,2,2,2,1,3.125,1.625
+132,small residence,2,male,37,2,2,2,3,4,3,2,2,early majority,3,4,4,3,4,5,5,4,likely to,2,3,3,2,3,4,4,3,1,1,1,2,3,2,1,1,3,1.5
+133,regular residence,2,male,47,3,1,1,1,1,1,3,1,early adopters,1,5,4,1,5,5,5,5,probably will,0,4,3,0,4,4,4,4,2,0,0,0,0,0,2,0,2.875,0.5
+134,regular residence,2,male,62,1,1,1,1,1,1,1,1,innovators,2,5,5,5,5,5,5,3,probably will,1,4,4,4,4,4,4,2,0,0,0,0,0,0,0,0,3.375,0
+135,regular residence,2,male,30,1,1,1,1,2,2,1,1,early majority,2,4,5,3,3,4,3,3,probably not,1,3,4,2,2,3,2,2,0,0,0,0,1,1,0,0,2.375,0.25
+136,small residence,2,female,55,3,3,4,3,3,3,4,3,laggards,4,4,5,4,4,5,5,5,probably not,3,3,4,3,3,4,4,4,2,2,3,2,2,2,3,2,3.5,2.25
+137,regular residence,2,female,38,1,1,1,1,1,1,1,1,early adopters,4,5,4,4,5,5,5,4,definitely not,3,4,3,3,4,4,4,3,0,0,0,0,0,0,0,0,3.5,0
+140,regular residence,2,female,36,1,1,1,1,1,1,1,1,late majority,2,4,5,3,4,5,3,3,probably will,1,3,4,2,3,4,2,2,0,0,0,0,0,0,0,0,2.625,0
+141,regular residence,2,female,59,1,1,1,1,1,1,1,1,laggards,1,1,1,1,1,1,1,1,probably will,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+142,regular residence,2,male,24,3,4,3,3,3,3,1,2,early adopters,3,3,4,3,3,3,3,3,probably will,2,2,3,2,2,2,2,2,2,3,2,2,2,2,0,1,2.125,1.75
+144,regular residence,2,male,37,1,1,1,1,1,1,1,1,late majority,2,2,2,2,3,3,2,3,probably will,1,1,1,1,2,2,1,2,0,0,0,0,0,0,0,0,1.375,0
+146,small residence,2,male,25,3,3,4,3,3,4,4,3,late majority,1,2,2,3,3,3,4,4,probably will,0,1,1,2,2,2,3,3,2,2,3,2,2,3,3,2,1.75,2.375
+148,small residence,2,female,24,1,1,1,1,1,1,1,1,early majority,4,3,3,2,4,4,4,4,probably will,3,2,2,1,3,3,3,3,0,0,0,0,0,0,0,0,2.5,0
+149,regular residence,2,female,42,1,1,1,1,1,1,1,1,early majority,2,2,2,2,2,2,3,3,probably will,1,1,1,1,1,1,2,2,0,0,0,0,0,0,0,0,1.25,0
+152,regular residence,2,male,33,3,2,2,3,3,3,3,3,early adopters,3,4,5,5,5,5,5,4,probably will,2,3,4,4,4,4,4,3,2,1,1,2,2,2,2,2,3.5,1.75
+154,regular residence,2,male,53,3,1,1,1,1,1,1,1,early adopters,3,3,3,3,5,5,5,5,definitely not,2,2,2,2,4,4,4,4,2,0,0,0,0,0,0,0,3,0.25
+155,small residence,2,male,40,2,3,3,3,3,4,4,2,innovators,4,3,3,3,4,3,4,2,probably will,3,2,2,2,3,2,3,1,1,2,2,2,2,3,3,1,2.25,2
+157,regular residence,2,female,31,1,1,1,1,1,1,1,1,innovators,5,5,5,5,5,5,5,5,probably will,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,4,0
+158,regular residence,2,female,39,1,1,1,1,1,1,1,1,late majority,1,3,2,1,1,1,1,1,probably will,0,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0.375,0
+160,small residence,2,female,35,4,3,4,3,3,3,4,4,innovators,4,5,5,4,4,4,4,5,probably not,3,4,4,3,3,3,3,4,3,2,3,2,2,2,3,3,3.375,2.5
+161,regular residence,2,male,37,3,1,3,1,3,1,1,2,early majority,4,3,3,3,5,5,4,4,definitely not,3,2,2,2,4,4,3,3,2,0,2,0,2,0,0,1,2.875,0.875
+164,regular residence,2,male,63,3,2,1,1,2,1,1,4,late majority,1,2,2,2,5,5,4,2,definitely not,0,1,1,1,4,4,3,1,2,1,0,0,1,0,0,3,1.875,0.875
+166,regular residence,2,male,70,2,1,1,1,2,1,2,3,early majority,4,4,3,2,4,5,5,5,probably will,3,3,2,1,3,4,4,4,1,0,0,0,1,0,1,2,3,0.625
+168,regular residence,2,female,32,1,1,2,2,1,1,1,1,early majority,3,4,4,3,4,4,4,3,probably will,2,3,3,2,3,3,3,2,0,0,1,1,0,0,0,0,2.625,0.25
+169,regular residence,2,male,60,5,1,1,3,3,2,1,1,innovators,3,5,5,5,5,5,5,5,likely to,2,4,4,4,4,4,4,4,4,0,0,2,2,1,0,0,3.75,1.125
+170,regular residence,2,male,48,1,1,1,1,1,1,1,1,early majority,4,4,4,3,4,4,4,4,definitely not,3,3,3,2,3,3,3,3,0,0,0,0,0,0,0,0,2.875,0
+171,small residence,2,male,27,4,3,4,4,4,4,4,4,late majority,4,5,4,5,4,5,4,5,probably not,3,4,3,4,3,4,3,4,3,2,3,3,3,3,3,3,3.5,2.875
+172,regular residence,2,female,25,5,5,4,4,5,4,5,4,late majority,3,4,3,4,4,4,5,3,probably not,2,3,2,3,3,3,4,2,4,4,3,3,4,3,4,3,2.75,3.5
+173,regular residence,2,female,35,3,3,3,3,4,3,2,2,innovators,3,2,3,3,4,3,5,4,probably will,2,1,2,2,3,2,4,3,2,2,2,2,3,2,1,1,2.375,1.875
+174,small residence,2,female,31,3,2,2,2,1,1,1,2,laggards,3,4,3,4,3,3,4,2,probably not,2,3,2,3,2,2,3,1,2,1,1,1,0,0,0,1,2.25,0.75
+175,regular residence,2,female,50,1,1,1,1,1,1,1,1,laggards,3,4,3,3,4,4,5,5,likely to,2,3,2,2,3,3,4,4,0,0,0,0,0,0,0,0,2.875,0
+176,regular residence,2,female,48,3,4,4,3,3,3,2,2,late majority,4,5,5,3,5,5,5,5,probably will,3,4,4,2,4,4,4,4,2,3,3,2,2,2,1,1,3.625,2
+177,small residence,2,female,39,1,1,1,1,1,1,1,1,late majority,4,4,4,4,5,5,5,5,probably will,3,3,3,3,4,4,4,4,0,0,0,0,0,0,0,0,3.5,0
+178,regular residence,2,female,39,1,1,1,1,1,1,1,1,late majority,4,5,5,5,5,5,5,4,probably not,3,4,4,4,4,4,4,3,0,0,0,0,0,0,0,0,3.75,0
+183,small residence,2,male,65,3,3,4,3,2,3,4,3,early majority,3,2,3,4,3,4,4,3,probably will,2,1,2,3,2,3,3,2,2,2,3,2,1,2,3,2,2.25,2.125
+184,regular residence,2,female,54,3,2,2,2,2,2,2,2,early majority,4,5,5,4,5,5,4,4,probably not,3,4,4,3,4,4,3,3,2,1,1,1,1,1,1,1,3.5,1.125
+185,regular residence,2,female,45,1,1,1,1,1,2,1,1,late majority,3,5,5,3,5,5,5,5,probably will,2,4,4,2,4,4,4,4,0,0,0,0,0,1,0,0,3.5,0.125
+187,regular residence,2,male,42,1,1,1,1,1,1,1,3,late majority,3,3,3,3,4,4,3,3,probably will,2,2,2,2,3,3,2,2,0,0,0,0,0,0,0,2,2.25,0.25
+189,regular residence,2,female,39,3,4,4,4,4,4,4,3,early adopters,4,3,4,3,4,4,4,4,probably not,3,2,3,2,3,3,3,3,2,3,3,3,3,3,3,2,2.75,2.75
+190,regular residence,2,female,28,2,1,1,1,1,1,1,1,early adopters,5,5,5,5,5,5,5,5,definitely going to,4,4,4,4,4,4,4,4,1,0,0,0,0,0,0,0,4,0.125
+191,small residence,2,female,40,1,1,1,1,1,1,1,1,laggards,2,3,2,2,2,3,3,3,definitely not,1,2,1,1,1,2,2,2,0,0,0,0,0,0,0,0,1.5,0
+192,regular residence,2,female,25,3,1,1,1,3,1,1,1,late majority,3,4,3,3,5,5,5,3,probably will,2,3,2,2,4,4,4,2,2,0,0,0,2,0,0,0,2.875,0.5
+193,small residence,2,female,54,4,3,1,3,1,2,2,1,innovators,4,5,4,3,4,4,3,4,probably will,3,4,3,2,3,3,2,3,3,2,0,2,0,1,1,0,2.875,1.125
+194,regular residence,2,male,54,5,1,3,4,4,3,4,2,early adopters,4,4,5,1,4,5,5,4,definitely going to,3,3,4,0,3,4,4,3,4,0,2,3,3,2,3,1,3,2.25
+195,regular residence,2,female,48,3,3,4,3,3,1,2,1,innovators,3,4,3,2,3,3,3,4,probably will,2,3,2,1,2,2,2,3,2,2,3,2,2,0,1,0,2.125,1.5
+196,regular residence,2,female,51,1,1,1,1,1,1,1,1,late majority,3,5,5,5,2,3,4,5,definitely going to,2,4,4,4,1,2,3,4,0,0,0,0,0,0,0,0,3,0
+197,small residence,2,female,35,4,1,1,1,3,1,1,1,late majority,5,5,4,4,5,5,4,4,probably will,4,4,3,3,4,4,3,3,3,0,0,0,2,0,0,0,3.5,0.625
+198,small residence,2,male,72,1,3,2,1,1,1,1,1,laggards,1,1,1,1,1,1,1,1,definitely not,0,0,0,0,0,0,0,0,0,2,1,0,0,0,0,0,0,0.375
+199,small residence,2,male,23,1,1,1,1,1,1,1,1,early majority,5,5,3,2,5,4,3,2,probably not,4,4,2,1,4,3,2,1,0,0,0,0,0,0,0,0,2.625,0
+200,regular residence,2,male,32,3,1,2,3,3,3,3,2,early majority,3,5,5,5,4,4,4,4,likely to,2,4,4,4,3,3,3,3,2,0,1,2,2,2,2,1,3.25,1.5
+201,small residence,2,male,55,2,3,2,2,3,2,2,2,late majority,3,4,4,3,4,5,4,4,likely to,2,3,3,2,3,4,3,3,1,2,1,1,2,1,1,1,2.875,1.25
+204,small residence,2,male,48,1,1,1,1,2,1,1,1,early majority,5,4,5,5,1,5,5,5,likely to,4,3,4,4,0,4,4,4,0,0,0,0,1,0,0,0,3.375,0.125
+205,regular residence,2,female,60,1,1,3,3,3,3,2,3,early majority,3,5,5,5,5,5,5,5,probably will,2,4,4,4,4,4,4,4,0,0,2,2,2,2,1,2,3.75,1.375
+207,regular residence,2,male,62,3,3,1,2,2,1,2,1,early adopters,3,5,4,5,5,5,5,5,probably will,2,4,3,4,4,4,4,4,2,2,0,1,1,0,1,0,3.625,0.875
+208,small residence,2,male,59,1,2,2,1,1,1,1,1,laggards,2,2,3,2,2,1,1,2,definitely not,1,1,2,1,1,0,0,1,0,1,1,0,0,0,0,0,0.875,0.25
+209,small residence,2,female,33,1,1,1,1,1,1,5,1,innovators,5,5,5,5,5,5,5,5,probably will,4,4,4,4,4,4,4,4,0,0,0,0,0,0,4,0,4,0.5
+210,small residence,2,male,37,4,4,4,4,4,4,4,4,laggards,3,3,3,3,3,3,3,3,likely to,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,2,3
+211,regular residence,2,male,47,5,5,5,5,5,5,5,5,early adopters,4,4,5,4,5,5,5,4,likely to,3,3,4,3,4,4,4,3,4,4,4,4,4,4,4,4,3.5,4
+212,regular residence,2,male,34,3,1,2,3,3,2,3,2,early majority,4,4,4,3,5,5,4,3,likely to,3,3,3,2,4,4,3,2,2,0,1,2,2,1,2,1,3,1.375
+213,regular residence,2,male,28,2,2,2,2,2,2,2,2,early majority,2,4,4,3,4,4,4,4,probably will,1,3,3,2,3,3,3,3,1,1,1,1,1,1,1,1,2.625,1
+214,regular residence,2,female,29,1,1,1,1,1,1,1,1,early majority,1,4,2,1,1,4,4,4,probably will,0,3,1,0,0,3,3,3,0,0,0,0,0,0,0,0,1.625,0
+216,regular residence,2,female,42,1,1,1,1,1,1,1,1,early majority,4,4,4,3,4,4,4,4,likely to,3,3,3,2,3,3,3,3,0,0,0,0,0,0,0,0,2.875,0
+217,regular residence,2,female,38,2,3,3,1,2,2,2,1,laggards,4,3,4,3,4,3,4,4,probably will,3,2,3,2,3,2,3,3,1,2,2,0,1,1,1,0,2.625,1
+218,regular residence,2,female,51,1,1,1,1,1,3,1,1,early majority,4,5,5,3,4,4,3,3,probably will,3,4,4,2,3,3,2,2,0,0,0,0,0,2,0,0,2.875,0.25
+219,regular residence,2,male,30,2,1,2,1,1,1,1,1,late majority,3,3,3,3,4,4,4,4,probably not,2,2,2,2,3,3,3,3,1,0,1,0,0,0,0,0,2.5,0.25
+220,regular residence,2,female,37,1,1,1,1,1,1,1,1,late majority,5,5,3,5,3,3,4,4,probably will,4,4,2,4,2,2,3,3,0,0,0,0,0,0,0,0,3,0
+221,regular residence,2,female,49,2,2,1,1,2,2,2,2,early majority,3,4,4,3,4,4,4,4,probably will,2,3,3,2,3,3,3,3,1,1,0,0,1,1,1,1,2.75,0.75
+222,regular residence,2,female,28,2,2,2,2,2,2,2,2,early majority,3,3,4,3,3,4,4,4,definitely not,2,2,3,2,2,3,3,3,1,1,1,1,1,1,1,1,2.5,1
+223,small residence,2,male,73,2,1,1,1,1,1,1,1,laggards,1,3,5,3,1,5,5,2,probably not,0,2,4,2,0,4,4,1,1,0,0,0,0,0,0,0,2.125,0.125
+224,small residence,2,female,50,2,2,3,4,4,2,1,1,late majority,2,1,1,2,4,4,4,5,definitely not,1,0,0,1,3,3,3,4,1,1,2,3,3,1,0,0,1.875,1.375
+226,regular residence,2,female,53,1,1,1,1,1,1,1,1,late majority,2,2,2,1,5,5,2,5,likely to,1,1,1,0,4,4,1,4,0,0,0,0,0,0,0,0,2,0
+228,small residence,2,male,27,4,4,4,5,4,4,4,5,early majority,3,3,4,5,5,3,5,5,probably not,2,2,3,4,4,2,4,4,3,3,3,4,3,3,3,4,3.125,3.25
+229,small residence,2,male,49,4,3,4,4,3,4,4,4,early majority,4,4,5,4,5,5,5,5,probably will,3,3,4,3,4,4,4,4,3,2,3,3,2,3,3,3,3.625,2.75
+230,small residence,2,female,43,1,1,2,1,2,2,2,3,early majority,1,2,2,1,2,2,1,2,probably will,0,1,1,0,1,1,0,1,0,0,1,0,1,1,1,2,0.625,0.75
+232,small residence,2,male,58,4,1,1,2,5,2,1,1,early majority,3,3,3,3,5,5,5,5,likely to,2,2,2,2,4,4,4,4,3,0,0,1,4,1,0,0,3,1.125
+233,regular residence,2,female,49,1,1,1,1,1,1,1,1,early majority,4,4,4,2,4,4,4,4,definitely not,3,3,3,1,3,3,3,3,0,0,0,0,0,0,0,0,2.75,0
+234,regular residence,2,female,46,1,1,1,1,1,1,1,1,early majority,5,5,5,5,5,5,5,5,probably will,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,4,0
+235,regular residence,2,female,67,1,1,1,1,2,1,1,1,late majority,4,4,4,4,4,4,5,4,probably not,3,3,3,3,3,3,4,3,0,0,0,0,1,0,0,0,3.125,0.125
+236,regular residence,2,female,30,1,1,1,1,1,1,1,1,late majority,4,4,4,4,5,5,5,5,probably will,3,3,3,3,4,4,4,4,0,0,0,0,0,0,0,0,3.5,0
+237,regular residence,2,male,43,3,2,3,3,4,3,4,3,early majority,2,4,4,4,5,5,3,3,probably will,1,3,3,3,4,4,2,2,2,1,2,2,3,2,3,2,2.75,2.125
+239,small residence,2,male,34,3,2,2,3,2,2,2,2,early majority,4,4,5,3,3,4,4,4,likely to,3,3,4,2,2,3,3,3,2,1,1,2,1,1,1,1,2.875,1.25
+240,regular residence,2,male,55,3,3,2,2,4,2,2,2,early majority,3,4,2,3,4,3,3,2,probably will,2,3,1,2,3,2,2,1,2,2,1,1,3,1,1,1,2,1.5
+241,regular residence,2,male,31,1,1,1,1,1,1,1,1,late majority,4,3,4,4,4,4,4,4,definitely not,3,2,3,3,3,3,3,3,0,0,0,0,0,0,0,0,2.875,0
+242,regular residence,2,female,49,1,1,2,1,2,2,1,1,late majority,2,4,4,4,5,5,4,5,probably will,1,3,3,3,4,4,3,4,0,0,1,0,1,1,0,0,3.125,0.375
+243,small residence,2,female,30,1,1,1,1,1,1,1,1,early adopters,4,4,4,2,2,4,4,3,likely to,3,3,3,1,1,3,3,2,0,0,0,0,0,0,0,0,2.375,0
+244,regular residence,2,male,50,2,3,3,3,4,2,4,2,early majority,5,5,5,4,5,4,5,4,probably will,4,4,4,3,4,3,4,3,1,2,2,2,3,1,3,1,3.625,1.875
+246,regular residence,2,male,61,4,1,5,4,5,5,3,3,early majority,4,5,5,4,5,5,5,5,likely to,3,4,4,3,4,4,4,4,3,0,4,3,4,4,2,2,3.75,2.75
+247,regular residence,2,female,59,3,2,2,3,2,4,2,4,early majority,4,2,4,2,5,5,5,2,likely to,3,1,3,1,4,4,4,1,2,1,1,2,1,3,1,3,2.625,1.75
+248,small residence,2,female,39,4,3,3,3,3,3,3,3,early majority,4,4,4,3,4,4,4,3,probably will,3,3,3,2,3,3,3,2,3,2,2,2,2,2,2,2,2.75,2.125
+249,small residence,2,female,44,1,1,1,1,1,1,1,1,early majority,4,4,4,3,4,4,4,3,probably will,3,3,3,2,3,3,3,2,0,0,0,0,0,0,0,0,2.75,0
+250,small residence,2,female,58,1,1,1,1,2,2,2,2,late majority,3,4,4,4,4,4,4,3,probably will,2,3,3,3,3,3,3,2,0,0,0,0,1,1,1,1,2.75,0.5
+252,regular residence,2,female,65,1,1,1,1,1,1,1,1,laggards,4,4,5,4,5,5,4,5,probably will,3,3,4,3,4,4,3,4,0,0,0,0,0,0,0,0,3.5,0
+253,regular residence,2,male,28,3,1,2,3,2,2,1,1,early majority,4,4,4,3,5,5,5,4,probably will,3,3,3,2,4,4,4,3,2,0,1,2,1,1,0,0,3.25,0.875
+254,regular residence,2,male,63,1,1,1,1,1,1,1,1,early majority,3,3,4,4,5,5,5,2,definitely not,2,2,3,3,4,4,4,1,0,0,0,0,0,0,0,0,2.875,0
+255,regular residence,2,female,30,2,3,3,3,3,2,2,2,early majority,2,5,3,3,2,2,3,3,probably will,1,4,2,2,1,1,2,2,1,2,2,2,2,1,1,1,1.875,1.5
+257,regular residence,2,female,36,1,1,1,1,1,1,1,1,early majority,4,4,4,4,4,4,4,4,definitely not,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,3,0
+258,regular residence,2,female,31,1,1,1,1,1,1,1,1,innovators,2,3,3,2,3,3,5,1,probably will,1,2,2,1,2,2,4,0,0,0,0,0,0,0,0,0,1.75,0
+259,regular residence,2,female,55,1,1,1,1,3,1,1,1,late majority,2,4,3,3,4,5,5,5,probably not,1,3,2,2,3,4,4,4,0,0,0,0,2,0,0,0,2.875,0.25
+260,regular residence,2,male,58,2,1,1,1,2,1,1,1,innovators,3,4,4,4,5,5,4,4,likely to,2,3,3,3,4,4,3,3,1,0,0,0,1,0,0,0,3.125,0.25
+261,small residence,2,male,25,5,5,4,4,5,4,5,4,early majority,4,4,3,3,4,3,5,5,probably will,3,3,2,2,3,2,4,4,4,4,3,3,4,3,4,3,2.875,3.5
+262,regular residence,2,male,46,2,1,1,1,1,1,1,1,early majority,2,2,2,2,4,2,4,4,probably will,1,1,1,1,3,1,3,3,1,0,0,0,0,0,0,0,1.75,0.125
+263,regular residence,2,male,35,1,1,1,1,1,1,2,1,late majority,3,3,4,5,5,5,4,4,probably not,2,2,3,4,4,4,3,3,0,0,0,0,0,0,1,0,3.125,0.125
+265,small residence,2,female,31,1,1,1,1,1,1,1,1,early majority,3,5,5,4,4,4,5,3,probably will,2,4,4,3,3,3,4,2,0,0,0,0,0,0,0,0,3.125,0
+266,regular residence,2,female,27,1,1,1,1,1,1,1,1,innovators,4,4,4,2,4,4,4,4,probably will,3,3,3,1,3,3,3,3,0,0,0,0,0,0,0,0,2.75,0
+268,regular residence,2,female,50,1,1,1,1,1,1,1,1,laggards,3,3,4,2,3,4,4,5,definitely not,2,2,3,1,2,3,3,4,0,0,0,0,0,0,0,0,2.5,0
+271,regular residence,2,female,24,2,1,2,2,2,2,3,2,early majority,3,5,4,3,5,5,5,5,definitely going to,2,4,3,2,4,4,4,4,1,0,1,1,1,1,2,1,3.375,1
+273,regular residence,2,male,33,2,1,2,1,2,1,2,1,early majority,4,5,4,5,5,5,5,3,probably will,3,4,3,4,4,4,4,2,1,0,1,0,1,0,1,0,3.5,0.5
+274,regular residence,2,female,40,1,1,3,3,2,2,2,2,early majority,3,4,4,4,4,4,4,3,likely to,2,3,3,3,3,3,3,2,0,0,2,2,1,1,1,1,2.75,1
+275,regular residence,2,female,32,1,1,1,1,1,1,1,1,early adopters,5,4,4,4,4,4,4,5,probably will,4,3,3,3,3,3,3,4,0,0,0,0,0,0,0,0,3.25,0
+277,small residence,2,female,53,1,1,1,1,1,1,1,1,laggards,1,4,3,5,5,4,5,3,probably will,0,3,2,4,4,3,4,2,0,0,0,0,0,0,0,0,2.75,0
+278,regular residence,2,male,58,3,3,3,3,3,3,3,3,early majority,3,3,3,3,3,4,4,3,probably will,2,2,2,2,2,3,3,2,2,2,2,2,2,2,2,2,2.25,2
+280,regular residence,2,male,59,1,1,1,1,1,1,1,1,early majority,4,4,3,4,4,3,4,3,probably will,3,3,2,3,3,2,3,2,0,0,0,0,0,0,0,0,2.625,0
+281,regular residence,2,male,52,1,1,2,2,2,3,2,3,laggards,3,4,4,4,4,4,4,4,definitely not,2,3,3,3,3,3,3,3,0,0,1,1,1,2,1,2,2.875,1
+282,small residence,2,female,21,1,1,1,1,1,1,1,1,late majority,3,3,5,5,2,4,4,3,definitely not,2,2,4,4,1,3,3,2,0,0,0,0,0,0,0,0,2.625,0
+283,regular residence,2,male,57,1,1,1,1,2,1,1,2,early majority,4,5,5,5,5,5,5,5,probably will,3,4,4,4,4,4,4,4,0,0,0,0,1,0,0,1,3.875,0.25
+284,regular residence,2,male,33,4,3,3,4,3,4,4,1,late majority,3,4,4,3,5,5,4,2,probably will,2,3,3,2,4,4,3,1,3,2,2,3,2,3,3,0,2.75,2.25
+285,regular residence,2,female,27,3,4,3,2,4,4,3,3,early adopters,4,3,4,4,3,3,3,3,definitely not,3,2,3,3,2,2,2,2,2,3,2,1,3,3,2,2,2.375,2.25
+286,regular residence,2,male,45,3,1,1,1,2,1,1,1,early majority,1,3,3,3,5,5,5,1,probably not,0,2,2,2,4,4,4,0,2,0,0,0,1,0,0,0,2.25,0.375
+287,regular residence,2,female,49,3,3,3,3,3,3,3,3,early majority,3,5,5,3,5,4,5,5,probably will,2,4,4,2,4,3,4,4,2,2,2,2,2,2,2,2,3.375,2
+288,small residence,2,female,53,2,2,3,3,2,2,2,2,laggards,3,3,2,2,3,4,4,3,probably not,2,2,1,1,2,3,3,2,1,1,2,2,1,1,1,1,2,1.25
+290,regular residence,2,female,66,2,1,1,1,1,1,1,1,late majority,3,5,3,3,4,5,5,5,likely to,2,4,2,2,3,4,4,4,1,0,0,0,0,0,0,0,3.125,0.125
+291,regular residence,2,female,42,1,1,1,1,1,1,1,1,innovators,4,4,4,4,5,5,5,5,definitely not,3,3,3,3,4,4,4,4,0,0,0,0,0,0,0,0,3.5,0
+292,small residence,2,male,52,2,2,3,2,4,1,3,3,early majority,4,3,4,3,4,4,4,4,probably not,3,2,3,2,3,3,3,3,1,1,2,1,3,0,2,2,2.75,1.5
+293,regular residence,2,female,37,1,2,2,2,1,1,2,2,innovators,3,3,3,3,4,3,3,2,probably not,2,2,2,2,3,2,2,1,0,1,1,1,0,0,1,1,2,0.625
+294,small residence,2,male,41,4,2,2,2,2,2,3,2,early adopters,5,5,5,4,4,5,5,5,likely to,4,4,4,3,3,4,4,4,3,1,1,1,1,1,2,1,3.75,1.375
+295,regular residence,2,female,72,1,1,3,3,1,1,1,1,laggards,3,3,3,4,5,4,5,5,definitely not,2,2,2,3,4,3,4,4,0,0,2,2,0,0,0,0,3,0.5
+297,regular residence,2,male,35,1,1,1,1,2,1,1,1,early majority,1,5,2,1,5,5,5,5,probably will,0,4,1,0,4,4,4,4,0,0,0,0,1,0,0,0,2.625,0.125
+298,regular residence,2,female,52,1,1,2,2,3,1,1,1,late majority,4,4,5,4,4,5,4,4,probably will,3,3,4,3,3,4,3,3,0,0,1,1,2,0,0,0,3.25,0.5
+299,regular residence,2,female,67,1,1,1,1,1,1,1,1,laggards,5,4,4,4,4,5,4,4,definitely not,4,3,3,3,3,4,3,3,0,0,0,0,0,0,0,0,3.25,0
+300,regular residence,2,female,40,4,4,3,4,4,4,4,3,late majority,4,4,4,5,5,4,4,4,probably not,3,3,3,4,4,3,3,3,3,3,2,3,3,3,3,2,3.25,2.75
+301,regular residence,2,female,67,1,1,3,3,1,1,1,1,early majority,3,3,3,3,5,5,5,5,probably will,2,2,2,2,4,4,4,4,0,0,2,2,0,0,0,0,3,0.5
+302,regular residence,2,male,34,1,1,1,1,1,1,1,1,early majority,4,4,3,3,5,5,4,3,probably will,3,3,2,2,4,4,3,2,0,0,0,0,0,0,0,0,2.875,0
+303,regular residence,2,male,43,1,1,1,1,2,1,2,2,laggards,3,4,2,2,3,3,4,2,probably not,2,3,1,1,2,2,3,1,0,0,0,0,1,0,1,1,1.875,0.375
+306,small residence,2,male,34,1,1,1,1,1,1,1,1,laggards,2,2,3,3,4,4,4,4,definitely not,1,1,2,2,3,3,3,3,0,0,0,0,0,0,0,0,2.25,0
+309,regular residence,2,female,58,1,1,1,1,1,1,1,1,late majority,3,3,2,2,2,4,4,4,probably will,2,2,1,1,1,3,3,3,0,0,0,0,0,0,0,0,2,0
+310,regular residence,2,male,48,3,2,4,1,4,3,3,2,early majority,2,4,3,3,4,4,3,2,probably will,1,3,2,2,3,3,2,1,2,1,3,0,3,2,2,1,2.125,1.75
+311,regular residence,2,male,29,3,3,3,3,3,3,2,3,innovators,4,4,4,3,3,3,4,4,probably will,3,3,3,2,2,2,3,3,2,2,2,2,2,2,1,2,2.625,1.875
+312,small residence,2,female,60,1,1,1,1,1,1,1,1,early majority,3,5,5,5,5,5,5,5,probably will,2,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,3.75,0
+313,small residence,2,female,64,1,1,1,1,1,1,1,1,laggards,2,3,2,3,2,3,2,2,probably not,1,2,1,2,1,2,1,1,0,0,0,0,0,0,0,0,1.375,0
+314,regular residence,2,male,53,1,1,1,1,1,1,2,2,late majority,5,4,2,3,5,5,4,4,probably not,4,3,1,2,4,4,3,3,0,0,0,0,0,0,1,1,3,0.25
+315,small residence,2,female,45,1,1,1,1,1,1,1,1,late majority,1,5,3,4,5,5,5,5,definitely not,0,4,2,3,4,4,4,4,0,0,0,0,0,0,0,0,3.125,0
+316,regular residence,2,female,40,1,1,1,1,1,1,1,1,early majority,3,4,3,3,3,3,3,3,probably will,2,3,2,2,2,2,2,2,0,0,0,0,0,0,0,0,2.125,0
+317,regular residence,2,male,66,4,3,3,2,3,4,4,3,early majority,4,5,4,3,5,5,4,4,likely to,3,4,3,2,4,4,3,3,3,2,2,1,2,3,3,2,3.25,2.25
+318,regular residence,2,female,32,1,1,1,1,1,1,1,1,laggards,3,3,3,2,3,4,3,3,probably will,2,2,2,1,2,3,2,2,0,0,0,0,0,0,0,0,2,0
+320,regular residence,2,male,38,1,1,1,1,1,1,1,1,early majority,5,4,4,3,2,3,2,2,probably not,4,3,3,2,1,2,1,1,0,0,0,0,0,0,0,0,2.125,0
+321,small residence,2,female,46,3,3,3,3,3,3,3,3,early majority,2,2,2,2,2,2,2,2,probably will,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,1,2
+322,regular residence,2,male,60,3,3,2,3,3,1,1,3,early adopters,3,3,4,3,4,4,4,4,likely to,2,2,3,2,3,3,3,3,2,2,1,2,2,0,0,2,2.625,1.375
+323,regular residence,2,male,60,1,1,1,1,1,1,1,1,late majority,5,5,5,5,5,5,5,5,probably will,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,4,0
+324,regular residence,2,male,35,3,1,2,3,3,3,4,4,early adopters,4,5,3,5,5,5,5,2,probably will,3,4,2,4,4,4,4,1,2,0,1,2,2,2,3,3,3.25,1.875
+325,regular residence,2,male,60,4,4,4,4,4,4,4,4,early majority,4,4,4,3,4,4,4,4,likely to,3,3,3,2,3,3,3,3,3,3,3,3,3,3,3,3,2.875,3
+326,regular residence,2,male,56,3,2,4,3,4,3,3,2,early majority,2,2,4,3,4,4,4,3,likely to,1,1,3,2,3,3,3,2,2,1,3,2,3,2,2,1,2.25,2
+327,regular residence,2,female,51,2,1,1,2,1,1,1,1,late majority,3,5,5,5,5,5,4,4,probably will,2,4,4,4,4,4,3,3,1,0,0,1,0,0,0,0,3.5,0.25
+328,regular residence,2,female,20,2,2,1,2,1,3,1,3,early majority,2,1,2,3,3,2,1,1,probably will,1,0,1,2,2,1,0,0,1,1,0,1,0,2,0,2,0.875,0.875
+330,regular residence,2,female,54,1,1,1,1,3,1,2,1,late majority,2,4,4,2,5,5,5,5,probably not,1,3,3,1,4,4,4,4,0,0,0,0,2,0,1,0,3,0.375
+332,regular residence,2,male,30,5,5,5,5,5,5,5,5,early adopters,5,5,5,5,5,5,5,5,probably will,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4
+333,regular residence,2,male,35,1,1,1,1,1,1,1,1,early adopters,3,3,3,3,3,2,1,2,probably will,2,2,2,2,2,1,0,1,0,0,0,0,0,0,0,0,1.5,0
+334,regular residence,2,male,56,3,3,3,2,1,1,3,3,early adopters,4,4,4,3,5,5,5,3,probably will,3,3,3,2,4,4,4,2,2,2,2,1,0,0,2,2,3.125,1.375
+335,regular residence,2,male,45,1,1,1,1,1,1,1,1,early adopters,4,5,5,5,5,5,5,5,likely to,3,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,3.875,0
+336,regular residence,2,female,25,1,1,1,1,1,1,3,1,early adopters,3,5,5,3,3,5,3,3,definitely not,2,4,4,2,2,4,2,2,0,0,0,0,0,0,2,0,2.75,0.25
+337,regular residence,2,female,26,2,2,2,2,2,2,5,2,late majority,5,5,5,4,5,5,5,5,probably not,4,4,4,3,4,4,4,4,1,1,1,1,1,1,4,1,3.875,1.375
+338,small residence,2,male,48,1,1,1,1,1,1,1,1,early majority,2,5,4,4,5,5,5,5,probably will,1,4,3,3,4,4,4,4,0,0,0,0,0,0,0,0,3.375,0
+339,regular residence,2,female,32,1,1,1,1,1,1,1,1,early majority,4,5,4,3,4,4,5,4,likely to,3,4,3,2,3,3,4,3,0,0,0,0,0,0,0,0,3.125,0
+340,regular residence,2,female,50,1,1,1,1,1,1,1,1,laggards,4,4,3,4,3,4,4,4,definitely not,3,3,2,3,2,3,3,3,0,0,0,0,0,0,0,0,2.75,0
+342,regular residence,2,male,47,1,1,2,1,1,1,1,1,late majority,5,5,5,4,5,5,5,4,probably will,4,4,4,3,4,4,4,3,0,0,1,0,0,0,0,0,3.75,0.125
+343,regular residence,2,female,67,2,1,1,1,1,1,1,1,late majority,3,5,5,1,3,4,5,4,definitely not,2,4,4,0,2,3,4,3,1,0,0,0,0,0,0,0,2.75,0.125
+344,regular residence,2,female,35,2,2,2,2,2,2,2,2,early majority,4,5,4,4,5,5,5,4,probably will,3,4,3,3,4,4,4,3,1,1,1,1,1,1,1,1,3.5,1
+345,small residence,2,male,31,2,2,3,5,5,5,5,2,early majority,4,4,4,4,5,5,5,5,probably will,3,3,3,3,4,4,4,4,1,1,2,4,4,4,4,1,3.5,2.625
+346,regular residence,2,male,56,3,3,3,3,3,3,3,3,late majority,4,5,5,4,5,5,5,2,likely to,3,4,4,3,4,4,4,1,2,2,2,2,2,2,2,2,3.375,2
+347,regular residence,2,male,77,1,1,1,1,1,1,1,1,laggards,2,4,3,2,3,3,3,3,probably will,1,3,2,1,2,2,2,2,0,0,0,0,0,0,0,0,1.875,0
+348,regular residence,2,female,33,1,1,1,1,1,1,1,1,late majority,3,3,3,3,3,3,3,3,probably will,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,2,0
+349,regular residence,2,female,61,1,1,1,1,1,2,1,1,early majority,5,5,5,3,5,5,5,5,definitely not,4,4,4,2,4,4,4,4,0,0,0,0,0,1,0,0,3.75,0.125
+350,small residence,2,female,50,2,1,1,1,1,2,1,1,late majority,2,1,1,1,1,1,1,2,probably not,1,0,0,0,0,0,0,1,1,0,0,0,0,1,0,0,0.25,0.25
+351,small residence,2,female,23,1,1,1,1,4,1,1,1,early majority,5,5,5,5,5,5,5,5,probably will,4,4,4,4,4,4,4,4,0,0,0,0,3,0,0,0,4,0.375
+352,small residence,2,male,31,1,1,1,1,1,1,1,1,early majority,1,4,4,4,4,4,5,4,probably will,0,3,3,3,3,3,4,3,0,0,0,0,0,0,0,0,2.75,0
+353,small residence,2,female,50,2,1,1,1,2,1,2,1,early majority,4,4,3,3,4,5,5,3,probably will,3,3,2,2,3,4,4,2,1,0,0,0,1,0,1,0,2.875,0.375
+355,small residence,2,female,35,2,2,3,3,3,3,3,3,late majority,4,4,4,3,4,4,5,4,probably not,3,3,3,2,3,3,4,3,1,1,2,2,2,2,2,2,3,1.75
+356,small residence,2,female,45,2,3,3,2,1,1,1,1,laggards,3,4,3,3,4,3,3,3,probably will,2,3,2,2,3,2,2,2,1,2,2,1,0,0,0,0,2.25,0.75
+357,regular residence,2,female,27,1,1,1,1,1,1,1,1,late majority,3,5,5,5,2,5,5,3,probably not,2,4,4,4,1,4,4,2,0,0,0,0,0,0,0,0,3.125,0
+359,regular residence,2,male,50,1,1,1,1,1,4,3,3,late majority,3,3,4,4,5,5,5,5,likely to,2,2,3,3,4,4,4,4,0,0,0,0,0,3,2,2,3.25,0.875
+360,small residence,2,female,31,2,1,3,2,3,2,3,2,laggards,2,2,2,2,4,4,3,3,probably will,1,1,1,1,3,3,2,2,1,0,2,1,2,1,2,1,1.75,1.25
+362,regular residence,2,female,28,1,1,1,1,1,1,1,1,early majority,3,5,4,4,5,5,5,4,probably will,2,4,3,3,4,4,4,3,0,0,0,0,0,0,0,0,3.375,0
+364,regular residence,2,female,30,1,1,1,1,1,1,1,1,laggards,4,4,3,3,1,5,5,1,probably not,3,3,2,2,0,4,4,0,0,0,0,0,0,0,0,0,2.25,0
+366,regular residence,2,male,45,4,4,4,5,5,5,4,4,early majority,4,4,5,3,4,5,5,5,probably will,3,3,4,2,3,4,4,4,3,3,3,4,4,4,3,3,3.375,3.375
+367,regular residence,2,male,38,1,1,1,1,1,1,1,1,laggards,4,4,4,4,5,5,5,1,definitely not,3,3,3,3,4,4,4,0,0,0,0,0,0,0,0,0,3,0
+371,regular residence,2,female,60,4,4,4,2,3,3,3,3,early adopters,4,4,4,4,5,4,4,4,probably will,3,3,3,3,4,3,3,3,3,3,3,1,2,2,2,2,3.125,2.25
+372,small residence,2,female,42,1,1,2,2,2,1,1,1,laggards,3,3,3,3,4,4,4,3,definitely not,2,2,2,2,3,3,3,2,0,0,1,1,1,0,0,0,2.375,0.375
+373,small residence,2,female,64,1,1,1,1,1,1,1,1,early adopters,3,5,4,4,5,5,5,5,probably not,2,4,3,3,4,4,4,4,0,0,0,0,0,0,0,0,3.5,0
+375,regular residence,2,male,32,1,1,1,1,1,1,1,1,early majority,2,4,3,2,2,4,4,3,probably will,1,3,2,1,1,3,3,2,0,0,0,0,0,0,0,0,2,0
+376,regular residence,2,female,65,3,1,1,1,3,1,1,1,early adopters,2,5,4,4,3,3,2,3,likely to,1,4,3,3,2,2,1,2,2,0,0,0,2,0,0,0,2.25,0.5
+379,small residence,2,female,24,2,2,2,2,3,3,2,2,late majority,2,3,4,4,5,5,4,4,probably not,1,2,3,3,4,4,3,3,1,1,1,1,2,2,1,1,2.875,1.25
+380,regular residence,2,female,62,3,1,2,2,2,2,2,1,early majority,3,5,5,4,4,5,5,4,probably will,2,4,4,3,3,4,4,3,2,0,1,1,1,1,1,0,3.375,0.875
+381,small residence,2,female,32,1,1,2,3,2,3,3,3,laggards,3,4,4,4,4,4,4,5,definitely not,2,3,3,3,3,3,3,4,0,0,1,2,1,2,2,2,3,1.25
+382,regular residence,2,male,60,5,3,4,4,3,3,4,3,early adopters,4,4,4,4,4,5,5,5,definitely going to,3,3,3,3,3,4,4,4,4,2,3,3,2,2,3,2,3.375,2.625
+383,regular residence,2,female,68,1,1,1,1,1,1,1,1,early majority,3,4,4,4,4,4,4,4,probably will,2,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,2.875,0
+384,regular residence,2,male,30,5,5,5,5,5,4,3,4,early majority,3,4,3,5,5,3,5,4,probably not,2,3,2,4,4,2,4,3,4,4,4,4,4,3,2,3,3,3.5

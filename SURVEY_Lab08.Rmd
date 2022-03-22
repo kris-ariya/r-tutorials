@@ -1,0 +1,360 @@
+---
+title: 'Lab 08: Data Cleaning'
+date: "Mar 17, 2022"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: TRUE
+---
+
+โหลดแพ็คเกจที่จะต้องใช้ในแบบฝึกหัดนี้
+
+```{r load_package, message = FALSE}
+library(psych)
+#install.packages("careless")
+library(careless)
+library(carData)
+library(Hmisc)
+library(haven) # for SPSS import
+```
+
+# 0. Import Data
+
+## .CSV
+
+[ข้อมูลที่ใช้ในครั้งนี้](SURVEY_Lab08_Data.csv) เป็นข้อมูลที่ดัดแปลงจาก dataset `bfi` ในแพ็คเกจ psych ซึ่งเป็นข้อมูลของมาตรบุคลิกภาพ Big 5 โดยมีองค์ประกอบละ 5 ข้อ ได้แก่ Agreeableness: `A1` - `A5`; Conscientiousness: `C1`-`C5`; Extraversion: `E1`-`E5`; Neuroticism: `N1`-`N5`; และ Openness to Experience: `O1`-`O5`
+
+`X` คือ ID
+
+ตัวแปร `gender`: Male = 1; Females = 2
+
+`education`: 1 = HS (High School); 2 = finished HS; 3 = some college; 4 = college graduate; 5 = graduate degree
+
+`age` อายุหน่วยเป็นปี
+
+`completed` ตอบแบบสอบถามเสร็จสิ้นหรือไม่ 0 = incomplete; 1 = complete
+
+```{r}
+# Import data & factorize variables
+big5_data <- read.csv("SURVEY_Lab08_Data.csv", stringsAsFactors=TRUE)
+big5_data$gender <- factor(big5_data$gender, labels = c("Male", "Females"))
+big5_data$education <- factor(big5_data$education, labels = c("HS", "finished HS", "some college", "college graduate", "graduate degree"))
+head(big5_data)
+```
+
+## .SAV (SPSS files)
+
+ถ้าข้อมูลเป็น[ไฟล์ข้อมูลจาก SPSS](SURVEY_Lab08_Data.sav) จะต้องใช้คำสั่งจากแพ็คเกจ haven เพื่อนำเข้าข้อมูล แต่ข้อมูลจะอยู่ในรูปแบบของตารางที่เรียกว่า tibble (`tbl_df`) ซึ่งไม่ใช่ data.frame ปกติ
+
+```{r}
+big5_spss <- read_sav("SURVEY_Lab08_Data.sav")
+big5_spss
+class(big5_spss)
+```
+
+ตาราง tibble สามารถจัดข้อมูลให้อ่านและใช้งานง่ายกว่า data.frame (เช่น แสดง data type บนหัวตาราง \<dbl\> = double หรือ แสดงผลแค่ 10 รายการแรกโดยอัตโนมัติแทนที่จะพิมพ์ข้อมูลทั้งหมดเหมือน data.frame) แต่ tibble ถูกออกแบบมาสำหรับใช้กับแพ็คเกจในกลุ่ม tidyverse เป็นหลัก จึงอาจมีปัญหากับคำสั่งบางตัวใน Base R
+
+ในแบบฝึกหัดนี้ เราจะแปลง tibble กลับไปเป็น data.frame ก่อนด้วยคำสั่ง `as.data.frame()`
+
+```{r}
+big5_data2 <- as.data.frame(big5_spss)
+class(big5_data2)
+head(big5_data2)
+```
+
+# 1. การคัดข้อมูลที่ไม่ครบถ้วนออก (Dropping Incomplete Cases)
+
+ในกรณีที่ข้อมูลจากแบบสอบถามออนไลน์มี metadata ว่าผู้ตอบ ได้ตอบแบบสอบถามเสร็จสิ้นหรือไม่ (เช่น ตัวแปร `completed` ในข้อมูลนี้) เราสามารถใช้ตัวแปรนั้นเพื่อคัดข้อมูลที่ไม่ครบถ้วนออกได้
+
+```{r}
+# Option 1: subset()
+big5_complete <- subset(big5_data, subset = big5_data$completed == 1 )
+# Option 2: logical index
+big5_complete2 <- big5_data[big5_data$completed == 1, ] #choose only completed rows, retain all columns
+identical(big5_complete, big5_complete2) # check whether both options give the same results
+```
+
+ในกรณีที่ไม่มีตัวแปรเพื่อบ่งบอกว่า ตอบครบถ้วนหรือไม่ เราอาจใช้เกณฑ์บางอย่างเพื่อตัดคำตอบที่ไม่สมบูรณ์ออก เช่น มีข้อมูลสูญหายตั้งแต่ 70% ขึ้นไป
+
+เราจะเริ่มด้วยการหาว่ามี `NA` อยู่ตรงไหนบ้างในข้อมูลด้วย `is.na` จากนั้นรวมจำนวน `NA` แต่ละแถวด้วย `rowSums` แล้วหารด้วยจำนวนตัวแปร (25 ข้อแบบสอบถาม + 3 ข้อ demographic)
+
+จากนั้นเราควรสำรวจข้อมูลด้วยตาอีกครั้งว่าเป็นข้อมูลที่ตอบไม่ครบถ้วนจริงหรือไม่ เช่น ข้อมูลของมาตรช่วงท้าย ๆ สูญหายเนื่องจากผู้ตอบทิ้งแบบสอบถามไปแล้ว
+
+```{r}
+percentNA <- rowSums(is.na(big5_data[, 2:29]))/28 #calculate proportion of NA for each case. Column 2 is the first column for items. We also pretend that Column 30 does not exist.
+big5_data[percentNA > .7, ] # show incomplete cases
+big5_complete3 <- big5_data[percentNA <= .7, ] #select only data with 30% or more completion. 
+```
+
+# 2. ตรวจสอบว่าข้อมูลสูญหายถูกบันทึกไว้ถูกต้องหรือไม่
+
+ในโปรแกรม R ข้อมูลสูญหายจะถูกบันทึกเป็น `NA` โดยเราสามารถดูตำแหน่งของ*แถว (rows)* ที่มี `NA` ได้ด้วยการนิเสธ (not) `!` คำสั่ง `complete.cases()` ร่วมกับ `which()`
+
+```{r}
+which(!complete.cases(big5_complete), arr.ind = TRUE)
+```
+
+แม้จะมีผู้ตอบที่มีข้อมูลสูญหายอยู่หลายคน แต่ก็คำสั่งนี้ยังไม่บอกปริมาณของข้อมูลที่สูญหายของแต่ละคน จึงยังไม่สามารถเหมารวมลบข้อมูลทิ้งได้ทั้งหมด
+
+นอกจากนี้ แนวปฏิบัติในการบันทึกข้อมูลสูญหายนั้นอาจแตกต่างไปตามโปรแกรมสถิติที่คุ้นเคย ยกตัวอย่างเช่น ผู้วิจัยที่คุ้นเคยกับ SPSS มักจะบันทึกข้อมูลที่สูญหายด้วยเลข 9, 99, หรือ 999 แล้วตั้งค่าโปรแกรมให้ตีความเลขดังกล่าวเป็นค่า missing เพื่อแสดงให้เห็นว่าข้อมูลที่สูญหายนั้นเป็น user-defined missing (คือ ผู้วิจัยตรวจสอบแล้วว่าเป็นค่า missing จากแบบสอบถามจริงๆ) แทนที่จะเป็น system-missing (แสดงผลเป็นช่องว่างหรือ `NA` ซึ่งอาจเกิดจากความผิดพลาดในการบันทึกข้อมูล) แนวปฏิบัติเช่นนี้มีประโยชน์เพื่อสอบทานข้อมูลในกรณีที่ใช้แบบสอบถามกระดาษแล้วนำข้อมูลมาบันทึกเป็นไฟล์
+
+แต่ในกรณีที่ แบบสอบถามถูกเก็บมาด้วยระบบคอมพิวเตอร์ตั้งแต่ต้น ค่าว่างหรือ `NA` นั้นแสดงถึงค่าสูญหายในการตอบอยู่แล้ว จึงไม่มีความจำเป็นต้องแปลงให้เป็นค่าเฉพาะอื่นใด เราปล่อยให้ค่าสูญหายเป็น `NA` ไว้ได้เลย
+
+การเขียนโค้ด R เพื่อจัดการกับค่า missing นั้นไม่นิยมนำตัวเลขอื่นมาใช้แทนค่า missing แต่ให้ใช้ `NA` เลย เนื่องจากคำสั่งการวิเคราะห์อาจไม่รองรับค่า missing อื่น ๆ ที่ผู้ใช้กำหนด ดังนั้นเมื่อตรวจสอบข้อมูลเสร็จเรียบร้อยแล้ว จึงควรแปลงค่า user-defined missing (เช่น 999) ให้กลายเป็น `NA` ทั้งหมด (เราควรเขียนโน้ตตำแหน่งและเหตุผลในการเปลี่ยนไว้เพื่อใช้อ้างอิงในภายหลัง)
+
+ในตัวอย่างนี้เราจะค้นหาข้อมูลที่อาจจะถูกบันทึกไว้เป็นค่า user-defined missing เช่น 9, 99, 999, หรือ 9999 แล้วแปลงให้กลายเป็น `NA`
+
+```{r}
+miss9 <- which(big5_complete == 9, arr.ind = TRUE) # arr.ind gives index of row and col
+miss9 # This variable has two indices: rows and columns.
+miss9[, 1] # The first column shows rows that contain 9.
+big5_complete[miss9[,1], ] # Use the index in extract cases that contains 9. This is the case of age == 9, which is possible. This is not a missing value. 
+miss99 <- which(big5_complete == 99, arr.ind = TRUE)
+big5_complete[miss99[,1], ] # N1 is coded as 99, which is out of range. This is a user-defined missing value.
+miss999 <- which(big5_complete == 999, arr.ind = TRUE)
+big5_complete[miss999[,1], ] # There are many cases with 999 as missing values.
+miss9999 <- which(big5_complete == 9999, arr.ind = TRUE)
+big5_complete[miss9999[,1], ] # No data is coded as 9999
+```
+
+แทนค่า 99 และ 999 ด้วย `NA`
+
+```{r}
+big5_complete[big5_complete == 99] <- NA #replace 99 with NA
+which(big5_complete == 99, arr.ind = TRUE) # no more data with 99
+big5_complete[big5_complete == 999] <- NA
+which(big5_complete == 999, arr.ind = TRUE)
+```
+
+# 3. ตรวจสอบว่าข้อมูลอยู่ในพิสัยของมาตรหรือไม่
+
+แบบสอบถามบุคลิกภาพนี้เป็นมาตร 6 ระดับ จาก 1-6 จึงไม่ควรมีคะแนนนอกเหนือจากนี้ เราจะใช้ `describe` จากแพ็กเกจ psych เพื่อตรวจสอบว่ามีตัวแปรใดที่มีค่านอกพิสัยบ้าง
+
+```{r}
+begin <- which(colnames(big5_complete) == "A1")
+end <- which(colnames(big5_complete) == "O5")
+psych::describe(big5_complete[, begin:end]) # or just use [, 2:26]. We need psych::describe() because Hmisc also has describe()
+```
+
+จากข้อมูลแต่ละข้อคำถาม ค่า Min ไม่มีต่ำกว่า 1 แต่มีบางข้อที่คะแนนมากกว่า 6 (เช่น ตัวแปร A5 กับ C5)
+
+เราจะแทนที่คะแนนที่มากกว่า 6 ด้วย `NA`
+
+```{r}
+big5_complete[, begin:end][big5_complete[, begin:end] > 6] <- NA
+psych::describe(big5_complete[, begin:end]) # no more out-of-range data
+```
+
+นอกจากนี้ค่า mean และ sd ของข้อคำถามยังอยู่ในช่วงที่ดูเป็นปกติ
+
+ต่อไปเราจะดูตัวแปร `gender` และ `education` เนื่องจากตัวแปรทั้งสองเป็น factor เมื่อเราใช้ `summary` โปรแกรม R จะสร้างตารางแจกแจงความถี่ให้ รวมถึงจำนวน `NA` (หากใช้คำสั่ง `table` จะไม่ปรากฏจำนวน `NA`)
+
+```{r}
+summary(big5_complete$gender)
+summary(big5_complete$education)
+```
+
+# 4. ตรวจสอบความสมบูรณ์ข้อมูลในแต่ละมาตรย่อย
+
+แม้ว่าข้อมูลโดยรวมของคนคนหนึ่งอาจจะไม่สูญหายถึงเกณฑ์คัดทิ้ง แต่ข้อมูลในระดับตัวแปรหรือมาตรย่อย (subscale) อาจไม่ครบถ้วนสมบูรณ์ จึงควรตรวจสอบความสมบูรณ์ของข้อมูลทีละตัวแปร และตัดสินใจว่าจะคัดข้อมูลทิ้งหรือไม่
+
+สมมติให้เราตั้งเกณฑ์ว่าในแต่ละมาตรย่อยจะต้องมีข้อมูลสูญหายไม่เกินร้อยละ 50 ของข้อคำถามในองค์ประกอบหนึ่ง ๆ (เช่น ใน 5 ข้อต้องตอบอย่างน้อย 3 ข้อ)
+
+เราจะเริ่มคำนวณจำนวนตัวแปรสูญหายของบุคลิกภาพแต่ละองค์ประกอบ โดยอันดับแรกคือการเลือกเฉพาะมาตรย่อยด้วยคำสั่ง `subset()` จากนั้นใช้ `is.na()` เพื่อดูว่าสร้าง logical 0-1 (`FALSE`-`TRUE`) ว่า ตำแหน่งใดเป็น `NA` จากนั้นเฉลี่ยค่าของแต่ละแถว ค่าเฉลี่ยที่ได้จะเป็นสัดส่วนของคำตอบ `NA` ของผู้ตอบแต่ละคน
+
+```{r}
+# Agreeableness
+perNAagree <- rowMeans(is.na(subset(big5_complete, select = A1:A5))) #percent of NA for each case
+big5_complete[perNAagree > .5, ] # cases with more than 50% missing in Agreeableness
+# Conscientiousness
+perNAconsci <- rowMeans(is.na(subset(big5_complete, select = C1:C5))) 
+big5_complete[perNAconsci > .5, ] 
+# Extraversion
+perNAextra <- rowMeans(is.na(subset(big5_complete, select = E1:E5))) 
+big5_complete[perNAextra > .5, ] 
+# Neuroticism
+perNAneuro <- rowMeans(is.na(subset(big5_complete, select = N1:N5))) 
+big5_complete[perNAneuro > .5, ] 
+# Openness
+perNAopen <- rowMeans(is.na(subset(big5_complete, select = O1:O5))) 
+big5_complete[perNAopen > .5, ] 
+
+```
+
+เรารวบรวมแถว (rows) ที่มีปัญหาข้อมูลไม่ครบโดยด้วย OR \|
+
+```{r}
+tobedeleted <- perNAagree > .5 | perNAconsci > .5 | perNAextra > .5 | perNAneuro > .5 | perNAopen > .5
+big5_complete[tobedeleted, ]
+```
+
+เราจะคัดข้อมูลด้านบนทิ้งไป แล้วสร้างเป็น dataframe ใหม่
+
+```{r}
+big5_var_complete <- big5_complete[!tobedeleted, ]
+# OR 
+big5_var_complete2 <- big5_complete[perNAagree <= .5 & perNAconsci <= .5 & perNAextra <= .5 & perNAneuro <= .5 & perNAopen <= .5, ]
+identical(big5_var_complete, big5_var_complete2) #same results
+```
+
+# 5. ตรวจสอบการตอบแบบทิ้งดิ่ง (Straightlining)
+
+กรณีที่ผู้ตอบให้คะแนนเดียวกันในทุกข้อ แสดงว่าผู้ตอบไม่ได้ใส่ใจในการตอบคำถาม ข้อมูลลักษณะนี้ควรถูกคัดทิ้ง
+
+คำสั่ง `longstring` ในแพ็กเกจ careless ช่วยระบุความยาวของการทิ้งดิ่งได้
+
+```{r}
+long <- longstring(big5_var_complete) # calculate the max length of identical response 
+boxplot(long) # cases with 20 consecutive identical responses are suspicious
+big5_var_complete[long > 10, ] # use 10 string as a cutoff
+big5_clean <- big5_var_complete[long <= 10, ] # select response with less than 10 longstring and save to a new variable
+
+
+```
+
+# 6. การทดแทนค่าข้อมูลสูญหาย (Missing Value Imputation)
+
+การแทนค่าข้อมูลสูญหายด้วยค่าเฉลี่ย หรือค่ามัธยฐานของตัวแปรนั้น ๆ ทำได้โดยคำสั่ง `impute` ในแพ็กเกจ Hmisc
+
+โดยค่าตั้งต้น `impute` จะแทนค่าด้วย median แต่ถ้าต้องการให้ใช้ค่า mean ทำได้โดยเพิ่ม option `fun = mean`
+
+```{r}
+# Agreeableness
+big5_clean$A1.im <- impute(big5_clean$A1, fun = mean)
+big5_clean$A2.im <- impute(big5_clean$A2, fun = mean)
+big5_clean$A3.im <- impute(big5_clean$A3, fun = mean)
+big5_clean$A4.im <- impute(big5_clean$A4, fun = mean)
+big5_clean$A5.im <- impute(big5_clean$A5, fun = mean)
+# Repeat for all scales (tedious & prone to errors)
+
+### OR ###
+
+# You can also use for loop (preferred)
+big5_impute <- big5_clean
+begin # begin is the column number of A1, remember from above?
+end # end is the column number of O5
+for (i in begin:end) {
+  big5_impute[,i] <- impute(big5_clean[,i], fun = mean)
+}
+all(complete.cases(big5_impute[, begin:end])) # complete cases for everyone
+psych::describe(big5_impute[, begin:end]) #notice that all n are equal.
+```
+
+# 7. คำนวณคะแนนมาตรย่อย
+
+มาตรวัดโดยทั่วไปมักจะมีการกลับคะแนน จึงต้องทำการกลับคะแนนก่อนค่อยหาค่าเฉลี่ยของด้านย่อยแต่ละด้าน
+
+key ของมาตร Big Five นี้เป็นดังนี้
+
+\$agree
+: "-A1" "A2" "A3" "A4" "A5" 
+
+
+\$conscientious
+: "C1" "C2" "C3" "-C4" "-C5"
+
+
+\$extraversion
+: "-E1" "-E2" "E3" "E4" "E5" 
+
+
+\$neuroticism
+: "N1" "N2" "N3" "N4" "N5"
+
+
+\$openness
+: "O1" "-O2" "O3" "O4" "-O5"
+
+ในที่นี้จะแสดงวิธีกลับและรวมคะแนนของมาตร agreeableness และ conscientiousness
+
+```{r}
+# agreeableness
+big5_impute$A1.re <- 7 - big5_impute$A1 # Reverse = (max_scale +1) - data
+head(big5_impute[c("A1", "A1.re")]) #see if reverse scoring is correct
+big5_impute$agree_mean <- rowMeans(big5_impute[c("A1.re", "A2", "A3", "A4", "A5")])
+head(big5_impute$agree_mean)
+
+#conscientiousness
+big5_impute$C4.re <- 7 - big5_impute$C4 
+big5_impute$C5.re <- 7 - big5_impute$C5 
+big5_impute$conscientious_mean <- rowMeans(big5_impute[c("C1", "C2", "C3", "C4.re", "C5.re")])
+
+# Subscale mean for each person
+head(big5_impute[c("agree_mean", "conscientious_mean")])
+
+# Group means for each scale
+psych::describe(big5_impute[c("agree_mean", "conscientious_mean")])
+# repeat for other subscales
+```
+
+# 8. ทางลัด 5-7: `psych::scoreItems`
+
+คำสั่ง `scoreItems` ในแพ็คเกจ psych ช่วยให้เราสามารถคำนวณคะแนน กลับคะแนน และแทนค่าสูญหายได้ในครั้งเดียว
+
+input ของคำสั่ง มี
+
+`keys` list กำหนดน้ำหนัก -1, 0, 1 สำหรับข้อที่ต้องการกลับคะแนน ไม่คิดคะแนน คิดตามปกติ (ตามลำดับ) เราจะสร้าง list โดยตั้งชื่อมาตร เช่น `agree` = ชื่อตัวแปรที่จะใช้คำนวณ โดยตัวที่ต้องการกลับคะแนนให้ใส่ลบไว้ด้านหน้า ทำเช่นนี้ไปจนครบทุกมาตร
+
+`items` data.frame ที่มีคะแนนดิบของมาตร
+
+`min` ค่าต่ำสุดที่เป็นไปได้ของมาตร (ใช้สำหรับกลับคะแนน)
+
+`max` ค่าสูงสุดที่เป็นไปได้ของมาตร (ใช้สำหรับกลับคะแนน)
+
+`totals` TRUE = total scores; FALSE (default) = average scores
+
+`missing` TRUE = impute data; FALSE = complete cases only
+
+`impute` imputation method: "median", "mean", "none"
+
+`delete` ตัดข้อที่ไม่มี variance ทิ้ง (ใช้ตรวจสอบการทิ้งดิ่งได้ในกรณีที่มาตรย่อยค่อนข้างยาว แต่ถ้ามาตรสั้น 2-3 ข้อก็มีความเป็นไปได้ว่าผู้ตอบอาจจะเลือกคำตอบเหมือนกันทุกข้อในมาตรย่อย กรณีมาตรย่อยสั้น ควรดูการทิ้งดิ่งจากภาพรวมด้วย `careless::longstring()` แทน)
+
+Output จากคำสั่ง `scoreItems` เป็น list ที่มีหลายตัวแปรอยู่ในนั้น ค่าคะแนนที่แปลงแล้วจะอยู่ใน object ที่ชื่อว่า `$score`
+
+```{r}
+keys.list <- list(agree = c("-A1","A2","A3","A4","A5"),
+                  conscientious=c("C1","C2","C3","-C4","-C5"),
+                  extraversion=c("-E1","-E2","E3","E4","E5"),
+                  neuroticism=c("N1","N2","N3","N4","N5"), 
+                  openness = c("O1","-O2","O3","O4","-O5"))
+big5_scores <- scoreItems(key = keys.list, items = big5_clean, min = 1, max = 6, missing = TRUE, impute = "mean") #output is a list with many info. 
+head(big5_scores$scores) # access calculated scores
+big5_calculated <- cbind(big5_impute, big5_scores$scores) # combine data.frame
+head(big5_calculated)
+psych::describe(big5_calculated[, c(37,40:42)]) # group means for agree and conscientious from each method
+```
+
+จะเห็นได้ว่าค่าที่ได้จาก `scoreItems` (สองบรรทัดล่าง) ตรงกับที่เราคำนวณเอง (สองบรรทัดบน มีคำว่า \_mean ตามหลัง)
+
+# 9. หาค่าสุดโต่งของมาตร
+
+เราจะหาข้อมูลที่มีค่าสุดโต่งเกิน ±3 SD
+
+เนื่องจากไม่มี function สำหรับวิธีนี้โดยตรง เราจะเขียน function `outlier_3sd` ขึ้นมาเองเพื่อใช้หาว่าแถวใดมีค่าสุดโต่ง
+
+```{r}
+outlier_3sd <- function(var){
+  m <- mean(var)
+  s <- sd(var)
+  loc <- which(var < m - (3*s) | var > m + (3*s))
+  value <- var[loc]
+  output <- cbind(loc, value)
+  colnames(output) <- c("Location", "Outlier_Values")
+  return(output)
+}
+
+outlier_3sd(big5_calculated$agree) 
+outlier_3sd(big5_calculated$conscientious)
+outlier_3sd(big5_calculated$extraversion) # no outliers
+outlier_3sd(big5_calculated$neuroticism) # no outliers
+outlier_3sd(big5_calculated$openness)
+
+```
+
+# 10. Boxplot และ histogram
+
+```{r}
+boxplot(big5_calculated[, 41:45])
+hist(big5_calculated[, 41:45])
+```

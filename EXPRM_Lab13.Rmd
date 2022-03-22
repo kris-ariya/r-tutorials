@@ -1,0 +1,142 @@
+---
+title: 'Lab 13: Analysis of Covariance'
+---
+
+```{r message=FALSE, warning=FALSE}
+# load all libraries for this tutorial
+library(datarium)
+library(dplyr)
+library(emmeans)
+library(afex)
+library(ggplot2)
+
+```
+
+Tutorial นี้จะแสดงวิธีการวิเคราะห์ความแปรปรวนร่วม (ANCOVA)
+
+# One-way ANCOVA
+
+ในตัวอย่างนี้ เราจะใช้ข้อมูล `stress` จาก datarium package
+
+ข้อมูลนี้เป็นการทดลองว่า `treatment` และ `exercise` มีผลต่อ `score` หรือไม่ โดยมี `age` เป็น covariate
+
+ตัวแปรทุกตัวได้รับตั้งค่าประเภทตัวแปรแล้ว
+
+```{r}
+data(stress)
+str(stress)
+```
+
+## afex
+
+ในการวิเคราะห์ความแปรปรวนร่วมทางเดียว เราจะใช้ `treatment` เป็นตัวแปรอิสระ และ `age` เป็น covariate
+
+โมเดลคือ ตัวแปรสองตัวนี้ร่วมกันอธิบายตัวแปรตาม `score` จึงใช้ `treatment + age`
+
+ใช้ option `factorize = FALSE` เนื่องจากคำสั่ง `aov_car` จะแปลงตัวแปรเป็น factor โดยอัตโนมัติ เผื่อในกรณีที่ผู้ใช้ลืมแปลงตัวแปรเป็น factor (ถ้าหากไม่กำหนด option นี้ `aov_car` จะพยายามแปลง `age` เป็น factor แล้วทำให้เกิด error)
+
+```{r}
+one.ancova.afex <- aov_car(score ~ treatment + age + Error(id), data = stress, factorize = FALSE)
+summary(one.ancova.afex)
+nice(one.ancova.afex, es = "pes") #short summary with partial eta square
+```
+
+จะเห็นว่ามีคำเตือนว่าตัวแปรเชิงตัวเลข ไม่ถูกแปลงเป็นค่ากึ่งกลาง (centered variable; ค่าตัวแปรที่ลบออกด้วยค่าเฉลี่ยของตัวมันเอง) การแปลงเป็นค่ากึ่งกลางจะช่วยให้ค่า intercept แสดงถึงค่าเฉลี่ยของกลุ่มอ้างอิง (reference group) เมื่อควบคุมให้ covariate อยู่ที่ค่าเฉลี่ย ซึ่งไม่ใช่สิ่งที่เราสนใจในกรณีนี้ เราจึงไม่ต้องสนใจคำเตือนนี้ก็ได้ (หากต้องการลองวิเคราะห์โดยใช้ค่าที่ center แล้ว สามารถใช้คำสั่ง `scale()` เพื่อแปลงตัวแปร `age` เป็นค่ากึ่งกลางก่อนนำไปวิเคราะห์ข้อมูล)
+
+### EMMEANS
+
+ค่าเฉลี่ยประมาณตามขอบ (estimated marginal means) เป็นค่าเฉลี่ยของเงื่อนไขแต่ละกลุ่มเมื่อควบคุมค่าตัวแปรร่วม `age` ให้คงที่ที่ค่าเฉลี่ยของตัวมันเอง
+
+สังเกตว่าค่า emmeans และค่าเฉลี่ยที่ยังไม่ปรับของแต่ละกลุ่ม จะแตกต่างกันเล็กน้อย
+
+```{r}
+one.ancova.emm <- emmeans(one.ancova.afex, ~ treatment)
+summary(one.ancova.emm)  # estimated (adjusted) mean
+by(stress$score, stress$treatment, mean) # raw (unadjusted mean)
+pairs(one.ancova.emm) #pariwise comparison
+```
+
+### Plot
+
+```{r}
+emm.summary <- summary(one.ancova.emm)
+ggplot(emm.summary, aes(x = treatment, y = emmean)) + 
+  geom_col(alpha = .5, position = position_dodge(.9)) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = .3, position = position_dodge(.9)) + 
+  xlab("Treatment") +
+  ylab("Score") +
+  ylim(c(0,100)) +
+  theme_classic()
+```
+
+## base R: lm()
+
+การวิเคราะห์ ANCOVA เป็นกรณีพิเศษของ regression เราสามารถใช้ `lm()` ในการวิเคราะห์ได้เช่นกัน
+
+แต่ผลการวิเคราะห์จาก `summary()` ของ `lm()` นั้นจะอยู่ในรูปแบบ output สำหรับ regression
+
+ค่า coefficient ของ `treatment` คือความแตกต่างของค่าเฉลี่ยในสองเงื่อนไขโดยมี `no` เป็นกลุ่มอ้างอิง ค่านี้จะสอดคล้องกับการเปรียบเทียบรายคู่ด้านบน (แต่กลับทิศทางเป็นบวก)
+
+```{r}
+one.ancova.lm <- lm(score ~ treatment + age, data = stress)
+summary(one.ancova.lm) # summary in regression styled output
+anova(one.ancova.lm) # use type I sum of squares ##AVOID this for most of the time
+```
+
+หากเราใช้ `anova` วิเคราะห์โมเดลนี้ เราจะได้ค่า *F* ที่แตกต่างจากผลด้านบน เนื่องจากคำสั่ง `anova()` ของ R นั้นใช้ Type I SS
+
+## Homogeneity of Regression Assumptions
+
+การวิเคราะห์ความแปรปรวนร่วม มีข้อสมมติพื้นฐานข้อหนึ่งคือ ค่า slope ระหว่างตัวแปรร่วมและตัวแปรตาม จะเท่ากันในทุกเงื่อนไขของตัวแปรอิสระ กล่าวคือ slope ของ covariate และ DV ในแต่ละเงื่อนไขการทดลองจะต้องขนานกัน
+
+การที่ slope ขนานกันในทุกเงื่อนไขคือการบอกว่าตัวแปรอิสระและตัวแปรร่วม นั้นไม่มีปฏิสัมพันธ์กัน
+
+เราสามารถทดสอบได้โดยการสร้างโมเดลที่มีการทดสอบปฏิสัมพันธ์ของตัวแปรอิสระและตัวแปรร่วม `treatment * age`
+
+```{r}
+one.ancova.afex2 <- aov_car(score ~ treatment * age + Error(id), data = stress, factorize = FALSE)
+summary(one.ancova.afex2)
+
+```
+
+เราพบว่าปฏิสัมพันธ์ระหว่างตัวแปรอิสระและตัวแปรร่วมไม่มีนัยสำคัญทางสถิติ ข้อสมมติฐานพื้นฐานนี้ไม่ถูกละเมิด เราจึงเลือกที่จะใช้ผลจากการวิเคราะห์ ANCOVA `one.ancova.afex` ตัวแรกด้านบน
+
+# Two-way ANCOVA
+
+การวิเคราะห์ตัวแปรร่วมสามารถทำใน factorial design ก็ได้ ใน factorial design นี้มีตัวแปรอิสระแบบจัดประเภทสองตัว คือ `treatment` และ `exercise` ส่วนตัวแปรร่วมคือ `age`
+
+```{r}
+two.ancova <- aov_car(score ~ treatment * exercise + age + Error(id), data = stress, factorize = FALSE)
+summary(two.ancova)
+nice(two.ancova, es = "pes")
+```
+
+### Homogeneity of regression
+
+```{r}
+two.ancova2 <- aov_car(score ~ treatment * exercise * age + Error(id), data = stress, factorize = FALSE)
+summary(two.ancova2)
+```
+
+ตัวแปร age ไม่มีปฏิสัมพันธ์กับตัวแปรอิสระใด ๆ และไม่มีปฏิสัมพันธ์สามทาง จึงไม่ละเมิดเรื่อง homogeneity of regression เราจึงเลือกใช้ผลการวิเคราะห์จาก โมเดล ANCOVA `treatment * exercise + age` ได้
+
+### EMMEANS
+
+ค่าเฉลี่ยประมาณตามขอบในการวิเคราะห์นี้เป็นค่าตัวแปรตามที่ถูกควบคุมเมื่อตัวแปรร่วม `age` คงที่อยู่ที่ค่าเฉลี่ย
+
+วิธีการสร้าง emmeans และการเปรียบเทียบรายคู่ ทำเหมือน factorial ANOVA ตามปกติ ค่าที่ได้จะเป็นค่าจากโมเดลซึ่งควบคุมตัวแปรร่วมแล้ว
+
+```{r}
+two.ancova.emm <- emmeans(two.ancova, ~ treatment | exercise)
+mean(stress$age) # control age at its mean
+summary(two.ancova.emm)
+pairs(two.ancova.emm)
+
+
+```
+
+หากต้องการประมาณค่าเฉลี่ยตามขอบ (ค่าเฉลี่ยของแต่ละเงื่อนไข) โดยกำหนดค่าตัวแปรควบคุมเป็นค่าอื่น สามารถใช้ option `at = list()` กำหนดค่าของตัวแปรควบคุมที่ต้องการได้
+
+```{r}
+emmeans(two.ancova, ~ treatment | exercise, at = list(age = 30))
+```

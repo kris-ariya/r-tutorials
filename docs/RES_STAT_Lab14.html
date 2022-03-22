@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 14: Chi-Square</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Tutorials</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    RES MTHD/STAT PSY Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="RES_STAT_Lab04.html">Lab 4: Descriptive Statistics</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab05.html">Lab 5: Standard Score</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab06.html">Lab 6: Visualizing Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab07.html">Lab 7: Sampling Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab08.html">Lab 8: Confidence Interval and t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab09.html">Lab 9: Correlation</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab10.html">Lab 10: Simple Regression</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab12.html">Lab 12: Dependent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab13.html">Lab 13: Independent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab14.html">Lab 14: Chi-Squared Test</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    EXPRM DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="EXPRM_Lab02.html">Lab 2: Randomization</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab03.html">Lab 3: Power and Sample Size</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab04.html">Lab 4: One-way ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab05.html">Lab 5: Multiple Comparisons</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab07.html">Lab 7: Factorial ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab09.html">Lab 9: Data Visualization with ggplot2</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab10.html">Lab 10: Repeated-Measures ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab11.html">Lab 11: Factorial ANOVA in Repeated-Measures Design</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab12.html">Lab 12: Means Comparison in Regression</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab13.html">Lab 13: ANCOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab14.html">Lab 14: Moderation Analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    SURVEY DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="SURVEY_Lab08.html">Lab 08: Data Cleaning</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Lab 14: Chi-Square</h1>
+
+</div>
+
+
+<p>Let’s load dataset <code>survey</code> from package <code>MASS</code>.</p>
+<pre class="r"><code>library(MASS)
+data(survey)
+survey</code></pre>
+<pre><code>##       Sex Wr.Hnd NW.Hnd W.Hnd    Fold Pulse    Clap Exer Smoke Height      M.I    Age
+## 1  Female   18.5   18.0 Right  R on L    92    Left Some Never 173.00   Metric 18.250
+## 2    Male   19.5   20.5  Left  R on L   104    Left None Regul 177.80 Imperial 17.583
+## 3    Male   18.0   13.3 Right  L on R    87 Neither None Occas     NA     &lt;NA&gt; 16.917
+## 4    Male   18.8   18.9 Right  R on L    NA Neither None Never 160.00   Metric 20.333
+## 5    Male   20.0   20.0 Right Neither    35   Right Some Never 165.00   Metric 23.667
+## 6  Female   18.0   17.7 Right  L on R    64   Right Some Never 172.72 Imperial 21.000
+## 7    Male   17.7   17.7 Right  L on R    83   Right Freq Never 182.88 Imperial 18.833
+## 8  Female   17.0   17.3 Right  R on L    74   Right Freq Never 157.00   Metric 35.833
+## 9    Male   20.0   19.5 Right  R on L    72   Right Some Never 175.00   Metric 19.000
+## 10   Male   18.5   18.5 Right  R on L    90   Right Some Never 167.00   Metric 22.333
+## 11 Female   17.0   17.2 Right  L on R    80   Right Freq Never 156.20 Imperial 28.500
+## 12   Male   21.0   21.0 Right  R on L    68    Left Freq Never     NA     &lt;NA&gt; 18.250
+## 13 Female   16.0   16.0 Right  L on R    NA   Right Some Never 155.00   Metric 18.750
+## 14 Female   19.5   20.2 Right  L on R    66 Neither Some Never 155.00   Metric 17.500
+## 15   Male   16.0   15.5 Right  R on L    60   Right Some Never     NA     &lt;NA&gt; 17.167
+## 16 Female   17.5   17.0 Right  R on L    NA   Right Freq Never 156.00   Metric 17.167
+## 17 Female   18.0   18.0 Right  L on R    89 Neither Freq Never 157.00   Metric 19.333
+## 18   Male   19.4   19.2  Left  R on L    74   Right Some Never 182.88 Imperial 18.333
+## 19   Male   20.5   20.5 Right  L on R    NA    Left Some Never 190.50 Imperial 19.750
+## 20   Male   21.0   20.9 Right  R on L    78   Right Freq Never 177.00   Metric 17.917
+## 21   Male   21.5   22.0 Right  R on L    72    Left Freq Never 190.50 Imperial 17.917
+## 22   Male   20.1   20.7 Right  L on R    72   Right Freq Never 180.34 Imperial 18.167
+## 23   Male   18.5   18.0 Right  L on R    64   Right Freq Never 180.34 Imperial 17.833
+## 24   Male   21.5   21.2 Right  R on L    62   Right Some Never 184.00   Metric 18.250
+## 25 Female   17.0   17.5 Right  R on L    64    Left Some Never     NA     &lt;NA&gt; 19.167
+## 26   Male   18.5   18.5 Right Neither    90 Neither Some Never     NA     &lt;NA&gt; 17.583
+## 27   Male   21.0   20.7 Right  R on L    90   Right Some Never 172.72 Imperial 17.500
+## 28   Male   20.8   21.4 Right  R on L    62 Neither Freq Never 175.26 Imperial 18.083
+## 29   Male   17.8   17.8 Right  L on R    76 Neither Freq Never     NA     &lt;NA&gt; 21.917
+## 30   Male   19.5   19.5 Right  L on R    79   Right Some Never 167.00   Metric 19.250
+## 31 Female   18.5   18.0 Right  R on L    76   Right None Occas     NA     &lt;NA&gt; 41.583
+## 32   Male   18.8   18.2 Right  L on R    78   Right Freq Never 180.00   Metric 17.500
+## 33 Female   17.1   17.5 Right  R on L    72   Right Freq Heavy 166.40 Imperial 39.750
+## 34   Male   20.1   20.0 Right  R on L    70   Right Some Never 180.00   Metric 17.167
+## 35   Male   18.0   19.0 Right  L on R    54 Neither Some Regul     NA     &lt;NA&gt; 17.750
+## 36   Male   22.2   21.0 Right  L on R    66   Right Freq Occas 190.00   Metric 18.000
+## 37 Female   16.0   16.5 Right  L on R    NA   Right Some Never 168.00   Metric 19.000
+## 38   Male   19.4   18.5 Right  R on L    72 Neither Freq Never 182.50   Metric 17.917
+## 39   Male   22.0   22.0 Right  R on L    80   Right Some Never 185.00   Metric 35.500
+## 40   Male   19.0   19.0 Right  R on L    NA Neither Freq Occas 171.00   Metric 19.917
+## 41 Female   17.5   16.0 Right  L on R    NA   Right Some Never 169.00   Metric 17.500
+## 42 Female   17.8   18.0 Right  R on L    72   Right Some Never 154.94 Imperial 17.083
+## 43   Male     NA     NA Right  R on L    60    &lt;NA&gt; Some Never 172.00   Metric 28.583
+## 44 Female   20.1   20.2 Right  L on R    80   Right Some Never 176.50 Imperial 17.500
+## 45 Female   13.0   13.0  &lt;NA&gt;  L on R    70    Left Freq Never 180.34 Imperial 17.417
+## 46   Male   17.0   17.5 Right  R on L    NA Neither Freq Never 180.34 Imperial 18.500
+## 47   Male   23.2   22.7 Right  L on R    84    Left Freq Regul 180.00   Metric 18.917
+## 48   Male   22.5   23.0 Right  R on L    96   Right None Never 170.00   Metric 19.417
+## 49 Female   18.0   17.6 Right  R on L    60   Right Some Occas 168.00   Metric 18.417
+## 50 Female   18.0   17.9 Right  R on L    50    Left None Never 165.00   Metric 30.750
+## 51   Male   22.0   21.5  Left  R on L    55    Left Freq Never 200.00   Metric 18.500
+## 52   Male   20.5   20.0 Right  L on R    68   Right Freq Never 190.00   Metric 17.500
+## 53   Male   17.0   18.0 Right  L on R    78    Left Some Never 170.18 Imperial 18.333
+## 54   Male   20.5   19.5 Right  L on R    56   Right Freq Never 179.00   Metric 17.417
+## 55   Male   22.5   22.5 Right  R on L    65   Right Freq Regul 182.00   Metric 20.000
+## 56   Male   18.5   18.5 Right  L on R    NA Neither Freq Never 171.00   Metric 18.333
+## 57 Female   15.5   15.4 Right  R on L    70 Neither None Never 157.48 Imperial 17.167
+## 58   Male   19.5   19.7 Right  R on L    72   Right Freq Never     NA     &lt;NA&gt; 17.417
+## 59   Male   19.5   19.0 Right  L on R    62   Right Freq Never 177.80 Imperial 17.667
+## 60   Male   20.6   21.0  Left  L on R    NA    Left Freq Occas 175.26 Imperial 18.417
+## 61   Male   22.8   23.2 Right  R on L    66 Neither Freq Never 187.00   Metric 20.333
+## 62 Female   18.5   18.2 Right  R on L    72 Neither Freq Never 167.64 Imperial 17.333
+## 63 Female   19.6   19.7 Right  L on R    70   Right Freq Never 178.00   Metric 17.500
+## 64 Female   18.7   18.0  Left  L on R    NA    Left None Never 170.00   Metric 19.833
+## 65 Female   17.3   18.0 Right  L on R    64 Neither Freq Never 164.00   Metric 18.583
+## 66   Male   19.5   19.8 Right Neither    NA   Right Freq Never 183.00   Metric 18.000
+## 67 Female   19.0   19.1 Right  L on R    NA Neither Freq Never 172.00   Metric 30.667
+## 68 Female   18.5   18.0 Right  R on L    64   Right Freq Never     NA     &lt;NA&gt; 16.917
+## 69   Male   19.0   19.0 Right  L on R    NA   Right Some Never 180.00   Metric 19.917
+## 70   Male   21.0   19.5 Right  L on R    80    Left None  &lt;NA&gt;     NA     &lt;NA&gt; 18.333
+## 71 Female   18.0   17.5 Right  L on R    64    Left Freq Never 170.00   Metric 17.583
+## 72   Male   19.4   19.5 Right  R on L    NA   Right Freq Heavy 176.00   Metric 17.833
+## 73 Female   17.0   16.6 Right  R on L    68   Right Some Never 171.00   Metric 17.667
+## 74 Female   16.5   17.0 Right  L on R    40    Left Freq Never 167.64 Imperial 17.417
+## 75 Female   15.6   15.8 Right  R on L    88    Left Some Never 165.00   Metric 17.750
+## 76 Female   17.5   17.5 Right Neither    68   Right Freq Heavy 170.00   Metric 20.667
+## 77 Female   17.0   17.6 Right  L on R    76   Right Some Never 165.00   Metric 23.583
+## 78 Female   18.6   18.0 Right  L on R    NA Neither Freq Heavy 165.10 Imperial 17.167
+## 79 Female   18.3   18.5 Right  R on L    68 Neither Some Never 165.10 Imperial 17.083
+## 80   Male   20.0   20.5 Right  L on R    NA   Right Freq Never 185.42 Imperial 18.750
+## 81   Male   19.5   19.5  Left  R on L    66    Left Some Never     NA     &lt;NA&gt; 16.750
+## 82   Male   19.2   18.9 Right  R on L    76   Right Freq Never 176.50 Imperial 20.167
+## 83 Female   17.5   17.5 Right  R on L    98    Left Freq Never     NA     &lt;NA&gt; 17.667
+##  [ reached &#39;max&#39; / getOption(&quot;max.print&quot;) -- omitted 154 rows ]</code></pre>
+<div id="goodness-of-fit" class="section level1">
+<h1>Goodness-of-fit</h1>
+<p>To performa a goodness-of-fit test, we want to compare whether an observed frequency is similar to expected frequency or not. For example, we have a hypothesis that 20% of people frequently exercise, 50% do some exercise, and 30% do not exercise. We will use <code>Exer</code> variable to test this hypothesis.</p>
+<p>We will use function <code>chisq.test(x, p)</code>, where <code>x</code> is a frequency table, and <code>p</code> is a vector of expected probability for each category.</p>
+<pre class="r"><code>ex_tab &lt;- table(survey$Exer) # create a table to be analyzed
+ex_tab # note the order of the categories.</code></pre>
+<pre><code>## 
+## Freq None Some 
+##  115   24   98</code></pre>
+<pre class="r"><code>chi &lt;- chisq.test(ex_tab, p = c(20/100, 30/100, 50/100)) # We put exptected p for each category here. 0.2 or 20% for frequent exercise, 0.3 or 30% for no exercise, 0.5 or 50% for some exercise.  
+
+
+chi # value of the chi-square test</code></pre>
+<pre><code>## 
+##  Chi-squared test for given probabilities
+## 
+## data:  ex_tab
+## X-squared = 131.16, df = 2, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>chi$observed # observed value (same as the input table)</code></pre>
+<pre><code>## 
+## Freq None Some 
+##  115   24   98</code></pre>
+<pre class="r"><code>chi$expected # expected value</code></pre>
+<pre><code>##  Freq  None  Some 
+##  47.4  71.1 118.5</code></pre>
+<p>The <span class="math inline">\(\chi^2\)</span> value was significant, suggesting that the observed frequencies were not distributed as expected. Looking at the results, we could see that there were more people who exercise frequently (115) more than our expectation (20% or 47.6), and there were fewer the people who do no exercise (24) than what we expected (30% or 71.1).</p>
+</div>
+<div id="contengency-table-or-test-of-independence" class="section level1">
+<h1>Contengency Table or Test of Independence</h1>
+<p>Next we would like to consider whether exercise frequencies depends on (or associated with) biological sex (<code>Sex</code>). The idea behind the test is that if <code>Sex</code> has nothing to do with exercise frequencies, then the distribution of exercise should be the same in male and female (proportion, not expected value).</p>
+<pre class="r"><code>se_tab &lt;- table(survey$Sex, survey$Exer)
+se_tab</code></pre>
+<pre><code>##         
+##          Freq None Some
+##   Female   49   11   58
+##   Male     65   13   40</code></pre>
+<pre class="r"><code>chi2 &lt;- chisq.test(se_tab)
+chi2</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  se_tab
+## X-squared = 5.7184, df = 2, p-value = 0.05731</code></pre>
+<pre class="r"><code>chi2$observed</code></pre>
+<pre><code>##         
+##          Freq None Some
+##   Female   49   11   58
+##   Male     65   13   40</code></pre>
+<pre class="r"><code>chi2$expected # we have the same expected values for both sexes because we have equal number of male and female. </code></pre>
+<pre><code>##         
+##          Freq None Some
+##   Female   57   12   49
+##   Male     57   12   49</code></pre>
+<p>The test was not significant, but very close. When we compare the expected values to the observed values, we could see that more men seems to exercise frequently than women. On ther other hand, for people with some exercise, there seems to be more female than male. Although we cannot claim to find this pattern because the <span class="math inline">\(\chi^2\)</span> was not significant, this pattern might worth looking into in a future study.</p>
+</div>
+<div id="jmv" class="section level1">
+<h1><code>jmv</code></h1>
+<p>In jamovi’s package, we can use <code>propTestN()</code>, proportion test (N outcomes), for a goodness-of-fit test.</p>
+<pre class="r"><code>library(jmv)
+propTestN(data = survey, 
+          var = Exer, # variable to be analyzed
+          expected = TRUE, #show expected values
+          ratio = c(20/100, 30/100, 50/100)
+          )</code></pre>
+<pre><code>## 
+##  PROPORTION TEST (N OUTCOMES)
+## 
+##  Proportions - Exer                               
+##  ──────────────────────────────────────────────── 
+##    Level                Count        Proportion   
+##  ──────────────────────────────────────────────── 
+##    Freq     Observed          115     0.4852321   
+##             Expected     47.40000     0.2000000   
+##                                                   
+##    None     Observed           24     0.1012658   
+##             Expected     71.10000     0.3000000   
+##                                                   
+##    Some     Observed           98     0.4135021   
+##             Expected    118.50000     0.5000000   
+##  ──────────────────────────────────────────────── 
+## 
+## 
+##  χ² Goodness of Fit               
+##  ──────────────────────────────── 
+##    χ²          df    p            
+##  ──────────────────────────────── 
+##    131.1561     2    &lt; .0000001   
+##  ────────────────────────────────</code></pre>
+<p>For contingency table, we use <code>contTables()</code>.</p>
+<pre class="r"><code>contTables(data = survey,
+           rows = Sex,
+           cols = Exer,
+           exp = TRUE) # show expected values</code></pre>
+<pre><code>## 
+##  CONTINGENCY TABLES
+## 
+##  Contingency Tables                                                      
+##  ─────────────────────────────────────────────────────────────────────── 
+##    Sex                   Freq         None        Some        Total      
+##  ─────────────────────────────────────────────────────────────────────── 
+##    Female    Observed           49          11          58         118   
+##              Expected     57.00000    12.00000    49.00000    118.0000   
+##                                                                          
+##    Male      Observed           65          13          40         118   
+##              Expected     57.00000    12.00000    49.00000    118.0000   
+##                                                                          
+##    Total     Observed          114          24          98         236   
+##              Expected    114.00000    24.00000    98.00000    236.0000   
+##  ─────────────────────────────────────────────────────────────────────── 
+## 
+## 
+##  χ² Tests                              
+##  ───────────────────────────────────── 
+##          Value       df    p           
+##  ───────────────────────────────────── 
+##    χ²    5.718403     2    0.0573145   
+##    N          236                      
+##  ─────────────────────────────────────</code></pre>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

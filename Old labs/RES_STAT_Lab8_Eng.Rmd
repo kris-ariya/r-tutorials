@@ -1,0 +1,284 @@
+---
+title: 'Lab 8: Confidence interval and t-test'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message = FALSE}
+# Load packages for this script.
+library(ggplot2)
+library(BSDA)
+library(psych)
+```
+
+
+# Confidence Interval
+
+Most of the times, we are dealing with a sample with unknown population parameters (i.e., unknown $\mu$ and $\sigma$). Therefore, we use the sample mean $\bar{X}$ to estimate the parameter $\mu$. However, due to sampling error, we know that our $\bar{X}$ is not exactly the same as $\mu$. Instead, we are looking for an interval of values that would contain a true population mean. This is called a **confidence interval**.
+
+Recall that in a sampling distribution, 95% of sample means will fall between ±1.96 *SE* from the population mean. If we put that ±1.96 *SE* around a sample mean in that 95% range, that interval will also contain the population mean. That is,
+$$\text{95% CI} = \bar{X} ± 1.96SE$$
+If we could repeatedly sample from a population, a 95% confidence interval around $\bar{X}$ will contain $\mu$ for 95% for the times.
+
+Let's demonstrate with a simulation. Imagine that we survey a population with $\mu = 50$ and $\sigma$ = 9.
+
+1. We survey 900 random samples and calculate $\bar{X}$ for each sample, 
+2. then calculate a 95% CI around each sample mean and,
+3. repeat 1 & 2 for 100 times.
+
+We will find that each sample has a slightly different $\bar{X}$. But this $\bar{X}$ *dances* around $\mu$. We run a simulation in the background and record the statistics of each survey into `sim`. Then plot each survey's CI in a vertical order. 
+
+```{r echo = FALSE}
+n <- 900
+contain <- 1
+sim <- matrix(nrow = 100, ncol = 6)
+colnames(sim) <- c("survey_id", "mean","sd","se","LL","UL")
+# run simulation until we get exactly 95%. 
+while (contain != 95) {
+  for (i in 1:100) {
+    s <- rnorm(n, 50, 9)
+    sim[i, "survey_id"] <- i
+    sim[i, "mean"] <- mean(s)
+    sim[i, "sd"] <- sd(s)
+    sim[i, "se"] <- sim[i, "sd"]/sqrt(n)
+    sim[i, "LL"] <- sim[i, "mean"] + (qnorm(.025) * sim[i, "se"])
+    sim[i, "UL"] <- sim[i, "mean"] + (qnorm(.975) * sim[i, "se"])
+  }
+  sim <- data.frame(sim)
+  sim$contain <- !(sim$LL > 50 | sim$UL < 50) #CI that contain mu
+  
+  contain <- sum(sim$contain)
+}
+
+```
+
+```{r }
+head(sim)
+```
+
+
+```{r echo = FALSE }
+ggplot(sim, aes(x = mean, y = survey_id )) +
+  labs(x = "x", y = "Survey", title = "Confidence intervals for 100 survey samples") +
+  geom_vline(aes(xintercept = 50), color = "forestgreen") +
+  theme_classic() + 
+  geom_errorbarh(aes(xmin = LL, xmax = UL, color = contain ))
+```
+
+For 95% of the surveys, the CIs cover the population mean (blue intervals). In other words, we can be confident that, most of the times, the interval of this size will include the population mean. The CI provides us an estimate of the population mean.  
+
+## Manual calculation of a CI
+
+Suppose that we have a sample with *M* = 50.5, *SD* = 9, *N* = 900.
+```{r}
+m <- 50.5
+sd <- 9
+n <- 900
+se <- sd/sqrt(n)
+```
+A 95% interval would be ±1.96 *SE* around the mean.
+```{r results = "hold"}
+LL <- m - (1.96 * se) # Lower limit
+UL <- m + (1.96 * se) # Upper limit
+print(paste0("95% CI [", LL,", ", UL, "]"))
+```
+
+```{r echo = FALSE}
+p <- ggplot(data = data.frame(x = c(49, 51.5)), aes(x)) +
+  coord_cartesian(ylim = c(0, 1.5), xlim = c(49, 51.5)) +
+  annotate(geom = "point", x = m, y = 0) +
+  theme_classic() + 
+  theme(axis.text.y = element_blank()) +
+  geom_errorbarh(aes(xmin = LL, xmax = UL, y = 0),
+                   height = .1,
+                   color = "steelblue")
+p
+```
+
+Does this sample come from the population with $\mu = 50$?
+
+or $H_0: \bar{X} = \mu = 50$
+
+We could plot the sampling distribution of $\mu = 50$.
+
+```{r echo = FALSE}
+pop_mean <- 50
+p <- p + stat_function(fun = dnorm, n = 1000, args = list(mean = pop_mean, sd = se)) + 
+  geom_vline(aes(xintercept = pop_mean), 
+             color = "forestgreen",
+             linetype = "dashed") +
+  annotate(geom = "text", x = pop_mean, y = .3, 
+           label = paste("mu ==", pop_mean), parse = TRUE,
+           color = "forestgreen") +
+  labs(x = "Sampling Distribution") 
+
+# Extract data from ggplot
+d <- ggplot_build(p)$data[[3]]
+# Area with 95%
+p <- p + geom_area(data = subset(d, x >= pop_mean - (1.96*se) & x <= pop_mean + (1.96*se)), 
+                   aes(x=x, y=y), 
+                   fill="red", alpha = .2)
+p
+```
+ 
+Note that  
+
+1. The 95% CI includes the population mean (50).
+2. The sample mean (50.5) is within the 95% area of the sampling distribution. 
+
+If the 95% CI of the sample mean include our hypothesized value (e.g., 50), it also means that *if the population mean is 50, there is more than 5% chance that this sample comes from this population*. In other words, you **cannot** conclude that the sample mean (50.5) is statistically significantly different from 50. 
+
+You can also do this in *z*-test.
+```{r z-test}
+zsum.test(m, sd, n, mu = 50)
+```
+
+# t-test
+
+However, most of the time we are dealing with 
+
+1. unkown population variance $\sigma^2$
+2. small sample size
+
+In these situations, *z*-test is not appropriate because it would *underestimate* the sampling error. The *t*-statistics was invented to address this issue.
+
+Take a look at the theoretical distributions below.
+
+```{r echo = FALSE}
+t <- ggplot(data = data.frame(x = c(-4, 4)), aes(x)) +
+  stat_function(fun = dt, n = 1000, args = list(x = 0, df = 3), color = "red") + 
+  stat_function(fun = dt, n = 1000, args = list(x = 0, df = 10), color = "forestgreen") + 
+  stat_function(fun = dt, n = 1000, args = list(x = 0, df = 30), color = "wheat4") +
+  stat_function(fun = dt, n = 1000, args = list(x = 0, df = 300), color = "blue") +
+  stat_function(fun = dnorm, n = 1000, args = list(mean = 0, sd = 1), color = "purple") +
+  annotate(geom = "text", x = 2, y = .2, label = "df = 3", color = "red" ) +
+  annotate(geom = "text", x = 2, y = .22, label = "df = 10", color = "forestgreen") +
+  annotate(geom = "text", x = 2, y = .24, label = "df = 30", color = "wheat4") +
+  annotate(geom = "text", x = 2, y = .26, label = "df = 300", color = "blue") +
+  annotate(geom = "text", x = 2, y = .28, label = "z-distribution", color = "purple") +
+  theme_classic()
+t
+```
+
+You can see that *t* distributions are flatter than the *z* distribution. The shape of *t* depends on degrees of freedom (*df*) to account for errors that occur with a smaller sample size. 
+
+The flatter shape changes area under the curve and, therefore, changes the critical values that mark 95%. 
+
+```{r echo = FALSE}
+library(gridExtra)
+tt <- list()
+# Area with 95%
+#df = 10
+tt[[1]] <- ggplot(data = data.frame(x = c(-4, 4)), aes(x)) +
+  theme_classic() +
+  stat_function(fun = dt, n = 1000, args = list(x = 0, df = 10), color = "forestgreen") +
+  labs(x = "t distribution, df = 10")
+
+d10 <- ggplot_build(tt[[1]])$data[[1]]
+
+tt[[1]] <- tt[[1]] + geom_area(data = subset(d10, x >= qt(.025, 10) & x <= qt(.975, 10)), 
+                   aes(x=x, y=y), 
+                   fill="forestgreen", alpha = .2) +
+  annotate(geom = "text", x = qt(.025, 10), y = -.02, 
+           label = paste("t[critical](10) ==", round(qt(.025, 10), 3)), parse = TRUE,
+           color = "forestgreen") +
+  annotate(geom = "text", x = qt(.975, 10), y = -.02, 
+           label = paste("t[critical](10) ==", round(qt(.975, 10), 3)), parse = TRUE,
+           color = "forestgreen")
+
+# df = 300
+tt[[2]] <- ggplot(data = data.frame(x = c(-4, 4)), aes(x)) +
+  theme_classic() +
+  stat_function(fun = dt, n = 1000, args = list(x = 0, df = 300), color = "blue") +
+  labs(x = "t distribution, df = 300")
+
+d300 <- ggplot_build(tt[[2]])$data[[1]]
+
+tt[[2]] <- tt[[2]] + geom_area(data = subset(d300, x >= qt(.025, 300) & x <= qt(.975, 300)), 
+                   aes(x=x, y=y), 
+                   fill="blue", alpha = .2) +
+  annotate(geom = "text", x = qt(.025, 300), y = -.02, 
+           label = paste("t[critical](300) ==", round(qt(.025, 300), 3)), parse = TRUE,
+           color = "blue") +
+  annotate(geom = "text", x = qt(.975, 300), y = -.02, 
+           label = paste("t[critical](300) ==", round(qt(.975, 300), 3)), parse = TRUE,
+           color = "blue")
+
+do.call(grid.arrange,tt)
+```
+
+For *df* = 10, the critical *t* = ±2.228.  
+For *df* = 300, the critical *t* = ±1.968.  
+The critical values of *t* will approach those of *z* as sample size increases. 
+
+## One sample *t*-test
+
+```{r echo = FALSE}
+reading <- round(rnorm(54, 97, 60))
+reading[reading < 0] <- 0
+```
+
+Now let's consider a study that ask students to read two hours per day: *M*~dailyreading~ = `r round(mean(reading), 2)` minutes, *SD* = `r round(sd(reading), 2)`, *N* = `r length(reading)`.
+
+We will call this variable `reading`.
+
+```{r}
+reading
+psych::describe(reading)
+```
+
+We would like to test whether this sample mean is different from our hypothesis that students read 2 hours (120 minutes) per day. 
+$$H_0: \mu = 120$$
+or
+$$H_0: \mu - 120 = 0$$
+
+We would test this against the *t*-distribution
+$$t = \frac{\bar{X} - 120}{SE}$$
+and $SE = \frac{SD}{\sqrt{N}}$
+
+```{r manual t, collapse=TRUE}
+n <- length(reading)
+se <- sd(reading)/sqrt(n)
+t <- (mean(reading)-120)/se
+se
+t
+```
+You can look up the *t* value in the *t* distribution table. You will find that this sample average reading time was statistically lower than 120 minutes. 
+
+## Confidence interval
+We can also construct a confidence interval for this sample mean. However, we cannot use ±1.96 because we are using *t* distribution now. The function `qt` will give us a quantile of *t* for a given *p*. 
+For a two-tail test, we want the *t* value associated with *p* = .025 and *p* = .975. 
+```{r t CI, collapse=TRUE}
+df <- n - 1 # degrees of freedom
+LL <- mean(reading) + (qt(.025, df) * se) #Lower limit
+UL <- mean(reading) + (qt(.975, df) * se) #Upper limit
+LL
+UL
+```
+
+
+```{r echo = FALSE}
+ggplot(data = data.frame(x = c(75, 120)), aes(x)) +
+  coord_cartesian(ylim = c(0, 1.5), xlim = c(75, 120)) +
+  annotate(geom = "point", x = mean(reading), y = 0) +
+  geom_errorbarh(aes(xmin = LL, xmax = UL, y = 0),
+                   height = .1,
+                   color = "steelblue") +
+  geom_vline(aes(xintercept = 120), 
+             color = "forestgreen",
+             linetype = "dashed") +
+  theme_classic()
+```
+
+The 95% CI did not include the hypothesized value (120). In this case, we conclude that this sample's reading time mean was significanty lower than 120 minutes that we asked them to do. In other words, this group of students failed to keep up with reading two hourse per day. 
+
+## `t.test` function
+
+The *t*-test can be performed with a function `t.test`. For a one sample *t*-test, you will need two arguments in `t.test(x, mu)`, where `x` is your data and `mu` is a hypothesized mean to test against. 
+
+```{r}
+t.test(reading, mu = 120) #default is a two-tailed test. 
+t.test(reading, mu = 120, alternative = "less") #alternative lets you run a one-tailed test with "less" or "greater".
+```

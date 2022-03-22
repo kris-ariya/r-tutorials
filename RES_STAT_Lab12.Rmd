@@ -1,0 +1,123 @@
+---
+title: "Lab 12: Paired-Sample *t*-Test"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: TRUE
+---
+
+# Basic Concepts
+
+Paired-sample *t*-test (also called, dependent-sample *t*-test) compares means between two groups of observations that are NOT independent. For example, when you collected pre-test and post-test scores from the same group of students, the pre-test and post-test scores came from the same person (i.e., a within-subject design). Individuals with high pre-test scores were also likely to get high post-test scores, and those with lower pre-test scores were likely to have low post-test scores. In other words, the pre-test and post-test scores were correlated; they were NOT independent. Therefore, the assumption of *independence observation* was violated. We cannot just compare the means of pre- and post-test. Instead, we need to *pair up* the pre- and post-test scores and calcualte a difference (*D*) score for each person.
+
+Let's consider an example
+
+```{r}
+p_id <- c(1:10) # participant's ID
+pre <-  c(3, 5, 8,  8, 6, 9, 2, 3,  7, 5) #pre-test scores
+post <- c(5, 8, 9, 10, 5, 9, 4, 2, 10, 7) #post-test scores
+dat <- data.frame(p_id, pre, post) # create a data frame
+dat
+```
+
+We calculate the difference score (*D* = post - pre) for each person.
+```{r}
+dat$D <- dat$post - dat$pre # calculate D score for each participant
+dat
+library(psych)
+describe(dat$D)
+```
+
+On average, the scores went up by `r mean(dat$D)` points (*SD* = `r sd(dat$D)`). We would like to test whether this score increase was statistically significant. The null hypothesis for this test was that pre- and post-test were not different, i.e., *pre* - *post* = *D* = 0. Therefore, $$H_0: \mu_d = 0$$. 
+
+At this point, we only need to test one variable, *D*, whether it is different from zero. Therefore, we can use the formula
+$$\begin{aligned} 
+t &= \frac{\bar{D} - \mu_d}{SE_D} \\ 
+&= \frac{\bar{D} - 0}{SE_D} \\ 
+&=\frac{\bar{D}}{SE_D} 
+\end{aligned}$$.
+
+# Manual Calculation
+
+We will need $\bar{D}$ and its standard error. Recall that $SE = SD/\sqrt{N}$
+
+```{r}
+n <- nrow(dat) # get sample size N
+n
+se_D <- sd(dat$D)/sqrt(n) # calculate SE
+se_D
+t <- mean(dat$D)/se_D # calculate t
+t
+```
+
+Now we have the *t* value. To test whether it is significant, we would compare it the $t_{critical}$ at a corresponding *df*, which is *N* -1 = 9. You can do this by looking up the *t* table or use *t*-test calculator on the internet. 
+
+
+# `t.test()`
+
+The base R provides the `t.test()`function to make it easier for us to conduct *t*-tests. For paired t-test, you would use `t.test(score1, score2, paired = TRUE)`. The function will subtract `score2` from `score1` (i.e., `score1` - `score2`). Therefore, it would make sense to the post-test in the `score1` position. 
+
+```{r}
+t.test(dat$post, dat$pre, paired = TRUE)
+```
+The output includes the *t* value, its degrees of freedom (*df*), and the *p*-value to help determine whether it is statistically significantly different from 0. The function also gives use the 95% CI for the difference scores. The interval [0.23, 2.37] has a very high chance to capture the population mean of the difference scores. Note that the 95% CI does not include zero. 
+
+Looking at the *p*-value and 95% CI, we conclude that the difference between pre- and post-test was more than zero. **That is, the post-test was significant higher than the pre-test.** 
+
+**Note**: Paired-sample *t*-test is not limited to pre- vs. post-testing. It can be used with other dependent samples. For example, when we are studying twins, their genetics, personality, childhood background, etc. are not independent. We could use a paired-sample *t*-test to test, for example, whether older twins are more responsible than younger twins or not. 
+
+# Wide vs. Long Format Data
+
+When each person is represented in one row and all repeated observation are recorded as a new variable, such as `pre` and `post`. The dataset grows in columns or *width* with repeated observations. We call the data organized this way a *wide* formatted data. 
+```{r}
+p_id <- c(1:10) # participant's ID
+time1 <-  c(3, 5, 8,  8, 6, 9, 2, 3,  7, 5)
+time2 <- c(5, 8, 9, 10, 5, 9, 4, 2, 10, 7)
+dat2 <- data.frame(p_id, pre, post)
+dat2
+t.test(dat2$post, dat2$pre, paired = TRUE)
+```
+
+However, there is another way to organize the data, where each observation is recorded as a row. A repeated observations will create a new row. In this scheme, we will need variables to identify *when* the data was observed and who it belongs to. 
+
+```{r}
+ob_id <- c(1:20) # observation ID
+p_id <- c(1:10, 1:10) # participant ID
+score <-  c(3, 5, 8,  8, 6, 9, 2, 3,  7, 5, 5, 8, 9, 10, 5, 9, 4, 2, 10, 7) # all test scores.
+time <- c(rep("pre", 10), rep("post", 10)) # First 10 were pre-test, last 10 were post-test.
+dat2.long <- data.frame(ob_id, p_id, time, score)
+knitr::kable(dat2.long)
+```
+
+In this long formatted data, the first 10 rows were the pre-test `scores`, and the last 10 rows were from the post-test. The `time` column was used to identify when the observation happened. The `p_id` identified which observations belonged to which participants. Repeated observation makes the data grows in rows or *length*. Hence, it is called a *long* format. 
+
+You can also use `t.test()` even if you data is in a long format. However, you will need to change the code to `t.test(y ~ x, data, paired = TRUE)`, where `y` is your dependent variable and `x` is your independent variable (i.e., the testing time: pre vs. post). 
+
+```{r}
+dat2.long$time <- factor(dat2.long$time) #convert time into a factor
+t.test(score ~ time, data = dat2.long, paired = TRUE)
+```
+
+# Effect size
+The effect size can be calculated with Cohen's $d = \frac{\bar{D}}{s_D}$
+```{r}
+# Let's go back to the "dat" dataset. 
+d.manual <- mean(dat$D)/sd(dat$D)
+d.manual
+```
+
+## `effectsize` package
+
+The `effectsize` package provides a function to calculate Cohen's *d*. 
+```{r}
+library(effectsize)
+effectsize::cohens_d(dat$post, dat$pre, paired = TRUE)
+
+# OR save a t-test as an R object and put it into the function. 
+mypair_t.test <- t.test(dat$post, dat$pre, paired = TRUE)
+effectsize::cohens_d(mypair_t.test)
+```
+
+
+

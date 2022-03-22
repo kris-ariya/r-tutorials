@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 05: Standard Scores</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Tutorials</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    RES MTHD/STAT PSY Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="RES_STAT_Lab04.html">Lab 4: Descriptive Statistics</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab05.html">Lab 5: Standard Score</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab06.html">Lab 6: Visualizing Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab07.html">Lab 7: Sampling Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab08.html">Lab 8: Confidence Interval and t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab09.html">Lab 9: Correlation</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab10.html">Lab 10: Simple Regression</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab12.html">Lab 12: Dependent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab13.html">Lab 13: Independent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab14.html">Lab 14: Chi-Squared Test</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    EXPRM DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="EXPRM_Lab02.html">Lab 2: Randomization</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab03.html">Lab 3: Power and Sample Size</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab04.html">Lab 4: One-way ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab05.html">Lab 5: Multiple Comparisons</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab07.html">Lab 7: Factorial ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab09.html">Lab 9: Data Visualization with ggplot2</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab10.html">Lab 10: Repeated-Measures ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab11.html">Lab 11: Factorial ANOVA in Repeated-Measures Design</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab12.html">Lab 12: Means Comparison in Regression</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab13.html">Lab 13: ANCOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab14.html">Lab 14: Moderation Analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    SURVEY DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="SURVEY_Lab08.html">Lab 08: Data Cleaning</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Lab 05: Standard Scores</h1>
+
+</div>
+
+
+<div id="load-data" class="section level1">
+<h1>Load Data</h1>
+<p>Save a data file and an R script in the same directory. Set working directory to Source File Location. <code>setwd(dirname(rstudioapi::getSourceEditorContext()$path))</code> Then, load the data.</p>
+<pre class="r"><code>solar_data &lt;- read.csv(&quot;data/RES_STAT_Lab5_Data.csv&quot;)
+head(solar_data) ## view the first part of the data frame.</code></pre>
+<pre><code>##   id              user deci    sex age kno1 kno2 kno3 kno4 kno5 kno6 kno7 kno8           inno att1 att2 att3 att4 att5
+## 1  1 regular residence    2 female  43    1    1    1    1    1    1    1    1 early majority    2    3    3    1    3
+## 2  2 regular residence    2 female  51    1    1    1    1    1    1    1    1       laggards    4    4    3    3    2
+## 3  3 regular residence    2   male  28    4    4    4    4    2    3    4    2 early adopters    2    5    5    3    4
+## 4  4 regular residence    2 female  32    1    1    1    1    1    1    1    1  late majority    3    4    4    4    5
+## 5  5 regular residence    2   male  38    4    4    4    3    3    3    3    4     innovators    4    4    4    3    5
+## 6  6 regular residence    2   male  51    1    1    1    1    1    1    1    1 early adopters    5    5    3    2    5
+##   att6 att7 att8            interest re_att1 re_att2 re_att3 re_att4 re_att5 re_att6 re_att7 re_att8 re_kno1 re_kno2
+## 1    3    3    3        probably not       1       2       2       0       2       2       2       2       0       0
+## 2    2    2    1      definitely not       3       3       2       2       1       1       1       0       0       0
+## 3    5    4    4           likely to       1       4       4       2       3       4       3       3       3       3
+## 4    5    4    3       probably will       2       3       3       3       4       4       3       2       0       0
+## 5    5    5    3           likely to       3       3       3       2       4       4       4       2       3       3
+## 6    5    5    4 definitely going to       4       4       2       1       4       4       4       3       0       0
+##   re_kno3 re_kno4 re_kno5 re_kno6 re_kno7 re_kno8 attitude knowledge
+## 1       0       0       0       0       0       0    1.625     0.000
+## 2       0       0       0       0       0       0    1.625     0.000
+## 3       3       3       1       2       3       1    3.000     2.375
+## 4       0       0       0       0       0       0    3.000     0.000
+## 5       3       2       2       2       2       3    3.125     2.500
+## 6       0       0       0       0       0       0    3.250     0.000</code></pre>
+</div>
+<div id="calculate-z-scores" class="section level1">
+<h1>Calculate <em>z</em>-scores</h1>
+<p>For each <em>X</em>, its standardized score, <em>z</em>, can be calculated as <span class="math display">\[z = \frac{X-\bar{X}}{s}\]</span></p>
+<div id="manual-method" class="section level3">
+<h3>Manual method</h3>
+<p>You can calculate <em>z</em>-score step by step. First, the top part of the equation <span class="math inline">\(X-\bar{X}\)</span> is called <strong>mean centering</strong>. That is, the value X is subtracted by the mean of X, <code>X - mean(X)</code>.<br />
+The mean of X is now the “center” (0) of the distribution. Each <span class="math inline">\(X-\bar{X}\)</span> represents how far each X is from the <span class="math inline">\(\bar{X}\)</span>, i.e., a deviation score.</p>
+<p>Then, the centered value is <strong>scaled</strong> to the SD of X, <code>X - mean(X)/sd(X)</code>. When the score is scaled to SD. It means that one unit change in the <em>z</em>-score represents one SD change in the raw score.</p>
+<p>To standardize a variable, you will calculate <em>z</em>-scores for each row in that column. Let put it the calculated values in <code>z_kno_m</code> variable.<br />
+<code>z</code> for <em>z</em>-scores; <code>kno</code> for knowledge; and <code>m</code> for manual calculation.</p>
+<pre class="r"><code>solar_data$z_kno_m &lt;- (solar_data$knowledge - mean(solar_data$knowledge))/sd(solar_data$knowledge)
+head(solar_data$z_kno_m)</code></pre>
+<pre><code>## [1] -0.837499 -0.837499  1.532611 -0.837499  1.657354 -0.837499</code></pre>
+</div>
+<div id="scale-function" class="section level3">
+<h3><code>scale()</code> function</h3>
+<p>The scale function will <em>center</em> the value by substracting the column mean. Then it <em>scales</em> the centered value by the column standard deviation.<br />
+Let create a variable name <code>z_kno_f</code>. <code>f</code> for function.</p>
+<pre class="r"><code>solar_data$z_kno_f &lt;- scale(solar_data$knowledge)
+head(solar_data$z_kno_f)</code></pre>
+<pre><code>##           [,1]
+## [1,] -0.837499
+## [2,] -0.837499
+## [3,]  1.532611
+## [4,] -0.837499
+## [5,]  1.657354
+## [6,] -0.837499</code></pre>
+<p>Are all values in the manual method equal to values from <code>scale()</code>?</p>
+<pre class="r"><code>all(solar_data$z_kno_m == solar_data$z_kno_f)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>Both methods lead to the same results.</p>
+</div>
+</div>
+<div id="outliers" class="section level1">
+<h1>Outliers</h1>
+<div id="use-z-score-to-determine-outliers" class="section level3">
+<h3>Use <em>z</em>-score to determine outliers</h3>
+<p>There are many methods to identify outliers. In this example, any values outside ±3 SD are considered outliers. Because <em>z</em>-scores are in a unit of SD, any <em>z</em> beyond ±3 will be marked as outliers.</p>
+<pre class="r"><code>outliers &lt;- solar_data$z_kno_f &gt; 3 | solar_data$z_kno_f &lt; -3
+solar_data[outliers, ]</code></pre>
+<pre><code>##      id              user deci  sex age kno1 kno2 kno3 kno4 kno5 kno6 kno7 kno8           inno att1 att2 att3 att4 att5
+## 167 211 regular residence    2 male  47    5    5    5    5    5    5    5    5 early adopters    4    4    5    4    5
+## 264 332 regular residence    2 male  30    5    5    5    5    5    5    5    5 early adopters    5    5    5    5    5
+##     att6 att7 att8      interest re_att1 re_att2 re_att3 re_att4 re_att5 re_att6 re_att7 re_att8 re_kno1 re_kno2 re_kno3
+## 167    5    5    4     likely to       3       3       4       3       4       4       4       3       4       4       4
+## 264    5    5    5 probably will       4       4       4       4       4       4       4       4       4       4       4
+##     re_kno4 re_kno5 re_kno6 re_kno7 re_kno8 attitude knowledge  z_kno_m  z_kno_f
+## 167       4       4       4       4       4      3.5         4 3.154265 3.154265
+## 264       4       4       4       4       4      4.0         4 3.154265 3.154265</code></pre>
+</div>
+<div id="z-score-by-group" class="section level3">
+<h3><em>z</em>-score by group</h3>
+<p><code>z_kno_f</code> was calculated from the entire data set. This would be appropriate if we are looking at a homogenous group. However, it is not a case here. Our data contain subgroups of innovators <code>inno</code>. Therefore, we should find outilers <em>within</em> each group instead.</p>
+<p>We will use <code>ave()</code> to calculate the z-score by group. <code>ave</code> is normally used to calculate means for subsets of X. However, you can specified the argument <code>FUN =</code> to other functions, such as <code>sd()</code> or <code>scale()</code>.</p>
+<p>The first argument in <code>ave()</code> is a numeric object to be calculated (<code>knowledge</code>). The second argument is a grouping variable (<code>inno</code>). The third argument <code>FUN =</code> is a function to by applied for each factor level (<code>FUN = scale</code>).</p>
+<pre class="r"><code>solar_data$z_kno_g &lt;- ave(solar_data$knowledge, solar_data$inno, FUN = scale)
+# wrong &lt;- ave(solar_data$z_kno_f, solar_data$inno, FUN = scale)
+head(solar_data$z_kno_g)</code></pre>
+<pre><code>## [1] -0.9203839 -0.5926129  0.9015546 -0.7532102  1.4462915 -1.0470435</code></pre>
+<pre class="r"><code># head(wrong)</code></pre>
+<p>To check whether the code works correctly, we will calculate the mean and SD of the <em>z</em>-scores for each innovator group. The mean should be 0 and SD should be 1 for each group.</p>
+<p>We will use <code>tapply</code> to apply <code>mean()</code> to each <code>inno</code> group. In <code>tapply</code>, the first argument is an input value. The second argument is a grouping variable (a factor). The third argument is a function to apply.</p>
+<pre class="r"><code>tapply(solar_data$z_kno_g, solar_data$inno, mean)</code></pre>
+<pre><code>## early adopters early majority     innovators       laggards  late majority 
+##  -6.455541e-17  -6.450725e-17   4.979358e-17   2.100642e-19  -2.301871e-17</code></pre>
+<pre class="r"><code># The values contain very small decimals. Let&#39;s round them up to make them easier to read.
+round(tapply(solar_data$z_kno_g, solar_data$inno, mean))</code></pre>
+<pre><code>## early adopters early majority     innovators       laggards  late majority 
+##              0              0              0              0              0</code></pre>
+<pre class="r"><code># Then calculate the SD
+tapply(solar_data$z_kno_g, solar_data$inno, sd)</code></pre>
+<pre><code>## early adopters early majority     innovators       laggards  late majority 
+##              1              1              1              1              1</code></pre>
+<p>With the mean = 0 and SD = 1 for each innovator group, it seems that the <em>z-score-by-group</em> code works correctly.</p>
+</div>
+<div id="outliers-by-group" class="section level3">
+<h3>Outliers by group</h3>
+<p>Now we find outliers that have z-score beyond ±3. Because the <em>z</em>-scores were calculated for each innovator group, any values beyond ±3 are outliers for that group.</p>
+<pre class="r"><code>outliers_g &lt;- solar_data$z_kno_g &gt; 3 | solar_data$z_kno_g &lt; -3
+solar_data[outliers_g, ]</code></pre>
+<pre><code>##      id            user deci    sex age kno1 kno2 kno3 kno4 kno5 kno6 kno7 kno8     inno att1 att2 att3 att4 att5 att6
+## 115 136 small residence    2 female  55    3    3    4    3    3    3    4    3 laggards    4    4    5    4    4    5
+## 166 210 small residence    2   male  37    4    4    4    4    4    4    4    4 laggards    3    3    3    3    3    3
+##     att7 att8     interest re_att1 re_att2 re_att3 re_att4 re_att5 re_att6 re_att7 re_att8 re_kno1 re_kno2 re_kno3 re_kno4
+## 115    5    5 probably not       3       3       4       3       3       4       4       4       2       2       3       2
+## 166    3    3    likely to       2       2       2       2       2       2       2       2       3       3       3       3
+##     re_kno5 re_kno6 re_kno7 re_kno8 attitude knowledge  z_kno_m  z_kno_f  z_kno_g
+## 115       2       2       3       2      3.5      2.25 1.407868 1.407868 3.038717
+## 166       3       3       3       3      2.0      3.00 2.156324 2.156324 4.249160</code></pre>
+<p>In this case, we will remove outliers from the data. We will choose rows that are <strong>NOT</strong> outliers <code>!outliers_g</code>.</p>
+<pre class="r"><code>solar_data_new &lt;- solar_data[!outliers_g, ] # choose rows that are not outliers and choose all columns.
+nrow(solar_data) # Number of observation in the original data. </code></pre>
+<pre><code>## [1] 304</code></pre>
+<pre class="r"><code>nrow(solar_data_new) # The number of observation should be reduced by 2 cases.</code></pre>
+<pre><code>## [1] 302</code></pre>
+</div>
+</div>
+<div id="descriptives-for-each-group" class="section level1">
+<h1>Descriptives for each group</h1>
+<p>We will use <code>describe()</code> from package <code>psych</code> to calculate means and SDs <code>by</code> each <code>inno</code> group. The first argument of <code>by</code> is an input data, <code>knowledge</code>. The second argument is a grouping factor, <code>inno</code>. The third argument is a function to apply, <code>describe</code>.</p>
+<pre class="r"><code>library(psych)
+by(solar_data_new$knowledge, solar_data_new$inno, psych::describe)</code></pre>
+<pre><code>## solar_data_new$inno: early adopters
+##    vars  n mean   sd median trimmed  mad min max range skew kurtosis   se
+## X1    1 43 1.28 1.22   1.12    1.15 1.67   0   4     4 0.58    -0.78 0.19
+## -------------------------------------------------------------------------------------------- 
+## solar_data_new$inno: early majority
+##    vars   n mean   sd median trimmed  mad min max range skew kurtosis   se
+## X1    1 117 0.93 1.01   0.62    0.79 0.93   0 3.5   3.5 0.87    -0.36 0.09
+## -------------------------------------------------------------------------------------------- 
+## solar_data_new$inno: innovators
+##    vars  n mean   sd median trimmed mad min max range skew kurtosis   se
+## X1    1 17 1.08 0.98   1.12    1.06 1.3   0 2.5   2.5  0.2    -1.66 0.24
+## -------------------------------------------------------------------------------------------- 
+## solar_data_new$inno: laggards
+##    vars  n mean  sd median trimmed mad min  max range skew kurtosis   se
+## X1    1 46 0.27 0.4      0     0.2   0   0 1.25  1.25  1.3     0.37 0.06
+## -------------------------------------------------------------------------------------------- 
+## solar_data_new$inno: late majority
+##    vars  n mean   sd median trimmed  mad min max range skew kurtosis   se
+## X1    1 79 0.71 0.94   0.25    0.54 0.37   0 3.5   3.5 1.37     0.85 0.11</code></pre>
+<pre class="r"><code># We will create an object from the code above for future use.
+kno_table &lt;- by(solar_data_new$knowledge, solar_data_new$inno, psych::describe)</code></pre>
+<p>The object <code>kno_table</code> from <code>by()</code> and <code>describe()</code> is a list. We will access its mean and SD values to calculate effect sizes.</p>
+</div>
+<div id="effect-sizes" class="section level1">
+<h1>Effect sizes</h1>
+<p>An effect size is <span class="math inline">\(\frac{X_1-X_2}{SD}\)</span>.</p>
+<p>We will need means of the two groups and an SD.</p>
+<pre class="r"><code>kno_table$innovators$mean # mean of the innovators group</code></pre>
+<pre><code>## [1] 1.080882</code></pre>
+<pre class="r"><code>kno_table$laggards$mean # mean of the laggards group</code></pre>
+<pre><code>## [1] 0.2690217</code></pre>
+<pre class="r"><code># For SD we will use the SD from the whole data set.
+sd_all &lt;- sd(solar_data_new$knowledge)
+sd_all</code></pre>
+<pre><code>## [1] 0.9942528</code></pre>
+<p>Now we can calculate an effect size for each comparison.</p>
+<pre class="r"><code>effect_size1 &lt;- (kno_table$innovators$mean - kno_table$laggards$mean)/sd_all
+effect_size1</code></pre>
+<pre><code>## [1] 0.8165535</code></pre>
+<pre class="r"><code>effect_size2 &lt;- (kno_table$innovators$mean - kno_table$`early adopters`$mean)/sd_all
+effect_size2</code></pre>
+<pre><code>## [1] -0.1964092</code></pre>
+<pre class="r"><code>effect_size3 &lt;- (kno_table$`early majority`$mean - kno_table$laggards$mean)/sd_all
+effect_size3</code></pre>
+<pre><code>## [1] 0.659985</code></pre>
+<pre class="r"><code>effect_size4 &lt;- (kno_table$`early majority`$mean - kno_table$`late majority`$mean)/sd_all
+effect_size4</code></pre>
+<pre><code>## [1] 0.2176035</code></pre>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

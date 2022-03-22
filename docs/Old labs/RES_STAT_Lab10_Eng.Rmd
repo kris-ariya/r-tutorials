@@ -1,0 +1,110 @@
+---
+title: 'Lab 10: Simple Regression'
+---
+
+# Model Fitting
+
+To perform a statistical analysis in R, first, you need to write a formula to describe a statistical model. For example, a formula `y ~ x` means that you are predictng `y` with `x`. The variable on the left side of a tilde (`~`) is a dependent variable, and the variable on the right side is an independent variable. 
+
+Then, you would use a function, such as `lm()`, `aov()`, or `glm()` to fit your model.To *fit* a model means that you are trying to use a mathematical model to describe data. For example, if a linear model is a good *fit* for your data, it means that it does a good job at describing a relationship pattern among variables in the model. For example, a *linear model* is a good fit to describe relationship between `wt` and `mpg`, but a *curvilinear model* seems to be a better fit for `disp` and `mpg` (see plots below). 
+
+After fitting the model, we will use `summary()` to print an output of the analysis.
+```{r}
+library(gridExtra)
+library(ggplot2)
+data("mtcars")
+p1 <- ggplot(mtcars, aes(x = wt, y = mpg)) +
+  geom_point() + 
+  geom_smooth(method = lm, se = FALSE) + 
+  theme_classic()
+p2 <- ggplot(mtcars, aes(x = hp, y = mpg)) +
+  geom_point() + 
+  geom_smooth(method = lm, formula = y ~ poly(x,3), se = FALSE) +
+  theme_classic()
+grid.arrange(p1,p2, ncol = 2)
+```
+
+# Simple Regression
+
+For a simple regression analysis, we will need a ***linear model*** because we are testing for linear relationship between X-Y. 
+
+## `lm()` function
+The `lm()` function is used to fit a linear model. Its simplest form is `lm(formula, data)`, where `formula` is a statistical model and `data` is a data frame. 
+
+Let's look at `mtcars` dataset and say that we want to predict a car's `mpg` with weight `wt`. The formula for this regression model is  `mpg ~ wt`. We will save this model in to an object called `reg_model`. This object contains information from a linear regression analysis. 
+
+We will then use `summary()` to output important information about regression analyses.
+
+```{r}
+data(mtcars)
+reg_model <- lm(mpg ~ wt, mtcars)
+summary(reg_model)
+```
+The `Call:` section shows the formula of the model being analyzed.  
+The `Residuals:` section shows the summary of residuals, $Y-\hat{Y}$.  
+The `Coefficients:` section show an intercept and slope estimates as well as their significance testing.  
+Asterisks (*) are used to noted significant values at different $\alpha$ level.  
+The rest of the lines show 
+
+* `Residual standard error` = standard deviation of residuals (errors), 
+* degrees of freedom of the residuals = $N-k-1$,
+* Multiple R-squared ($R^2$) = proportion of variance in Y that was explained by X (predictor). 
+* Adjusted $R^2$ = $R^2$ adjusted for number of predictors. This will be relevant to multiple regression. For simple regression, unadjusted $R^2$ works fine. 
+* *F* test of the whole regression model. In simple regression, this is the same as testing a coeffient (slope) of X.
+* *df* of the regression model =  ($k$ or a number of predictors) and  *df* of residuals ($N-k-1$), and
+* *p*-value of the *F* statistics. 
+
+## Coefficients
+
+In this analysis, we can write a regression equation as $\hat{Y}_{mpg} = 37.285 - 5.344X_{weight}$.
+
+* The intercept, $b_0$, is a value of predicted *Y* when *X* = 0. In this case, it means that if a car weights zero tons, its could run `r round(reg_model$coefficients[1], 2)` miles per a gallon of gasoline. However, in this case, the intercept does not means much because there is no car that weights zero tons. 
+
+* However, we are more interested in a *relationship* between `wt` and `mpg` that was a slope of `wt`, *b* = `r round(reg_model$coefficients[2], 2)`. This negative relationship means that if a car's weight (`wt`) changes by one ton, its fuel economy (`mpg`) changes in an opposite direction by `r abs(round(reg_model$coefficients[2], 2))` miles per gallon. 
+
+We can use this equation to predict a car's `mpg` given its `wt`. For example, if a car weight 1.5 ton, we could use the equation to predict its fuel economy. 
+$$ \begin{aligned}
+\hat{Y}_{mpg} &= 37.285 - 5.344(1.5) \\
+&= 37.285 - 8.016 \\
+&= 29.269 
+\end{aligned} $$
+
+## Hypothesis testing
+If we takes an `Estimate` (intercept or slope) and divide by its `Std. Error`(*SE*), you will get a *t*-value. We can then use a *t*-distribution to calculate a *p*-value to determine statistical significance. The *p*-value was a probability of obtaining that *t* value or more extreme given that a null hypothesis is true. The null hypothesis being tested here was $H_0 : b = 0$. 
+
+A significant test of coefficient (i.e., *p* < .05) suggests that, if the relationship does not exist, it is very unlikely to obtain this magnitude of slope. Thus, we *infer* that the relationship *may* exist (accepting $H_a$). In other words, the coefficient *may not be zero*. 
+
+## Confidence interval of coefficients
+We can calculate a 95% CI for each coefficient. 
+```{r}
+confint(reg_model) #default setting is 95% CI
+confint(reg_model, level = .99) # set to 99% CI
+```
+The 99% CI is *wider* than the 95% CI because the 99% CI represents a higher chance of being correct about the population value. Thus, it includes a larger margin of error. 
+
+Even with the 99% confidence level, the CI of `wt` slope does not contain zero. This gives us confidence that the negative relationship between `wt` and `mpg` may really exists. 
+
+
+## Standardized coefficients or betas
+Raw coefficients are in a unit of variable *Y*, which make it hard to judge the strengh of relationship. To solve this problem, we could standardize the coefficient to make it easier to interpret. This standardized regression coefficients are also called *beta* ($\beta$) by some statistical programs. 
+```{r}
+# install.packages("QuantPsyc")
+library(QuantPsyc)
+lm.beta(reg_model)
+```
+The standardized coeff. of -.87 was quite a strong negative relationship. 
+
+# Plot
+To create a scatter plot with a fit line.
+
+1. Use `ggplot(data, aes(x, y))` to specify the data and aesthetic mapping,
+2. Use `geom_point()` to make a scatter plot,
+3. Use `geom_smooth(method = , se = )` to add the best fit line. The `method` option refers to a method to create a smooth line, which would be `lm` for a linear model. The option `se` is for confidence interval around the predicted line, which is `TRUE` by default. 
+```{r}
+library(ggplot2)
+ggplot(mtcars, aes(x = wt, y = mpg)) +
+  geom_point() + # scatter dots
+  geom_smooth(method = lm, se = TRUE) + #add a linear fit line to the previous plot
+  theme_classic()
+```
+

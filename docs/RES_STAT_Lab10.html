@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 10: Simple Regression</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Tutorials</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    RES MTHD/STAT PSY Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="RES_STAT_Lab04.html">Lab 4: Descriptive Statistics</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab05.html">Lab 5: Standard Score</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab06.html">Lab 6: Visualizing Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab07.html">Lab 7: Sampling Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab08.html">Lab 8: Confidence Interval and t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab09.html">Lab 9: Correlation</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab10.html">Lab 10: Simple Regression</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab12.html">Lab 12: Dependent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab13.html">Lab 13: Independent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab14.html">Lab 14: Chi-Squared Test</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    EXPRM DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="EXPRM_Lab02.html">Lab 2: Randomization</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab03.html">Lab 3: Power and Sample Size</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab04.html">Lab 4: One-way ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab05.html">Lab 5: Multiple Comparisons</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab07.html">Lab 7: Factorial ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab09.html">Lab 9: Data Visualization with ggplot2</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab10.html">Lab 10: Repeated-Measures ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab11.html">Lab 11: Factorial ANOVA in Repeated-Measures Design</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab12.html">Lab 12: Means Comparison in Regression</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab13.html">Lab 13: ANCOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab14.html">Lab 14: Moderation Analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    SURVEY DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="SURVEY_Lab08.html">Lab 08: Data Cleaning</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Lab 10: Simple Regression</h1>
+
+</div>
+
+
+<div id="model-fitting" class="section level1">
+<h1>Model Fitting</h1>
+<p>To perform a statistical analysis in R, first, you need to write a formula to describe a statistical model. For example, a formula <code>y ~ x</code> means that you are predictng <code>y</code> with <code>x</code>. The variable on the left side of a tilde (<code>~</code>) is a dependent variable, and the variable on the right side is an independent variable.</p>
+<p>Then, you would use a function, such as <code>lm()</code>, <code>aov()</code>, or <code>glm()</code> to fit your model.To <em>fit</em> a model means that you are trying to use a mathematical model to describe data. For example, if a linear model is a good <em>fit</em> for your data, it means that it does a good job at describing a relationship pattern among variables in the model. For example, a <em>linear model</em> is a good fit to describe relationship between <code>wt</code> and <code>mpg</code>, but a <em>curvilinear model</em> seems to be a better fit for <code>disp</code> and <code>mpg</code> (see plots below).</p>
+<p>After fitting the model, we will use <code>summary()</code> to print an output of the analysis.</p>
+<pre class="r"><code>library(gridExtra)
+library(ggplot2)
+data(&quot;mtcars&quot;)
+p1 &lt;- ggplot(mtcars, aes(x = wt, y = mpg)) +
+  geom_point() + 
+  geom_smooth(method = lm, se = FALSE) + 
+  theme_classic()
+p2 &lt;- ggplot(mtcars, aes(x = hp, y = mpg)) +
+  geom_point() + 
+  geom_smooth(method = lm, formula = y ~ poly(x,3), se = FALSE) +
+  theme_classic()
+grid.arrange(p1,p2, ncol = 2)</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="RES_STAT_Lab10_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+</div>
+<div id="simple-regression" class="section level1">
+<h1>Simple Regression</h1>
+<p>For a simple regression analysis, we will need a <strong><em>linear model</em></strong> because we are testing for linear relationship between X-Y.</p>
+<div id="lm-function" class="section level2">
+<h2><code>lm()</code> function</h2>
+<p>The <code>lm()</code> function is used to fit a linear model. Its simplest form is <code>lm(formula, data)</code>, where <code>formula</code> is a statistical model and <code>data</code> is a data frame.</p>
+<p>Let’s look at <code>mtcars</code> dataset and say that we want to predict a car’s <code>mpg</code> with weight <code>wt</code>. The formula for this regression model is <code>mpg ~ wt</code>. We will save this model in to an object called <code>reg_model</code>. This object contains information from a linear regression analysis.</p>
+<p>We will then use <code>summary()</code> to output important information about regression analyses.</p>
+<pre class="r"><code>data(mtcars)
+reg_model &lt;- lm(mpg ~ wt, mtcars)
+summary(reg_model)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = mpg ~ wt, data = mtcars)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -4.5432 -2.3647 -0.1252  1.4096  6.8727 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  37.2851     1.8776  19.858  &lt; 2e-16 ***
+## wt           -5.3445     0.5591  -9.559 1.29e-10 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 3.046 on 30 degrees of freedom
+## Multiple R-squared:  0.7528, Adjusted R-squared:  0.7446 
+## F-statistic: 91.38 on 1 and 30 DF,  p-value: 1.294e-10</code></pre>
+<p>The <code>Call:</code> section shows the formula of the model being analyzed.<br />
+The <code>Residuals:</code> section shows the summary of residuals, <span class="math inline">\(Y-\hat{Y}\)</span>.<br />
+The <code>Coefficients:</code> section show an intercept and slope estimates as well as their significance testing.<br />
+Asterisks (*) are used to noted significant values at different <span class="math inline">\(\alpha\)</span> level.<br />
+The rest of the lines show</p>
+<ul>
+<li><code>Residual standard error</code> = standard deviation of residuals (errors),</li>
+<li>degrees of freedom of the residuals = <span class="math inline">\(N-k-1\)</span>,</li>
+<li>Multiple R-squared (<span class="math inline">\(R^2\)</span>) = proportion of variance in Y that was explained by X (predictor).</li>
+<li>Adjusted <span class="math inline">\(R^2\)</span> = <span class="math inline">\(R^2\)</span> adjusted for number of predictors. This will be relevant to multiple regression. For simple regression, unadjusted <span class="math inline">\(R^2\)</span> works fine.</li>
+<li><em>F</em> test of the whole regression model. In simple regression, this is the same as testing a coeffient (slope) of X.</li>
+<li><em>df</em> of the regression model = (<span class="math inline">\(k\)</span> or a number of predictors) and <em>df</em> of residuals (<span class="math inline">\(N-k-1\)</span>), and</li>
+<li><em>p</em>-value of the <em>F</em> statistics.</li>
+</ul>
+</div>
+<div id="coefficients" class="section level2">
+<h2>Coefficients</h2>
+<p>In this analysis, we can write a regression equation as <span class="math inline">\(\hat{Y}_{mpg} = 37.285 - 5.344X_{weight}\)</span>.</p>
+<ul>
+<li><p>The intercept, <span class="math inline">\(b_0\)</span>, is a value of predicted <em>Y</em> when <em>X</em> = 0. In this case, it means that if a car weights zero tons, its could run 37.29 miles per a gallon of gasoline. However, in this case, the intercept does not means much because there is no car that weights zero tons.</p></li>
+<li><p>However, we are more interested in a <em>relationship</em> between <code>wt</code> and <code>mpg</code> that was a slope of <code>wt</code>, <em>b</em> = -5.34. This negative relationship means that if a car’s weight (<code>wt</code>) changes by one ton, its fuel economy (<code>mpg</code>) changes in an opposite direction by 5.34 miles per gallon.</p></li>
+</ul>
+<p>We can use this equation to predict a car’s <code>mpg</code> given its <code>wt</code>. For example, if a car weight 1.5 ton, we could use the equation to predict its fuel economy. <span class="math display">\[ \begin{aligned}
+\hat{Y}_{mpg} &amp;= 37.285 - 5.344(1.5) \\
+&amp;= 37.285 - 8.016 \\
+&amp;= 29.269 
+\end{aligned} \]</span></p>
+</div>
+<div id="hypothesis-testing" class="section level2">
+<h2>Hypothesis testing</h2>
+<p>If we takes an <code>Estimate</code> (intercept or slope) and divide by its <code>Std. Error</code>(<em>SE</em>), you will get a <em>t</em>-value. We can then use a <em>t</em>-distribution to calculate a <em>p</em>-value to determine statistical significance. The <em>p</em>-value was a probability of obtaining that <em>t</em> value or more extreme given that a null hypothesis is true. The null hypothesis being tested here was <span class="math inline">\(H_0 : b = 0\)</span>.</p>
+<p>A significant test of coefficient (i.e., <em>p</em> &lt; .05) suggests that, if the relationship does not exist, it is very unlikely to obtain this magnitude of slope. Thus, we <em>infer</em> that the relationship <em>may</em> exist (accepting <span class="math inline">\(H_a\)</span>). In other words, the coefficient <em>may not be zero</em>.</p>
+</div>
+<div id="confidence-interval-of-coefficients" class="section level2">
+<h2>Confidence interval of coefficients</h2>
+<p>We can calculate a 95% CI for each coefficient.</p>
+<pre class="r"><code>confint(reg_model) #default setting is 95% CI</code></pre>
+<pre><code>##                 2.5 %    97.5 %
+## (Intercept) 33.450500 41.119753
+## wt          -6.486308 -4.202635</code></pre>
+<pre class="r"><code>confint(reg_model, level = .99) # set to 99% CI</code></pre>
+<pre><code>##                 0.5 %    99.5 %
+## (Intercept) 32.121659 42.448593
+## wt          -6.881997 -3.806946</code></pre>
+<p>The 99% CI is <em>wider</em> than the 95% CI because the 99% CI represents a higher chance of being correct about the population value. Thus, it includes a larger margin of error.</p>
+<p>Even with the 99% confidence level, the CI of <code>wt</code> slope does not contain zero. This gives us confidence that the negative relationship between <code>wt</code> and <code>mpg</code> may really exists.</p>
+</div>
+<div id="standardized-coefficients-or-betas" class="section level2">
+<h2>Standardized coefficients or betas</h2>
+<p>Raw coefficients are in a unit of variable <em>Y</em>, which make it hard to judge the strengh of relationship. To solve this problem, we could standardize the coefficient to make it easier to interpret. This standardized regression coefficients are also called <em>beta</em> (<span class="math inline">\(\beta\)</span>) by some statistical programs.</p>
+<pre class="r"><code># install.packages(&quot;QuantPsyc&quot;)
+library(QuantPsyc)
+lm.beta(reg_model)</code></pre>
+<pre><code>##         wt 
+## -0.8676594</code></pre>
+<p>The standardized coeff. of -.87 was quite a strong negative relationship.</p>
+</div>
+</div>
+<div id="plot" class="section level1">
+<h1>Plot</h1>
+<p>To create a scatter plot with a fit line.</p>
+<ol style="list-style-type: decimal">
+<li>Use <code>ggplot(data, aes(x, y))</code> to specify the data and aesthetic mapping,</li>
+<li>Use <code>geom_point()</code> to make a scatter plot,</li>
+<li>Use <code>geom_smooth(method = , se = )</code> to add the best fit line. The <code>method</code> option refers to a method to create a smooth line, which would be <code>lm</code> for a linear model. The option <code>se</code> is for confidence interval around the predicted line, which is <code>TRUE</code> by default.</li>
+</ol>
+<pre class="r"><code>library(ggplot2)
+ggplot(mtcars, aes(x = wt, y = mpg)) +
+  geom_point() + # scatter dots
+  geom_smooth(method = lm, se = TRUE) + #add a linear fit line to the previous plot
+  theme_classic()</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="RES_STAT_Lab10_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

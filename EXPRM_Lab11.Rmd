@@ -1,0 +1,208 @@
+---
+title: 'Lab 11: Factorial ANOVA in Repeated-Measures Design'
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: TRUE
+---
+
+```{r message=FALSE, warning=FALSE}
+# load all libraries for this tutorial
+library(jmv)
+library(psych)
+library(car)
+library(tidyverse)
+library(afex)
+library(effectsize)
+library(emmeans)
+library(datarium)
+
+```
+
+# Mixed ANOVA (Between- & Within-Subjects Factor)
+
+## Data Preparation
+
+ใน tutorial นี้เราจะใช้ข้อมูล `ChickWeight` จาก dataset ของ R ข้อมูลชุดนี้แสดงน้ำหนักของลูกไก่ `weight` วัดซ้ำ 12 ครั้ง `Time` ภายใต้เงื่อนอาหาร 4 แบบ `Diet` โดยมีหมายเลขลูกไก่คือ `Chick`
+
+ข้อมูลชุดนี้เป็นข้อมูลแบบยาว (long format) ที่แต่ละแถวแสดงการสังเกต (observation) แต่ละช่วงเวลาซ้อนอยู่ในตัวลูกไก่
+
+ตัวแปรอิสระแบบภายในกลุ่มตัวอย่าง คือ `Time` และตัวแปรอิสระแบบระหว่างกลุ่มตัวอย่างคือ `Diet` ตัวแปรตามคือ `Weight`
+
+```{r}
+data("ChickWeight")
+head(ChickWeight, n = 25)
+# Convert to factor
+ChickWeight$Chick <- factor(ChickWeight$Chick)
+ChickWeight$Diet <- factor(ChickWeight$Diet)
+ChickWeight$Time <- factor(ChickWeight$Time)
+# Rename labels for Time
+time_label <- paste0("Time", levels(ChickWeight$Time))
+levels(ChickWeight$Time) <- time_label
+str(ChickWeight)
+```
+
+## Base R
+
+สำหรับการวิเคราะห์ mixed design นี้เราจะไม่ใช้คำสั่ง base R เนื่องจาก base R จะใช้ SS Type I แต่ว่าในกรณีที่กลุ่มตัวอย่างไม่เท่ากันในแต่ละเงื่อนไข ในกรณีที่มีตัวแปรมากกว่า 1 ตัว (เช่น การวิเคราะห์ปฏิสัมพันธ์ระหว่างตัวแปรสองตัว) ควรใช้ SS Type II หรือ Type III ดังนั้นเราจะใช้ afex ในการคำนวณแทน
+
+## afex
+
+เนื่องจากมีตัวแปรภายในบุคคล หนึ่งตัว คือ เวลา `Time` จึงกำหนดให้ `Error()` เป็น เวลาในการวัด ซ้อนอยู่ในลูกไก่แต่ละตัว `Error(Chick/Time)`
+
+```{r}
+chick.afex <- aov_car(weight ~ Diet*Time + Error(Chick/Time), data = ChickWeight) 
+summary(chick.afex) # regular ANOVA
+nice(chick.afex, es = "pes") # GG correction + partial eta squared
+```
+
+## Effect size
+
+```{r}
+eta_squared(chick.afex)
+```
+
+## Estimated Marginal Means
+
+```{r}
+chick.emm <- emmeans(chick.afex, ~ Time | Diet) # Mean for each time split by Diet
+chick.emm
+pairs(chick.emm, simple = "Diet") # pairwise comparisons for simple effect of Diet at each time point
+```
+
+## Plots
+
+```{r}
+chick.emm.summary <- summary(chick.emm)
+chick.emm.summary
+ggplot(chick.emm.summary, aes(x = Time, y = emmean, color = Diet)) +
+  geom_point(position = position_dodge(.2)) +
+  geom_line(aes(group = Diet), position = position_dodge(.2)) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = .3, position = position_dodge(.2)) + 
+  xlab("Number of days since birth") +
+  ylab("Weight (gm)") +
+  theme_classic()
+```
+
+## jmv
+
+### Convert to wide format
+
+เพื่อใช้คำสั่งใน jmv จะต้องเปลี่ยนข้อมูลเป็นแบบกว้าง (wide format)
+
+ในข้อมูลแบบกว้าง แต่ละแถวจะแทนกลุ่มตัวอย่าง ตัวแปรตาม (น้ำหนัก) จะถูกแสดงแยกคอลัมน์ตามจำนวนการวัดซ้ำ (เช่น weight.time0 ถึง time21 จำนวน 12 คอลัมน์)
+
+ตัวแปรระหว่างบุคคล (between-subjects) จะถูกแสดงด้วยคอลัมน์ตัวแปรตามตัวจำนวนตัวแปรระหว่างบุคคล เช่น เงื่อนไข Diet 1 คอลัมน์
+
+คำสั่งที่ใช้คือ `tidyr::pivot_wider` โดยกำหนด option ดังนี้
+
+`data` = data frame ข้อมูลแบบยาวที่ต้องการแปลงเป็นกว้าง
+
+`id_cols` = ข้อมูลที่เป็นระหว่างบุคคล (เช่น รหัสประจำตัว `Chick` และ เงื่อนไขอาหาร `Diet`)
+
+`names_from` = ชื่อของตัวแปรที่วัดซ้ำ (ปกติคือ ​level ของ within-subject factor เช่น `Time` มีระดับ Time0, Time2, Time4, ...
+
+`names_prefix` = string ที่ต้องการใส่หน้าชื่อ level ที่มาจาก `names_from` เช่น "weight." จะนำหน้า 0, 2, 4, .., 21 ซึ่งเป็น level ของตัวแปร `Time` ทำให้ได้ชื่อตัวแปร เช่น `weight.Time2` เป็นต้น
+
+`values_from` = ค่าของตัวแปรตามที่มีการวัดซ้ำ เช่น `weight`
+
+```{r}
+chick_wide <- pivot_wider(data = ChickWeight, id_cols = c(Chick, Diet), names_from = Time, names_prefix = "weight.", values_from = weight)
+head(chick_wide)
+```
+
+วิเคราะห์ด้วย `anovaRM`
+
+```{r}
+anovaRM(chick_wide, 
+        rm = list(list(
+                       label = "Time",
+                       levels = levels(ChickWeight$Time)
+                       )),
+        rmCells=list(
+                     list(measure="weight.Time0",
+                           cell = "Time0"),
+                     list(measure="weight.Time2",
+                           cell = "Time2"),
+                     list(measure="weight.Time4",
+                           cell = "Time4"),
+                     list(measure="weight.Time6",
+                           cell = "Time6"),
+                     list(measure="weight.Time8",
+                           cell = "Time8"),
+                     list(measure="weight.Time10",
+                           cell = "Time10"),
+                     list(measure="weight.Time12",
+                           cell = "Time12"),
+                     list(measure="weight.Time14",
+                           cell = "Time14"),
+                     list(measure="weight.Time16",
+                           cell = "Time16"),
+                     list(measure="weight.Time18",
+                           cell = "Time18"),
+                     list(measure="weight.Time20",
+                           cell = "Time20"),
+                     list(measure="weight.Time21",
+                           cell = "Time21")
+                     ),
+             bs = list("Diet"),
+             rmTerms = list("Time"),
+             bsTerms = list("Diet"),
+             spherTest = TRUE,
+             effectSize = "partEta",
+             emMeans = list(list("Time", "Diet")),     
+             emmPlots = TRUE  
+            )
+```
+
+# Two-Way Repeated ANOVA (Within- & Within-Subjects Factor)
+
+## Data preparation
+
+`selfesteem2` เป็นข้อมูล $2 \times 3$ repeated measures
+
+กลุ่มตัวอย่าง 12 คน ผ่าน 2 เงื่อนไข คือ Diet `Diet` และ control `ctr` และวัดซ้ำ 3 ครั้ง
+
+ข้อมูลชุดนี้อยู่ในรูปแบบผสมระหว่างแบบกว้าง (เวลา) และแบบยาว (เงื่อนไข) จึงจำเป็นต้องเปลี่ยนให้อยู่ในแบบยาวทั้งหมดก่อน
+
+```{r}
+data("selfesteem2")
+selfesteem2
+selfesteem_long <- pivot_longer(selfesteem2, cols = c("t1", "t2", "t3"), names_to = "time", values_to = "se" )
+selfesteem_long
+str(selfesteem_long) # check for variable types
+selfesteem_long$time <- factor(selfesteem_long$time) #convert to factor
+```
+
+## afex
+
+เนื่องจากมีตัวแปรภายในบุคคล 2 ตัว ความคลาดเคลื่อนจึงเป็น `Error(id/treatment * time)`
+
+```{r}
+self.afex <- aov_car(se ~ treatment * time + Error(id/treatment * time), data = selfesteem_long)
+summary(self.afex)
+nice(self.afex, es = "pes") # GG correction + partial eta square
+```
+
+## Estimated marginal means
+
+```{r}
+self.emm <- emmeans(self.afex, ~ time | treatment)
+self.emm
+contrast(self.emm, method = "pairwise", simple = "time") #simple effect of time at each treatment level
+pairs(self.emm, simple = "treatment") #simple effect of treatment at each time level
+```
+
+## Plot
+
+```{r}
+self.emm.summary <- summary(self.emm)
+ggplot(self.emm.summary, aes(x = time, y = emmean, color = treatment)) + 
+  geom_point(position = position_dodge(.2)) +
+  geom_line(aes(group = treatment), position = position_dodge(.2)) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = .3, position = position_dodge(.2)) + 
+  xlab("Time") +
+  ylab("Self esteem") +
+  theme_classic()
+```

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 06: Visualizing Distribution</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Tutorials</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    RES MTHD/STAT PSY Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="RES_STAT_Lab04.html">Lab 4: Descriptive Statistics</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab05.html">Lab 5: Standard Score</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab06.html">Lab 6: Visualizing Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab07.html">Lab 7: Sampling Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab08.html">Lab 8: Confidence Interval and t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab09.html">Lab 9: Correlation</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab10.html">Lab 10: Simple Regression</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab12.html">Lab 12: Dependent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab13.html">Lab 13: Independent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab14.html">Lab 14: Chi-Squared Test</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    EXPRM DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="EXPRM_Lab02.html">Lab 2: Randomization</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab03.html">Lab 3: Power and Sample Size</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab04.html">Lab 4: One-way ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab05.html">Lab 5: Multiple Comparisons</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab07.html">Lab 7: Factorial ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab09.html">Lab 9: Data Visualization with ggplot2</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab10.html">Lab 10: Repeated-Measures ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab11.html">Lab 11: Factorial ANOVA in Repeated-Measures Design</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab12.html">Lab 12: Means Comparison in Regression</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab13.html">Lab 13: ANCOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab14.html">Lab 14: Moderation Analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    SURVEY DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="SURVEY_Lab08.html">Lab 08: Data Cleaning</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Lab 06: Visualizing Distribution</h1>
+
+</div>
+
+
+<p>Set working directory to a source file.<br />
+`<code>setwd(dirname(rstudioapi::getSourceEditorContext()$path))</code><br />
+Then, load the data.</p>
+<pre class="r"><code>solar_data &lt;- read.csv(&quot;data/RES_STAT_Lab6_Data.csv&quot;)
+solar_data$inno &lt;- factor(solar_data$inno, levels = c(&quot;innovators&quot;, &quot;early adopters&quot;, &quot;early majority&quot;, &quot;late majority&quot;, &quot;laggards&quot;), ordered = TRUE)
+head(solar_data$inno)</code></pre>
+<pre><code>## [1] early majority laggards       early adopters late majority  innovators     early adopters
+## Levels: innovators &lt; early adopters &lt; early majority &lt; late majority &lt; laggards</code></pre>
+<div id="boxplot" class="section level1">
+<h1>Boxplot</h1>
+<p>A boxplot is a classic visualization of a distribution. You can run the function in the base R or with the <code>ggplot2</code> package. ## Base R</p>
+<pre class="r"><code>boxplot(solar_data$attitude)</code></pre>
+<p><img src="RES_STAT_Lab06_files/figure-html/boxplot-1.png" width="672" /></p>
+<p>You can also assign an object name for your plot.</p>
+<pre class="r"><code>bp &lt;- boxplot(solar_data$attitude) #This still prints out the plot.</code></pre>
+<p><img src="RES_STAT_Lab06_files/figure-html/boxplot%20object-1.png" width="672" /></p>
+<pre class="r"><code>bp</code></pre>
+<pre><code>## $stats
+##       [,1]
+## [1,] 0.625
+## [2,] 2.250
+## [3,] 2.875
+## [4,] 3.375
+## [5,] 4.000
+## 
+## $n
+## [1] 304
+## 
+## $conf
+##          [,1]
+## [1,] 2.773053
+## [2,] 2.976947
+## 
+## $out
+## [1] 0.250 0.000 0.000 0.375 0.000 0.250
+## 
+## $group
+## [1] 1 1 1 1 1 1
+## 
+## $names
+## [1] &quot;1&quot;</code></pre>
+<p>The object <code>bp</code> is a list containing information about the plot.<br />
+<code>$stat</code> contains 1) lower whisker or -1.5 IQR, 2) lower hinge or 25th quantile, 3) median or 50th quantile, 4) upper hinge or 75th quantile, and 5) upper whisker or +1.5 IQR. <code>$n</code> is the number of observations. <code>$out</code> list are values of outliers that lie outside the whiskers See <code>help(boxplot)</code> for more information.</p>
+<p>The values in boxplot object can be access as a list. This can be useful. For example, we could use <code>$out</code> to identify outliers data in the dataset.</p>
+<pre class="r"><code>solar_data[solar_data$attitude %in% bp$out, ] </code></pre>
+<pre><code>##      id              user deci    sex age kno1 kno2 kno3 kno4 kno5 kno6 kno7 kno8           inno att1 att2 att3 att4 att5
+## 19   22 regular residence    2   male  47    3    1    5    5    5    5    5    1 early majority    1    1    1    1    3
+## 38   44 regular residence    2 female  59    2    2    2    2    2    2    2    2 early adopters    1    1    1    1    1
+## 118 141 regular residence    2 female  59    1    1    1    1    1    1    1    1       laggards    1    1    1    1    1
+## 128 158 regular residence    2 female  39    1    1    1    1    1    1    1    1  late majority    1    3    2    1    1
+## 157 198   small residence    2   male  72    1    3    2    1    1    1    1    1       laggards    1    1    1    1    1
+## 281 350   small residence    2 female  50    2    1    1    1    1    2    1    1  late majority    2    1    1    1    1
+##     att6 att7 att8       interest re_att1 re_att2 re_att3 re_att4 re_att5 re_att6 re_att7 re_att8 re_kno1 re_kno2 re_kno3
+## 19     1    1    1 definitely not       0       0       0       0       2       0       0       0       2       0       4
+## 38     1    1    1   probably not       0       0       0       0       0       0       0       0       1       1       1
+## 118    1    1    1  probably will       0       0       0       0       0       0       0       0       0       0       0
+## 128    1    1    1  probably will       0       2       1       0       0       0       0       0       0       0       0
+## 157    1    1    1 definitely not       0       0       0       0       0       0       0       0       0       2       1
+## 281    1    1    2   probably not       1       0       0       0       0       0       0       1       1       0       0
+##     re_kno4 re_kno5 re_kno6 re_kno7 re_kno8 attitude knowledge
+## 19        4       4       4       4       0    0.250     2.750
+## 38        1       1       1       1       1    0.000     1.000
+## 118       0       0       0       0       0    0.000     0.000
+## 128       0       0       0       0       0    0.375     0.000
+## 157       0       0       0       0       0    0.000     0.375
+## 281       0       0       1       0       0    0.250     0.250</code></pre>
+<pre class="r"><code>#%in% is a value matching function. We match value in $attitude with the outliers, $out.</code></pre>
+<div id="multiple-boxes" class="section level3">
+<h3>Multiple Boxes</h3>
+<p>When exploring the data, you can use boxplot to simultaneously check distributions of multiple items at once.</p>
+<pre class="r"><code>boxplot(solar_data[, c(&quot;att1&quot;, &quot;att2&quot;, &quot;att3&quot;, &quot;att4&quot;, &quot;att5&quot;)]) #check distributions of item att1-5</code></pre>
+<p><img src="RES_STAT_Lab06_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+</div>
+<div id="boxplots-by-group" class="section level3">
+<h3>Boxplots by group</h3>
+<p>You can use formula to create boxplots by each level of a factor. In the formula <code>attitude ~ inno</code>, <code>attitude</code> is split by the factor <code>inno</code>. The <code>solar_data</code> is the dataset of variables in a formula.<br />
+<code>xlab</code> and <code>ylab</code> are labels for x- and y-axis, respectively.</p>
+<pre class="r"><code>boxplot(attitude ~ inno, solar_data, xlab = &quot;Innovator Groups&quot;, ylab = &quot;Attitude Score&quot;)</code></pre>
+<p><img src="RES_STAT_Lab06_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+<div id="boxplot-with-ggplot2" class="section level2">
+<h2>Boxplot with <code>ggplot2</code></h2>
+<p>While the base R is simple, <code>ggplot2</code> offers a more coherent way of writing a code for graphics. It employs the “<em>Grammar of Graphics</em>.” The main components are 1) a <strong>data</strong>, 2) <strong>aesthethics</strong>, and 3) <strong>geometries</strong>.</p>
+<p>Data is the data you want to plot. Aesthetics <code>aes()</code> is how you want to map the data to the plot scale. Geommetries (geom) is the visual elements of the plot (e.g., lines, dots, bars)</p>
+<p>There are other option layers, such as <em>themes</em>, <em>statistics</em>, <em>coordinates</em>, and <em>facet</em>. The graphics are built by the multiple layers.</p>
+<p>The function <code>ggplot</code> is the main function to plot graphics. The first argument is the data <code>solar_data</code>. The second argument is aesthetics <code>aes()</code>. Inside we specify <code>y = attitude</code>, meaning that we want to plot the value on <em>attitude</em> on the y-axis. After that, we use a <code>+</code> sign to tell the function that we still want to add more layers.<br />
+Then we add a geometry layer <code>geom_boxplot()</code> to create a boxplot. Then <code>+</code> the theme layer <code>theme_classic()</code>.</p>
+<pre class="r"><code>library(ggplot2) #load the ggplot2 package
+ggplot(solar_data, aes(y = attitude)) +
+  geom_boxplot() +
+  theme_classic() #Classic theme is the most similar to the APA style. </code></pre>
+<p><img src="RES_STAT_Lab06_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<div id="boxplot-by-groups" class="section level3">
+<h3>Boxplot by groups</h3>
+<p>You can specify a factor <code>x</code> in <code>aes()</code> to create boxplots by groups. In this case, we use <code>inno</code> for grouping on the <em>x</em>-axis.</p>
+<pre class="r"><code>ggplot(solar_data, aes(x = inno, y = attitude)) +
+  geom_boxplot() +
+  theme_classic()</code></pre>
+<p><img src="RES_STAT_Lab06_files/figure-html/box%20plot%20by%20group-1.png" width="672" /></p>
+</div>
+</div>
+</div>
+<div id="histogram" class="section level1">
+<h1>Histogram</h1>
+<p>If you want to see the shape of a distribution, you will need a histogram.</p>
+<div id="base-r" class="section level2">
+<h2>Base R</h2>
+<pre class="r"><code>h &lt;- hist(solar_data$attitude)</code></pre>
+<p><img src="RES_STAT_Lab06_files/figure-html/histrogram-1.png" width="672" /></p>
+<pre class="r"><code>h</code></pre>
+<pre><code>## $breaks
+## [1] 0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0
+## 
+## $counts
+## [1]  6  7 11 30 47 95 75 33
+## 
+## $density
+## [1] 0.03947368 0.04605263 0.07236842 0.19736842 0.30921053 0.62500000 0.49342105 0.21710526
+## 
+## $mids
+## [1] 0.25 0.75 1.25 1.75 2.25 2.75 3.25 3.75
+## 
+## $xname
+## [1] &quot;solar_data$attitude&quot;
+## 
+## $equidist
+## [1] TRUE
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;histogram&quot;</code></pre>
+<p>The object <code>h</code> is a list of values for a histogram. <code>breaks</code> = the boundary of bins. <code>counts</code> = frequencies for each bin. <code>density</code> = estimated density values. <code>mid</code> = midpoints for each bin. <code>equidist</code> = logical, if the bin sizes are equal.</p>
+<p>R will automatically decide how to bins look like. If you want your histogram to look a certain way, you will use the argument <code>breaks</code>. There are multiple ways to use the argument <code>breaks</code> (see Help). We will use a vector to determine the boundary of the bins.</p>
+<pre class="r"><code># First create a vector from 0 to 4 with a 0.25 step.
+b &lt;- seq(0, 4, 0.25)
+b</code></pre>
+<pre><code>##  [1] 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.25 2.50 2.75 3.00 3.25 3.50 3.75 4.00</code></pre>
+<pre class="r"><code># Then use b in the argument breaks.
+hist(solar_data$attitude, breaks = b) # alternative: hist(solar_data$attitude, breaks = seq(0, 4, 0.25))</code></pre>
+<p><img src="RES_STAT_Lab06_files/figure-html/customize%20histrogram-1.png" width="672" /></p>
+<pre class="r"><code># use col for color and ylim for the range of y-axis.
+hist(solar_data$attitude, breaks = seq(0, 4, 0.25), col = &quot;lightsteelblue&quot;, ylim = c(0, 80))</code></pre>
+<p><img src="RES_STAT_Lab06_files/figure-html/customize%20histrogram-2.png" width="672" /></p>
+<p>See <a href="http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf" class="uri">http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf</a> for color names in R.</p>
+</div>
+<div id="histogram-with-ggplot2" class="section level2">
+<h2>Histogram with <code>ggplot2</code></h2>
+<p>For histogram <code>aes()</code>, we use <code>x = attitude</code> as we plot the value of attitude on the <em>x</em>-axis. Then we add a layer of <code>geom_histogram</code>.<br />
+By default, it will use 30 bins.</p>
+<pre class="r"><code>ggplot(solar_data, aes(x = attitude)) +
+  geom_histogram() +  
+  theme_classic() </code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="RES_STAT_Lab06_files/figure-html/histogram-1.png" width="672" /></p>
+<p>We can specify a bin width using <code>binwidth</code></p>
+<pre class="r"><code>ggplot(solar_data, aes(x = attitude)) +
+  geom_histogram(binwidth = 0.5) +
+  theme_classic() </code></pre>
+<p><img src="RES_STAT_Lab06_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>We can also change a border and a filll color with <code>color</code> and <code>fill</code>.</p>
+<pre class="r"><code>ggplot(solar_data, aes(x = attitude)) +
+  geom_histogram(binwidth = 0.5, color = &quot;red&quot;, fill = &quot;pink&quot;) + 
+  theme_classic()</code></pre>
+<p><img src="RES_STAT_Lab06_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<div id="histogram-by-groups" class="section level3">
+<h3>Histogram by groups</h3>
+<p>Because historgram is plot on the x-axis, if we want to split histogram by groups, we need to create multiple of them and put them to gether using a facet layer <code>facet_wrap()</code>.</p>
+<pre class="r"><code>ggplot(solar_data, aes(x = attitude)) +
+  geom_histogram(binwidth = .5,
+                 aes(y = ..density..), #plot density instead of frequency
+                 color = &quot;black&quot;,
+                 fill = &quot;steelblue&quot;) + 
+  facet_wrap(~ inno) + # create subplots by inno and put them together
+  theme_classic()</code></pre>
+<p><img src="RES_STAT_Lab06_files/figure-html/facet%20wrap-1.png" width="672" /></p>
+</div>
+</div>
+</div>
+<div id="density-plot" class="section level1">
+<h1>Density Plot</h1>
+<p>Density plot shows the probability density of the distribution. ## Base R</p>
+<pre class="r"><code>plot(density(solar_data$attitude))</code></pre>
+<p><img src="RES_STAT_Lab06_files/figure-html/density%20plot-1.png" width="672" /></p>
+<div id="ggplot2" class="section level2">
+<h2><code>ggplot2</code></h2>
+<pre class="r"><code>ggplot(solar_data, aes(attitude)) +
+  geom_density(color = &quot;red&quot;, fill = &quot;pink&quot;) +
+  theme_classic()</code></pre>
+<p><img src="RES_STAT_Lab06_files/figure-html/ggplot%20density-1.png" width="672" /></p>
+<p>We can overlay the density plot on the histogram plot by layer them together.</p>
+<pre class="r"><code>ggplot(solar_data, aes(attitude)) +
+  # histogram layer
+  geom_histogram(binwidth = .25, 
+                 aes(y = ..density..), #histogram of density
+                 color = &quot;black&quot;, 
+                 fill = &quot;white&quot;) +
+  # density plot layer
+  geom_density(alpha = .2, color = &quot;forestgreen&quot;, fill = &quot;forestgreen&quot;) + #alpha = transparent level
+  theme_classic() +
+  facet_wrap(~ inno)</code></pre>
+<p><img src="RES_STAT_Lab06_files/figure-html/ggplot%20histogram%20with%20density-1.png" width="672" /></p>
+</div>
+</div>
+<div id="violin-plot" class="section level1">
+<h1>Violin Plot</h1>
+<p>A violin plot is a hybrid between a density and a boxplot. ## Violin with <code>ggplot2</code> Violin plots are usualy used to compare distributions for each leve of a factor. For the <code>aes()</code>, we use <code>x = inno</code> to split plots by innovator groups. <code>y = attitude</code> to plot the distribution on the <em>y</em>-axis. <code>fill = inno</code> to fill color automatically by innovator groups.</p>
+<pre class="r"><code>ggplot(solar_data, aes(x = inno, y = attitude, fill = inno)) +
+  geom_violin() +
+  theme_classic()</code></pre>
+<p><img src="RES_STAT_Lab06_files/figure-html/violin%20plot-1.png" width="672" /></p>
+<div id="violin-plot-with-data-points" class="section level2">
+<h2>Violin plot with data points</h2>
+<p>We can add <code>geom_jitter</code> layer to illustrate how data points distribute in the plot.</p>
+<pre class="r"><code>ggplot(solar_data, aes(x = inno, y = attitude, fill = inno)) +
+  geom_violin() +
+  geom_jitter(width = .15) + #width = 15% to keep most dots in each violin.
+  theme_classic()</code></pre>
+<p><img src="RES_STAT_Lab06_files/figure-html/violin%20plot%20with%20data-1.png" width="672" /></p>
+</div>
+</div>
+<div id="resource-ggplot-in-datacamp." class="section level1">
+<h1>Resource: ggplot in datacamp.</h1>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

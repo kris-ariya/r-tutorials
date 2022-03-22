@@ -1,0 +1,212 @@
+---
+title: 'Lab 06: Visualizing Distribution'
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Set working directory to a source file.  
+``setwd(dirname(rstudioapi::getSourceEditorContext()$path))`  
+Then, load the data.
+
+```{r import data}
+solar_data <- read.csv("data/RES_STAT_Lab6_Data.csv")
+solar_data$inno <- factor(solar_data$inno, levels = c("innovators", "early adopters", "early majority", "late majority", "laggards"), ordered = TRUE)
+head(solar_data$inno)
+```
+
+# Boxplot
+A boxplot is a classic visualization of a distribution. You can run the function in the base R or with the `ggplot2` package.
+## Base R
+
+```{r boxplot}
+boxplot(solar_data$attitude)
+```
+
+You can also assign an object name for your plot.
+```{r boxplot object}
+bp <- boxplot(solar_data$attitude) #This still prints out the plot.
+bp
+```
+The object `bp` is a list containing information about the plot.  
+`$stat` contains 1) lower whisker or -1.5 IQR, 2) lower hinge or 25th quantile, 3) median or 50th quantile, 4) upper hinge or 75th quantile, and 5) upper whisker or +1.5 IQR.
+`$n` is the number of observations.
+`$out` list are values of outliers that lie outside the whiskers
+See `help(boxplot)` for more information.
+
+The values in boxplot object can be access as a list. This can be useful. For example, we could use `$out` to identify outliers data in the dataset.
+```{r find outliers}
+solar_data[solar_data$attitude %in% bp$out, ] 
+#%in% is a value matching function. We match value in $attitude with the outliers, $out.
+```
+
+### Multiple Boxes
+When exploring the data, you can use boxplot to simultaneously check  distributions of multiple items at once. 
+```{r}
+boxplot(solar_data[, c("att1", "att2", "att3", "att4", "att5")]) #check distributions of item att1-5
+```
+
+### Boxplots by group
+You can use formula to create boxplots by each level of a factor. In the formula `attitude ~ inno`, `attitude` is split by the factor `inno`. The `solar_data` is the dataset of variables in a formula.  
+`xlab` and `ylab` are labels for x- and y-axis, respectively.
+
+```{r}
+boxplot(attitude ~ inno, solar_data, xlab = "Innovator Groups", ylab = "Attitude Score")
+```
+
+
+## Boxplot with `ggplot2`
+While the base R is simple, `ggplot2` offers a more coherent way of writing a code for graphics. It employs the "*Grammar of Graphics*." The main components are 1) a **data**, 2) **aesthethics**, and 3) **geometries**. 
+
+Data is the data you want to plot.
+Aesthetics `aes()` is how you want to map the data to the plot scale. 
+Geommetries (geom) is the visual elements of the plot (e.g., lines, dots, bars)
+
+There are other option layers, such as *themes*, *statistics*, *coordinates*, and *facet*. The graphics are built by the multiple layers.
+
+The function `ggplot` is the main function to plot graphics. The first argument is the data `solar_data`. The second argument is aesthetics `aes()`. Inside we specify `y = attitude`, meaning that we want to plot the value on *attitude* on the y-axis. After that, we use a `+` sign to tell the function that we still want to add more layers.   
+Then we add a geometry layer `geom_boxplot()` to create a boxplot. Then `+` the theme layer `theme_classic()`.
+
+```{r}
+library(ggplot2) #load the ggplot2 package
+ggplot(solar_data, aes(y = attitude)) +
+  geom_boxplot() +
+  theme_classic() #Classic theme is the most similar to the APA style. 
+```
+
+### Boxplot by groups
+You can specify a factor `x` in `aes()` to create boxplots by groups. In this case, we use `inno` for grouping on the *x*-axis. 
+
+```{r box plot by group}
+ggplot(solar_data, aes(x = inno, y = attitude)) +
+  geom_boxplot() +
+  theme_classic()
+```
+
+
+# Histogram
+If you want to see the shape of a distribution, you will need a histogram. 
+
+## Base R
+```{r histrogram}
+h <- hist(solar_data$attitude)
+h
+```
+The object `h` is a list of values for a histogram. 
+`breaks` = the boundary of bins.
+`counts` = frequencies for each bin.
+`density` = estimated density values.
+`mid` = midpoints for each bin.
+`equidist` = logical, if the bin sizes are equal. 
+
+R will automatically decide how to bins look like. If you want your histogram to look a certain way, you will use the argument `breaks`.
+There are multiple ways to use the argument `breaks` (see Help). We will use a vector to determine the boundary of the bins. 
+
+```{r customize histrogram}
+# First create a vector from 0 to 4 with a 0.25 step.
+b <- seq(0, 4, 0.25)
+b
+# Then use b in the argument breaks.
+hist(solar_data$attitude, breaks = b) # alternative: hist(solar_data$attitude, breaks = seq(0, 4, 0.25))
+
+
+# use col for color and ylim for the range of y-axis.
+hist(solar_data$attitude, breaks = seq(0, 4, 0.25), col = "lightsteelblue", ylim = c(0, 80))
+```
+
+See http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf for color names in R. 
+
+## Histogram with `ggplot2`
+For histogram `aes()`, we use `x = attitude` as we plot the value of attitude on the *x*-axis. Then we add a layer of `geom_histogram`.  
+By default, it will use 30 bins. 
+```{r histogram}
+ggplot(solar_data, aes(x = attitude)) +
+  geom_histogram() +  
+  theme_classic() 
+```
+
+We can specify a bin width using `binwidth`
+```{r}
+ggplot(solar_data, aes(x = attitude)) +
+  geom_histogram(binwidth = 0.5) +
+  theme_classic() 
+```
+
+We can also change a border and a filll color with `color` and `fill`.
+```{r}
+ggplot(solar_data, aes(x = attitude)) +
+  geom_histogram(binwidth = 0.5, color = "red", fill = "pink") + 
+  theme_classic()
+```
+
+### Histogram by groups
+
+Because historgram is plot on the x-axis, if we want to split histogram by groups, we need to create multiple of them and put them to gether using a facet layer `facet_wrap()`. 
+
+```{r facet wrap}
+ggplot(solar_data, aes(x = attitude)) +
+  geom_histogram(binwidth = .5,
+                 aes(y = ..density..), #plot density instead of frequency
+                 color = "black",
+                 fill = "steelblue") + 
+  facet_wrap(~ inno) + # create subplots by inno and put them together
+  theme_classic()
+```
+
+# Density Plot
+Density plot shows the probability density of the distribution.
+## Base R
+```{r density plot}
+plot(density(solar_data$attitude))
+```
+
+## `ggplot2`
+
+```{r ggplot density}
+ggplot(solar_data, aes(attitude)) +
+  geom_density(color = "red", fill = "pink") +
+  theme_classic()
+```
+
+We can overlay the density plot on the histogram plot by layer them together.
+```{r ggplot histogram with density}
+ggplot(solar_data, aes(attitude)) +
+  # histogram layer
+  geom_histogram(binwidth = .25, 
+                 aes(y = ..density..), #histogram of density
+                 color = "black", 
+                 fill = "white") +
+  # density plot layer
+  geom_density(alpha = .2, color = "forestgreen", fill = "forestgreen") + #alpha = transparent level
+  theme_classic() +
+  facet_wrap(~ inno)
+```
+
+# Violin Plot
+A violin plot is a hybrid between a density and a boxplot. 
+## Violin with `ggplot2`
+Violin plots are usualy used to compare distributions for each leve of a factor. For the `aes()`, we use `x = inno` to split plots by innovator groups. `y = attitude` to plot the distribution on the *y*-axis. `fill = inno` to fill color automatically by innovator groups. 
+```{r violin plot}
+ggplot(solar_data, aes(x = inno, y = attitude, fill = inno)) +
+  geom_violin() +
+  theme_classic()
+```
+
+## Violin plot with data points
+We can add `geom_jitter` layer to illustrate how data points distribute in the plot. 
+```{r violin plot with data}
+ggplot(solar_data, aes(x = inno, y = attitude, fill = inno)) +
+  geom_violin() +
+  geom_jitter(width = .15) + #width = 15% to keep most dots in each violin.
+  theme_classic()
+```
+
+# Resource: ggplot in datacamp.
+
+

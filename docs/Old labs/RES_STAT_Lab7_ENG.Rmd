@@ -1,0 +1,328 @@
+---
+title: 'Lab 7: Sampling Distribution and *z*-Test'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Sampling Distribution
+
+In this lab, you will learn about sampling distribution through a data simulation. 
+
+To illustrate the concept of sampling distribution, we will look at a population with a known mean ($\mu$) and standard deviation ($\sigma$). Remember that you almost never know actual population parameters in real life. This example is only for illustrative purpose. 
+
+Let's consider a dataset containing mood scores from a fictitious student *population* of 30,538 people. Load this dataset.
+```{r load, message = FALSE}
+library(psych)
+library(ggplot2) # for plots
+library(gridExtra) #for plots
+pop <- read.csv("data/RES_STAT_Lab7_data.csv")
+head(pop)
+```
+
+Now, let's imagine that you conduct a mood survey on 50 samples, randomly chosen from this population. 
+
+```{r sample stats}
+survey <- sample(pop$mood, 50)
+describe(survey) # sample statistics
+pop_mean <- mean(pop$mood) # Calculate population mean for later use.
+```
+
+Notice that your sample statistics (e.g., mean and SD) were a bit different from the population.
+
+```{r population parameters}
+describe(pop$mood) # Population parameters
+```
+
+These deviations are due to *smpling error* that occurs during a random sampling process. 
+
+## Sampling, sampling, sampling, .....
+
+Suppose that you repeat the survey again with 50 people for 10 more times.
+```{r small resampling, echo=FALSE, message=FALSE}
+m <- vector(mode = "numeric", 10)
+p <- list()
+for (i in 1:10) {
+  print(paste("Survey", i))
+  s <- sample(pop$mood, 50)
+  m[i] <- mean(s)
+  print(describe(s))
+  p[[i]] <- ggplot(data.frame(s), aes(x = s)) +
+      geom_histogram(aes(y = ..density..), binwidth = 0.5) +
+      geom_density(alpha = .5, color = "red", fill = "red") + 
+      # Pop mean
+      geom_vline(aes(xintercept = pop_mean), 
+                 color = "forestgreen", 
+                 linetype = "dashed") + 
+      annotate(geom = "text", 
+               x = pop_mean, y = .4, 
+               label = paste("mu ==", round(pop_mean, 2)), parse = TRUE,
+               color = "forestgreen") +
+      # Sample mean
+      geom_vline(aes(xintercept = mean(s)), color = "blue") +
+      annotate(geom = "text", 
+               x = mean(s), y = .1, 
+               label = paste("bar(X) ==", round(mean(s), 2)), parse = TRUE,
+               color = "blue") +
+      coord_cartesian(xlim = c(-1,7), ylim = c(0, .5)) +
+      labs(x = paste("Survey", i)) +
+      theme_classic()
+}
+do.call(grid.arrange,p)
+```
+
+As you can see, *statistics* of each survey (such as $\bar{X}$) varied from sample to sample. Nonetheless, most $\bar{X}s$ were close to $\mu$. 
+
+Behind the scene, we recored the means of each survey sample into a variable `m`.
+```{r sampling dist mean}
+# Here are the sample means of the ten surveys.
+m
+```
+You can plot them to see the sampling distribution of the means.
+```{r sampling dist plot, echo = FALSE}
+ggplot(data.frame(m), aes(m)) +
+  geom_histogram(binwidth = .1, aes(y = ..density..), color = "black") +
+  coord_cartesian(xlim = c(2.5, 4.5)) +
+  geom_vline(aes(xintercept = pop_mean), 
+             color = "forestgreen",
+             linetype = "dashed") +
+  annotate(geom = "text", x = pop_mean, y = 3.5, 
+           label = paste("mu ==", round(pop_mean,2)), parse = TRUE,
+           color = "forestgreen") +
+  labs(x = "Sample means") +
+  theme_classic()
+```
+
+For each sample, the sample mean was not exactly the same as the population mean due to *sampling error*. Most of the time, the sample means $\bar{X}$ were quite close to the population mean $\mu$. But occassionaly, you might get the sample means quite far away from the population means. The distribution of the sample means is called, the **sampling distribution of the sample mean** or **sampling distribution** for short. 
+
+According to the ***central limit theorem***, the sampling distribution will be normally distributed or a bell-shaped curve. We will demonstrate this with a simulation.
+
+Now imagine that you can keep conducting a survey of 50 people again and again for 10,000 times. We will record each sample mean into a variable `M`.
+
+```{r large resampling}
+# Sample 10,000 times
+M <- vector(mode = "numeric", 10000)
+for (i in 1:length(M)) {
+  s <- sample(pop$mood, 50)
+  M[i] <- mean(s)
+}
+head(M)
+```
+
+We could plot the sampling distribution. 
+
+```{r large sample dist, echo = FALSE}
+# Plot the sampling distribution
+ggplot(data.frame(M), aes(M)) +
+  geom_histogram(binwidth = .1, aes(y = ..density..)) +
+  coord_cartesian(xlim = c(2.5, 4.5)) +
+  geom_density() +
+  # population mean
+  geom_vline(aes(xintercept = pop_mean), 
+             color = "forestgreen",
+             linetype = "dashed") +
+  annotate(geom = "text", x = pop_mean, y = 2, 
+           label = paste("mu ==", (round(pop_mean, 2))), parse = TRUE,
+           color = "forestgreen") +
+  # sample mean
+  geom_vline(aes(xintercept = mean(M)), 
+             color = "blue") +
+  annotate(geom = "text", x = mean(M), y = 0, 
+           label = paste("bar(X) ==", (round(mean(M), 2))), parse = TRUE,
+           color = "blue") +
+  labs(x = "Sampling Distribution") +
+  theme_classic()
+```
+
+Now recall the mean and SD of the *population*.
+
+```{r pop m & sd, results = "hold"}
+mean(pop$mood)
+sd(pop$mood)
+```
+
+These are the mean and SD of the *sampling distribution*.
+
+```{r sample dist m & sd, results = "hold"}
+mean(M)
+sd(M) #SD of sampling distribtion is SE. 
+```
+
+The SD of the sample distribution gives you an idea how large is the sampling error. This is called the **standard error of the mean** or *SE*. 
+
+Remember that we have another way to estimate a standard error, $SE = \frac{\sigma}{\sqrt{n}}$. This should be similar to our simulated *SE* `sd(M)`. 
+```{r}
+se <- sd(pop$mood)/sqrt(50) #estimated SE
+se
+```
+
+Now remember that in a normal distrbituion, 95% of the data fall between ±1.96 SD.
+
+Therefore, in sampling distribution, 95% of sample means will be between ±1.96 SE. 
+
+This means that 9,500 from 10,000 samples will give you a sample mean between [`r round(-1.96*se + mean(pop$mood), 2)`, `r round(1.96*se + mean(pop$mood), 2)`].
+ 
+In other words, any values beyond that interval is very unlikely (less than 5%). 
+
+Here is how you calculate the lower limit and upper limit, $\mu ± 1.96SE$.  
+
+```{r LLUL, results = "hold"}
+LL <- mean(pop$mood) + (-1.96*se)
+UL <- mean(pop$mood) + (1.96*se)
+LL
+UL
+```
+
+
+```{r echo = FALSE }
+p <- ggplot(data.frame(M), aes(M)) +
+  coord_cartesian(xlim = c(2.5, 4.5)) +
+  geom_density() +
+  geom_vline(aes(xintercept = pop_mean), 
+             color = "forestgreen",
+             linetype = "dashed") +
+  annotate(geom = "text", x = pop_mean, y = 0, 
+           label = paste("mu ==", round(pop_mean, 2)), parse = TRUE,
+           color = "forestgreen") +
+  geom_vline(aes(xintercept = LL), color = "blue", linetype = "dashed") +
+  geom_vline(aes(xintercept = UL), color = "blue", linetype = "dashed") +
+  labs(x = "Sampling Distribution") +
+  theme_classic()
+
+# Extract data from ggplot
+d <- ggplot_build(p)$data[[1]]
+
+# Area within confidence interval
+p + geom_area(data = subset(d, x >= LL & x <= UL), aes(x=x, y=y), fill="red", alpha = .3)
+```
+
+# Probability of Sampling Distribution
+
+Let's assume that we conduct a survey again, but this time from an unknown population. Therefore, we are not sure if this sample came from our student population in the example above. 
+
+## Sample 1
+Suppose that your new survey sample has *M* = 3.57 (*N* = 50).
+```{r echo = FALSE}
+p <- ggplot(data.frame(M), aes(M)) +
+  coord_cartesian(xlim = c(2.5, 4.5)) +
+  geom_density() +
+  geom_vline(aes(xintercept = pop_mean), 
+             color = "forestgreen",
+             linetype = "dashed") +
+  annotate(geom = "text", x = pop_mean, y = 2.2, 
+           label = paste("mu ==", round(pop_mean, 2)), parse = TRUE,
+           color = "forestgreen") +
+  geom_vline(aes(xintercept = LL), color = "blue", linetype = "dashed") +
+  geom_vline(aes(xintercept = UL), color = "blue", linetype = "dashed") +
+  labs(x = "Sampling Distribution") +
+  theme_classic()
+
+# Extract data from ggplot
+d <- ggplot_build(p)$data[[1]]
+
+# Area within confidence interval
+p <- p + geom_area(data = subset(d, x >= LL & x <= UL), aes(x=x, y=y), fill="red", alpha = .3)
+# Add a dot
+p + annotate(geom = "point", x = 3.57, y = 0, color = "red") +
+  annotate(geom = "text", x = 3.57, y = .15, color = "red",
+           label = paste("bar(X) == ", 3.57), parse = TRUE)
+```
+
+The sample mean of 3.57 is still within the 95% of the sampling distribution. We therefore accept that the sample mean of 3.57 did not differ from the population mean of `r round(pop_mean, 2)`. It is possible that  sampling error occurs and we get the sample mean slightly larger than the population mean. 
+
+
+## Sample 2
+Let's consider another sample of *M* = 2.96 (*N* = 50).
+
+```{r echo = FALSE}
+# Add a dot
+p + annotate(geom = "point", x = 2.96, y = 0, color = "red") + 
+  annotate(geom = "text", x = 2.96, y = .15, color = "red",
+           label = paste("bar(X) == ", 2.96), parse = TRUE)
+```
+
+Now the sample mean lies outside the 95% interval, suggesting that this case happen less than 5 out of 100 times. It is very unlikely to obtain the sample mean this low *given that* the sample comes from this population. 
+
+At this point, we are confident to *infer* that *this sample may* ***NOT*** *come from this student population*. Could we be wrong? Yes, but less than 5% of the times. This 5% possibility of being wrong is called **Type I error**. Despite that, we are quite confident that this sample is unlikely from the student population. 
+
+# Null Hypothesis Testing
+
+Now that we know the *sampling distribution of the mean* will be normally distributed, we do not need to simulate the sampling distribution. Instead, we could compare our data to the *z*-distribution.
+
+If a sample came from the same population, the sample mean should be the same as the population mean. We call this a *null hypothesis*. 
+
+$$H_0: \bar{X} = \mu$$
+or $$H_0: \bar{X} - \mu = 0$$
+To test the difference between the sample mean and the population mean (when$\mu$ and $\sigma$ are known), we use *z*-test 
+$$z = \frac{\bar{X}-{\mu}}{SE} $$
+and $$SE = \frac{SD}{\sqrt{N}}$$
+
+We will conduct a *z*-test on Sample 2. Recall that
+```{r ztest}
+x_bar <- 2.96
+mu <- mean(pop$mood)
+se <- sd(pop$mood)/sqrt(50) #N = 50
+z <- (x_bar - mu)/se
+z
+```
+
+The critical *z*-value for $\alpha = .05$ is ±1.96. Our *z* value is much lower than -1.96. Therefore, we know that this sample mean of 2.96 is statistically significantly lower than the population mean of `r round(pop_mean,2)`. 
+
+You can find the *p*-value for this *z*-test by looking up the *z*-table.
+
+You will find that the *p*-value was lower than our $\alpha$ level at .05. 
+
+Therefore, we rejected the null hypothesis and concluded that the sample mean was significantly lower than the population mean. 
+
+
+
+# Visualizing
+
+```{r echo = FALSE}
+p <- ggplot(data = data.frame(x = c(2.5, 4.5)), aes(x)) +
+  stat_function(fun = dnorm, n = 1000, args = list(mean = pop_mean, sd = se)) + 
+  scale_y_continuous(breaks = NULL) +
+  geom_vline(aes(xintercept = pop_mean), 
+             color = "forestgreen",
+             linetype = "dashed") +
+  annotate(geom = "text", x = pop_mean, y = 2, 
+           label = paste("mu ==", round(pop_mean,2)), parse = TRUE,
+           color = "forestgreen") +
+  labs(x = "Sampling Distribution") +
+  theme_classic()
+
+# Extract data from ggplot
+d <- ggplot_build(p)$data[[1]]
+
+# Area within confidence interval
+p <- p + geom_area(data = subset(d, x >= LL & x <= UL), aes(x=x, y=y), fill="red", alpha = .3)
+# Add a dot
+p + annotate(geom = "point", x = 2.96, y = 0, color = "red") +
+  annotate(geom = "text", x = 2.96, y = .15, color = "red",
+           label = paste("bar(X) == ", 2.96), parse = TRUE)
+```
+
+## Survey 3: Use an R function
+
+Let's conduct a third survey with 120 samples.
+
+```{r echo = FALSE}
+sample3 <- rnorm(120, 3.8, 1)
+```
+We will use function `z.test` from the `BSDA` package. The main arguments in `z.test` are
+`x =` data,
+`mu =` population mean to test,
+`sigma.x =` population standard deviation.
+THe function will take care of the rest.
+
+```{r message = FALSE}
+library(BSDA)
+sample3
+z.test(x = sample3, mu = mean(pop$mood), sigma.x = sd(pop$mood))
+```
+
+
+
+
+

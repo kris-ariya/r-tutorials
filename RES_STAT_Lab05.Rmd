@@ -1,0 +1,152 @@
+---
+title: "Lab 05: Standard Scores"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: TRUE
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Load Data
+Save a data file and an R script in the same directory. Set working directory to Source File Location. 
+`setwd(dirname(rstudioapi::getSourceEditorContext()$path))`
+Then, load the data.
+
+```{r import data}
+solar_data <- read.csv("data/RES_STAT_Lab5_Data.csv")
+head(solar_data) ## view the first part of the data frame.
+```
+
+
+# Calculate *z*-scores
+
+For each *X*, its standardized score, *z*, can be calculated as
+$$z = \frac{X-\bar{X}}{s}$$
+
+### Manual method
+You can calculate *z*-score step by step.
+First, the top part of the equation $X-\bar{X}$ is called **mean centering**. That is, the value X is subtracted by the mean of X, `X - mean(X)`.  
+The mean of X is now the "center" (0) of the distribution. Each $X-\bar{X}$ represents how far each X is from the $\bar{X}$, i.e., a deviation score.   
+
+Then, the centered value is **scaled** to the SD of X, `X - mean(X)/sd(X)`. When the score is scaled to SD. It means that one unit change in the *z*-score represents one SD change in the raw score.   
+
+To standardize a variable, you will calculate *z*-scores for each row in that column.
+Let put it the calculated values in `z_kno_m` variable.   
+`z` for *z*-scores; `kno` for knowledge; and `m` for manual calculation.
+```{r manual z score}
+solar_data$z_kno_m <- (solar_data$knowledge - mean(solar_data$knowledge))/sd(solar_data$knowledge)
+head(solar_data$z_kno_m)
+```
+
+### `scale()` function
+The scale function will *center* the value by substracting the column mean. Then it *scales* the centered value by the column standard deviation.  
+Let create a variable name `z_kno_f`. `f` for function. 
+```{r scale function}
+solar_data$z_kno_f <- scale(solar_data$knowledge)
+head(solar_data$z_kno_f)
+```
+
+Are all values in the manual method equal to values from `scale()`?
+```{r compare manual and scale}
+all(solar_data$z_kno_m == solar_data$z_kno_f)
+```
+Both methods lead to the same results.
+
+# Outliers
+### Use *z*-score to determine outliers
+There are many methods to identify outliers. In this example, any values outside ±3 SD are considered outliers. Because *z*-scores are in a unit of SD, any *z* beyond ±3 will be marked as outliers.
+```{r all outliers index}
+outliers <- solar_data$z_kno_f > 3 | solar_data$z_kno_f < -3
+solar_data[outliers, ]
+```
+
+### *z*-score by group
+`z_kno_f` was calculated from the entire data set. This would be appropriate if we are looking at a homogenous group. However, it is not a case here. Our data contain subgroups of innovators `inno`. Therefore, we should find outilers *within* each group instead.  
+
+We will use `ave()` to calculate the z-score by group. `ave` is normally used to calculate means for subsets of X. However, you can specified the argument `FUN = ` to other functions, such as `sd()` or `scale()`. 
+
+The first argument in `ave()` is a numeric object to be calculated (`knowledge`). The second argument is a grouping variable (`inno`). The third argument `FUN =` is a function to by applied for each factor level (`FUN = scale`). 
+
+```{r z scores by group}
+solar_data$z_kno_g <- ave(solar_data$knowledge, solar_data$inno, FUN = scale)
+# wrong <- ave(solar_data$z_kno_f, solar_data$inno, FUN = scale)
+head(solar_data$z_kno_g)
+# head(wrong)
+```
+
+To check whether the code works correctly, we will calculate the mean and SD of the *z*-scores for each innovator group. The mean should be 0 and SD should be 1 for each group. 
+
+We will use `tapply` to apply `mean()` to each `inno` group. In `tapply`, the first argument is an input value. The second argument is a grouping variable (a factor). The third argument is a function to apply. 
+
+```{r mean and sd by group}
+tapply(solar_data$z_kno_g, solar_data$inno, mean)
+# The values contain very small decimals. Let's round them up to make them easier to read.
+round(tapply(solar_data$z_kno_g, solar_data$inno, mean))
+# Then calculate the SD
+tapply(solar_data$z_kno_g, solar_data$inno, sd)
+```
+
+With the mean = 0 and SD = 1 for each innovator group, it seems that the *z-score-by-group* code works correctly. 
+
+### Outliers by group
+Now we find outliers that have z-score beyond ±3. Because the *z*-scores were calculated for each innovator group, any values beyond ±3 are outliers for that group.
+```{r outliers by group}
+outliers_g <- solar_data$z_kno_g > 3 | solar_data$z_kno_g < -3
+solar_data[outliers_g, ]
+```
+
+In this case, we will remove outliers from the data.
+We will choose rows that are **NOT** outliers `!outliers_g`.
+
+```{r}
+
+solar_data_new <- solar_data[!outliers_g, ] # choose rows that are not outliers and choose all columns.
+nrow(solar_data) # Number of observation in the original data. 
+nrow(solar_data_new) # The number of observation should be reduced by 2 cases.
+```
+
+# Descriptives for each group
+
+We will use `describe()` from package `psych` to calculate means and SDs `by` each `inno` group.
+The first argument of `by` is an input data, `knowledge`. The second argument is a grouping factor, `inno`. The third argument is a function to apply, `describe`.
+
+```{r}
+library(psych)
+by(solar_data_new$knowledge, solar_data_new$inno, psych::describe)
+# We will create an object from the code above for future use.
+kno_table <- by(solar_data_new$knowledge, solar_data_new$inno, psych::describe)
+```
+
+The object `kno_table` from `by()` and `describe()` is a list. We will access its mean and SD values to calculate effect sizes.
+
+# Effect sizes
+
+An effect size is $\frac{X_1-X_2}{SD}$.
+
+We will need means of the two groups and an SD. 
+
+```{r}
+kno_table$innovators$mean # mean of the innovators group
+kno_table$laggards$mean # mean of the laggards group
+# For SD we will use the SD from the whole data set.
+sd_all <- sd(solar_data_new$knowledge)
+sd_all
+
+```
+
+Now we can calculate an effect size for each comparison.
+
+```{r}
+effect_size1 <- (kno_table$innovators$mean - kno_table$laggards$mean)/sd_all
+effect_size1
+effect_size2 <- (kno_table$innovators$mean - kno_table$`early adopters`$mean)/sd_all
+effect_size2
+effect_size3 <- (kno_table$`early majority`$mean - kno_table$laggards$mean)/sd_all
+effect_size3
+effect_size4 <- (kno_table$`early majority`$mean - kno_table$`late majority`$mean)/sd_all
+effect_size4
+
+```
+

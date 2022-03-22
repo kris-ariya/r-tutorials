@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 14: Moderation Analysis</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Tutorials</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    RES MTHD/STAT PSY Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="RES_STAT_Lab04.html">Lab 4: Descriptive Statistics</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab05.html">Lab 5: Standard Score</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab06.html">Lab 6: Visualizing Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab07.html">Lab 7: Sampling Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab08.html">Lab 8: Confidence Interval and t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab09.html">Lab 9: Correlation</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab10.html">Lab 10: Simple Regression</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab12.html">Lab 12: Dependent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab13.html">Lab 13: Independent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab14.html">Lab 14: Chi-Squared Test</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    EXPRM DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="EXPRM_Lab02.html">Lab 2: Randomization</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab03.html">Lab 3: Power and Sample Size</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab04.html">Lab 4: One-way ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab05.html">Lab 5: Multiple Comparisons</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab07.html">Lab 7: Factorial ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab09.html">Lab 9: Data Visualization with ggplot2</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab10.html">Lab 10: Repeated-Measures ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab11.html">Lab 11: Factorial ANOVA in Repeated-Measures Design</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab12.html">Lab 12: Means Comparison in Regression</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab13.html">Lab 13: ANCOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab14.html">Lab 14: Moderation Analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    SURVEY DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="SURVEY_Lab08.html">Lab 08: Data Cleaning</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Lab 14: Moderation Analysis</h1>
+
+</div>
+
+
+<pre class="r"><code># load all libraries for this tutorial
+library(emmeans)
+library(carData)
+library(ggplot2)</code></pre>
+<div id="categorical-by-continuous-variables" class="section level1">
+<h1>Categorical by Continuous Variables</h1>
+<p>ใน tutorial นี้ เราจะใช้ข้อมูล <code>Salaries</code> จาก carData package ซึ่งเป็นข้อมูลเงินเดือนของอาจารย์มหาวิทยาลัยในสหรัฐอเมริกา เพื่อศึกษาปัญหาความไม่เท่าเทียมกันระหว่างอาจารย์ชายและหญิง</p>
+<p>ข้อมูลนี้มีตัวแปรที่จะใช้ในการวิเคราะห์นี้ ได้แก่</p>
+<p><code>salary</code> เงินดือน</p>
+<p><code>sex</code> เพศ แบ่งเป็น <code>Female</code> และ <code>Male</code></p>
+<p><code>yrs.service</code> จำนวนปีที่ทำงาน</p>
+<pre class="r"><code>data(&quot;Salaries&quot;)
+str(Salaries)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    397 obs. of  6 variables:
+##  $ rank         : Factor w/ 3 levels &quot;AsstProf&quot;,&quot;AssocProf&quot;,..: 3 3 1 3 3 2 3 3 3 3 ...
+##  $ discipline   : Factor w/ 2 levels &quot;A&quot;,&quot;B&quot;: 2 2 2 2 2 2 2 2 2 2 ...
+##  $ yrs.since.phd: int  19 20 4 45 40 6 30 45 21 18 ...
+##  $ yrs.service  : int  18 16 3 39 41 6 23 45 20 18 ...
+##  $ sex          : Factor w/ 2 levels &quot;Female&quot;,&quot;Male&quot;: 2 2 2 2 2 2 2 2 2 1 ...
+##  $ salary       : int  139750 173200 79750 115000 141500 97000 175000 147765 119250 129000 ...</code></pre>
+</div>
+<div id="linear-model" class="section level1">
+<h1>Linear Model</h1>
+<p>การวิเคราะห์เริ่มด้วยการสร้างโมเดลสมการเชิงเส้นตรงด้วยคำสั่ง <code>lm()</code> โดยสามารถกำหนดให้วิเคราะห์ปฏิสัมพันธ์ด้วยเครื่องหมาย <code>*</code> ระหว่างตัวแปรทำนาย เช่น <code>x1 * x2</code> หรือ เขียนตัวแปรที่ต้องการใส่ไว้ในโมเดลทีละตัว เช่น <code>x1 + x2 + x1:x2</code> เครื่องหมาย <code>:</code> ใช้สร้าง interaction term ระหว่างตัวแปร</p>
+<pre class="r"><code>salary.lm &lt;- lm(salary ~ yrs.service * sex, Salaries)
+salary.lm2 &lt;- lm(salary ~ yrs.service + sex + yrs.service:sex, Salaries) # same analysis
+identical(salary.lm$coefficients, salary.lm2$coefficients) #same results</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>summary(salary.lm2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = salary ~ yrs.service + sex + yrs.service:sex, data = Salaries)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -80381 -20258  -3727  16353 102536 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)       92132.8     3995.6  23.059  &lt; 2e-16 ***
+## yrs.service        1171.4      267.6   4.377 1.54e-05 ***
+## sex1             -10064.3     3995.6  -2.519   0.0122 *  
+## yrs.service:sex1    465.9      267.6   1.741   0.0825 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 28420 on 393 degrees of freedom
+## Multiple R-squared:  0.1266, Adjusted R-squared:  0.1199 
+## F-statistic: 18.98 on 3 and 393 DF,  p-value: 1.622e-11</code></pre>
+<p>ผลการวิเคราะห์แสดงค่าสัมประสิทธิ์ถดถอยแต่ละตัว</p>
+<p><code>Intercept</code> คือค่าทำนายตัวแปร Y (เงินเดือน) หากจำนวนปีที่ทำงาน <code>yrs.service</code>เป็น 0 และเป็นเพศหญิง <code>sex = 0</code></p>
+<p>ค่าความชันของ <code>yrs.service</code> แสดงให้เห็นว่าเมื่ออายุงานเพิ่มขึ้น 1 ปี เงินเดือนจะเพิ่มขึ้น $1,637.3 อย่างมีนัยสำคัญทางสถิติ ในกลุ่มอาจารย์ผู้หญิง (<code>sex = 0</code>)</p>
+<p>ค่าความชันของ <code>sex</code> คือค่าความแตกต่างระหว่างเพศชายและหญิง หากควบคุมให้อายุงานเป็น 0 ปี จากโมเดลนี้เราจะทำนายได้ว่าผู้ชายจะได้เงินเดือนสูงกว่าผู้หญิงตอนเริ่มงานใหม่ $20,128.6</p>
+<p><code>yrs.service:sex</code> คือ ค่าความแตกต่างความชันระหว่างปีที่ทำงานและเงินเดือน เมื่อเทียบกับกลุ่มอ้างอิง (เพศหญิง) ค่าตัวนี้แสดงถึงปฏิสัมพันธ์ระหว่างตัวแปรทำนายทั้งสองตัว กล่าวคือความสัมพันธ์ระหว่างเงินเดือนกับอายุงานนั้นขึ้นอยู่กับเพศ โดยพบว่าความชันระหว่างอายุงานกับเงินเดือนในกลุ่มตัวอย่างชาย น้อยกว่าความชันในกลุ่มตัวอย่างหญิง (ความชันของกลุ่มเปรียบเทียบน้อยกว่ากลุ่มควบคุม จึงมีค่าติดลบ) แสดงให้เห็นว่ากลุ่มตัวอย่างหญิงจะมีอัตราการเพิ่มของเงินเดือนที่สูงกว่าผู้ชาย อย่างไรก็ดีค่าสัมประสิทธิ์ตัวนี้ไม่ถึงระดับนัยสำคัญทางสถิติ จึงยังไม่สามารถสรุปอะไรได้ชัดเจน</p>
+<p>โดยปกติแล้ว หากไม่พบ interaction ในการทดลองผู้วิจัยไม่ควร probe interaction ต่อเพราะอาจเสี่ยงให้เกิด Type I error ขึ้น แต่ในกรณีนี้เราจะใช้ตัวอย่างนี้ต่อเพื่อสาธิตการใช้งาน R</p>
+<div id="emmeans" class="section level3">
+<h3>EMMEANS</h3>
+<p>เมื่อมีตัวแปรต่อเนื่อง <code>W</code> ในโมเดล หากผู้วิจัยต้องการคำนวณ EM means ของอิทธิพลตัวแปร <code>X</code> ในแต่ละช่วงของตัวแปร <code>W</code> เรามักนิยมกำหนดให้ควบคุมค่าตัวแปรต่อเนื่อง <code>W</code> ไว้ที่ -1 SD, Mean, +1 SD ให้ง่ายต่อการเปรียบเทียบ</p>
+<p>เช่น ต้องการเปรียบเทียบว่า เงินเดือนชายหญิงแตกต่างกันหรือไม่ในกลุ่มคนเริ่มทำงาน (-1SD) กลุ่มทำงานมาระยะหนึ่งแล้ว (Mean) กลุ่มที่ทำงานมานานแล้ว (+1SD)</p>
+<p>เราจะต้องสร้าง list ขึ้นมาเพื่อบรรจุรายละเอียดของการวิเคราะห์เข้าไป โดยกำหนดให้ วิเคราะห์ที่ <code>yrs.service</code> มี [ค่าน้อยกว่าค่าเฉลี่ย 1 SD] [ค่าเฉลี่ย] และ [ค่ามากกว่าค่าเฉลี่ย 1 SD] นอกจากนี้ยังกำหนดด้วยว่าจะให้เทียบตัวแปรเพศโดยให้ <code>female</code> เป็นกลุ่มอ้างอิง (ให้ใส่กลุ่มอ้างอิงไว้ข้างหลัง [ต่างจากคำสั่ง <code>factor()</code>])</p>
+<p>ตอนที่สร้าง <code>emmeans()</code> จะต้องเพิ่มตัวเลือก <code>at = list()</code> โดยใช้ list ที่สร้างไว้ก่อนนี้มากำหนดค่าที่ต้องการเปรียบเทียบ</p>
+<pre class="r"><code>at_value &lt;- list(yrs.service = c(mean(Salaries$yrs.service) - sd(Salaries$yrs.service), #-1SD
+                          mean(Salaries$yrs.service), # Mean
+                          mean(Salaries$yrs.service) + sd(Salaries$yrs.service)  #+1 SD
+                         ), #yearof
+                sex = c(&quot;Male&quot;, &quot;Female&quot;))  #Order for mean comparison,i.e., Order 1 - Order 2
+salary.emm &lt;- emmeans(salary.lm2,  ~ sex | yrs.service, at = at_value )</code></pre>
+<p>เมื่อเราใช้คำสั่ง <code>summary()</code> หรือ <code>contrast()</code> เราจะเห็นว่าการเปรียบเทียบจะเกิดขึ้นตามตำแหน่ง <code>yrs.service</code> ที่เรากำหนดไว้</p>
+<pre class="r"><code>summary(salary.emm)  # estimated (adjusted) mean</code></pre>
+<pre><code>## yrs.service =  4.61:
+##  sex    emmean    SE  df lower.CL upper.CL
+##  Male   105449  2161 393   101200   109697
+##  Female  89614  5826 393    78161   101067
+## 
+## yrs.service = 17.61:
+##  sex    emmean    SE  df lower.CL upper.CL
+##  Male   114625  1504 393   111669   117582
+##  Female 110909  5542 393   100013   121805
+## 
+## yrs.service = 30.62:
+##  sex    emmean    SE  df lower.CL upper.CL
+##  Male   123802  2056 393   119760   127844
+##  Female 132204 10957 393   110663   153744
+## 
+## Confidence level used: 0.95</code></pre>
+<pre class="r"><code>contrast(salary.emm, &quot;pairwise&quot;, by = &quot;yrs.service&quot;)</code></pre>
+<pre><code>## yrs.service =  4.61:
+##  contrast      estimate    SE  df t.ratio p.value
+##  Male - Female    15835  6213 393   2.548  0.0112
+## 
+## yrs.service = 17.61:
+##  contrast      estimate    SE  df t.ratio p.value
+##  Male - Female     3716  5743 393   0.647  0.5179
+## 
+## yrs.service = 30.62:
+##  contrast      estimate    SE  df t.ratio p.value
+##  Male - Female    -8402 11148 393  -0.754  0.4515</code></pre>
+<p>เราใช้คำสั่ง <code>emmip</code> เพื่อสร้าง interaction plot คำสั่งนี้จะมีโครงสร้าง <code>emmip(object, formula, at, CIs)</code></p>
+<p><code>object</code> เป็นโมเดลที่ถูกสร้างจากคำสั่งเช่น <code>lm()</code> หรือ <code>aov()</code></p>
+<p><code>fomula</code> เป็นสูตรเพื่อบอกคำสั่งว่าจะให้วาดกราฟอย่างไร โดยกำหนดให้อยู่ในรูป <code>w ~ x</code> โดย <code>x</code> คือตัวแปรที่ต้องการให้ปรากฏบนแกนนอน และ <code>w</code> คือตัวแปรที่ต้องการให้พล็อตแยกระดับ</p>
+<p><code>at</code> เป็น list ที่ใช้กำหนดจุดที่จะเปรียบเทียบ</p>
+<p><code>CIs</code> เป็น logical ว่าจะให้แสดง error bar 95% CI หรือไม่</p>
+<pre class="r"><code>emmip(salary.lm2, yrs.service ~ sex, at = at_value, CIs = TRUE)</code></pre>
+<p><img src="EXPRM_Lab14_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="looking-from-the-other-angle" class="section level2">
+<h2>Looking from the other angle</h2>
+<p>เราสามารถมองภาพของปฏิสัมพันธ์นี้จากอีกมุมหนึ่งได้ ซึ่งอาจจะช่วยให้เห็นภาพความสัมพันธ์ระหว่างเวลาการทำงานกับเงินเดือนใแต่ละเพศได้ชัดเจนกว่า นั่นคือ การวิเคราะห์ดูค่าความชันอย่างง่าย (simple slopes) ของระยะเวลาทำงาน โดยแบ่งตามเพศ</p>
+<p>ในการทดสอบความชัน จะใช้คำสั่ง <code>emtrends(object, specs, var)</code></p>
+<p><code>object</code> คือ โมเดลจากการวิเคราะห์เชิงเส้น เช่น <code>lm()</code></p>
+<p><code>specs</code> คือ ข้อกำหนดว่าจะเปรียบเทียบแบ่งตามตัวแปรใด เช่น <code>~ sex</code> แต่ถ้าหากใส่ <code>pairwise ~ sex</code> คำสั่งจะทดสอบความแตกต่างของค่าความชันให้ด้วย</p>
+<p><code>var</code> คือ ตัวแปร x ที่เราต้องการหาความชัน</p>
+<pre class="r"><code>emtrends(salary.lm2, pairwise ~ sex, var = &quot;yrs.service&quot;)</code></pre>
+<pre><code>## $emtrends
+##  sex    yrs.service.trend  SE  df lower.CL upper.CL
+##  Female              1637 523 393      609     2666
+##  Male                 706 114 393      482      929
+## 
+## Confidence level used: 0.95 
+## 
+## $contrasts
+##  contrast      estimate  SE  df t.ratio p.value
+##  Female - Male      932 535 393   1.741  0.0825</code></pre>
+<pre class="r"><code>emmip(salary.lm2, sex ~ yrs.service, at = at_value, CIs = TRUE)</code></pre>
+<p><img src="EXPRM_Lab14_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>เราจะเห็นได้ว่าในกลุ่มผู้หญิง เมื่ออายุงานเพิ่ม 1 ปี เงินเดือนจะเพิ่มขึ้น $1637 ส่วนกลุ่มผู้ชายจะเพิ่มขึ้น $706 ค่าความชันทั้งสองนี้แตกต่างกัน $932 (ซึ่งเท่ากับค่าสัมประสิทธิ์การถดถอยของปฏิสัมพันธ์และสถิติทดสอบเหมือนกับการวิเคราะห์ <code>summary(salary.lm2)</code> เพียงแค่กลับสัญลักษณ์เนื่องจากวิธีตั้งค่ากลุ่มอ้างอิงของแต่ละคำสั่ง)</p>
+<p>สำหรับกราฟเปรียบเทียบความชันจะเห็นภาพความสัมพันธ์ระหว่างอายุงานกับเงินเดือนของแต่ละเพศได้อย่างชัดเจน</p>
+<div id="plot" class="section level3">
+<h3>Plot</h3>
+<p>ใช้ ggplot2 เพื่อสร้างกราฟที่มีความสวยงามมากขึ้น</p>
+<pre class="r"><code>emm.summary &lt;- summary(salary.emm)
+ggplot(emm.summary, aes(x = yrs.service, y = emmean, color = sex)) + 
+  geom_point(position = position_dodge(.2)) +
+  geom_line(aes(group = sex), position = position_dodge(.2)) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = .3, position = position_dodge(.2)) + 
+  xlab(&quot;Year of Service&quot;) +
+  ylab(&quot;Salary&quot;) +
+  theme_classic() +
+  scale_color_brewer(palette=&quot;Set1&quot;)</code></pre>
+<p><img src="EXPRM_Lab14_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

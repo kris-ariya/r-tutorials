@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 13: Analysis of Covariance</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Tutorials</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    RES MTHD/STAT PSY Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="RES_STAT_Lab04.html">Lab 4: Descriptive Statistics</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab05.html">Lab 5: Standard Score</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab06.html">Lab 6: Visualizing Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab07.html">Lab 7: Sampling Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab08.html">Lab 8: Confidence Interval and t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab09.html">Lab 9: Correlation</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab10.html">Lab 10: Simple Regression</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab12.html">Lab 12: Dependent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab13.html">Lab 13: Independent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab14.html">Lab 14: Chi-Squared Test</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    EXPRM DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="EXPRM_Lab02.html">Lab 2: Randomization</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab03.html">Lab 3: Power and Sample Size</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab04.html">Lab 4: One-way ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab05.html">Lab 5: Multiple Comparisons</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab07.html">Lab 7: Factorial ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab09.html">Lab 9: Data Visualization with ggplot2</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab10.html">Lab 10: Repeated-Measures ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab11.html">Lab 11: Factorial ANOVA in Repeated-Measures Design</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab12.html">Lab 12: Means Comparison in Regression</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab13.html">Lab 13: ANCOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab14.html">Lab 14: Moderation Analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    SURVEY DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="SURVEY_Lab08.html">Lab 08: Data Cleaning</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Lab 13: Analysis of Covariance</h1>
+
+</div>
+
+
+<pre class="r"><code># load all libraries for this tutorial
+library(datarium)
+library(dplyr)
+library(emmeans)
+library(afex)
+library(ggplot2)</code></pre>
+<p>Tutorial นี้จะแสดงวิธีการวิเคราะห์ความแปรปรวนร่วม (ANCOVA)</p>
+<div id="one-way-ancova" class="section level1">
+<h1>One-way ANCOVA</h1>
+<p>ในตัวอย่างนี้ เราจะใช้ข้อมูล <code>stress</code> จาก datarium package</p>
+<p>ข้อมูลนี้เป็นการทดลองว่า <code>treatment</code> และ <code>exercise</code> มีผลต่อ <code>score</code> หรือไม่ โดยมี <code>age</code> เป็น covariate</p>
+<p>ตัวแปรทุกตัวได้รับตั้งค่าประเภทตัวแปรแล้ว</p>
+<pre class="r"><code>data(stress)
+str(stress)</code></pre>
+<pre><code>## tibble [60 × 5] (S3: tbl_df/tbl/data.frame)
+##  $ id       : int [1:60] 1 2 3 4 5 6 7 8 9 10 ...
+##  $ score    : num [1:60] 95.6 82.2 97.2 96.4 81.4 83.6 89.4 83.8 83.3 85.7 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Cholesterol concentration (in mmol/L)&quot;
+##   ..- attr(*, &quot;format.spss&quot;)= chr &quot;F8.2&quot;
+##   ..- attr(*, &quot;display_width&quot;)= int 9
+##  $ treatment: Factor w/ 2 levels &quot;yes&quot;,&quot;no&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ exercise : Factor w/ 3 levels &quot;low&quot;,&quot;moderate&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ age      : num [1:60] 59 65 70 66 61 65 57 61 58 55 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Body weight (in kg)&quot;
+##   ..- attr(*, &quot;format.spss&quot;)= chr &quot;F8.2&quot;</code></pre>
+<div id="afex" class="section level2">
+<h2>afex</h2>
+<p>ในการวิเคราะห์ความแปรปรวนร่วมทางเดียว เราจะใช้ <code>treatment</code> เป็นตัวแปรอิสระ และ <code>age</code> เป็น covariate</p>
+<p>โมเดลคือ ตัวแปรสองตัวนี้ร่วมกันอธิบายตัวแปรตาม <code>score</code> จึงใช้ <code>treatment + age</code></p>
+<p>ใช้ option <code>factorize = FALSE</code> เนื่องจากคำสั่ง <code>aov_car</code> จะแปลงตัวแปรเป็น factor โดยอัตโนมัติ เผื่อในกรณีที่ผู้ใช้ลืมแปลงตัวแปรเป็น factor (ถ้าหากไม่กำหนด option นี้ <code>aov_car</code> จะพยายามแปลง <code>age</code> เป็น factor แล้วทำให้เกิด error)</p>
+<pre class="r"><code>one.ancova.afex &lt;- aov_car(score ~ treatment + age + Error(id), data = stress, factorize = FALSE)</code></pre>
+<pre><code>## Warning: Numerical variables NOT centered on 0 (i.e., likely bogus results): age</code></pre>
+<pre class="r"><code>summary(one.ancova.afex)</code></pre>
+<pre><code>## Anova Table (Type 3 tests)
+## 
+## Response: score
+##           num Df den Df    MSE       F      ges    Pr(&gt;F)    
+## treatment      1     57 45.132  4.9182 0.079431   0.03058 *  
+## age            1     57 45.132 21.3676 0.272658 2.218e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>nice(one.ancova.afex, es = &quot;pes&quot;) #short summary with partial eta square</code></pre>
+<pre><code>## Anova Table (Type 3 tests)
+## 
+## Response: score
+##      Effect    df   MSE         F  pes p.value
+## 1 treatment 1, 57 45.13    4.92 * .079    .031
+## 2       age 1, 57 45.13 21.37 *** .273   &lt;.001
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;+&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>จะเห็นว่ามีคำเตือนว่าตัวแปรเชิงตัวเลข ไม่ถูกแปลงเป็นค่ากึ่งกลาง (centered variable; ค่าตัวแปรที่ลบออกด้วยค่าเฉลี่ยของตัวมันเอง) การแปลงเป็นค่ากึ่งกลางจะช่วยให้ค่า intercept แสดงถึงค่าเฉลี่ยของกลุ่มอ้างอิง (reference group) เมื่อควบคุมให้ covariate อยู่ที่ค่าเฉลี่ย ซึ่งไม่ใช่สิ่งที่เราสนใจในกรณีนี้ เราจึงไม่ต้องสนใจคำเตือนนี้ก็ได้ (หากต้องการลองวิเคราะห์โดยใช้ค่าที่ center แล้ว สามารถใช้คำสั่ง <code>scale()</code> เพื่อแปลงตัวแปร <code>age</code> เป็นค่ากึ่งกลางก่อนนำไปวิเคราะห์ข้อมูล)</p>
+<div id="emmeans" class="section level3">
+<h3>EMMEANS</h3>
+<p>ค่าเฉลี่ยประมาณตามขอบ (estimated marginal means) เป็นค่าเฉลี่ยของเงื่อนไขแต่ละกลุ่มเมื่อควบคุมค่าตัวแปรร่วม <code>age</code> ให้คงที่ที่ค่าเฉลี่ยของตัวมันเอง</p>
+<p>สังเกตว่าค่า emmeans และค่าเฉลี่ยที่ยังไม่ปรับของแต่ละกลุ่ม จะแตกต่างกันเล็กน้อย</p>
+<pre class="r"><code>one.ancova.emm &lt;- emmeans(one.ancova.afex, ~ treatment)
+summary(one.ancova.emm)  # estimated (adjusted) mean</code></pre>
+<pre><code>##  treatment emmean   SE df lower.CL upper.CL
+##  yes         82.6 1.23 57     80.2     85.1
+##  no          86.5 1.23 57     84.0     89.0
+## 
+## Confidence level used: 0.95</code></pre>
+<pre class="r"><code>by(stress$score, stress$treatment, mean) # raw (unadjusted mean)</code></pre>
+<pre><code>## stress$treatment: yes
+## [1] 82.15667
+## -------------------------------------------------------------------------------------------- 
+## stress$treatment: no
+## [1] 86.99667</code></pre>
+<pre class="r"><code>pairs(one.ancova.emm) #pariwise comparison</code></pre>
+<pre><code>##  contrast estimate   SE df t.ratio p.value
+##  yes - no    -3.87 1.75 57  -2.218  0.0306</code></pre>
+</div>
+<div id="plot" class="section level3">
+<h3>Plot</h3>
+<pre class="r"><code>emm.summary &lt;- summary(one.ancova.emm)
+ggplot(emm.summary, aes(x = treatment, y = emmean)) + 
+  geom_col(alpha = .5, position = position_dodge(.9)) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = .3, position = position_dodge(.9)) + 
+  xlab(&quot;Treatment&quot;) +
+  ylab(&quot;Score&quot;) +
+  ylim(c(0,100)) +
+  theme_classic()</code></pre>
+<p><img src="EXPRM_Lab13_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+</div>
+<div id="base-r-lm" class="section level2">
+<h2>base R: lm()</h2>
+<p>การวิเคราะห์ ANCOVA เป็นกรณีพิเศษของ regression เราสามารถใช้ <code>lm()</code> ในการวิเคราะห์ได้เช่นกัน</p>
+<p>แต่ผลการวิเคราะห์จาก <code>summary()</code> ของ <code>lm()</code> นั้นจะอยู่ในรูปแบบ output สำหรับ regression</p>
+<p>ค่า coefficient ของ <code>treatment</code> คือความแตกต่างของค่าเฉลี่ยในสองเงื่อนไขโดยมี <code>no</code> เป็นกลุ่มอ้างอิง ค่านี้จะสอดคล้องกับการเปรียบเทียบรายคู่ด้านบน (แต่กลับทิศทางเป็นบวก)</p>
+<pre class="r"><code>one.ancova.lm &lt;- lm(score ~ treatment + age, data = stress)
+summary(one.ancova.lm) # summary in regression styled output</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = score ~ treatment + age, data = stress)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -13.1490  -5.1796   0.2194   4.6729  13.8482 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  28.5673    12.1477   2.352   0.0222 *  
+## treatment1   -1.9373     0.8736  -2.218   0.0306 *  
+## age           0.9343     0.2021   4.623 2.22e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 6.718 on 57 degrees of freedom
+## Multiple R-squared:  0.3384, Adjusted R-squared:  0.3152 
+## F-statistic: 14.58 on 2 and 57 DF,  p-value: 7.712e-06</code></pre>
+<pre class="r"><code>anova(one.ancova.lm) # use type I sum of squares ##AVOID this for most of the time</code></pre>
+<pre><code>## Analysis of Variance Table
+## 
+## Response: score
+##           Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
+## treatment  1  351.38  351.38  7.7857   0.00715 ** 
+## age        1  964.36  964.36 21.3676 2.218e-05 ***
+## Residuals 57 2572.52   45.13                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>หากเราใช้ <code>anova</code> วิเคราะห์โมเดลนี้ เราจะได้ค่า <em>F</em> ที่แตกต่างจากผลด้านบน เนื่องจากคำสั่ง <code>anova()</code> ของ R นั้นใช้ Type I SS</p>
+</div>
+<div id="homogeneity-of-regression-assumptions" class="section level2">
+<h2>Homogeneity of Regression Assumptions</h2>
+<p>การวิเคราะห์ความแปรปรวนร่วม มีข้อสมมติพื้นฐานข้อหนึ่งคือ ค่า slope ระหว่างตัวแปรร่วมและตัวแปรตาม จะเท่ากันในทุกเงื่อนไขของตัวแปรอิสระ กล่าวคือ slope ของ covariate และ DV ในแต่ละเงื่อนไขการทดลองจะต้องขนานกัน</p>
+<p>การที่ slope ขนานกันในทุกเงื่อนไขคือการบอกว่าตัวแปรอิสระและตัวแปรร่วม นั้นไม่มีปฏิสัมพันธ์กัน</p>
+<p>เราสามารถทดสอบได้โดยการสร้างโมเดลที่มีการทดสอบปฏิสัมพันธ์ของตัวแปรอิสระและตัวแปรร่วม <code>treatment * age</code></p>
+<pre class="r"><code>one.ancova.afex2 &lt;- aov_car(score ~ treatment * age + Error(id), data = stress, factorize = FALSE)</code></pre>
+<pre><code>## Warning: Numerical variables NOT centered on 0 (i.e., likely bogus results): age</code></pre>
+<pre class="r"><code>summary(one.ancova.afex2)</code></pre>
+<pre><code>## Anova Table (Type 3 tests)
+## 
+## Response: score
+##               num Df den Df    MSE       F      ges    Pr(&gt;F)    
+## treatment          1     56 44.453  2.3110 0.039633    0.1341    
+## age                1     56 44.453 23.5415 0.295965 1.015e-05 ***
+## treatment:age      1     56 44.453  1.8705 0.032322    0.1769    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>เราพบว่าปฏิสัมพันธ์ระหว่างตัวแปรอิสระและตัวแปรร่วมไม่มีนัยสำคัญทางสถิติ ข้อสมมติฐานพื้นฐานนี้ไม่ถูกละเมิด เราจึงเลือกที่จะใช้ผลจากการวิเคราะห์ ANCOVA <code>one.ancova.afex</code> ตัวแรกด้านบน</p>
+</div>
+</div>
+<div id="two-way-ancova" class="section level1">
+<h1>Two-way ANCOVA</h1>
+<p>การวิเคราะห์ตัวแปรร่วมสามารถทำใน factorial design ก็ได้ ใน factorial design นี้มีตัวแปรอิสระแบบจัดประเภทสองตัว คือ <code>treatment</code> และ <code>exercise</code> ส่วนตัวแปรร่วมคือ <code>age</code></p>
+<pre class="r"><code>two.ancova &lt;- aov_car(score ~ treatment * exercise + age + Error(id), data = stress, factorize = FALSE)</code></pre>
+<pre><code>## Warning: Numerical variables NOT centered on 0 (i.e., likely bogus results): age</code></pre>
+<pre class="r"><code>summary(two.ancova)</code></pre>
+<pre><code>## Anova Table (Type 3 tests)
+## 
+## Response: score
+##                    num Df den Df    MSE       F     ges    Pr(&gt;F)    
+## treatment               1     53 24.848 11.0657 0.17272  0.001603 ** 
+## exercise                2     53 24.848 20.7147 0.43873 2.254e-07 ***
+## age                     1     53 24.848  9.1097 0.14667  0.003903 ** 
+## treatment:exercise      2     53 24.848  4.4458 0.14366  0.016409 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>nice(two.ancova, es = &quot;pes&quot;)</code></pre>
+<pre><code>## Anova Table (Type 3 tests)
+## 
+## Response: score
+##               Effect    df   MSE         F  pes p.value
+## 1          treatment 1, 53 24.85  11.07 ** .173    .002
+## 2           exercise 2, 53 24.85 20.71 *** .439   &lt;.001
+## 3                age 1, 53 24.85   9.11 ** .147    .004
+## 4 treatment:exercise 2, 53 24.85    4.45 * .144    .016
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;+&#39; 0.1 &#39; &#39; 1</code></pre>
+<div id="homogeneity-of-regression" class="section level3">
+<h3>Homogeneity of regression</h3>
+<pre class="r"><code>two.ancova2 &lt;- aov_car(score ~ treatment * exercise * age + Error(id), data = stress, factorize = FALSE)</code></pre>
+<pre><code>## Warning: Numerical variables NOT centered on 0 (i.e., likely bogus results): age</code></pre>
+<pre class="r"><code>summary(two.ancova2)</code></pre>
+<pre><code>## Anova Table (Type 3 tests)
+## 
+## Response: score
+##                        num Df den Df   MSE      F      ges  Pr(&gt;F)  
+## treatment                   1     48 27.08 0.0650 0.001351 0.79991  
+## exercise                    2     48 27.08 0.0900 0.003734 0.91413  
+## age                         1     48 27.08 4.5622 0.086796 0.03781 *
+## treatment:exercise          2     48 27.08 0.1097 0.004549 0.89634  
+## treatment:age               1     48 27.08 0.0082 0.000171 0.92821  
+## exercise:age                2     48 27.08 0.0745 0.003094 0.92834  
+## treatment:exercise:age      2     48 27.08 0.0730 0.003034 0.92967  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>ตัวแปร age ไม่มีปฏิสัมพันธ์กับตัวแปรอิสระใด ๆ และไม่มีปฏิสัมพันธ์สามทาง จึงไม่ละเมิดเรื่อง homogeneity of regression เราจึงเลือกใช้ผลการวิเคราะห์จาก โมเดล ANCOVA <code>treatment * exercise + age</code> ได้</p>
+</div>
+<div id="emmeans-1" class="section level3">
+<h3>EMMEANS</h3>
+<p>ค่าเฉลี่ยประมาณตามขอบในการวิเคราะห์นี้เป็นค่าตัวแปรตามที่ถูกควบคุมเมื่อตัวแปรร่วม <code>age</code> คงที่อยู่ที่ค่าเฉลี่ย</p>
+<p>วิธีการสร้าง emmeans และการเปรียบเทียบรายคู่ ทำเหมือน factorial ANOVA ตามปกติ ค่าที่ได้จะเป็นค่าจากโมเดลซึ่งควบคุมตัวแปรร่วมแล้ว</p>
+<pre class="r"><code>two.ancova.emm &lt;- emmeans(two.ancova, ~ treatment | exercise)
+mean(stress$age) # control age at its mean</code></pre>
+<pre><code>## [1] 59.95</code></pre>
+<pre class="r"><code>summary(two.ancova.emm)</code></pre>
+<pre><code>## exercise = low:
+##  treatment emmean   SE df lower.CL upper.CL
+##  yes         87.0 1.60 53     83.8     90.2
+##  no          88.5 1.62 53     85.3     91.7
+## 
+## exercise = moderate:
+##  treatment emmean   SE df lower.CL upper.CL
+##  yes         87.0 1.58 53     83.8     90.2
+##  no          88.7 1.59 53     85.5     91.9
+## 
+## exercise = high:
+##  treatment emmean   SE df lower.CL upper.CL
+##  yes         73.3 1.65 53     70.0     76.6
+##  no          83.0 1.61 53     79.8     86.3
+## 
+## Confidence level used: 0.95</code></pre>
+<pre class="r"><code>pairs(two.ancova.emm)</code></pre>
+<pre><code>## exercise = low:
+##  contrast estimate   SE df t.ratio p.value
+##  yes - no    -1.53 2.23 53  -0.685  0.4961
+## 
+## exercise = moderate:
+##  contrast estimate   SE df t.ratio p.value
+##  yes - no    -1.68 2.25 53  -0.748  0.4575
+## 
+## exercise = high:
+##  contrast estimate   SE df t.ratio p.value
+##  yes - no    -9.75 2.23 53  -4.362  0.0001</code></pre>
+<p>หากต้องการประมาณค่าเฉลี่ยตามขอบ (ค่าเฉลี่ยของแต่ละเงื่อนไข) โดยกำหนดค่าตัวแปรควบคุมเป็นค่าอื่น สามารถใช้ option <code>at = list()</code> กำหนดค่าของตัวแปรควบคุมที่ต้องการได้</p>
+<pre class="r"><code>emmeans(two.ancova, ~ treatment | exercise, at = list(age = 30))</code></pre>
+<pre><code>## exercise = low:
+##  treatment emmean   SE df lower.CL upper.CL
+##  yes         71.9 5.52 53     60.8     83.0
+##  no          73.4 5.58 53     62.2     84.6
+## 
+## exercise = moderate:
+##  treatment emmean   SE df lower.CL upper.CL
+##  yes         71.9 5.18 53     61.5     82.3
+##  no          73.6 5.47 53     62.6     84.6
+## 
+## exercise = high:
+##  treatment emmean   SE df lower.CL upper.CL
+##  yes         58.2 4.77 53     48.6     67.8
+##  no          67.9 4.91 53     58.1     77.8
+## 
+## Confidence level used: 0.95</code></pre>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 08: Confidence interval and t-test</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Tutorials</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    RES MTHD/STAT PSY Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="RES_STAT_Lab04.html">Lab 4: Descriptive Statistics</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab05.html">Lab 5: Standard Score</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab06.html">Lab 6: Visualizing Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab07.html">Lab 7: Sampling Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab08.html">Lab 8: Confidence Interval and t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab09.html">Lab 9: Correlation</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab10.html">Lab 10: Simple Regression</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab12.html">Lab 12: Dependent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab13.html">Lab 13: Independent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab14.html">Lab 14: Chi-Squared Test</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    EXPRM DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="EXPRM_Lab02.html">Lab 2: Randomization</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab03.html">Lab 3: Power and Sample Size</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab04.html">Lab 4: One-way ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab05.html">Lab 5: Multiple Comparisons</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab07.html">Lab 7: Factorial ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab09.html">Lab 9: Data Visualization with ggplot2</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab10.html">Lab 10: Repeated-Measures ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab11.html">Lab 11: Factorial ANOVA in Repeated-Measures Design</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab12.html">Lab 12: Means Comparison in Regression</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab13.html">Lab 13: ANCOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab14.html">Lab 14: Moderation Analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    SURVEY DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="SURVEY_Lab08.html">Lab 08: Data Cleaning</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Lab 08: Confidence interval and t-test</h1>
+<h4 class="date">Mar 13, 2022</h4>
+
+</div>
+
+
+<pre class="r"><code># Load packages for this script.
+library(ggplot2)
+library(BSDA)
+library(psych)</code></pre>
+<div id="ชวงความเชอมน-confidence-interval" class="section level1">
+<h1>ช่วงความเชื่อมั่น (Confidence Interval)</h1>
+<p>ในแบบฝึกหัดที่แล้ว เราได้ทำความเข้าใจหลักการของช่วงความเชื่อมั่นจากการสร้างช่วงที่ครอบคลุม 95% ของการแจกแจงค่าตัวอย่าง (sampling distribution) รอบ ๆ ค่าเฉลี่ยประชากร <span class="math inline">\(\mu\)</span> โดยอาศัยความน่าจะเป็นภายใต้โค้งปกติ (normal distribution) ช่วงดังกล่าวช่วยให้เรารู้ได้ว่าโดยส่วนใหญ่แล้ว (95%) ความคลาดเคลื่อนในการสุ่มจะทำให้เราได้ค่าเฉลี่ยตัวอย่างอยู่ระหว่างค่าใด</p>
+<p>แต่ทว่าวิธีการดังกล่าวนั้นไม่สามารถนำมาใช้ได้ในการทดสอบทางสถิติตามปกติ เนื่องจากในการศึกษาวิจัยนั้น เราแทบจะไม่สามารถทราบได้เลยว่าค่าเฉลี่ยประชากรแท้จริงแล้วมีค่าเท่าใด นั่นคือเราไม่รู้ <span class="math inline">\(\mu\)</span> แต่รู้เฉพาะค่าเฉลี่ยของกลุ่มตัวอย่าง <span class="math inline">\(\bar{X}\)</span></p>
+<p>เพื่อประมาณค่า <span class="math inline">\(\mu\)</span> เราจะใช้ค่าเฉลี่ยกลุ่มตัวอย่าง <span class="math inline">\(\bar{X}\)</span> แล้วสร้าง<strong>ช่วงความเชื่อมั่น (confidence interval)</strong> รอบ ๆ ค่า <span class="math inline">\(\bar{X}\)</span> โดยหวังว่าขนาดของช่วงที่กว้างถึง 95% ของโค้งปกติ (normal หรือ <em>z</em> distribution) น่าจะครอบคลุมค่า <span class="math inline">\(\mu\)</span></p>
+<p>ตามหลักการกระจายตัวใต้โค้งปกติ 95% ของข้อมูลรอบค่าเฉลี่ยจะอยู่ระหว่าง ±1.96 <em>SD</em> ในกรณีของ sampling distribution ก็คือ ±1.96 <em>SE</em> นั่นเอง เราจึงสามารถคำนวณค่าช่วงความเชื่อมั่นที่ระดับ 95% (95% confidence interval) ได้ดังนี้</p>
+<p><span class="math display">\[\text{95% CI} = \bar{X} ± 1.96SE\]</span></p>
+<p>นั่นคือ หากเราสุ่มกลุ่มตัวอย่างมาหนึ่งร้อยครับ (แต่ละครั้ง <span class="math inline">\(\bar{X}\)</span> คลาดเคลื่อนไปมากบ้างน้อยบ้าง) แล้วสร้างช่วงระหว่าง ±1.96 <em>SE</em> (นั่นคือ 95 % ใต้โค้งปกติ) จะมี 95 ครั้งที่ช่วงดังกล่าวจะครอบคลุมค่าเฉลี่ยประชากร <span class="math inline">\(\mu\)</span></p>
+<p>เราสามารถจำลองข้อมูลเพื่อให้เห็นภาพมากขึ้น สมมติว่าเราไปสุ่มกลุ่มตัวอย่าง 900 คน จากประชากรที่มี <span class="math inline">\(\mu = 50\)</span> และ <span class="math inline">\(\sigma\)</span> = 9.</p>
+<ol style="list-style-type: decimal">
+<li>เราสุ่มกลุ่มตัวอย่าง 900 คนจากประชากร แล้วคำนวณค่าเฉลี่ยของกลุ่มตัวอย่างแต่ละกลุ่ม</li>
+<li>จากนั้นใช้ค่า <span class="math inline">\(\sigma\)</span> เพื่อคำนวณค่า SE และช่วง 95% CI รอบค่าเฉลี่ยของกลุ่มตัวอย่างแต่ละกลุ่ม</li>
+<li>ทำซ้ำ 100 ครั้งและนำข้อมูลมาสร้างกราฟด้านล่าง</li>
+<li>บันทึกข้อมูลในตัวแปรชื่อ <code>sim</code></li>
+</ol>
+<p>กราฟด้านล่างจะแสดงค่าเฉลี่ยและ 95% CI ของกลุ่มตัวอย่างในการจำลองแต่ละรอบ (เรียงตั้งแต่ครั้งที่ 1 ถึง 100 จากล่างขึ้นบน) เห็นได้ว่าในการสุ่มตัวอย่างแต่ละครั้ง เราจะได้ค่า <span class="math inline">\(\bar{X}\)</span> ต่างกันไปในแต่ละครั้ง แต่ค่าเฉลี่ยกลุ่มตัวอย่างเหล่านี้ก็กระจายอยู่รอบ ๆ ค่าเฉลี่ยประชากร <span class="math inline">\(\mu\)</span></p>
+<pre class="r"><code>head(sim)</code></pre>
+<pre><code>##   survey_id     mean       sd        se       LL       UL contain
+## 1         1 49.94889 9.268652 0.3089551 49.34335 50.55443    TRUE
+## 2         2 50.10460 9.270810 0.3090270 49.49892 50.71029    TRUE
+## 3         3 50.44799 9.015943 0.3005314 49.85896 51.03702    TRUE
+## 4         4 50.58498 9.257960 0.3085987 49.98014 51.18983    TRUE
+## 5         5 50.17681 9.015126 0.3005042 49.58783 50.76578    TRUE
+## 6         6 49.79891 9.122816 0.3040939 49.20290 50.39493    TRUE</code></pre>
+<p><img src="RES_STAT_Lab08_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>ในการจำลอง 100 ครั้ง เส้นสีฟ้าแทนการจำลองครั้งที่ค่า 95% CI ครอบคลุมค่า <span class="math inline">\(\mu\)</span> ส่วนเส้นสีแดงแทนครั้งที่กลุ่มตัวอย่างคลาดเคลื่อนไปจน 95% CI ไม่ครอบคลุม <span class="math inline">\(\mu\)</span></p>
+<p>การจำลอง 100 ครั้งนี้ทำให้เราเห็นได้ว่า แม้ว่าเราจะสุ่มกลุ่มตัวอย่างจากประชากรเดียวกัน แต่เราพบ 5 ครั้ง (สีแดง)ที่เกิดความคลาดเคลื่อนจากการสุ่มจนทำให้ค่าเฉลี่ยกลุ่มตัวอย่าง <span class="math inline">\(\bar{X}\)</span> ที่ได้แตกต่างไปจากค่าเฉลี่ยประชากร <span class="math inline">\(\mu\)</span> จนถึงระดับนัยสำคัญทางสถิติ (นั่นคือ เราพบว่า <span class="math inline">\(\bar{X}\)</span> แตกต่างกับค่าที่เราคิดว่าเป็น <span class="math inline">\(\mu\)</span> มากเสียจนเราเชื่อว่ากลุ่มตัวอย่างนี้แตกต่างจากประชากรที่เราต้องการทดสอบ) แต่ในความเป็นจริงแล้วความแตกต่างดังกล่าวเป็นเพียงแค่ความคลาดเคลื่อนทางสถิติ ความผิดพลาดนี้เรียกว่า Type I Error ซึ่งเรากำหนดไว้ว่าไม่ควรเกิน 5% (<span class="math inline">\(\alpha = .05\)</span>) นั่นหมายความว่า หากเราเลือกใช้ 95% CI เราจะมั่นใจได้ว่า Type I error จะอยู่ที่ไม่เกิน 5% (นั่นคือ หากแท้จริงแล้วกลุ่มตัวอย่างของเราไม่ได้แตกต่างจากประชากร จะมีโอกาสเพียง 5% เท่านั้นที่เราจะบังเอิญได้ <span class="math inline">\(\bar{X}\)</span> ที่แตกต่างไปจาก <span class="math inline">\(\mu\)</span> จนถึงระดับนัยสำคัญทางสถิติ)</p>
+<p>ดังนั้นค่า 95% CI จึงช่วยบอกช่วงที่เรามั่นใจได้ว่า ความคลาดเคลื่อนทางสถิติส่วนใหญ่จะอยู่ในช่วงนี้ เราจึง<em>อนุมาน</em>ต่อไปว่าช่วงดังกล่าวน่าจะครอบคลุมค่าเฉลี่ยประชากร <span class="math inline">\(\mu\)</span></p>
+<div id="การคำนวณ-ci-ดวยมอ" class="section level2">
+<h2>การคำนวณ CI ด้วยมือ</h2>
+<p>สมมติให้เรามีกลุ่มตัวอย่าง <em>M</em> = 50.5, <em>SD</em> = 9, <em>N</em> = 900.</p>
+<pre class="r"><code>m &lt;- 50.5
+sd &lt;- 9
+n &lt;- 900
+se &lt;- sd/sqrt(n)</code></pre>
+<p>ช่วงความเชื่อมั่น 95% จะอยู่ระหว่าง ±1.96 <em>SE</em> รอบค่าเฉลี่ย เราสามารถคำนวณหาขอบเขตล่าง (lower limit; <em>LL</em>) และขอบเขตบนได้ (upper limit; <em>UL</em>)</p>
+<pre class="r"><code>LL &lt;- m - (1.96 * se) # Lower limit
+UL &lt;- m + (1.96 * se) # Upper limit
+print(paste0(&quot;95% CI [&quot;, LL,&quot;, &quot;, UL, &quot;]&quot;))</code></pre>
+<pre><code>## [1] &quot;95% CI [49.912, 51.088]&quot;</code></pre>
+<p><img src="RES_STAT_Lab08_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>หากเราต้องการทดสอบว่ากลุ่มตัวอย่างนี้มาจากประชากรที่มี <span class="math inline">\(\mu = 50\)</span> หรือไม่ เราสามารถลองเทียบช่วงดังกล่าวกับ sampling distribution ของ <span class="math inline">\(\mu = 50\)</span> ได้</p>
+<p><img src="RES_STAT_Lab08_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>สังเกตว่า</p>
+<ol style="list-style-type: decimal">
+<li>ช่วงความเชื่อมั่น 95 CI% [49.912, 51.088] นั้นครอบคลุมค่า <span class="math inline">\(\mu = 50\)</span></li>
+<li>ในขณะเดียวกัน หากมองจากมุมของ sampling distribution ของ <span class="math inline">\(\mu = 50\)</span> ค่าเฉลี่ยกลุ่มตัวอย่าง <span class="math inline">\(\bar{X}\)</span> ที่ 50.5 ก็ยังอยู่ในพื้นที่ใต้กราฟสีแดง</li>
+</ol>
+<p>เนื่องจากช่วงความเชื่อมั่นถูกคำนวนมาจาก <em>SE</em> เดียวกัน ทั้งมุมมอง 1 และ 2 ก็คือการทดสอบเดียวกัน ได้ผลลัพธ์ไม่แตกต่างกัน</p>
+<p>กล่าวคือ เมื่อเราพบว่าช่วง 95% CI ของค่าเฉลี่ยกลุ่มตัวอย่างนั้นครอบคลุมค่าที่เราต้องการทดสอบสมมติฐาน (<span class="math inline">\(\mu = 50\)</span>) แสดงว่า <em>หากกลุ่มตัวอย่างนี้มาจากประชากรที่มีค่าเฉลี่ยเท่ากับ 50 จริง</em> ค่า 50.5 นั้นยังอยู่ในช่วง 95% ของความคลาดเคลื่อนทางสถิติ เราจึงยัง<strong>ไม่สามารถสรุป</strong>ได้ว่าค่า 50.5 นี้ แตกต่างจาก 50 อย่างมีนัยสำคัญทางสถิติ (นั่นคือเรา<em>อนุมาน</em>ว่าค่า 50.5 นี้เป็นเพียงแค่ sampling error บน assumption ว่ากลุ่มตัวอย่างไม่ต่างจากประชากร )</p>
+<p>การคำนวณค่า 95% CI ที่แสดงมาข้างต้นนี้ใช้ค่าความน่าจะเป็นใต้การแจงแจงโค้งปกติ (normal หรือ <em>z</em>-distribution) ดังนั้นผลการทดสอบนี้ ก็คือการทดสอบด้วย <em>z</em>-test นั่นเอง</p>
+<pre class="r"><code>zsum.test(m, sd, n, mu = 50)</code></pre>
+<pre><code>## 
+##  One-sample z-Test
+## 
+## data:  Summarized x
+## z = 1.6667, p-value = 0.09558
+## alternative hypothesis: true mean is not equal to 50
+## 95 percent confidence interval:
+##  49.91201 51.08799
+## sample estimates:
+## mean of x 
+##      50.5</code></pre>
+</div>
+</div>
+<div id="t-test" class="section level1">
+<h1><em>t</em>-test</h1>
+<p>อย่างไรก็ดี การคำนวณค่า 95% CI หรือการใช้ z-test ก็มีข้อจำกัดอยู่ เนื่องจากการใช้ normal หรือ z-distribution นั้นจำเป็นต้องใช้ส่วนเบี่ยงเบนมาตรฐานของประชากร <span class="math inline">\(\sigma\)</span> และค่า z เป็นการแจกแจงระดับประชากร เมื่อเอามาใช้กับกลุ่มตัวอย่างขนาดเล็กจะทำให้เรา<em>ประมาณค่าความคลาดเคลื่อนต่ำเกินไป</em> กล่าวคือ ข้อมูลกลุ่มตัวอย่างที่เราศึกษามักจะ</p>
+<ol style="list-style-type: decimal">
+<li>ไม่ทราบความแปรปรวนประชากร (population variance <span class="math inline">\(\sigma^2\)</span>)</li>
+<li>กลุ่มตัวอย่างมีขนาดเล็ก</li>
+</ol>
+<p>จึงมีการคิดค้นการแจกแจงแบบ t-distribution ขึ้นมาเพื่อแก้ไขปัญหาดังกล่าว โดยที่การแจกแจงแบบ t นั้นจะเปลี่ยนรูปร่างไปตามขนาดของ degree of freedom (ซึ่งคำนวณมาจากกลุ่มตัวอย่างอีกที)</p>
+<p>นั่นคือในกรณีที่กลุ่มตัวอย่างมีขนาดเล็ก ค่าวิกฤติ (critical value) ของสถิติ <em>t</em> จะถูกปรับเพื่อรองรับความคลาดเคลื่อนที่มากขึ้น (เกณฑ์การถึงระดับนัยสำคัญสูงขึ้น) และ เมื่อกลุ่มตัวอย่างมีขนาดใหญ่ขึ้น จะค่อย ๆ มีค่าคล้ายกับสถิติ <em>z</em> มากขึ้น ดังกราฟการแจกแจงด้านล่าง</p>
+<p><img src="RES_STAT_Lab08_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>เห็นได้ว่าการแจกแจงแบบ t นั้นจะแบนราบกว่าการแจกจงแบบ z ส่งผลให้ช่วง 95% นั้นกว้างกว่า โดยรูปร่างของการแจกแจง t นั้นจะขึ้นอยู่กับ degrees of freedom (<em>df</em>) ซึ่งคำนวณมาจากจำนวนกลุ่มตัวอย่าง</p>
+<p>กราฟด้านล่างแสดงให้เห็นว่าค่าวิกฤติของ <em>t</em> distribution เมื่อ <em>df</em> น้อยกว่านั้น มีช่วงกว้างกว่า เมื่อ <em>df</em> มีจำนวนมาก และเมื่อค่า <em>df</em> มากขึ้น ค่า critical ก็เข้าใกล้ค่า ±1.96 ของ <em>z</em> distribution</p>
+<p><img src="RES_STAT_Lab08_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>สำหรับ <em>df</em> = 10 ค่า <em>t</em> วิกฤติ = ±2.228.<br />
+สำหรับ <em>df</em> = 300 ค่า <em>t</em> วิกฤติ = ±1.968.<br />
+เมื่อกลุ่มตัวอย่างมากขึ้น ค่า <em>t</em> วิกฤติจะเข้าใกล้ค่า <em>z</em> วิกฤติ (±1.96)</p>
+<div id="one-sample-t-test" class="section level2">
+<h2>One sample <em>t</em>-test</h2>
+<p>การทดสอบด้วยสถิติ t แบบกลุ่มตัวอย่างเดียว เป็นการทดสอบค่าเฉลี่ยกับค่าที่ต้องการทดสอบ (เช่น 0 หรือค่าที่เราเชื่อว่าเป็น <span class="math inline">\(\mu\)</span>)</p>
+<p>ลองสมมติตัวอย่างการวิจัยที่ต้องการทดสอบว่านักเรียนอ่านหนังสือถึง 2 ชั่วโมงต่อวันหรือไม่ โดยเก็บข้อมูลว่านักเรียนใช้เวลาอ่านหนังสือจริงเท่าไหร่</p>
+<p>ให้ <em>M</em><sub>dailyreading</sub> = 93.07 นาที, <em>SD</em> = 61.14, <em>N</em> = 54.</p>
+<p>ข้อมูลอยู่ในตัวแปรที่ชื่อว่า <code>reading</code>.</p>
+<pre class="r"><code>reading</code></pre>
+<pre><code>##  [1]  18  74 170  18  59  52 174   0  38 106  34 210  28  35 266 118 103 200 110  16 115 162 123  83  29  95  44 135 109
+## [30]  80 215  36  22  98 123 153 158   1   0  41 100  65 156 138  71 133  98  38  43 111 143 126  58  95</code></pre>
+<pre class="r"><code>psych::describe(reading)</code></pre>
+<pre><code>##    vars  n  mean    sd median trimmed   mad min max range skew kurtosis   se
+## X1    1 54 93.07 61.14   96.5   89.23 73.39   0 266   266 0.51    -0.27 8.32</code></pre>
+<p>เราต้องการทดสอบว่าค่าเฉลี่ยกลุ่มตัวอย่างนี้แตกต่างจากค่าที่เราตั้งสมมติฐานไว้ คือ 2 ชั่วโมงหรือ 120 นาทีต่อวันหรือไม่ <span class="math display">\[H_0: \mu = 120\]</span> หรือ <span class="math display">\[H_0: \mu - 120 = 0\]</span></p>
+<p>เราทดสอบด้วยสถิติ <em>t</em><br />
+<span class="math display">\[t = \frac{\bar{X} - 120}{SE}\]</span> โดย <span class="math inline">\(SE = \frac{SD}{\sqrt{N}}\)</span></p>
+<pre class="r"><code>n &lt;- length(reading)
+se &lt;- sd(reading)/sqrt(n)
+t &lt;- (mean(reading)-120)/se
+se
+## [1] 8.320529
+t
+## [1] -3.236083</code></pre>
+<p>เราสามารถนำค่า t นี้ไปตรวจกับตาราง t distribution หรือนำไปเข้าเครื่องคำนวณค่าสถิติตามเว็บไซต์ต่าง ๆ (ค้นหา t test calculator) โดยใช้ค่า <span class="math inline">\(df = N - 1\)</span> หรือ 54 - 1 = 53 โดยเราจะพบว่าค่าสถิติดังกล่าวแสดงว่า เวลาในการอ่านหนังสือของนักเรียนน้อยกว่า 120 นาทีอย่างมีนัยสำคัญทางสถิติที่ระดับ <em>p</em> &lt; .05</p>
+</div>
+<div id="confidence-interval" class="section level2">
+<h2>Confidence interval</h2>
+<p>ในการสร้างช่วงความเชื่อมั่น 95% ของค่าเฉลี่ยกลุ่มตัวอย่างใน t-test เราไม่สามารถใช้ช่วง ±1.96 SE ของ z-distribution ได้ เราต้องใช้ค่าวิกฤติของ t distribution แทน</p>
+<p>คำสั่ง <code>qt</code> จะแสดงค่า <em>t</em> ตามค่า <em>p</em> ที่เราต้องการ ในการทดสอบแบบสองหาง เราต้องการหาค่าวิกฤติ <em>t</em> ที่ตรงจุดความน่าจะเป็นที่ <em>p</em> = .025 และ <em>p</em> = .975</p>
+<pre class="r"><code>df &lt;- n - 1 # degrees of freedom
+LL &lt;- mean(reading) + (qt(.025, df) * se) #Lower limit
+UL &lt;- mean(reading) + (qt(.975, df) * se) #Upper limit
+LL
+## [1] 76.38521
+UL
+## [1] 109.7629</code></pre>
+<p><img src="RES_STAT_Lab08_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>ช่วงความเชื่อมั่น 95% ไม่ครอบคลุมค่าที่ต้องการทดสอบ (120 นาที) ซึ่งสอดคล้องกับผลที่พบว่านักเรียนอ่านหนังสือน้อยกว่า 120 นาทีอย่างมีนัยสำคัญทางสถิติ</p>
+</div>
+<div id="t.test-function" class="section level2">
+<h2><code>t.test</code> function</h2>
+<p>เราสามารถใช้คำสั่ง <code>t.test</code> เพื่อทดสอบค่าเฉลี่ยได้ สำหรับ t-test แบบกลุ่มตัวอย่างเดียว (one sample t-test) ต้องการ input argument สองตัว <code>t.test(x, mu)</code> คือ <code>x</code> ที่เป็นข้อมูล และ <code>mu</code> ที่เป็นค่าเฉลี่ยตามสมมติฐานที่ต้องการจะทดสอบ</p>
+<pre class="r"><code>t.test(reading, mu = 120) #default is a two-tailed test. </code></pre>
+<pre><code>## 
+##  One Sample t-test
+## 
+## data:  reading
+## t = -3.2361, df = 53, p-value = 0.002091
+## alternative hypothesis: true mean is not equal to 120
+## 95 percent confidence interval:
+##   76.38521 109.76294
+## sample estimates:
+## mean of x 
+##  93.07407</code></pre>
+<pre class="r"><code>t.test(reading, mu = 120, alternative = &quot;less&quot;) #alternative lets you run a one-tailed test with &quot;less&quot; or &quot;greater&quot;.</code></pre>
+<pre><code>## 
+##  One Sample t-test
+## 
+## data:  reading
+## t = -3.2361, df = 53, p-value = 0.001045
+## alternative hypothesis: true mean is less than 120
+## 95 percent confidence interval:
+##      -Inf 107.0036
+## sample estimates:
+## mean of x 
+##  93.07407</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

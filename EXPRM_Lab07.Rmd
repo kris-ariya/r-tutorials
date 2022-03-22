@@ -1,0 +1,276 @@
+---
+title: 'Lab 07: Factorial ANOVA'
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: TRUE
+---
+
+```{r}
+# load all libraries for this tutorial
+library(car)
+library(ggplot2)
+library(afex)
+library(effectsize)
+library(psych)
+library(apaTables)
+library(jmv)
+library(emmeans)
+```
+
+เราจะใช้การวิเคราะห์ความแปรปรวนแบบแฟกทอเรียลในกรณีที่มีปัจจัย (factor) ที่ต้องการศึกษาตั้งแต่สองปัจจัยขึ้นไป
+
+# Two-way ANOVA
+
+การวิเคราะห์ความแปรปรวนสองทางใช้ในกรณีที่มีปัจจัยที่เป็นตัวแปรอิสระสองตัว ในตัวอย่างนี้เราจะใช้ชุดข้อมูล `ToothGrowth` ที่มีอยู่แล้วใน R
+
+ชุดข้อมูลนี้มาจากการศึกษาความยาวของเซลล์ที่เกี่ยวข้องกับการเติบโตของฟันในหนูตะเภา ตัวแปรอิสระตัวแรกคือโดสของวิตามินซีที่ได้รับในแต่ละวัน (0.5, 1, และ 2 มิลลิกรัม/วัน) โดยมีตัวแปรอิสระตัวที่สองคือ แหล่งที่มาของวิตามิน ได้แก่ น้ำส้ม (OJ) หรือ กรดแอสคอร์บิกที่มีวิตามินซี (VC)
+
+```{r}
+mydata <- ToothGrowth
+mydata$id <- 1:nrow(mydata) #add id column
+mydata
+```
+
+# Data Preparation
+
+ใช้คำสั่ง `str()` เพื่อตรวจสอบว่าโครงสร้างของข้อมูลเป็นไปตามที่ต้องการหรือไม่
+
+ในกรณีนี้พบว่าตัวแปร dose นั้นถูกบันทึกเป็น `num` จึงต้องแปลงให้เป็น `factor` ให้เรียบร้อย กำหนด `levels` และ `labels` ให้ตรงกับที่ต้องการจะให้ปรากฎเวลาวิเคราะห์ข้อมูล
+
+```{r}
+str(mydata)
+mydata$dose <- factor(mydata$dose, levels = c(0.5, 1, 2), labels = c("D0.5", "D1", "D2"))
+str(mydata)
+```
+
+# Descriptive Statistics
+
+ลำดับต่อไปคือการตรวจสอบค่าสถิติพื้นฐาน เช่น ค่าเฉลี่ย ส่วนเบี่ยงเบนมาตรฐาน จำนวนกลุ่มตัวอย่าง เป็นต้น
+
+```{r}
+# checking sample size
+table(mydata$supp, mydata$dose)
+```
+
+ในกรณีนี้เรามีกลุ่มตัวอย่างเท่ากันในทุกช่อง (balanced design)
+
+สำหรับสถิติเชิงพรรณาให้ใช้คำสั่ง `describeBy()` จาก package `psych` เพื่อตรวจสอบค่าต่าง ๆ เช่น ค่าสูงสุดต่ำสุด ว่าข้อมูลมีจุดผิดพลาดอะไรหรือไม่
+
+ส่วนคำสั่ง `apa.2way.table()` เหมาะสำหรับใช้สร้างตารางเป็นไฟล์ Word เพื่อนำไปใช้เขียนรายงาน
+
+```{r}
+describeBy(len ~ supp * dose, data = mydata) # This will give us detailed descriptive stats by group
+
+apa.2way.table(dv = len, iv1 = supp, iv2 = dose , data = mydata, filename = "twowaydesciptive.doc")
+```
+
+# Quick Visualization
+
+เพื่อให้เห็นภาพของข้อมูลโดยรวม การใช้วาดกราฟจะช่วยได้เป็นอย่างดี ในจุดนี้เราไม่ต้องการภาพที่สวยงานแค่ใช้พิจารณาข้อมูลได้ก็เพียงพอ
+
+เราสามาถใช้ `boxplot()` ใน Base R หรือใช้ `ggplot()` ก็ได้
+
+```{r}
+boxplot(len ~ supp * dose, data = mydata, col = c("dodgerblue", "lightyellow"))
+
+ggplot(mydata, aes(x = supp, y = len, fill = dose)) +
+  geom_boxplot()
+```
+
+# Two-way ANOVA
+
+ในขั้นตอนการวิเคราะห์ความแปรปรวนสองทางนี้ เราต้องระมัดระวังว่าจะเลือกใช้คำสั่งใด เพราะแต่ละคำสั่งจะใช้วิธีคำนวณ SS ละคนประเภทกัน
+
+ในตัวอย่างนี้ ข้อมูลเป็นแบบ balanced ผลของ SS Type I, II, และ III จะเท่ากัน แต่หากกลุ่มตัวอย่างไม่เท่ากัน การเลือกใช้ SS Type ที่แตกต่างกันจะทำให้ได้ผลที่ไม่เหมือนกันไปด้วย
+
+## Base R (Type I SS)
+
+สำหรับการวิเคราะห์ที่มีตัวแปรต้นตั้งแต่สองตัวขึ้นไป ควรหลีกเลี่ยงการสร้างโมเดล `aov` ใน R เพราะเป็นวิธีที่ใช้ Type I SS ซึ่งมักจะไม่เหมาะสมในการทดสอบสมมติฐานใน unbalanced design
+
+```{r}
+tooth.aov <- aov(len ~ supp * dose, data = mydata)
+summary(tooth.aov)
+```
+
+หากต้องการคำนวณโดยใช้ Type III SS เรามีทางเลือกหลัก ๆ 3 วิธี
+
+## Option 1: `car` package
+
+ใช้คำสั่ง `Anova()` ใน `car` (สังเกตว่าใช้ A ตัวพิมพ์ใหญ่)
+
+เพื่อจะใช้งานคำสั่งนี้ เราจะต้องสร้างโมเดลเชิงเส้นตรง (linear model) ด้วยคำสั่ง `lm()`
+
+ในส่วนโมเดล เราจะเขียน `y ~ x1 * x2` หรือ `y ~ x1 + x2 + x1:x2` ก็ได้ (ได้ผลเหมือนกัน)
+
+นอกจากนี้ให้กำหนดตัวเลือก `contrast` เป็น `contr.sum` สำหรับตัวแปรอิสระทั้งสองตัว เมื่อทำตามนี้แล้วจะได้โมเดลที่ให้ผลเท่ากับการวิเคราะห์ ANOVA (ANOVA เป็นกรณีเฉพาะแบบหนึ่งของ linear model)
+
+สำหรับคำสั่ง `Anova()` นั้นจะมี input เป็นโมเดล `lm` ที่เราสร้างขึ้น และมี option `type` ให้กำหนดชนิดของ SS
+
+เราสามารถเรียกคำสั่ง `Anova()` เพื่อดูผลได้เลย หรือ save เป็นตัวแปรเพื่อใช้งานในอนาคตต่อไปก็ได้
+
+```{r}
+tooth.lm <- lm(len ~ supp + dose + supp:dose, data = mydata, 
+               contrast = list(supp = contr.sum, dose = contr.sum)) # same as aov
+
+# Type I
+anova(tooth.lm) # Base R function. Notice the small a.
+
+# Type III
+tooth.Anova <- Anova(tooth.lm, type = 3)
+tooth.Anova # car function. Capital A. 
+
+```
+
+## Option 2: `afex` package
+
+อีกทางเลือกหนึ่งคือใช้ `afex` (Analysis of Factorial Experiments) ซึ่งออกแบบมาเพื่อการวิเคราะห์ ANOVA ที่ซับซ้อนโดยเฉพาะ ในระดับโปรแกรมคำสั่ง `afex::aov_car()` จะดึงคำสั่งจากชุดคำสั่งใน `car` มาใช้งาน แต่คำสั่งใน `afex` อาจดูใช้งานง่ายกว่า
+
+ในคำสั่ง `aov_car()` จะต้องมีการเขียนโมเดล โดยโมเดลจะอยู่ในรูป `y ~ x1 * x2 + Error()` จุดที่แตกต่างจากเดิมคือต้องมีการระบุ `Error()` หรือความคลาดเคลื่อนของโมเดล ในกรณีนี้เป็นการออกแบบระหว่างกลุ่ม ความคลาดเคลื่อนจึงอยู่ที่กลุ่มตัวอย่าง ซึ่งเราระบุตัวได้ด้วยตัวแปร `id` (ขึ้นไปดูวิธีสร้างด้านบน)
+
+```{r}
+tooth.afex <- aov_car(len ~ supp * dose + Error(id), data = mydata)
+summary(tooth.afex)
+Anova(tooth.afex$lm, type = 3)
+```
+
+ข้อความเตือนแสดงให้เราเห็นว่า โปรแกรมได้ปรับ option `contrast` อัตโนมัติให้เป็น `contr.sum`
+
+ตาราง ANOVA ของคำสั่ง `aov_car()` จะไม่เหมือนกับตาราง ANOVA ทั่วไปที่จะแสดง SS หรือ MS ให้ หากต้องการได้ตารางที่มีค่า SS สามารถใช้คำสั่ง `car::Anova()` เรียกวิเคราะห์โมเดล `lm` ที่ซ่อนอยู่ใน object ของ `aov_car` ได้
+
+## Option 3: `jmv`
+
+คำสั่ง `ANOVA()` ใน `jmv` จะวิเคราะห์ด้วย Type III SS เป็นค่าตั้งต้น ลักษณะการใช้งานของคำสั่งใน `jmv` จะแตกต่างจากคำสั่ง `R` ทั่วไป ที่จะให้ผู้ใช้เรียกคำสั่งตามที่ต้องการทีละตัว แต่คำสั่งใน `jmv` จะมีลักษณะเป็นคำสั่งเดียว (เช่น ANOVA) แล้วมี options ให้เลือกจำนวนมาก (เช่น คำนวณ effect size ตัวไหน ต้องการทำ post-hoc หรือไม่ จะดู estimated marginal means ไหม จะ plot estimated marginal means ไหม จะแสดง 95% CI หรือไม่ ฯลฯ) สำหรับ options ในคำสั่ง สามารถดูได้ที่ `?ANOVA`
+
+```{r}
+ANOVA(formula = len ~ supp * dose, data = mydata, effectSize = list("partEta", "omega"))
+```
+
+# Effect size
+
+ในการคำนวณขนาดอิทธิพล สามารถใช้คำสั่งจาก `effectsize` ได้ เช่น ต้องการ `eta_squared()` หรือ `omega_squared` หรือ `cohens_f`
+
+เนื่องจากการวิเคราะห์ที่เราใช้เป็น Type III SS เราจึงต้องใช้ object ที่เป็น Type III ในคำสั่งของ `effectsize` ซึ่งสามารถใช้ได้ทั้งโมเดลจาก `afex::aov_car()` หรือ output ที่ save จาก `car::Anova`
+
+```{r}
+eta_squared(tooth.Anova)
+eta_squared(tooth.afex) #same as above
+omega_squared(tooth.Anova)
+omega_squared(tooth.afex) #same as above
+cohens_f(tooth.Anova)
+cohens_f(tooth.afex) #same as above
+```
+
+# Simple effect
+
+เนื่องจากเราพบว่าตัวแปร `supp` และ `dose` มีปฏิสัมพันธ์กัน เราจึงต้องสำรวจต่อในระดับอิทธิพลอย่างง่าย (simple effects)
+
+ก่อนอื่นเราต้องสร้าง โมเดลค่าเฉลี่ยของแต่ละเงื่อนไขด้วย `emmeans()` โดยมี input เป็นโมเดลสถิติจากคำสั่ง `lm()` หรือ `afex::aov_car` และกำหนดโมเดลว่าเราต้องการดูค่าเฉลี่ยของตัวแปรใน เช่น `~ x1 * x2` คือ สร้างตารางค่าเฉลี่ยของทุกช่อง (ทุกระดับในตัวแปร 1 และ 2)
+
+```{r}
+tooth.emm1 <- emmeans(tooth.lm, ~ supp * dose)
+tooth.emm2 <- emmeans(tooth.afex, ~ supp * dose) #same as above
+tooth.emm1
+tooth.emm2 #same as above
+```
+
+หากผู้วิจัยต้องการศึกษาว่า แหล่งของวิตามิน `supp` แตกต่างหรือไม่ แยกตามระดับ `dose`
+
+เราสามารถใช้คำสั่ง `emmeans::contrast()` โดยให้ input เป็นโมเดลตารางค่าเฉลี่ย (จากคำสั่ง `emmeans` ด้านบน) และเลือก `method = "pairwise"` คือให้เปรียบเทียบรายคู่ และ กำหนดให้การทดสอบอิทธิพลอย่างง่าย `simple = "supp"` ซึ่งเป็นตัวแปรที่ต้องการเปรียบเทียบ (หรือใช้คำสั่ง `by` = ตัวแปรที่ต้องการแยก ก็ได้)
+
+```{r}
+suppBydose <- contrast(tooth.emm1, "pairwise", simple = "supp")
+contrast(tooth.emm1, "pairwise", by = "dose") #same as above
+```
+
+เนื่องจากการทดสอบ `supp` ในแต่ละเงื่อนไข `dose` จะทำให้มีการทดสอบทั้งสิ้น 3 คู่ เราจึงต้องปรับแก้ค่า *p* เพื่อป้องกัน $\alpha_{fw}$ ดังนั้นเราจึงต้องรวมการทดสอบทั้ง 3 คู่ให้อยู่ใน family เดียวกันด้วย `rbind()` จากนั้นใช้คำสั่ง `summary()` เรียกดูค่าสถิติ โดยกำหนดให้ปรับแก้ `adjust = "sidak"`
+
+```{r}
+fam_suppBydose<- rbind(suppBydose)
+summary(fam_suppBydose, adjust = "sidak", infer = TRUE)
+plot(fam_suppBydose, adjust = "sidak") 
+```
+
+หากต้องการเปรียบเทียบค่าเฉลี่ยของ `dose` โดยแบ่งตาม `supp` ก็สามารถทำได้โดยแก้ไข option `simple = "dose"` หรือ `by = "supp"`
+
+```{r}
+doseBysupp <- contrast(tooth.emm1, "pairwise", simple = "dose")
+
+fam_doseBysupp<- rbind(doseBysupp)
+summary(fam_doseBysupp, adjust = "sidak", infer = TRUE)
+plot(fam_doseBysupp, adjust = "sidak") 
+```
+
+ในกรณีที่ต้องการดู simple effects ทุกคู่ที่เป็นไปได้ ให้กำหนด `simple = "each"` โปรแกรมจะคำนวณ simple effects ในทุก ๆ รายคู่ที่เป็นไปได้ให้ เราควรเพิ่มคำสั่ง `combine = TRUE` เพื่อรวมการวิเคราะห์รายคู่ทั้งหมดอยู่ด้วยกัน แล้วปรับแก้พร้อมกันทีเดียวใน `summary()` ด้วยวิธีของ `sidak`
+
+```{r}
+allsimple <- contrast(tooth.emm1, "pairwise", simple = "each", combine = TRUE)
+summary(allsimple, adjust = "sidak", infer = TRUE)
+```
+
+# Post-hoc for main effects
+
+โดยปกติแล้วหากพบผลปฏิสัมพันธ์ ผู้วิจัยมักไม่มีความจำเป็นที่จะต้องวิเคราะห์รายคู่ในระดับ main effect (เนื่องจากวิเคราะห์ simple effect ไปแล้ว)
+
+แต่ถ้าหากไม่พบปฏิสัมพันธ์ แต่พบอิทธิพลหลัก เราอาจวิเคราะห์ post-hoc ของอิทธิพลหลักได้ด้วยคำสั่งด้านล่างนี้
+
+```{r}
+supp.emm <- emmeans(tooth.afex, ~ supp) # use only main effect of interest
+supp.emm
+
+contrast(supp.emm, "pairwise", infer = TRUE) 
+pairs(supp.emm, infer = TRUE) #same as above
+
+dose.emm <- emmeans(tooth.afex, ~ dose) # main effect of dose
+pairs(dose.emm, infer = TRUE) #for pairwise, default adjust option is "tukey"
+
+```
+
+# Pretty graphs
+
+กราฟิกใน R อาจจะใช้เวลาเรียนรู้นานกว่าโปรแกรมอื่น ๆ แต่เมื่อใช้งานเป็นแล้วจะสามารถสร้างกราฟที่สวยงามได้ตามที่ต้องการในเวลาที่รวดเร็ว
+
+เริ่มแรกให้เราสร้าง dataframe ที่มีค่าเฉลี่ยของแต่ละเงื่อนไขเพื่อเอาไปสร้างกราฟ โดย save ผลจาก `summary()` ของตัวโมเดลตารางค่าเฉลี่ย (จาก `emmeans`)
+
+จากนั้นนำไปใส่ในคำสั่ง `ggplot()` แล้วกำหนด aestheic `aes()` ให้
+
+x เป็นตัวแปรอิสระตัวที่ 1
+
+y เป็นตัวแปรตาม
+
+color กำหนดให้ใช้กลุ่มสีแทนตัวแปรอิสระตัวที่ 2
+
+จากนั้นเพิ่ม geometry ชนิด column `geom_col` กำหนด `aes(fill =)` ตัวแปรอิสระตัวที่ 2 (เพื่อให้เติมสีใน column ตามตัวแปร) ส่วน option `alpha` ใช้กำหนดความโปร่งแสง (transparency) และ option `position = position_dodge(.9)` กำหนดไว้ให้คอลัมน์วางอยู่ข้างกัน (หากไม่กำหนดคอลัมน์จะทับกัน)
+
+`geom_errorbar()` ใช้สร้างขีดบอกความคลาดเคลื่อน (ในโมเดลตารางค่าเฉลี่ยมี 95% CI อยู่) ให้กำหนด `ymin` เป็นตัวแปรที่มีค่าขอบล่างของขีด และ xmin เป็นค่าขอบบนของขีด (เราสามารถเลือกค่า error bar ได้ตามต้องการ เช่น นักวิจัยบางคนใช้ค่า SE แทนค่า 95% CI) ส่วน option `width` เป็นตัวบอกขนาดของขีด สำหรับ `position` เราใช้ค่าเดียวกับใน `geom_col` เพื่อให้ error bar กับ column เรียงตรงกัน
+
+`xlab` คือ ชื่อของแกน X `ylab` คือชื่อบนแกน Y ส่วน `theme_classic` มีลักษณะค่อนข้างใกล้เคียง APA (ผู้ใช้งานระดับสูงมักนิยมสร้าง theme ใหม่ของตัวเองไว้ใช้งาน)
+
+สำหรับสอง option สุดท้าย คือ สีสำหรับ `color` (สีเส้นขอบ) และ `fill` (สีช่องในคอลัมน์) สามารถดูชุดสีได้ด้วยคำสั่ง `RColorBrewer::display.brewer.all()`
+
+```{r}
+emm.summary <- summary(tooth.emm1)
+emm.summary
+ggplot(emm.summary, aes(x = dose, y = emmean, color = supp)) + 
+  geom_col(aes(fill = supp), alpha = .5, position = position_dodge(.9)) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = .3, position = position_dodge(.9)) + 
+  xlab("Dose") +
+  ylab("Length") +
+  theme_classic() +
+  scale_color_brewer(palette="Accent") +
+  scale_fill_brewer(palette="Accent")
+```
+
+```{r}
+emm.summary <- summary(tooth.emm1)
+emm.summary
+ggplot(emm.summary, aes(x = dose, y = emmean, color = supp)) + 
+  geom_point(position = position_dodge(.2)) +
+  geom_line(aes(group = supp), position = position_dodge(.2)) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = .3, position = position_dodge(.2)) + 
+  xlab("Dose") +
+  ylab("Length") +
+  theme_classic() +
+  scale_color_manual(values=c("#999999", "#E69F00"))
+```

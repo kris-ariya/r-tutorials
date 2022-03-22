@@ -1,0 +1,63 @@
+---
+title: "Lab 14: Chi-Square"
+---
+
+Let's load dataset `survey` from package `MASS`. 
+```{r}
+library(MASS)
+data(survey)
+survey
+```
+
+# Goodness-of-fit
+To performa a goodness-of-fit test, we want to compare whether an observed frequency is similar to expected frequency or not. 
+For example, we have a hypothesis that 20% of people frequently exercise, 50% do some exercise, and 30% do not exercise. We will use `Exer` variable to test this hypothesis.
+
+We will use function `chisq.test(x, p)`, where `x` is a frequency table, and `p` is a vector of expected probability for each category. 
+
+```{r}
+ex_tab <- table(survey$Exer) # create a table to be analyzed
+ex_tab # note the order of the categories.
+chi <- chisq.test(ex_tab, p = c(20/100, 30/100, 50/100)) # We put exptected p for each category here. 0.2 or 20% for frequent exercise, 0.3 or 30% for no exercise, 0.5 or 50% for some exercise.  
+
+
+chi # value of the chi-square test
+chi$observed # observed value (same as the input table)
+chi$expected # expected value
+```
+The $\chi^2$ value was significant, suggesting that the observed frequencies were not distributed as expected. Looking at the results, we could see that there were more people who exercise frequently (115) more than our expectation (20% or 47.6), and there were fewer the people who do no exercise (24) than what we expected (30% or 71.1). 
+
+# Contengency Table or Test of Independence
+Next we would like to consider whether exercise frequencies depends on (or associated with) biological sex (`Sex`). The idea behind the test is that if `Sex` has nothing to do with exercise frequencies, then the distribution of exercise should be the same in male and female (proportion, not expected value). 
+
+```{r}
+se_tab <- table(survey$Sex, survey$Exer)
+se_tab
+chi2 <- chisq.test(se_tab)
+chi2
+chi2$observed
+chi2$expected # we have the same expected values for both sexes because we have equal number of male and female. 
+```
+
+The test was not significant, but very close. When we compare the expected values to the observed values, we could see that more men seems to exercise frequently than women. On ther other hand, for people with some exercise, there seems to be more female than male. Although we cannot claim to find this pattern because the $\chi^2$ was not significant, this pattern might worth looking into in a future study. 
+
+# `jmv`
+In jamovi's package, we can use `propTestN()`, proportion test (N outcomes), for a goodness-of-fit test.
+
+```{r}
+library(jmv)
+propTestN(data = survey, 
+          var = Exer, # variable to be analyzed
+          expected = TRUE, #show expected values
+          ratio = c(20/100, 30/100, 50/100)
+          )
+```
+For contingency table, we use `contTables()`.
+
+```{r}
+contTables(data = survey,
+           rows = Sex,
+           cols = Exer,
+           exp = TRUE) # show expected values
+```
+

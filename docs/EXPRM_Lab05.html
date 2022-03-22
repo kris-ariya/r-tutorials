@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 05: Multiple Comparisons</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Tutorials</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    RES MTHD/STAT PSY Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="RES_STAT_Lab04.html">Lab 4: Descriptive Statistics</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab05.html">Lab 5: Standard Score</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab06.html">Lab 6: Visualizing Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab07.html">Lab 7: Sampling Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab08.html">Lab 8: Confidence Interval and t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab09.html">Lab 9: Correlation</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab10.html">Lab 10: Simple Regression</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab12.html">Lab 12: Dependent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab13.html">Lab 13: Independent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab14.html">Lab 14: Chi-Squared Test</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    EXPRM DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="EXPRM_Lab02.html">Lab 2: Randomization</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab03.html">Lab 3: Power and Sample Size</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab04.html">Lab 4: One-way ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab05.html">Lab 5: Multiple Comparisons</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab07.html">Lab 7: Factorial ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab09.html">Lab 9: Data Visualization with ggplot2</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab10.html">Lab 10: Repeated-Measures ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab11.html">Lab 11: Factorial ANOVA in Repeated-Measures Design</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab12.html">Lab 12: Means Comparison in Regression</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab13.html">Lab 13: ANCOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab14.html">Lab 14: Moderation Analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    SURVEY DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="SURVEY_Lab08.html">Lab 08: Data Cleaning</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Lab 05: Multiple Comparisons</h1>
+
+</div>
+
+
+<p>In this lab, we will learn how to perform planned contrasts and post hoc analysis for one-way ANOVA.</p>
+<p>First, we need an <code>aov</code> object. We will continue with the <code>PlantGrowth</code> dataset from the previous lab.</p>
+<pre class="r"><code>data(&quot;PlantGrowth&quot;)
+plant.aov &lt;- aov(weight ~ group, data = PlantGrowth)
+summary(plant.aov)</code></pre>
+<pre><code>##             Df Sum Sq Mean Sq F value Pr(&gt;F)  
+## group        2  3.766  1.8832   4.846 0.0159 *
+## Residuals   27 10.492  0.3886                 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<div id="descriptive-statistics" class="section level1">
+<h1>Descriptive Statistics</h1>
+<p>There are multiple functions from many packages that provide descriptive statistics (e.g., group means, <em>SD</em>). We will use <code>psych::describeBY</code> and <code>apaTables::apa.1way.table</code></p>
+<pre class="r"><code>library(psych)
+describeBy(weight ~ group, data = PlantGrowth) # This will give us detailed descriptive stats by group</code></pre>
+<pre><code>## 
+##  Descriptive statistics by group 
+## group: ctrl
+##    vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
+## X1    1 10 5.03 0.58   5.15       5 0.72 4.17 6.11  1.94 0.23    -1.12 0.18
+## -------------------------------------------------------------------------------------------- 
+## group: trt1
+##    vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
+## X1    1 10 4.66 0.79   4.55    4.62 0.53 3.59 6.03  2.44 0.47     -1.1 0.25
+## -------------------------------------------------------------------------------------------- 
+## group: trt2
+##    vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
+## X1    1 10 5.53 0.44   5.44     5.5 0.36 4.92 6.31  1.39 0.48    -1.16 0.14</code></pre>
+<pre class="r"><code>library(apaTables)
+apa.1way.table(dv = weight, iv = group, data = PlantGrowth)</code></pre>
+<pre><code>## 
+## 
+## Descriptive statistics for weight as a function of group.  
+## 
+##  group    M   SD
+##   ctrl 5.03 0.58
+##   trt1 4.66 0.79
+##   trt2 5.53 0.44
+## 
+## Note. M and SD represent mean and standard deviation, respectively.
+## </code></pre>
+<pre class="r"><code># For apaTables, you can also save a Word document file into the workspace
+apa.1way.table(dv = weight, iv = group, data = PlantGrowth, filename = &quot;onewaydesciptive.doc&quot;)</code></pre>
+<pre><code>## 
+## 
+## Descriptive statistics for weight as a function of group.  
+## 
+##  group    M   SD
+##   ctrl 5.03 0.58
+##   trt1 4.66 0.79
+##   trt2 5.53 0.44
+## 
+## Note. M and SD represent mean and standard deviation, respectively.
+## </code></pre>
+<pre class="r"><code># Extra: For APA formatted ANOVA table
+apa.aov.table(plant.aov, filename = &quot;anovatable.doc&quot;)</code></pre>
+<pre><code>## 
+## 
+## ANOVA results using weight as the dependent variable
+##  
+## 
+##    Predictor     SS df     MS       F    p partial_eta2 CI_90_partial_eta2
+##  (Intercept) 772.06  1 772.06 1986.79 .000                                
+##        group   3.77  2   1.89    4.85 .016          .26         [.03, .43]
+##        Error  10.49 27   0.39                                             
+## 
+## Note: Values in square brackets indicate the bounds of the 90% confidence interval for partial eta-squared</code></pre>
+</div>
+<div id="planned-contrasts" class="section level1">
+<h1>Planned contrasts</h1>
+<p>In <em>a priori</em> contrasts (usually just ‘contrasts’), we determine a set of comparisons beforehand (i.e., before the data collection). The number of planned comparisons are determined prior to the data collection. Hence, the familiy-wise error rate are known beforehand.</p>
+<p>In a modern standard, these specific hypotheses are usually “pre-registered” on a public site (such as the Open Science Framework website: <a href="http://osf.io" class="uri">http://osf.io</a>).</p>
+<p>Recall that in the <code>PlantGrowth</code> dataset, we have three conditions: control, treatment 1, treament 2 (in this particular order). The order of levels in a factor is VERY IMPORTANT when analyzing contrasts. <strong>This is the order that you will use in a coefficient matrix.</strong></p>
+<pre class="r"><code>summary(PlantGrowth$group)</code></pre>
+<pre><code>## ctrl trt1 trt2 
+##   10   10   10</code></pre>
+<pre class="r"><code>#or
+levels(PlantGrowth$group)</code></pre>
+<pre><code>## [1] &quot;ctrl&quot; &quot;trt1&quot; &quot;trt2&quot;</code></pre>
+<p>Suppose that we have two contrasts in our mind. We believe that treatmant 1 and treatment 2 will result in more weight than the control group. In other words, we plan to contrast (<code>trt1</code> + <code>trt2</code>)/2 with <code>ctrl</code>. The other contrast is between <code>trt1</code> and <code>trt2</code> because we want to know which one is better for plant growth.</p>
+<p>In sum, we have <em>two comparisons</em> to make (<code>trt1</code> + <code>trt2</code>)/2 - <code>ctrl</code> and <code>trt1</code> - <code>trt2</code> (or <code>trt2</code> - <code>trt1</code>, depending on which direction you want to investigate).</p>
+<div id="emmeans-package" class="section level2">
+<h2><code>emmeans</code> package</h2>
+<p>To calculate contrasts and post hocs, we will use the <code>emmeans</code> (estimated marginal means) package.</p>
+<pre class="r"><code>#install.packages(&quot;emmeans&quot;)
+library(emmeans)</code></pre>
+<p>First, we need to specify how many comparions do we want and represent each comparison in a coefficient matrix. Each row in the matrix represent level of a factor, in this case, <code>ctrl</code>, <code>trt1</code>, and <code>trt2</code>. It is important to note that an order of coefficients must correspond to levels of a factor. Each column represents our comparisons/contrasts.</p>
+<pre class="r"><code>contrast_m &lt;- data.frame(&quot;trt1trt2.vs.ctrl&quot;  = c(-1,  1/2, 1/2), # trt1 and trt2 were averaged (each weight 1/2) to compare against crl (-1)
+                         &quot;trt1.vs.trt2&quot;      = c( 0,    1,  -1)) # trt1 (+1) against trt2 (-1). ctrl is leftout (0).
+contrast_m</code></pre>
+<pre><code>##   trt1trt2.vs.ctrl trt1.vs.trt2
+## 1             -1.0            0
+## 2              0.5            1
+## 3              0.5           -1</code></pre>
+<p>Next, we will use <code>emmeans</code> to create an emmGrid object, which is an object containing estimated marginal means for each group (i.e., group mean). For this analysis we need two arguments in <code>emmeans(object, specs)</code></p>
+<ul>
+<li>For <code>object</code>, we will use the <code>aov</code> object.</li>
+<li>For <code>specs</code>, we will specify that we want means for each group with <code>~ group</code>.</li>
+</ul>
+<pre class="r"><code>emmeans(plant.aov, ~ group)</code></pre>
+<pre><code>##  group emmean    SE df lower.CL upper.CL
+##  ctrl    5.03 0.197 27     4.63     5.44
+##  trt1    4.66 0.197 27     4.26     5.07
+##  trt2    5.53 0.197 27     5.12     5.93
+## 
+## Confidence level used: 0.95</code></pre>
+<pre class="r"><code>plant.emm &lt;- emmeans(plant.aov, ~ group) # save to an object for later use</code></pre>
+<p><em>Note</em>: Looking at the means, you might notice that <code>trt1</code> was actually lower than <code>ctrl</code>. Combining <code>trt1</code> and <code>trt2</code> will likely cancel each other out. Combining treatment conditions only make sense if they are similar in some aspects. In this case, it is likely that <code>trt1</code> and <code>trt2</code> are totally different kind of treatment and should not be combined. However, we will proceed with this contrast for a demontration purpose.</p>
+</div>
+<div id="emmeanscontrast-function" class="section level2">
+<h2><code>emmeans::contrast</code> function</h2>
+<p>Next we will run contrasts on those group means. The <code>contrast</code> function will need four arguments <code>contrast(object, method, adjust, infer)</code></p>
+<ul>
+<li><code>oject</code> is an emmGrid object from the <code>emmeans</code> function.</li>
+<li><code>method</code> will be our coefficient matrix <code>contrast_m</code>.</li>
+<li><code>adjust</code> is a <em>p</em> value adjustment method for multiplicity. Let’s use <code>"bonferroni"</code>. Some other options are (<code>"tukey", "scheffe", "sidak", "mvt", "none"</code>)</li>
+<li><code>infer</code> is an option for inferential stats. Choose <code>TRUE</code> to display both <em>t</em> tests and <em>CI</em>s.</li>
+</ul>
+<pre class="r"><code>contrast(plant.emm, method = contrast_m, adjust = &quot;none&quot;, infer = TRUE) # results with no p value adjustment</code></pre>
+<pre><code>##  contrast         estimate    SE df lower.CL upper.CL t.ratio p.value
+##  trt1trt2.vs.ctrl   0.0615 0.241 27   -0.434    0.557   0.255  0.8009
+##  trt1.vs.trt2      -0.8650 0.279 27   -1.437   -0.293  -3.103  0.0045
+## 
+## Confidence level used: 0.95</code></pre>
+<pre class="r"><code>contrast(plant.emm, method = contrast_m, adjust = &quot;bonferroni&quot;, infer = TRUE) # p values adjusted with bonferroni method. Notice that it multiply each p value by the number of comparisons (2). </code></pre>
+<pre><code>##  contrast         estimate    SE df lower.CL upper.CL t.ratio p.value
+##  trt1trt2.vs.ctrl   0.0615 0.241 27   -0.512    0.635   0.255  1.0000
+##  trt1.vs.trt2      -0.8650 0.279 27   -1.527   -0.203  -3.103  0.0089
+## 
+## Confidence level used: 0.95 
+## Conf-level adjustment: bonferroni method for 2 estimates 
+## P value adjustment: bonferroni method for 2 tests</code></pre>
+<pre class="r"><code>plant.contrast &lt;- contrast(plant.emm, method = contrast_m, adjust = &quot;bonferroni&quot;) # save as an object for plotting</code></pre>
+<pre class="r"><code># Plotting contrasts and their confidence interval
+plot(plant.contrast)</code></pre>
+<p><img src="EXPRM_Lab05_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Looking at the results after adjustment, we can see that the <code>trt1trt2 vs ctrl</code> contrast was not significant (<em>p</em> value above .05 and 95% CI contains zero). That is, when combining <code>trt1</code> and <code>trt2</code> together, the plant weight was not different from <code>ctrl</code>. On the other hand, <code>trt2</code> resulted in significantly heavier plants than <code>trt1</code>.</p>
+</div>
+<div id="finding-m-and-sd-for-complex-contrasts" class="section level2">
+<h2>Finding <em>M</em> and <em>SD</em> for complex contrasts</h2>
+<p>For a contrast that combine groups together, their mean and <em>SD</em> would not be readily available in a regular descriptive statistics table. You will need to extract those groups from the dataset to calclate their means and standard deviations.</p>
+<pre class="r"><code>trt1.trt2 &lt;- subset(PlantGrowth, group == &quot;trt1&quot; | group == &quot;trt2&quot;)
+describe(trt1.trt2$weight)</code></pre>
+<pre><code>## trt1.trt2$weight 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       20        0       20        1    5.094   0.8978    3.818    4.136    4.620    5.190    5.605    6.042    6.158 
+## 
+## lowest : 3.59 3.83 4.17 4.32 4.41, highest: 5.80 5.87 6.03 6.15 6.31
+##                                                                                                               
+## Value      3.59 3.83 4.17 4.32 4.41 4.69 4.81 4.89 4.92 5.12 5.26 5.29 5.37 5.50 5.54 5.80 5.87 6.03 6.15 6.31
+## Frequency     1    1    1    1    1    1    1    1    1    1    1    1    1    1    1    1    1    1    1    1
+## Proportion 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05</code></pre>
+<pre class="r"><code>ctrl &lt;- subset(PlantGrowth, group == &quot;ctrl&quot;)
+describe(ctrl$weight)</code></pre>
+<pre><code>## ctrl$weight 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       10        0       10        1    5.032   0.6836    4.319    4.467    4.550    5.155    5.293    5.633    5.871 
+## 
+## lowest : 4.17 4.50 4.53 4.61 5.14, highest: 5.17 5.18 5.33 5.58 6.11
+##                                                             
+## Value      4.17 4.50 4.53 4.61 5.14 5.17 5.18 5.33 5.58 6.11
+## Frequency     1    1    1    1    1    1    1    1    1    1
+## Proportion  0.1  0.1  0.1  0.1  0.1  0.1  0.1  0.1  0.1  0.1</code></pre>
+</div>
+</div>
+<div id="post-hoc" class="section level1">
+<h1>Post hoc</h1>
+<p>A <em>post hoc</em> analysis is usually done in a pairwise manner (i.e., looking at all possible pairs). Because of a larger number of comparisons, conservative adjustment, such as Bonferroni method, is not recommended. We will use Tukey’s Honest Significant Differences (HSD) instead. There are multiple ways to run Tukey’s HSD. We will mention the Base R <code>TukeyHSD</code> and <code>emmeans::pairs</code>.</p>
+<div id="base-r" class="section level2">
+<h2>Base R</h2>
+<pre class="r"><code>TukeyHSD(plant.aov) # input is an aov object. </code></pre>
+<pre><code>##   Tukey multiple comparisons of means
+##     95% family-wise confidence level
+## 
+## Fit: aov(formula = weight ~ group, data = PlantGrowth)
+## 
+## $group
+##             diff        lwr       upr     p adj
+## trt1-ctrl -0.371 -1.0622161 0.3202161 0.3908711
+## trt2-ctrl  0.494 -0.1972161 1.1852161 0.1979960
+## trt2-trt1  0.865  0.1737839 1.5562161 0.0120064</code></pre>
+<pre class="r"><code>plot(TukeyHSD(plant.aov))</code></pre>
+<p><img src="EXPRM_Lab05_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>Among the three groups, only <code>trt2</code> was significantly higher than <code>trt1</code>. The <code>ctrl</code> was to be somewhere in the middle between <code>trt1</code> and <code>trt2</code> and was not significantly different from either of them.</p>
+</div>
+<div id="emmeanspairs" class="section level2">
+<h2><code>emmeans::pairs</code></h2>
+<pre class="r"><code>pairs(plant.emm, adjust = &quot;tukey&quot;, infer = TRUE) #input is an emm object. Options are similar to contrast, but without `method = `. </code></pre>
+<pre><code>##  contrast    estimate    SE df lower.CL upper.CL t.ratio p.value
+##  ctrl - trt1    0.371 0.279 27    -0.32    1.062   1.331  0.3909
+##  ctrl - trt2   -0.494 0.279 27    -1.19    0.197  -1.772  0.1980
+##  trt1 - trt2   -0.865 0.279 27    -1.56   -0.174  -3.103  0.0120
+## 
+## Confidence level used: 0.95 
+## Conf-level adjustment: tukey method for comparing a family of 3 estimates 
+## P value adjustment: tukey method for comparing a family of 3 estimates</code></pre>
+<pre class="r"><code>plant.pairs &lt;- pairs(plant.emm, adjust = &quot;tukey&quot;) #save for later use. </code></pre>
+<p>You can also use <code>contrast(method = "pairwise")</code>.</p>
+<pre class="r"><code>contrast(plant.emm, method = &quot;pairwise&quot;, adjust = &quot;tukey&quot;, infer = TRUE)</code></pre>
+<pre><code>##  contrast    estimate    SE df lower.CL upper.CL t.ratio p.value
+##  ctrl - trt1    0.371 0.279 27    -0.32    1.062   1.331  0.3909
+##  ctrl - trt2   -0.494 0.279 27    -1.19    0.197  -1.772  0.1980
+##  trt1 - trt2   -0.865 0.279 27    -1.56   -0.174  -3.103  0.0120
+## 
+## Confidence level used: 0.95 
+## Conf-level adjustment: tukey method for comparing a family of 3 estimates 
+## P value adjustment: tukey method for comparing a family of 3 estimates</code></pre>
+<p>You can use the <code>coef</code> function to look at a coefficient matrix for <code>"pairwise"</code> method. You can see how each combinaiton was compared.</p>
+<pre class="r"><code>coef(plant.pairs)</code></pre>
+<pre><code>##      group c.1 c.2 c.3
+## ctrl  ctrl   1   1   0
+## trt1  trt1  -1   0   1
+## trt2  trt2   0  -1  -1</code></pre>
+<p>And the plot for pairwise comparisons.</p>
+<pre class="r"><code>plot(plant.pairs)</code></pre>
+<p><img src="EXPRM_Lab05_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+</div>
+</div>
+<div id="post-hoc-for-unequal-variance" class="section level1">
+<h1>Post hoc for unequal variance</h1>
+<p>If a homogeneity of variance assumption is violated, you should use Welch’s one-way test instead of ANOVA. For post-hoc, you can use Game-Howell Post-hoc test from the <code>rstatix</code> package.</p>
+<pre class="r"><code># install.packages(&quot;rstatix&quot;)
+library(rstatix)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;rstatix&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:MASS&#39;:
+## 
+##     select</code></pre>
+<pre><code>## The following objects are masked from &#39;package:plyr&#39;:
+## 
+##     desc, mutate</code></pre>
+<pre><code>## The following objects are masked from &#39;package:effectsize&#39;:
+## 
+##     cohens_d, eta_squared</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter</code></pre>
+<pre class="r"><code>games_howell_test(PlantGrowth, weight ~ group) # input arguments are (data, model)</code></pre>
+<pre><code>## # A tibble: 3 × 8
+##   .y.    group1 group2 estimate conf.low conf.high p.adj p.adj.signif
+## * &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;       
+## 1 weight ctrl   trt1     -0.371   -1.17      0.430 0.475 ns          
+## 2 weight ctrl   trt2      0.494   -0.101     1.09  0.113 ns          
+## 3 weight trt1   trt2      0.865    0.114     1.62  0.024 *</code></pre>
+<pre class="r"><code>detach(package:rstatix)</code></pre>
+</div>
+<div id="plotting" class="section level1">
+<h1>Plotting</h1>
+<p>To create a plot for a report, <code>ggplot2</code> is prefered over the Base R graphic.</p>
+<div id="bar-graph" class="section level2">
+<h2>Bar graph</h2>
+<pre class="r"><code>plant.summary &lt;- summary(plant.emm) # create a variable containing means and SDs for each condition
+plant.summary</code></pre>
+<pre><code>##  group emmean    SE df lower.CL upper.CL
+##  ctrl    5.03 0.197 27     4.63     5.44
+##  trt1    4.66 0.197 27     4.26     5.07
+##  trt2    5.53 0.197 27     5.12     5.93
+## 
+## Confidence level used: 0.95</code></pre>
+<pre class="r"><code>plant.summary$Condition &lt;- factor(plant.summary$group, labels = c(&quot;Control&quot;, &quot;Treatment 1&quot;, &quot;Treatment 2&quot;)) # create a new factor &quot;Condition&quot; and re-label all levels. 
+plant.summary</code></pre>
+<pre><code>##  group emmean    SE df lower.CL upper.CL Condition  
+##  ctrl    5.03 0.197 27     4.63     5.44 Control    
+##  trt1    4.66 0.197 27     4.26     5.07 Treatment 1
+##  trt2    5.53 0.197 27     5.12     5.93 Treatment 2
+## 
+## Confidence level used: 0.95</code></pre>
+<pre class="r"><code>library(ggplot2)
+ggplot(plant.summary, aes(x = Condition, y = emmean)) + #use Condition from plant.summary as X-axis; emmean for Y-axis.
+  geom_col(aes(fill = Condition)) + # Add column geometry and fill the color by condition
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL, width = .3)) + # use lower.CL and upper.CL from plant.summary to create error bars. Adjust the width to make them look nice.
+  xlab(&quot;Condition&quot;) + # change X axis label to Condition
+  ylab(&quot;Weight&quot;) + # change Y axis label to Weight
+  theme_classic() # classic theme is most similar to APA format. </code></pre>
+<p><img src="EXPRM_Lab05_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre class="r"><code>ggsave(&quot;mean_plot.png&quot;) # You can save the graph to a file in a working directory.</code></pre>
+<pre><code>## Saving 7 x 5 in image</code></pre>
+</div>
+<div id="dot-plot" class="section level2">
+<h2>Dot plot</h2>
+<pre class="r"><code>ggplot(plant.summary, aes(x = Condition, y = emmean, group = 1)) + #similar to above graph, but need `group = 1` option. 
+  geom_point() + # Create a point for each mean
+  geom_line() + # create a line connecting each group mean
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = 0.2) + #error bars
+  ylim(c(0, 6.5)) + #set Y axis to show 0-6.5 values
+  xlab(&quot;Condition&quot;) +
+  ylab(&quot;Weight&quot;) +
+  theme_classic()</code></pre>
+<p><img src="EXPRM_Lab05_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

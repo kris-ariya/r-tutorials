@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 09: Correlation</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Tutorials</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    RES MTHD/STAT PSY Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="RES_STAT_Lab04.html">Lab 4: Descriptive Statistics</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab05.html">Lab 5: Standard Score</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab06.html">Lab 6: Visualizing Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab07.html">Lab 7: Sampling Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab08.html">Lab 8: Confidence Interval and t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab09.html">Lab 9: Correlation</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab10.html">Lab 10: Simple Regression</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab12.html">Lab 12: Dependent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab13.html">Lab 13: Independent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab14.html">Lab 14: Chi-Squared Test</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    EXPRM DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="EXPRM_Lab02.html">Lab 2: Randomization</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab03.html">Lab 3: Power and Sample Size</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab04.html">Lab 4: One-way ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab05.html">Lab 5: Multiple Comparisons</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab07.html">Lab 7: Factorial ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab09.html">Lab 9: Data Visualization with ggplot2</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab10.html">Lab 10: Repeated-Measures ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab11.html">Lab 11: Factorial ANOVA in Repeated-Measures Design</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab12.html">Lab 12: Means Comparison in Regression</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab13.html">Lab 13: ANCOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab14.html">Lab 14: Moderation Analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    SURVEY DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="SURVEY_Lab08.html">Lab 08: Data Cleaning</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Lab 09: Correlation</h1>
+<h4 class="date">Mar 22, 2022</h4>
+
+</div>
+
+
+<pre class="r"><code>library(ggplot2)</code></pre>
+<div id="pearsons-correlation-coefficient" class="section level1">
+<h1>Pearson’s Correlation Coefficient</h1>
+<p>ค่าสัมประสิทธิ์สหสัมพันธ์ของเพียร์สัน (Pearson’s correlation coefficient) หรือค่า Pearson’s <em>r</em> เป็นค่าความแปรปรวนร่วมมาตรฐาน (standardized covariance) ซึ่งบอกทั้ง<em>ทิศทาง</em>และ<em>ขนาด</em>ของความสัมพันธ์เชิงเส้นตรงระหว่างสองตัวแปร</p>
+<p><span class="math display">\[ r = \frac{cov_{xy}}{s_x s_y}\]</span></p>
+<p>ค่า <em>r</em> นั้นอยู่ระหว่าง -1 ถึง 1 โดยที่ -1 แสดงถึงความสัมพันธ์ทางลบแบบสมบูรณ์ 0 แสดงว่าตัวแปรทั้งสองไม่สัมพันธ์กัน และ +1 แสดงว่าตัวแปรสัมพันธ์กันทางบวกอย่างสมบูรณ์</p>
+<p>ในแบบฝึกหัดนี้เราจะใช้ชุดข้อมูลที่มีอยู่แล้วใน R ที่ชื่อว่า <code>mtcars</code></p>
+<pre class="r"><code>data(mtcars) # Load mtcars into a data frame.
+head(mtcars)</code></pre>
+<pre><code>##                    mpg cyl disp  hp drat    wt  qsec vs am gear carb
+## Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
+## Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
+## Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
+## Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
+## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
+## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</code></pre>
+<p>ข้อมูล <code>mtcars</code> เป็นข้อมูลของรถยนต์แต่ละยี่ห้อ เช่น อัตราสิ้นเปลือง ประเภทเกียร์ ขนาดกระบอกสูบ ฯลฯ เราสามารถดูรายละเอียดใน help ได้ด้วย <code>?mtcars</code></p>
+<div id="การคำนวณคา-r-ดวยมอ" class="section level2">
+<h2>การคำนวณค่า <em>r</em> ด้วยมือ</h2>
+<p>เราจะลองหาความสัมพันธ์ระหว่างอัตราการสิ้นเปลืองน้ำมัน (จำนวนไมล์ต่อแกลลอน; miles per gallon; <code>mpg</code>) และแรงม้า (horse power; <code>hp</code>)</p>
+<p>เราสามารถตั้งสมมติฐานได้ว่า รถที่มีแรงม้าสูง ๆ น่าจะสิ้นเปลืองน้ำมัน นั่นคือวิ่งได้ระยะทางน้อยลงต่อหน่วยเชื้อเพลิง ส่วนรถที่มีแรงม้าน้อย ๆ คือพวกรถขนาดเล็กที่จะวิ่งได้ระยะทางไกลกว่า เราจึงเชื่อว่า <code>mpg</code> และ <code>hp</code> จะมีความสัมพันธ์กันทางลบ</p>
+<pre class="r"><code>plot(mtcars$mpg, mtcars$hp)</code></pre>
+<p><img src="RES_STAT_Lab09_files/figure-html/simple%20plot-1.png" width="672" /></p>
+<p>เริ่มต้นด้วยการหาค่า <span class="math inline">\(cov_{xy}\)</span>. <span class="math display">\[cov_{xy} = \frac{\sum{(X - \bar{X})(Y - \bar{Y})}}{N - 1}\]</span></p>
+<pre class="r"><code>covxy &lt;- (sum((mtcars$mpg - mean(mtcars$mpg)) * (mtcars$hp - mean(mtcars$hp)))) / (nrow(mtcars) -1)
+covxy</code></pre>
+<pre><code>## [1] -320.7321</code></pre>
+<pre class="r"><code># Or use cov() function
+cov(mtcars$mpg, mtcars$hp)</code></pre>
+<pre><code>## [1] -320.7321</code></pre>
+<p>จากนั้นนำ <span class="math inline">\(cov_{xy}\)</span> ไปหารด้วย <span class="math inline">\(s_x s_y\)</span></p>
+<pre class="r"><code>covxy / (sd(mtcars$mpg) * sd(mtcars$hp))</code></pre>
+<pre><code>## [1] -0.7761684</code></pre>
+</div>
+<div id="คำสง-cor-และ-cor.test" class="section level2">
+<h2>คำสั่ง <code>cor()</code> และ <code>cor.test()</code></h2>
+<p>คำสั่งของ base R <code>cor()</code> ใช้คำนวณค่า <em>r</em></p>
+<pre class="r"><code>cor(mtcars$mpg, mtcars$hp)</code></pre>
+<pre><code>## [1] -0.7761684</code></pre>
+<p>แต่คำสั่ง <code>cor()</code> นั้นไม่ได้มีการทดสอบนัยสำคัญทางสถิติให้ หากเราต้องการรู้ค่า <em>p</em>-value และ CI เราต้องใช้คำสั่ง <code>cor.test()</code>.</p>
+<pre class="r"><code>cor.test(mtcars$mpg, mtcars$hp)</code></pre>
+<pre><code>## 
+##  Pearson&#39;s product-moment correlation
+## 
+## data:  mtcars$mpg and mtcars$hp
+## t = -6.7424, df = 30, p-value = 1.788e-07
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  -0.8852686 -0.5860994
+## sample estimates:
+##        cor 
+## -0.7761684</code></pre>
+<p>Output ของ <code>cor.test()</code> จะมีค่าสหสัมพันธ์ (<code>sample estimates: cor</code>), ค่า 95% CI ของสถิติ <em>r</em> (หากมีนัยสำคัญจะต้องไม่ครอบคลุมเลข 0), ค่าทดสอบสถิติ <em>t</em> (เพื่อทดสอบว่า r แตกต่างจาก 0 อย่างมีนัยสำคัญทางสถิติหรือไม่), ค่า <em>df</em> = <em>N -</em> 2, และค่า <em>p</em>-value ของการทดสอบ (น้อยกว่า .05 หรือไม่)</p>
+<p>โดยค่าตั้งต้น การทดสอบ <code>cor.test()</code> จะเป็นการทดสอบสองหาง (คือทั้งมากกว่าและน้อยกว่า 0) แต่เราสามารถเลือกเป็นการทดสอบหางเดียวได้หากเราต้องการทดสอบทางเดียว เช่น มีความสัมพันธ์ทางลบหรือไม่ <span class="math inline">\(H_0: r &lt; 0\)</span></p>
+<p>option <code>alternative = c("two.sided", "less", "greater")</code></p>
+<pre class="r"><code>cor.test(mtcars$mpg, mtcars$hp, alternative = &quot;less&quot;)</code></pre>
+<pre><code>## 
+##  Pearson&#39;s product-moment correlation
+## 
+## data:  mtcars$mpg and mtcars$hp
+## t = -6.7424, df = 30, p-value = 8.939e-08
+## alternative hypothesis: true correlation is less than 0
+## 95 percent confidence interval:
+##  -1.0000000 -0.6231988
+## sample estimates:
+##        cor 
+## -0.7761684</code></pre>
+</div>
+<div id="คาสหสมพนธประเภทอน-ๆ" class="section level2">
+<h2>ค่าสหสัมพันธ์ประเภทอื่น ๆ</h2>
+<p>คำสั่ง <code>cor()</code> และ <code>cor.test()</code> ใน base R ยังสามารถคำนวณค่าสหสัมพันธ์ประเภทอื่น ๆ ได้ ด้วยการระบุ <code>method = "pearson"</code>, <code>"kendall"</code> , หรือ <code>"spearman"</code></p>
+<ul>
+<li>ค่าสหสัมพันธ์ของเพียร์สัน (<em>r</em>) เหมาะกับการทดสอบความสัมพันธ์เชิงเส้นตรงระหว่างตัวแปรต่อเนื่องสองตัว แม้ว่าการทดสอบค่า r จะมีข้อสมมุติพื้นฐานเรื่องการกระจายตัวเป็นปกติ แต่การทดสอบก็มีความแกร่ง (robust) ต่อข้อมูลที่ไม่ได้เป็นปกติ อย่างไรก็ตามค่า r นั้นอ่อนไหวต่อค่าสุดโต่ง (outliers)</li>
+<li>ค่าสหสัมพันธ์แบบ Spearman’s rank หรือค่า Spearman’s rho (<span class="math inline">\(\rho\)</span>) เป็นการทดสอบความเชื่อมโยง (association) แบบไร้พารามิเตอร์สำหรับข้อมูลแบบจัดอันดับ ​(ranked data หรือ ordinal data) สถิตินี้เหมาะสมกับความสัมพันธ์แบบ monotonic (ความความสัมพันธ์มีทิศทางเดียว) ทั้งแบบเส้นตรงและไม่เป็นเส้นตรง ค่า rho นี้อ่อนไหวต่อค่าสุดโต่งน้อยกว่า <em>r</em></li>
+<li>ค่าสหสัมพันธ์แบบ Kendall’s rank หรือค่า Kendall’s tau (<span class="math inline">\(\tau\)</span>) เป็นการทดสอบความไม่เป็นอิสระ (dependence) แบบไร้พารามิเตอร์สำหรับตัวแปรแบบ ค่า Kendall’s tau มักจะมีค่าต่ำกว่า Spearman’s rho แต่ค่า tau นั้นไม่ค่อยอ่อนไหวต่อความคลาดเคลื่อนและแม่นยำกว่าในกลุ่มตัวอย่างขนาดเล็ก จึงเป็นสถิติที่แนะนำให้ใช้มากกว่า Spearman’s rho</li>
+</ul>
+<p>เราลองมาดู plot ระหว่าง <code>mpg</code> และ <code>hp</code></p>
+<p><img src="RES_STAT_Lab09_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>เส้นสีฟ้าเป็นโมเดลเชิงเส้นตรงระหว่างทั้งสองตัวแปร ส่วนเส้นสีแดงเป็นโมเดลเส้นโค้ง</p>
+<p>เห็นได้ว่าความสัมพันธ์ระหว่างตัวแปรเป็น <em>monotonic</em> ในทางลบ (คือเมื่อตัวแปรหนึ่งเพิ่มขึ้น อีกตัวหนึ่งลดลง) แต่ดูไม่ค่อยจะเป็นเส้นตรงนัก</p>
+<pre class="r"><code>cor.test(mtcars$mpg, mtcars$hp, method = &quot;pearson&quot;)</code></pre>
+<pre><code>## 
+##  Pearson&#39;s product-moment correlation
+## 
+## data:  mtcars$mpg and mtcars$hp
+## t = -6.7424, df = 30, p-value = 1.788e-07
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  -0.8852686 -0.5860994
+## sample estimates:
+##        cor 
+## -0.7761684</code></pre>
+<pre class="r"><code>cor.test(mtcars$mpg, mtcars$hp, method = &quot;spearman&quot;)</code></pre>
+<pre><code>## Warning in cor.test.default(mtcars$mpg, mtcars$hp, method = &quot;spearman&quot;): Cannot compute exact p-value with ties</code></pre>
+<pre><code>## 
+##  Spearman&#39;s rank correlation rho
+## 
+## data:  mtcars$mpg and mtcars$hp
+## S = 10337, p-value = 5.086e-12
+## alternative hypothesis: true rho is not equal to 0
+## sample estimates:
+##        rho 
+## -0.8946646</code></pre>
+<pre class="r"><code>cor.test(mtcars$mpg, mtcars$hp, method = &quot;kendall&quot;)</code></pre>
+<pre><code>## Warning in cor.test.default(mtcars$mpg, mtcars$hp, method = &quot;kendall&quot;): Cannot compute exact p-value with ties</code></pre>
+<pre><code>## 
+##  Kendall&#39;s rank correlation tau
+## 
+## data:  mtcars$mpg and mtcars$hp
+## z = -5.871, p-value = 4.332e-09
+## alternative hypothesis: true tau is not equal to 0
+## sample estimates:
+##        tau 
+## -0.7428125</code></pre>
+<p>เนื่องจากความสัมพันธ์นั้นไม่ค่อยเป็นเส้นตรง ค่า Spearman’s rho จึงสูงกว่าค่า Pearson’ r แสดงให้เห็นว่าโมเดลเส้นโค้งเหมาะสมกับข้อมูลมากกว่า ส่วนค่า Kendall’s <span class="math inline">\(\tau\)</span> แม้จะดูน้อยกว่า แต่เป็นเพราะวิธีการคำนวณ หากเราเปรียบเทียบที่ค่า p-value จะเห็นว่าค่า Kendall’s <span class="math inline">\(\tau\)</span> มีค่า <em>p</em> น้อยกว่าค่า Pearson’s <em>r</em></p>
+<p>ข้อสมมติพื้นฐานเรื่องความเป็นเส้นตรง (linearity) และค่าสุดโต่ง (outlier) เป็นข้อที่ควรระวังอย่างยิ่งสำหรับการใช้ Pearson’s <em>r</em> หากข้อสมมติดังกล่าวไม่เป็นจริง เราควรต้องเลือกสถิติอื่นที่เหมาะสมแทน (เช่น rank correlation) หรือแปลงข้อมูล (data transformation) ก่อนที่จะเลือกใช้สมการเส้นต้น</p>
+<p>ดังนั้นการทำข้อมูลให้เป็นภาพ (visualization) จะช่วยให้เราเลือกสถิติได้เหมาะสมกับข้อมูลยิ่งขึ้น</p>
+</div>
+</div>
+<div id="scatter-plot" class="section level1">
+<h1>Scatter Plot</h1>
+<p>การวิเคราะห์ความสัมพันธ์ระหว่างตัวแปรสองตัวจะนิยมใช้ scatter plot</p>
+<p>การ plot ใน R นั้นนิยมใช้คำสั่งใน base R หรือ คำสั่งจากแพ็คเกจ ggplot2</p>
+<div id="base-r" class="section level2">
+<h2>Base R</h2>
+<p>คำสั่ง <code>plot(x,y)</code> ใน R จะตรวจสอบว่าตัวแปร x, y นั้นเป็นตัวแปรประเภทใด หากเป็นตัวแปรต่อเนื่องทั้งคู่ก็จะสร้าง scatter plot ให้</p>
+<pre class="r"><code># Base R: Scatter plot
+plot(mtcars$hp, mtcars$mpg)</code></pre>
+<p><img src="RES_STAT_Lab09_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="ggplot2" class="section level2">
+<h2>ggplot2</h2>
+<p>แพ็คเกจ ggplot2 เป็นที่นิยมอย่างมากในการสร้างกราฟบน R อย่างไรก็ดีแพ็คเกจนี้ใช้แนวคิด Grammar of Graphics ในการเขียน การสร้างกราฟจะต้องมี 3 องค์ประกอบหลัก คือ data, coordinate system, และ geoms (geometry หรือลักษณะภาพเพื่อแสดงข้อมูล)</p>
+<p>เช่น หากเราต้องการสร้าง scatter plot เราจะใช้คำสั่ง <code>ggplot(data, mapping = aes(x, y) ) + geom_point()</code> ซึ่งมีความหมายดังนี้</p>
+<ul>
+<li><code>data</code> คือ data.frame ที่เราต้องการใช้วิเคราะห์ เช่น <code>mtcars</code></li>
+<li><code>mapping = aes()</code> กำหนด aesthetics ของ plot นั่นคือ ตัวแปรใดจะอยู่บนแกนไหน (mapping) ใน plot นี้เราจะให้ <code>hp</code> อยู่บนแกน x และ <code>mpg</code> อยู่บนแกน y</li>
+<li>หลังจากนั้นเราจะปิดวงเล็บคำสั่ง <code>ggplot()</code> แต่คำสั่งนี้ยังไม่จบ เนื่องจากเรายังไม่ได้ระบุว่าต้องการใช้พล็อตหน้าตาเป็นอย่างไร เราจะเพิ่มคำสั่ง geometry เข้าไปด้วยเครื่องหมาย (<code>+</code>) สำหรับข้อมูลที่เป็นจุด ๆ ใน scatter plot เราใช้คำสั่ง <code>geom_point()</code>.</li>
+<li>(เสริม) เราสามารถเพิ่มลักษณะอื่น เข้าไปในกราฟได้อีก เช่น <code>+</code> คำสั่ง <code>theme_classic()</code> เพื่อให้กราฟหน้าตาค่อนข้างเป็น APA-styled</li>
+</ul>
+<p>ถึงแม้ว่าคำสั่งของ ggplot2 จะยาวและใช้ยากกว่าสำหรับ scatter plot ง่าย ๆ แต่ในอนาคตเราจะได้เห็นว่า ggplot2 นั้นจะช่วยให้เราสร้างกราฟที่มีความซับซ้อนได้ง่ายขึ้นอย่างมาก (เช่น กราฟที่มีเส้น fitted line แบบด้านบน)</p>
+<pre class="r"><code># GGplot
+library(ggplot2)
+ggplot(mtcars, mapping = aes(x = hp, y = mpg)) + #define data and mapping aesthetics
+  geom_point() + #point geometry for scatter plot
+  theme_classic()</code></pre>
+<p><img src="RES_STAT_Lab09_files/figure-html/scatter-1.png" width="672" /></p>
+<pre class="r"><code># We can save the plot as a variable for later use (output will not be shown)
+p &lt;- ggplot(mtcars, mapping = aes(x = hp, y = mpg)) +
+  geom_point() +
+  theme_classic()</code></pre>
+</div>
+</div>
+<div id="correlation-matrix" class="section level1">
+<h1>Correlation Matrix</h1>
+<p>เราสามารถดูความสัมพันธ์ระหว่างตัวแปรหลาย ๆ คู่พร้อมกัน โดยสร้างเป็นตารางสหสัมพันธ์ (correlation matrix)</p>
+<div id="base-r-1" class="section level2">
+<h2>Base R</h2>
+<p>สมมติว่าเราต้องการดูความสัมพันธ์รายคู่ระหว่าง <code>mpg</code>, <code>cyl</code>, <code>disp</code>, <code>hp</code>, และ <code>wt</code></p>
+<pre class="r"><code># Crate a data frame with variables to be analyzed.
+corr_dat &lt;- mtcars[, c(&quot;mpg&quot;, &quot;cyl&quot;, &quot;disp&quot;, &quot;hp&quot;, &quot;wt&quot;)]  
+# run correlation
+cor(corr_dat)</code></pre>
+<pre><code>##             mpg        cyl       disp         hp         wt
+## mpg   1.0000000 -0.8521620 -0.8475514 -0.7761684 -0.8676594
+## cyl  -0.8521620  1.0000000  0.9020329  0.8324475  0.7824958
+## disp -0.8475514  0.9020329  1.0000000  0.7909486  0.8879799
+## hp   -0.7761684  0.8324475  0.7909486  1.0000000  0.6587479
+## wt   -0.8676594  0.7824958  0.8879799  0.6587479  1.0000000</code></pre>
+<p>ตารางสหสัมพันธ์จะมีชื่อตัวแปรทั้งแนวตั้งและแนวนอน ค่าในแต่ละช่อง คือ ค่า <em>r</em> ระหว่างคู่ตัวแปร ดังนั้นเส้นแทยงลงจึงมีค่าเป็น 1 (ตัวแปรแต่ละตัวสัมพันธ์อย่างสมบูรณ์กับตัวมันเอง) และค่าที่อยู่เหนือเส้นแทยงเป็นภาพสะท้อน (mirror image) ของค่าที่อยู่ใต้เส้นแทยง</p>
+<p>อย่างไรก็ดี คำสั่ง <code>cor()</code> นั้นไม่มีการทดสอบนัยสำคัญทางสถิติให้ เราจะลองดูแพ็คเกจอื่นที่ช่วยวิเคราะห์ตารางสหสัมพันธ์</p>
+</div>
+<div id="psych-package" class="section level2">
+<h2>psych package</h2>
+<p>แพ็คเกจ psych มีคำสั่งที่ชื่อว่า <code>corr.test()</code> (สังเกตว่ามี r 2 ตัว) คำสั่งนี้ใช้จะคำนวณค่า Pearson’s <em>r</em> เป็นค่าตั้งต้น หากต้องการคำนวณค่าสหสัมพันธ์ตัวอื่นก็สามารถเปลี่ยน option <code>method =</code> ได้เหมือนกับคำสั่งใน base R</p>
+<p>Output จะเป็นตารางค่า <em>r</em> และตารางค่า <em>p</em></p>
+<pre class="r"><code>library(&quot;psych&quot;)
+psych::corr.test(corr_dat) # Actually, you do not need to include &quot;psych::&quot; before &quot;corr.test&quot;. However, it is a good practice to identify which package you are using.</code></pre>
+<pre><code>## Call:psych::corr.test(x = corr_dat)
+## Correlation matrix 
+##        mpg   cyl  disp    hp    wt
+## mpg   1.00 -0.85 -0.85 -0.78 -0.87
+## cyl  -0.85  1.00  0.90  0.83  0.78
+## disp -0.85  0.90  1.00  0.79  0.89
+## hp   -0.78  0.83  0.79  1.00  0.66
+## wt   -0.87  0.78  0.89  0.66  1.00
+## Sample Size 
+## [1] 32
+## Probability values (Entries above the diagonal are adjusted for multiple tests.) 
+##      mpg cyl disp hp wt
+## mpg    0   0    0  0  0
+## cyl    0   0    0  0  0
+## disp   0   0    0  0  0
+## hp     0   0    0  0  0
+## wt     0   0    0  0  0
+## 
+##  To see confidence intervals of the correlations, print with the short=FALSE option</code></pre>
+<p>เนื่องจากค่าเหนือเส้นแทยงและใต้เส้นแทยงเป็นค่าเดียวกัน เราจึงดูเฉพาะครึ่งบนหรือครึ่งล่างของตารางได้ โดยใช้คำสั่ง <code>lowerCor()</code> เพื่อดูเฉพาะครึ่งล่างของตาราง</p>
+<pre class="r"><code>psych::lowerCor(corr_dat) # Show only lower half.</code></pre>
+<pre><code>##      mpg   cyl   disp  hp    wt   
+## mpg   1.00                        
+## cyl  -0.85  1.00                  
+## disp -0.85  0.90  1.00            
+## hp   -0.78  0.83  0.79  1.00      
+## wt   -0.87  0.78  0.89  0.66  1.00</code></pre>
+</div>
+<div id="apatables-package" class="section level2">
+<h2>apaTables package</h2>
+<p>แพ็คเกจ apaTables ช่วยสร้างตารางสหสัมพันธ์แบบ APA ที่สวยงามให้และบันทึกเป็นไฟล์ Word (.doc) เพื่อให้เอาไปใช้เขียนรายได้ต่อได้โดยง่าย <code>apaTables</code></p>
+<p>การบันทึกผลตารางใช้ option <code>filename = "your_file_name.doc"</code> โดยไฟล์จะถูกบันทึกใน working directory<br />
+คำสั่งเพื่อสร้างตารางในแพ็คเกจนี้คือ <code>apa.cor.table(data, filename = " ")</code>.</p>
+<pre class="r"><code># install.packages(&quot;apaTables&quot;)
+# run getwd() to check your working directory. 
+library(apaTables)
+apa.cor.table(corr_dat, filename = &quot;APA_Corr_Table.doc&quot;) </code></pre>
+<pre><code>## 
+## 
+## Means, standard deviations, and correlations with confidence intervals
+##  
+## 
+##   Variable M      SD     1            2          3          4         
+##   1. mpg   20.09  6.03                                                
+##                                                                       
+##   2. cyl   6.19   1.79   -.85**                                       
+##                          [-.93, -.72]                                 
+##                                                                       
+##   3. disp  230.72 123.94 -.85**       .90**                           
+##                          [-.92, -.71] [.81, .95]                      
+##                                                                       
+##   4. hp    146.69 68.56  -.78**       .83**      .79**                
+##                          [-.89, -.59] [.68, .92] [.61, .89]           
+##                                                                       
+##   5. wt    3.22   0.98   -.87**       .78**      .89**      .66**     
+##                          [-.93, -.74] [.60, .89] [.78, .94] [.40, .82]
+##                                                                       
+## 
+## Note. M and SD are used to represent mean and standard deviation, respectively.
+## Values in square brackets indicate the 95% confidence interval.
+## The confidence interval is a plausible range of population correlations 
+## that could have caused the sample correlation (Cumming, 2014).
+##  * indicates p &lt; .05. ** indicates p &lt; .01.
+## </code></pre>
+</div>
+</div>
+<div id="visualizing-correlation-matrix" class="section level1">
+<h1>Visualizing Correlation Matrix</h1>
+<p>การทำภาพของตารางสหสัมพันธ์ช่วยให้เราสำรวจความสัมพันธ์ระหว่างคู่ตัวแปรได้พร้อม ๆ กัน โดยเฉพาะอย่างยิ่งการตรวจสอบการละเมิดข้อสมมติพื้นฐาน (assumption violation) ภาพเหล่านี้มักใช้เพื่อวินิจฉัยปัญหาของข้อมูลมากกว่าจะใช้เพื่อรายงานผลการวิจัย เราจึงไม่ค่อยได้เห็น plots เหล่านี้ในบทความวิจัยเท่าใดนัก</p>
+<p>มีแพ็คเกจจำนวนมากสำหรับวิเคราะห์ภาพของสหสัมพันธ์ ในแบบฝึกหัดนี้เราจะพูดถึงแค่บางตัวเท่านั้น</p>
+<div id="base-r-2" class="section level2">
+<h2>Base R</h2>
+<p>คำสั่ง <code>pairs(data)</code> จะสร้างตารางของ scatter plot ตามคู่ตัวแปรในชุดข้อมูล <code>data</code> function will produce a matrix of scatter plots. You could examine whether assumptions of linearity and homoscedasticity hold true for any pairs.</p>
+<pre class="r"><code>pairs(corr_dat)</code></pre>
+<p><img src="RES_STAT_Lab09_files/figure-html/base%20R%20pairs-1.png" width="672" /></p>
+</div>
+<div id="psych-package-1" class="section level2">
+<h2>psych package</h2>
+<p>แพ็คเกจ psych มีคำสั่ง <code>pairs.panels()</code> ที่จะสร้างตารางค่าสหสัมพันธ์ในตารางครึ่งบน ตาราง scatter plot ในครึ่งล่าง และ histogram ของตัวแปรในแนวแทยง</p>
+<p>ประเภทของค่าสหสัมพันธ์สามารถกำหนดได้ค่า option <code>method = "pearson"</code>, <code>"spearman"</code>, หรือ <code>"kendall"</code> เหมือนใน base R</p>
+<p>The <code>psych</code> package’s <code>pairs.panels</code> function will give you correlation coefficients on an upper half, scatter plots on a lower half, and distribution density plots on a diagonal. The <code>method</code> option can be . The plots are useful for detecting assumption violations.</p>
+<pre class="r"><code>library(psych)
+pairs.panels(corr_dat) # input is a data frame.</code></pre>
+<p><img src="RES_STAT_Lab09_files/figure-html/psych%20pairs-1.png" width="672" /></p>
+</div>
+<div id="ggally" class="section level2">
+<h2>GGally</h2>
+<p>แพ็คเกจ GGally ใช้ฐานจาก ggplot2 แต่เพิ่มเติมความสามารถในการวิเคราะห์เข้ามาอีก เราจะใช้คำสั่ง <code>ggpairs()</code> และกำหนด option <code>lower=list(continuous = "smooth_lm")</code> เพื่อกำหนดให้สร้างเส้น fitted line แบบเส้นตรงใน scatter plot ด้านล่างตาราง</p>
+<pre class="r"><code># install.packages(&quot;GGally&quot;)
+library(&quot;GGally&quot;)
+ggpairs(corr_dat, lower=list(continuous = &quot;smooth_lm&quot;))</code></pre>
+<p><img src="RES_STAT_Lab09_files/figure-html/GGally%20pairs-1.png" width="672" /></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
