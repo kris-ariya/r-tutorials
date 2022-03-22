@@ -4,4 +4,4 @@ title: "R Tutorials"
 
 Hello, World!
 
-Welcome to PSY Chula's R tutorial pages!
+Welcome to PSY Chula's R tutorials site!

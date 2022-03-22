@@ -1,7 +1,7 @@
 name: "r-tutorials site"
 output_dir: "docs"
 navbar:
-  title: "R Tutorials"
+  title: "R Tutorials-PSY Chula"
   left:
     - text: "Home"
       href: index.html
