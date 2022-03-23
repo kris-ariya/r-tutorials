@@ -411,6 +411,9 @@ div.tocify {
     <li>
       <a href="SURVEY_Lab08.html">Lab 08: Data Cleaning</a>
     </li>
+    <li>
+      <a href="SURVEY_Lab09.html">Lab 09: Multiple Regression</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -523,8 +526,8 @@ print(paste0(&quot;95% CI [&quot;, LL,&quot;, &quot;, UL, &quot;]&quot;))</code>
 <p>ให้ <em>M</em><sub>dailyreading</sub> = 93.07 นาที, <em>SD</em> = 61.14, <em>N</em> = 54.</p>
 <p>ข้อมูลอยู่ในตัวแปรที่ชื่อว่า <code>reading</code>.</p>
 <pre class="r"><code>reading</code></pre>
-<pre><code>##  [1]  18  74 170  18  59  52 174   0  38 106  34 210  28  35 266 118 103 200 110  16 115 162 123  83  29  95  44 135 109
-## [30]  80 215  36  22  98 123 153 158   1   0  41 100  65 156 138  71 133  98  38  43 111 143 126  58  95</code></pre>
+<pre><code>##  [1]  18  74 170  18  59  52 174   0  38 106  34 210  28  35 266 118 103 200 110  16 115 162 123  83  29  95  44 135 109  80
+## [31] 215  36  22  98 123 153 158   1   0  41 100  65 156 138  71 133  98  38  43 111 143 126  58  95</code></pre>
 <pre class="r"><code>psych::describe(reading)</code></pre>
 <pre><code>##    vars  n  mean    sd median trimmed   mad min max range skew kurtosis   se
 ## X1    1 54 93.07 61.14   96.5   89.23 73.39   0 266   266 0.51    -0.27 8.32</code></pre>

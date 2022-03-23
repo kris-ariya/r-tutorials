@@ -1,0 +1,299 @@
+---
+title: "Lab 4-Describe Your Data"
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+# ข้อ 1 : การคำนวณความแปรปรวน (variance)
+
+การคำนวณค่าความแปรปรวนใน R นั้นทำได้ง่าย ๆ ด้วยคำสั่ง `var()`
+อย่างไรก็ดีวัตถุประสงค์ของแบบฝึกหัดนี้ คือ
+แสดงให้เห็นถึงขั้นตอนในการคำนวณค่าความแปรปรวนไปทีละขั้นด้วยคำสั่ง R
+
+เราจะเริ่มต้นด้วยการสร้างตัวแปร (variable) ชื่อ `drinks`
+เพื่อบันทึกข้อมูลจำนวนแก้วโอเลี้ยงจากแต่ละโต๊ะ
+
+```{r}
+drinks <- c(2, 4, 3, 1, 1, 2, 1)
+drinks
+n <- length(drinks) #ใช้คำสั่ง length() เพื่อหาขนาดของกลุ่มตัวอย่าง
+n
+```
+
+สูตรคำนวณความแปรปรวนคือ $$s^2 = \frac{\sum{(X - \bar{X})^2}}{N -1}$$
+ในสมการนี้เรารู้ว่า\
+ค่า $X$ คือ ค่าของข้อมูลแต่ละตัว\
+ค่า $N$ คือ ค่าจำนวนกลุ่มตัวอย่าง\
+จึงเหลือค่า $\bar{X}$ ที่ต้องคำนวณำนวณ
+
+```{r}
+mean_drinks <- mean(drinks)
+mean_drinks
+```
+
+นำค่าข้อมูลแต่ละตัวใน `drink` ไปลบด้วยค่าเฉลี่ยที่คำนวณได้
+จากนั้นบันทึกลงในตัวแปรชื่อ `deviation_drinks`
+
+```{r}
+deviation_drinks <- drinks - mean_drinks 
+deviation_drinks
+```
+
+ค่าความเบี่ยงเบนแบบนี้จะประกอบไปด้วยค่าที่สูงกว่าค่าเฉลี่ย (ติดบวก)
+หรือค่าที่ต่ำกว่าค่าเฉลี่ย (ติดลบ) และเมื่อรวมกันได้จะได้ 0
+ซึ่งไม่สามารถนำไปใช้คำนวณอะไรต่อได้
+
+```{r}
+sum(deviation_drinks)
+```
+
+เพื่อให้ได้ *ขนาด* ของความเบี่ยงเบนที่ไม่ติดลบ
+จึงนำค่าเบี่ยงเบนนี้ไปยกกำลังสอง
+
+```{r}
+sqr_dev <- deviation_drinks ^ 2
+sqr_dev
+```
+
+จากนั้นถึงหาผลรวม (sum) ตามสูตร $\sum{(X - \bar{X})^2}$\
+ค่าผลรวมนี้เรียกว่า sum of squares (*SS*) หรือที่เรียกเต็ม ๆ ว่า sum of
+squared deviations
+
+```{r}
+sum(sqr_dev)
+```
+
+จากนั้นนำไปหารด้วย degrees of freedom ($N - 1$)จะได้ค่าความแปรปรวน\
+ซึ่งสามารถคำนวณได้ด้วยคำสั่ง `var()`
+(สามารถทดสอบได้ว่าทั้งสองค่าเท่ากันด้วย `==`)
+
+```{r}
+sum(sqr_dev)/(n-1)
+var(drinks)
+sum(sqr_dev)/(n-1) == var(drinks)
+```
+
+ค่า *SD* ก็คือรากที่สองของ variance
+
+```{r}
+sqrt(var(drinks))
+sd(drinks)
+```
+
+### ให้คำนวณค่าความแปรปรวนและส่วนเบี่ยงเบนมาตรฐานของข้อมูลชุด 2
+
+1.  ให้คำนวณโดยแสดงวิธีทำแบบทีละขั้นตอนตามด้านบน
+2.  ให้คำนวณโดยใช้คำสั่ง `var` และ `sd`
+
+```{r}
+# Insert your code
+
+```
+
+## 2.1 นำเข้าข้อมูลและตั้งค่า working directory
+
+ให้ดาวน์โหลดไฟล์ R และข้อมูล (csv) ไว้ใน folder เดียวกัน
+จากนั้นให้เลือกเมนู Session -\> Set working directory -\> To source file
+location เพื่อให้ folder ที่ใช้ทำงานใน R เป็น folder
+ที่โค้ดและข้อมูลถูกบันทึกเอาไว้ หรือใช้คำสั่ง R ด้านล่าง
+
+```{r}
+# setwd(dirname(rstudioapi::getSourceEditorContext()$path))
+```
+
+เมื่อ set working directory เป็น folder ที่มีข้อมูลอยู่
+เราจะสามารถโหลดข้อมูลเข้า R ได้โดยเรียกชื่อไฟล์นั้นโดยตรง
+
+```{r}
+solar_data <- read.csv("data/RES_STAT_Lab4_Data.csv")
+head(solar_data)
+```
+
+## 2.2 Data selection
+
+เมื่อเรา import ตัวแปร user มา มันจะมีค่าเป็น numeric และไม่มี label
+ดังนั้นเราจะให้ประโยชน์จากตรงนี้ในการเลือกกลุ่ม user 1-2 และคัด 3-5 ทิ้ง
+
+```{r}
+solar_data <- solar_data[solar_data$user < 3, ]
+table(solar_data$user)
+```
+
+จากนั้นค่อยแปลง user เป็น factor พร้อมกับใส่ label ให้เรียบร้อย
+
+```{r}
+solar_data$user <- factor(solar_data$user, labels = c("small residence", "regular residence"))
+str(solar_data$user)
+```
+
+## 2.3 สร้าง frequency table และ bar graph ของตัวแปร user และ sex
+
+เปลี่ยนตัวแปร sex ให้เป็น factor เหมือนกับ user
+
+```{r}
+solar_data$sex <- factor(solar_data$sex, labels = c("Not answer", "male", "female" ))
+str(solar_data$sex)
+```
+
+### Frequency table
+
+การสร้างตารางความถี่ใช้คำสั่ง `table()` ซึ่งสามารถใช้ได้กับตัวแปร
+numeric หรือ factor ก็ได้\
+แต่ถ้าหากใช้คำสั่ง `summary()` กับตัวแปร factor
+ก็จะได้ผลเป็นตารางแจกแจงความถี่เช่นกัน
+
+```{r}
+table(solar_data$user)
+summary(solar_data$user)
+
+table(solar_data$sex)
+```
+
+### Bar graph
+
+การสร้างกราฟจะใช้ package ที่นิยม คือ ggplot2 หากยังไม่เคย install
+ไว้ในเครื่องให้ใช้คำสั่ง
+
+```{r}
+# install.packages("ggplot2")
+```
+
+เมื่อลง package เสร็จแล้ว จะต้องเปิดการใช้งานทุกครั้งเมื่อมี restart R
+โดยจะเรียก package นี้ด้วยคำสั่ง
+
+```{r}
+library("ggplot2")
+```
+
+การสร้างกราฟด้วย ggplot มีรูปแบบ คือ ระบุ data และแกน + ระบุ geoms
+คือลักษณะของแผนภูมิ + coordinat system คือ พิกัดของแกนต่าง ๆ
+
+การระบุ data และค่าบนแกนจะเป็น argument 2 ตัวแรกของคำสั่ง `ggplot`\
+`aes()` เป็นตัวกำหนดว่าตัวแปรที่จะอยู่บนแกน กรณีนี้คือแกน X
+แทนด้วยค่าของ user\
+เมื่อต่อบรรทัดใหม่จะใช้เครื่องหมาย +
+เพื่อให้รู้ว่าโค้ดมีต่อในบรรทัดถัดไป
+
+```{r}
+ggplot(data = solar_data, aes(user)) + 
+         geom_bar() + #geom_bar สร้าง bar plot
+         theme_classic() #theme นี้ใกล้เคียงกับ APA
+
+```
+
+สำหรับ sex เราจะเพิ่มสีสันลงใน geom_bar ด้วยคำสั่ง `aes(fill = ตัวแปร)`
+
+```{r}
+ggplot(data = solar_data, aes(sex)) + 
+         geom_bar(aes(fill = sex)) + 
+         theme_classic() 
+```
+
+```{r}
+#เขียน code เพื่อแก้โจทย์ข้อนี้
+```
+
+## 2.4 Contingency table
+
+ใช้คำสั่ง `table()` เพื่อสร้างตารางไขว้แบบ contingency table
+ระหว่างตัวแปรจัดประเภท
+
+```{r}
+table(solar_data$user, solar_data$sex)
+```
+
+```{r}
+#เขียน code เพื่อแก้โจทย์ข้อนี้
+```
+
+## 2.5 Cronbach's alpha
+
+การหาค่าความเที่ยงแบบสอดคล้องภายในด้วยสูตร Cronbach's alpha นั้น
+เราจะใช้คำสั่งของ package สำหรับการวิเคราะห์ข้อมูลทางจิตวิทยา `psych`
+
+```{r}
+# install.packages("psych") #หากมีแล้วสามารถข้ามขั้นนี้ไปได้
+library("psych") #เรียกใช้งาน
+```
+
+จะเห็นข้อความขึ้นเตือนว่าคำสั่ง `alpha` นอกจากใน package psych
+ก็ยังมีใช้งานใน package ggplot2 ด้วย เพื่อป้องกันโปรแกรมอ่านคำสั่งสับสน
+ควรจะต้องระบุชื่อ package ต่อด้วย colon 2 ตัวและตามด้วยชื่อคำสั่ง เช่น
+`psych::alpha()`
+
+ต่อไปเราจะต้องเตรียมตัวแปร KNO1 - KNO8 ให้พร้อม\
+หากดูให้ละเอียดเราจะพบว่าตัวแปร KNO ในแบบสอบถามนั้นมีคะแนนตั้งแต่ 0-4
+แต่ในข้อมูลนั้นมีคะแนน 1-5
+ทั้งนี้เนื่องจากระบบเก็บแบบสอบถามได้เข้ารหัสคะแนนมาแบบนั้น\
+ดังนั้นเราจึงต้องปรับคะแนน KNO ทั้งหมดลงไป 1 คะแนน
+
+```{r}
+kno <- subset(solar_data, select = kno1:kno8)
+head(kno)
+re_kno <- kno - 1
+head(re_kno)
+```
+
+การคำนวณค่าความเที่ยงใช้คำสั่ง `alpha` จาก package psych\
+โดยเลือกเฉพาะข้อคำถามในมาตรวัดความรู้ที่แก้คะแนนแล้วมาวิเคราะห์
+
+```{r}
+psych::alpha(re_kno)
+```
+
+ค่า alpha ดูจาก raw_alpha = .96 ค่า CITC ดูจาก std.r ในตาราง Item
+statistics
+
+```{r}
+#เขียน code เพื่อแก้โจทย์ข้อนี้
+```
+
+## 2.6 Average score of a scale
+
+มาตรวัดทางจิตวิทยาจะถามคำถามหลายข้อเพื่อวัด construct
+เดียวกันเพื่อให้ได้ข้อมูลที่มีความเที่ยงสูงขึ้น\
+การคำนวณคะแนนของมาตรวัดจึงนิยมใช้ค่าเฉลี่ยหรือคะแนนรวมจากข้อคำถามในมาตรวัดนั้น
+ๆ
+
+คำนวณคะแนนมาตรวัดความรู้ เป็นการหาค่าเฉลี่ยตามแนวนอนของตาราง ผลที่ได้คือ
+column ใหม่ที่มีค่าเฉลี่ยคะแนนความรู้ของผู้เข้าร่วมการวิจัยแต่ละคน
+
+```{r}
+solar_data$knowledge <- rowMeans(re_kno)
+head(solar_data)
+```
+
+```{r}
+#เขียน code เพื่อแก้โจทย์ข้อนี้
+```
+
+## 2.7 Histogram
+
+Histrogram เป็นแผนภูมิที่เหมาะสำหรับแสดงการแจกแจงความถี่ (distribution)
+ของข้อมูล Q-Q Plot เป็นแผนภูมิที่เหมาะสำหรับตรวจสอบการแจกแจงตามโค้งปกติ
+(normal distribution) หากข้อมูลกระจายตัวเป็นปกติ
+ข้อมูลจะเรียงตัวอยู่ตรงแนวเส้นแทยงอ้างอิง ของข้อมูล
+
+```{r}
+hist(solar_data$knowledge)
+qqnorm(solar_data$knowledge)
+qqline(solar_data$knowledge)
+```
+
+## 2.8 Descriptive Statistics
+
+คำสั่งจากแต่ละ package จะให้ค่าสถิติเชิงพรรณาบางตัว เช่น `summary`
+จะให้ค่าที่เน้นตำแหน่งต่าง ๆ เช่น mode, median, mean, quartile, min, max
+`psych::describe`
+จะให้ข้อมูลที่เกี่ยวข้องกับการกระจายตัวของข้อมูลมากกว่า เช่น sd, range,
+skewness, kurtosis
+
+```{r}
+summary(solar_data$knowledge)
+psych::describe(solar_data$knowledge)
+```
+
+```{r}
+#เขียน code เพื่อแก้โจทย์ข้อนี้
+```

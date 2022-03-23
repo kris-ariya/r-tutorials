@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 09: Multiple Regression</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R @ PSY Chula</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    RES MTHD/STAT PSY Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="RES_STAT_Lab04.html">Lab 04: Descriptive Statistics</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab05.html">Lab 05: Standard Score</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab06.html">Lab 06: Visualizing Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab07.html">Lab 07: Sampling Distribution</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab08.html">Lab 08: Confidence Interval and t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab09.html">Lab 09: Correlation</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab10.html">Lab 10: Simple Regression</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab12.html">Lab 12: Dependent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab13.html">Lab 13: Independent t Test</a>
+    </li>
+    <li>
+      <a href="RES_STAT_Lab14.html">Lab 14: Chi-Squared Test</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    EXPRM DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="EXPRM_Lab02.html">Lab 02: Randomization</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab03.html">Lab 03: Power and Sample Size</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab04.html">Lab 04: One-way ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab05.html">Lab 05: Multiple Comparisons</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab07.html">Lab 07: Factorial ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab09.html">Lab 09: Data Visualization with ggplot2</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab10.html">Lab 10: Repeated-Measures ANOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab11.html">Lab 11: Factorial ANOVA in Repeated-Measures Design</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab12.html">Lab 12: Means Comparison in Regression</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab13.html">Lab 13: ANCOVA</a>
+    </li>
+    <li>
+      <a href="EXPRM_Lab14.html">Lab 14: Moderation Analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    SURVEY DESIGN/ANA Lab
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="SURVEY_Lab08.html">Lab 08: Data Cleaning</a>
+    </li>
+    <li>
+      <a href="SURVEY_Lab09.html">Lab 09: Multiple Regression</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Lab 09: Multiple Regression</h1>
+<h4 class="date">Mar 23, 2022</h4>
+
+</div>
+
+
+<p>โหลดแพ็คเกจที่จะต้องใช้ในแบบฝึกหัดนี้</p>
+<pre class="r"><code>library(psych)
+library(car)
+library(carData)</code></pre>
+<div id="multiple-regression" class="section level1">
+<h1>1. Multiple Regression</h1>
+<div id="linear-model" class="section level2">
+<h2>Linear model</h2>
+<p>ชุดข้อมูล <code>Prestige</code> จากแพ็คเกจ carData</p>
+<p><code>education</code> = ระยะเวลาการศึกษาเฉลี่ยของผู้ประกอบอาชีพ</p>
+<p><code>income</code> =</p>
+<p><code>women</code></p>
+<p><code>prestige</code></p>
+<p><code>census</code></p>
+<p><code>type</code></p>
+<pre class="r"><code># Import data 
+dat &lt;- carData::Prestige
+str(dat)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    102 obs. of  6 variables:
+##  $ education: num  13.1 12.3 12.8 11.4 14.6 ...
+##  $ income   : int  12351 25879 9271 8865 8403 11030 8258 14163 11377 11023 ...
+##  $ women    : num  11.16 4.02 15.7 9.11 11.68 ...
+##  $ prestige : num  68.8 69.1 63.4 56.8 73.5 77.6 72.6 78.1 73.1 68.8 ...
+##  $ census   : int  1113 1130 1171 1175 2111 2113 2133 2141 2143 2153 ...
+##  $ type     : Factor w/ 3 levels &quot;bc&quot;,&quot;prof&quot;,&quot;wc&quot;: 2 2 2 2 2 2 2 2 2 2 ...</code></pre>
+<pre class="r"><code>prestige.lm &lt;- lm(prestige ~ education + income + women, data = dat)
+summary(prestige.lm)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = prestige ~ education + income + women, data = dat)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -19.8246  -5.3332  -0.1364   5.1587  17.5045 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -6.7943342  3.2390886  -2.098   0.0385 *  
+## education    4.1866373  0.3887013  10.771  &lt; 2e-16 ***
+## income       0.0013136  0.0002778   4.729 7.58e-06 ***
+## women       -0.0089052  0.0304071  -0.293   0.7702    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 7.846 on 98 degrees of freedom
+## Multiple R-squared:  0.7982, Adjusted R-squared:  0.792 
+## F-statistic: 129.2 on 3 and 98 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div id="residual-plots" class="section level2">
+<h2>Residual plots</h2>
+<pre class="r"><code>plot(prestige.lm)</code></pre>
+<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-1-1.png" width="672" /><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-1-2.png" width="672" /><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-1-3.png" width="672" /><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-1-4.png" width="672" /></p>
+<pre class="r"><code>residualPlots(prestige.lm)</code></pre>
+<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-1-5.png" width="672" /></p>
+<pre><code>##            Test stat Pr(&gt;|Test stat|)    
+## education     1.3268           0.1877    
+## income       -4.2815        4.366e-05 ***
+## women         1.4427           0.1523    
+## Tukey test   -1.4169           0.1565    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+</div>
+</div>
+<div id="detecting-extreme-cases" class="section level1">
+<h1>2. Detecting Extreme Cases</h1>
+<div id="leverage" class="section level2">
+<h2>Leverage</h2>
+<p>เลฟเวอเรจ (leverage) คือ กรณีที่ค่าของตัวแปรทำนาย Xi นั้นมีระยะห่างจากค่าเฉลี่ย <span class="math inline">\(\bar{X}\)</span> อย่างมาก (ไม่เกี่ยวกับค่า Y) ในแบบฝึกหัดที่ผ่าน ๆ มา เราได้ใช้วิธีแปลงคะแนนค่า x เป็นคะแนนมาตรฐาน (z score) เพื่อดูว่าค่านั้นสุดโต่งหรือไม่ นี่คือแนวคิดของการหา univariate outlier คือพิจารณาค่าสุดโต่งของตัวแปรเดียว (ไม่พิจารณาร่วมกับตัวแปรอื่น) หากเรานำค่า z ที่ได้ไปยกกำลังสอง เราจะได้สูตรดังนี้</p>
+<p><span class="math display">\[
+Z^2_{X_i} = \bigg{(}\frac{X_i - \bar{X}}{s_{X}^2}\bigg{)}^2
+\]</span></p>
+<p>เนื่องจากค่า z ถูกยกกำลังสองจึงเป็นค่าทางบวกเสมอที่แสดงถึงความห่างของค่าคะแนน Xi จากค่าเฉลี่ยของตัวแปร X โดยปกติแล้วเราจะใช้เกณฑ์ที่ ±3 SD เป็นจุดตัดของค่าสุดโต่ง</p>
+<p>แต่ในกรณีของการถดถอยพหุคูณ (multiple regression; MR) ค่าตัวแปร X ที่สุดโต่งอาจต้องพิจารณาร่วมกับตัวแปร X อื่น ๆ ด้วย เช่น คนที่สูง 180 อาจจะไม่เห็นค่าสุดโต่งในชุดข้อมูล แต่ผู้หญิงที่สูง 180 เป็นค่าที่มีเลฟเวอเรจสูง (พิจารณาตัวแปรเพศและความสูงร่วมกัน) เนื่องจากต้องพิจารณาหลายตัวแปรร่วมกันจึงเรียกว่าเป็น multivariate outlier โดยค่าสถิติที่ใช้พิจารณาก็พัฒนาต่อเนื่องมาจากสูตรด้านบนเป็นค่าที่เรียกว่า Mahalanobis distance</p>
+<p>เราจะใช้คำสั่ง <code>outlier(x, plot = TRUE, bad = 5, na.rm = TRUE)</code> ในแพ็คเกจ psych</p>
+<p><code>x</code> คือ ชุดตัวแปร X</p>
+<p><code>plot</code> คือต้องการให้สร้างกราฟ QQ หรือไม่ (ค่าตั้งต้น = TRUE)</p>
+<p><code>bad</code> คือ ให้แสดงเคสที่มีปัญหาบนกราฟ (ค่าตั้งต้น = 5 ตัวที่มีปัญหามากที่สุด)</p>
+<p><code>na.rm</code> คือ ให้ลบข้อมูลที่มี missing ทิ้ง (ค่าตั้งต้น = TRUE)</p>
+<pre class="r"><code>predictors &lt;- dat[c(&quot;education&quot;, &quot;income&quot;, &quot;women&quot;)]
+dat$maha_dis &lt;- psych::outlier(predictors)</code></pre>
+<p><img src="SURVEY_Lab09_files/figure-html/manalanobis-1.png" width="672" /></p>
+<pre class="r"><code>head(dat)</code></pre>
+<pre><code>##                     education income women prestige census type   maha_dis
+## gov.administrators      13.11  12351 11.16     68.8   1113 prof  1.7323152
+## general.managers        12.26  25879  4.02     69.1   1130 prof 33.5731939
+## accountants             12.77   9271 15.70     63.4   1171 prof  0.7825381
+## purchasing.officers     11.42   8865  9.11     56.8   1175 prof  0.4787457
+## chemists                14.62   8403 11.68     73.5   2111 prof  3.6997050
+## physicists              15.64  11030  5.13     77.6   2113 prof  4.4454380</code></pre>
+<pre class="r"><code>#calculate p value for Mahalanobis distance with Chi-square test with df = k- 1, where k = number of variables.
+dat$maha_p &lt;- pchisq(dat$maha_dis, df = 2, lower.tail = FALSE) # We only look for large MD. Therefore, only upper tail of distribution. 
+head(dat)</code></pre>
+<pre><code>##                     education income women prestige census type   maha_dis       maha_p
+## gov.administrators      13.11  12351 11.16     68.8   1113 prof  1.7323152 4.205644e-01
+## general.managers        12.26  25879  4.02     69.1   1130 prof 33.5731939 5.124761e-08
+## accountants             12.77   9271 15.70     63.4   1171 prof  0.7825381 6.761982e-01
+## purchasing.officers     11.42   8865  9.11     56.8   1175 prof  0.4787457 7.871214e-01
+## chemists                14.62   8403 11.68     73.5   2111 prof  3.6997050 1.572604e-01
+## physicists              15.64  11030  5.13     77.6   2113 prof  4.4454380 1.083142e-01</code></pre>
+<pre class="r"><code>dat[dat$maha_p &lt; .001, ] # cases with p &lt; .001 are considered outliers.</code></pre>
+<pre><code>##                  education income women prestige census type maha_dis       maha_p
+## general.managers     12.26  25879  4.02     69.1   1130 prof 33.57319 5.124761e-08
+## physicians           15.96  25308 10.56     87.2   3111 prof 23.60481 7.486533e-06</code></pre>
+<div id="hat-values" class="section level3">
+<h3>hat values</h3>
+<pre class="r"><code>dat$hat &lt;- hatvalues(prestige.lm)
+head(dat)</code></pre>
+<pre><code>##                     education income women prestige census type   maha_dis       maha_p        hat
+## gov.administrators      13.11  12351 11.16     68.8   1113 prof  1.7323152 4.205644e-01 0.02695556
+## general.managers        12.26  25879  4.02     69.1   1130 prof 33.5731939 5.124761e-08 0.34221178
+## accountants             12.77   9271 15.70     63.4   1171 prof  0.7825381 6.761982e-01 0.01755182
+## purchasing.officers     11.42   8865  9.11     56.8   1175 prof  0.4787457 7.871214e-01 0.01454398
+## chemists                14.62   8403 11.68     73.5   2111 prof  3.6997050 1.572604e-01 0.04643466
+## physicists              15.64  11030  5.13     77.6   2113 prof  4.4454380 1.083142e-01 0.05381816</code></pre>
+</div>
+</div>
+<div id="distance" class="section level2">
+<h2>Distance</h2>
+<p>Distance คือ ระยะห่างของค่า Y แต่ละตัวจากค่า <span class="math inline">\(\hat{Y}\)</span> (ค่า Y ทำนาย; predicted Y) นั่นก็คือค่า Y ที่ทำให้เกิดความคลาดเคลื่อนในการทำนายสูง (residual)</p>
+<div id="studentized-residual" class="section level3">
+<h3>Studentized residual</h3>
+<pre class="r"><code>dat$tr &lt;- rstudent(prestige.lm)
+head(dat)</code></pre>
+<pre><code>##                     education income women prestige census type   maha_dis       maha_p        hat         tr
+## gov.administrators      13.11  12351 11.16     68.8   1113 prof  1.7323152 4.205644e-01 0.02695556  0.5901624
+## general.managers        12.26  25879  4.02     69.1   1130 prof 33.5731939 5.124761e-08 0.34221178 -1.4848372
+## accountants             12.77   9271 15.70     63.4   1171 prof  0.7825381 6.761982e-01 0.01755182  0.6014246
+## purchasing.officers     11.42   8865  9.11     56.8   1175 prof  0.4787457 7.871214e-01 0.01454398  0.5397302
+## chemists                14.62   8403 11.68     73.5   2111 prof  3.6997050 1.572604e-01 0.04643466  1.0646403
+## physicists              15.64  11030  5.13     77.6   2113 prof  4.4454380 1.083142e-01 0.05381816  0.5840069</code></pre>
+<pre class="r"><code>outlierTest(prestige.lm)</code></pre>
+<pre><code>## No Studentized residuals with Bonferroni p &lt; 0.05
+## Largest |rstudent|:
+##           rstudent unadjusted p-value Bonferroni p
+## newsboys -2.694442          0.0083101      0.84763</code></pre>
+</div>
+</div>
+<div id="influence" class="section level2">
+<h2>Influence</h2>
+<p>Influence คือ อิทธิพลที่เคสนั้นมีต่อสมการถดถอย นั่นคือ ถ้าเคสนี้หายไปค่า b จะเปลี่ยนไปเท่าใด</p>
+<div id="cooks-distance" class="section level3">
+<h3>Cook’s distance</h3>
+<pre class="r"><code>dat$cook &lt;- cooks.distance(prestige.lm)
+head(dat)</code></pre>
+<pre><code>##                     education income women prestige census type   maha_dis       maha_p        hat         tr        cook
+## gov.administrators      13.11  12351 11.16     68.8   1113 prof  1.7323152 4.205644e-01 0.02695556  0.5901624 0.002428267
+## general.managers        12.26  25879  4.02     69.1   1130 prof 33.5731939 5.124761e-08 0.34221178 -1.4848372 0.283269734
+## accountants             12.77   9271 15.70     63.4   1171 prof  0.7825381 6.761982e-01 0.01755182  0.6014246 0.001626121
+## purchasing.officers     11.42   8865  9.11     56.8   1175 prof  0.4787457 7.871214e-01 0.01454398  0.5397302 0.001082658
+## chemists                14.62   8403 11.68     73.5   2111 prof  3.6997050 1.572604e-01 0.04643466  1.0646403 0.013779919
+## physicists              15.64  11030  5.13     77.6   2113 prof  4.4454380 1.083142e-01 0.05381816  0.5840069 0.004882702</code></pre>
+</div>
+</div>
+<div id="visualize" class="section level2">
+<h2>Visualize</h2>
+<pre class="r"><code>influenceIndexPlot(prestige.lm)</code></pre>
+<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+</div>
+<div id="assumption-violation" class="section level1">
+<h1>3. Assumption Violation</h1>
+<div id="nonlinearity" class="section level2">
+<h2>Nonlinearity</h2>
+<pre class="r"><code>crPlots(prestige.lm)</code></pre>
+<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>ncvTest(prestige.lm)</code></pre>
+<pre><code>## Non-constant Variance Score Test 
+## Variance formula: ~ fitted.values 
+## Chisquare = 0.2490143, Df = 1, p = 0.61777</code></pre>
+</div>
+<div id="non-normality" class="section level2">
+<h2>Non-Normality</h2>
+<pre class="r"><code>car::qqPlot(prestige.lm)</code></pre>
+<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre><code>## newsboys  farmers 
+##       53       67</code></pre>
+</div>
+<div id="heteroscedasticity" class="section level2">
+<h2>Heteroscedasticity</h2>
+<pre class="r"><code>spreadLevelPlot(prestige.lm)</code></pre>
+<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre><code>## 
+## Suggested power transformation:  1.12183</code></pre>
+</div>
+<div id="nonindependence" class="section level2">
+<h2>Nonindependence</h2>
+<p>Use MLM</p>
+</div>
+<div id="multi-colinearity" class="section level2">
+<h2>Multi-colinearity</h2>
+<pre class="r"><code>vif(prestige.lm)</code></pre>
+<pre><code>## education    income     women 
+##  1.845165  2.282038  1.526593</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

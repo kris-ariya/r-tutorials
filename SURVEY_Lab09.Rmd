@@ -1,0 +1,152 @@
+---
+title: 'Lab 09: Multiple Regression'
+date: "Mar 23, 2022"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: TRUE
+---
+
+โหลดแพ็คเกจที่จะต้องใช้ในแบบฝึกหัดนี้
+
+```{r load_package, message = FALSE}
+library(psych)
+library(car)
+library(carData)
+```
+
+# 1. Multiple Regression
+
+## Linear model
+
+ชุดข้อมูล `Prestige` จากแพ็คเกจ carData
+
+`education` = ระยะเวลาการศึกษาเฉลี่ยของผู้ประกอบอาชีพ
+
+`income` =
+
+`women`
+
+`prestige`
+
+`census`
+
+`type`
+
+```{r multiple regression}
+# Import data 
+dat <- carData::Prestige
+str(dat)
+prestige.lm <- lm(prestige ~ education + income + women, data = dat)
+summary(prestige.lm)
+```
+
+## Residual plots
+
+```{r}
+plot(prestige.lm)
+residualPlots(prestige.lm)
+```
+
+# 2. Detecting Extreme Cases
+
+## Leverage
+
+เลฟเวอเรจ (leverage) คือ กรณีที่ค่าของตัวแปรทำนาย Xi นั้นมีระยะห่างจากค่าเฉลี่ย $\bar{X}$ อย่างมาก (ไม่เกี่ยวกับค่า Y) ในแบบฝึกหัดที่ผ่าน ๆ มา เราได้ใช้วิธีแปลงคะแนนค่า x เป็นคะแนนมาตรฐาน (z score) เพื่อดูว่าค่านั้นสุดโต่งหรือไม่ นี่คือแนวคิดของการหา univariate outlier คือพิจารณาค่าสุดโต่งของตัวแปรเดียว (ไม่พิจารณาร่วมกับตัวแปรอื่น) หากเรานำค่า z ที่ได้ไปยกกำลังสอง เราจะได้สูตรดังนี้
+
+$$
+Z^2_{X_i} = \bigg{(}\frac{X_i - \bar{X}}{s_{X}^2}\bigg{)}^2
+$$
+
+เนื่องจากค่า z ถูกยกกำลังสองจึงเป็นค่าทางบวกเสมอที่แสดงถึงความห่างของค่าคะแนน Xi จากค่าเฉลี่ยของตัวแปร X โดยปกติแล้วเราจะใช้เกณฑ์ที่ ±3 SD เป็นจุดตัดของค่าสุดโต่ง
+
+แต่ในกรณีของการถดถอยพหุคูณ (multiple regression; MR) ค่าตัวแปร X ที่สุดโต่งอาจต้องพิจารณาร่วมกับตัวแปร X อื่น ๆ ด้วย เช่น คนที่สูง 180 อาจจะไม่เห็นค่าสุดโต่งในชุดข้อมูล แต่ผู้หญิงที่สูง 180 เป็นค่าที่มีเลฟเวอเรจสูง (พิจารณาตัวแปรเพศและความสูงร่วมกัน) เนื่องจากต้องพิจารณาหลายตัวแปรร่วมกันจึงเรียกว่าเป็น multivariate outlier โดยค่าสถิติที่ใช้พิจารณาก็พัฒนาต่อเนื่องมาจากสูตรด้านบนเป็นค่าที่เรียกว่า Mahalanobis distance
+
+เราจะใช้คำสั่ง `outlier(x, plot = TRUE, bad = 5, na.rm = TRUE)` ในแพ็คเกจ psych
+
+`x` คือ ชุดตัวแปร X
+
+`plot` คือต้องการให้สร้างกราฟ QQ หรือไม่ (ค่าตั้งต้น = TRUE)
+
+`bad` คือ ให้แสดงเคสที่มีปัญหาบนกราฟ (ค่าตั้งต้น = 5 ตัวที่มีปัญหามากที่สุด)
+
+`na.rm` คือ ให้ลบข้อมูลที่มี missing ทิ้ง (ค่าตั้งต้น = TRUE)
+
+```{r manalanobis}
+predictors <- dat[c("education", "income", "women")]
+dat$maha_dis <- psych::outlier(predictors)
+head(dat)
+#calculate p value for Mahalanobis distance with Chi-square test with df = k- 1, where k = number of variables.
+dat$maha_p <- pchisq(dat$maha_dis, df = 2, lower.tail = FALSE) # We only look for large MD. Therefore, only upper tail of distribution. 
+head(dat)
+dat[dat$maha_p < .001, ] # cases with p < .001 are considered outliers.
+```
+
+### hat values
+
+```{r}
+dat$hat <- hatvalues(prestige.lm)
+head(dat)
+
+```
+
+## Distance
+
+Distance คือ ระยะห่างของค่า Y แต่ละตัวจากค่า $\hat{Y}$ (ค่า Y ทำนาย; predicted Y) นั่นก็คือค่า Y ที่ทำให้เกิดความคลาดเคลื่อนในการทำนายสูง (residual)
+
+### Studentized residual
+
+```{r studentized res}
+dat$tr <- rstudent(prestige.lm)
+head(dat)
+outlierTest(prestige.lm)
+```
+
+## Influence
+
+Influence คือ อิทธิพลที่เคสนั้นมีต่อสมการถดถอย นั่นคือ ถ้าเคสนี้หายไปค่า b จะเปลี่ยนไปเท่าใด
+
+### Cook's distance
+
+```{r}
+dat$cook <- cooks.distance(prestige.lm)
+head(dat)
+```
+
+## Visualize
+
+```{r}
+influenceIndexPlot(prestige.lm)
+```
+
+# 3. Assumption Violation
+
+## Nonlinearity
+
+```{r}
+crPlots(prestige.lm)
+ncvTest(prestige.lm)
+```
+
+## Non-Normality
+
+```{r}
+car::qqPlot(prestige.lm)
+```
+
+## Heteroscedasticity
+
+```{r}
+spreadLevelPlot(prestige.lm)
+```
+
+## Nonindependence
+
+Use MLM
+
+## Multi-colinearity
+
+```{r}
+vif(prestige.lm)
+```

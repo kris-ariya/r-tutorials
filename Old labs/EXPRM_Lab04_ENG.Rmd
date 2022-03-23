@@ -1,0 +1,148 @@
+---
+title: 'Lab 04: One-way ANOVA'
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: TRUE
+---
+
+One-way analysis of variance provides an omnibus test when comparing means for three or more groups (when using ANOVA to compare two group means, $F = t^2$). The null hypothesis of ANOVA is that all group means are equal, $H_0: \mu_1 = \mu_2 = \mu_3 = \cdots = \mu_k$, while the alternative hypothesis is that at least one mean is different. The analysis of variance is based on a ratio of variance due to group difference to variance due to unknown (random) errors within groups, i.e., $$F = \frac{MS_{between}}{MS_{within}}$$
+
+When designed is balanced (equal $n$), $MS_{between} = \frac{SS_{between}}{df_{between}} = \frac{n\sum(\bar{Y}_k-\bar{Y})^2}{k-1}$, where $k$ is a number of groups; and $MS_{within} = \frac{SS_{within}}{df_{within}} = \frac{\sum (Y_{ik}-\bar{Y}_k)^2}{N-k}$. 
+
+# Assumptions
+Similar to *t*-tests, ANVOA has three main assumptions.
+
+1. **Normality of residual.** That is, the distribution of each group (unexplained variance) is normal. We could use a Q-Q plot or Shapiro-Wilk test to check for normality. 
+2. **Homogeneity of variance.** The variance of each group are all equals, which suggests that all error variances are equal. This is typically tested by Levene's test for equality of variance. 
+3. **Independence of observation.** Each observation (e.g., participant) is independent, which results in independence of an error term. This could not be detected or fixed with statistics. It can only be inferred from the research design. 
+
+Let's use an R built-in dataset, `PlantGrowth`. This dataset has two variables: `weight`, which is numeric, and `group`, which is a factor. The `group` factor has three levels: `ctrl` for control, `trt1` for treatment 1, and  `trt2` for treatment 2. 
+
+```{r}
+data(PlantGrowth)
+PlantGrowth
+str(PlantGrowth$group) #check if group is a factor. 
+table(PlantGrowth$group) # equal n for each group
+```
+
+## Plot the data
+For any analysis, you should always look at the data first to check for any anomalies. We can use the `boxplot` function
+
+```{r}
+boxplot(weight ~ group, data = PlantGrowth) 
+```
+
+Alternatively, you can use `ggplot2`.
+
+```{r}
+library(ggplot2)
+ggplot(PlantGrowth, aes(x = group, y = weight)) +
+  geom_boxplot() +
+  theme_classic()
+```
+
+or a violin plot
+
+```{r}
+ggplot(PlantGrowth, aes(x = group, y = weight, fill = group)) +
+  geom_violin() +
+  geom_jitter(width = .15) + #plot data points with random width
+  theme_classic()
+```
+
+As you can see, the condition `trt1` consists of some outliers. For now, let's proceed with the analysis. We will come back to check for assumptions later.
+
+# `aov` function
+
+To run ANOVA in R, you will need to create a model object with `aov` function. The formula will be in a form of `y ~ x` or `dv ~ iv`, that is the DV (Y) is predicted/explained/affected by IV (X). In this case, `weight ~ group`. 
+
+```{r}
+plant_aov <- aov(weight ~ group, data = PlantGrowth)
+str(plant_aov) # Look at the structure of aov class object. 
+```
+
+The object consists of many information, such as, model, coefficient, effects, residuals, etc. To get an typical ANOVA table, use `summary(ojbect)`.
+
+```{r}
+summary(plant_aov)
+```
+
+We will come back to an interpretation later. Now, let's use `plot` on the aov object to check for any assumption violations. We will focus on the first two plots.
+```{r}
+plot(plant_aov)
+```
+
+## Homogeneity of Variances
+The *Residuals vs Fitted* plot shows the relationship between residuals (errors; in this case the *within group variations*) against fitted values(or predicted values; in this case the *group means*). This plot is used to assess the **homogeneity of variances** assumption. We can see three groupings in the plot; one for each condtion The first grouping (fitted value or group mean below 4.8) was from `trt1`, the group with the lowest means. The second grouping (just above 5.0 ) was from `ctrl`, the control group. Lastly, the third grouping (above 5.4) was from `trt2`, which had the highest mean. 
+
+```{r}
+plot(plant_aov, 1)
+```
+
+If the group variances are equal, there should be the *same amount of vertical spread across three groups*. However, as you can see in this plot, the spread is highest in `trt1`, and `R` also labeled the extreme data points with their row numbers. The second grouping, which is `ctrl`, also spread a bit wide, but it is less concerning than `trt1`. In other words, we might suspect that the homogeneity of variances assumption might be violated. We can conduct a test for homogeneity of variance, known as **Levene's test**. 
+
+```{r}
+#install.packages("car") 
+library(car)
+leveneTest(weight ~ group, data = PlantGrowth)
+```
+
+The Levene's test was *not* significant, suggesting that group variances may not be different. Normally, we would assume that all variances were equal. However, because of the small sample size (each *n* = 10; *N* = 30), it was also possible that we lack power. In this case, it might be a better option to assume a worse posibility and use Welch's test instead (more on that later). 
+
+## Normality of Residuals
+The *Normal Q-Q* plot assesses the normality assumption. It combines all residuals (errors) and shows the deviation from normality in a single plot as well as flags for extreme data points. 
+
+```{r}
+plot(plant_aov, 2)
+```
+
+We can test the normality assumption with Shapiro-Wilk test. 
+
+```{r}
+# Run Shapiro-Wilk test
+shapiro.test(plant_aov$residuals) #Extract residuals from aov object and use them in shapiro.test.
+```
+
+The test was not significant, suggesting that the normaility was not violated. If you want to create Q-Q plots for each group, use `qqPlot` from `car` package.
+
+```{r}
+car::qqPlot(weight ~ group, data = PlantGrowth)
+```
+
+The strongest deviations from normality were found in `trt1`. These two data points affected both normality and homogeneity of variances. Anyway the departure from both assumptions did not seem to be serious, we will proceed with a typical ANOVA *F*-test. 
+
+# Back to ANOVA
+
+```{r}
+summary(plant_aov)
+```
+
+The table contains information from the analysis of variance. The `group` line shows the between-group/treatment effect of an independent variable along with its $df$, $SS$, $MS$ , $F$ value, and $p$ value. The `Residuals` line represent the error or within-group effect. 
+
+In this analysis, the *F* value was 4.85 and statistically significant, suggesting that at least one group mean is different from others. However, we do not know which groups were different at this point. We will address that analysis in the next lab tutorial. 
+
+# Effect Sizes
+There are multiple ways to calculate effect sizes for ANOVA, e.g., Cohen's $f$, $\eta^2$, and $\omega^2$. We will use the `effectsize` package. Each function takes an input of a model object, in this case, `plant_aov`. 
+
+```{r}
+#install.packages("effectsize")
+library(effectsize)
+eta_squared(plant_aov)
+omega_squared(plant_aov)
+cohens_f(plant_aov)
+```
+
+The functions also provide a confidence interval of the effect sizes to help us see errors in effect size estimation. For this analysis, $\eta^2 = .26$, $\omega^2 = .20$, and Cohen's $f$ = 0.60. 
+
+* The $\eta^2$ is a proportion of variance in *Y* that is explained by treatment *X*. This is the same as $R^2$ in a simple regression. 
+* The $\omega^2$ is an unbiased estimator of $\eta^2$. The $\omega^2$ is preferred when sample sizes are small. 
+* The Cohen's $f$ is a ratio of between-group *SD* to average within-group *SD*.
+
+# Welch's test
+We might opt to use Welch's test in order to protect against Type I error if we are concerned about homogeneity of variances. The Welch's test will adjust the *df*, resulting in *df* with decimals.
+```{r}
+oneway.test(weight ~ group, data = PlantGrowth)
+```
+In this case, the result was also significant (same as the regular *F* test.)

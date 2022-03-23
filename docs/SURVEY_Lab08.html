@@ -411,6 +411,9 @@ div.tocify {
     <li>
       <a href="SURVEY_Lab08.html">Lab 08: Data Cleaning</a>
     </li>
+    <li>
+      <a href="SURVEY_Lab09.html">Lab 09: Multiple Regression</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -586,9 +589,9 @@ big5_complete[miss999[,1], ] # There are many cases with 999 as missing values.<
 ## 226.6         1</code></pre>
 <pre class="r"><code>miss9999 &lt;- which(big5_complete == 9999, arr.ind = TRUE)
 big5_complete[miss9999[,1], ] # No data is coded as 9999</code></pre>
-<pre><code>##  [1] X         A1        A2        A3        A4        A5        C1        C2        C3        C4        C5       
-## [12] E1        E2        E3        E4        E5        N1        N2        N3        N4        N5        O1       
-## [23] O2        O3        O4        O5        gender    education age       completed
+<pre><code>##  [1] X         A1        A2        A3        A4        A5        C1        C2        C3        C4        C5        E1       
+## [13] E2        E3        E4        E5        N1        N2        N3        N4        N5        O1        O2        O3       
+## [25] O4        O5        gender    education age       completed
 ## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
 <p>แทนค่า 99 และ 999 ด้วย <code>NA</code></p>
 <pre class="r"><code>big5_complete[big5_complete == 99] &lt;- NA #replace 99 with NA
@@ -692,18 +695,12 @@ big5_complete[perNAconsci &gt; .5, ] </code></pre>
 <pre class="r"><code># Extraversion
 perNAextra &lt;- rowMeans(is.na(subset(big5_complete, select = E1:E5))) 
 big5_complete[perNAextra &gt; .5, ] </code></pre>
-<pre><code>##          X A1 A2 A3 A4 A5 C1 C2 C3 C4 C5 E1 E2 E3 E4 E5 N1 N2 N3 N4 N5 O1 O2 O3 O4 O5  gender       education age
-## 226  62102  1  6  6  6  4  1  5  6 NA NA NA NA NA NA NA  2  5  5  4  4  5  5  5  6  1 Females graduate degree  26
-## 244  62142  1  6  4  6  6  5  4  5  1  2 NA NA NA NA NA  1  2  2  1  1  4  2  5  5  3    Male    some college  40
-## 676  63030  1 NA NA NA  5  6 NA NA NA  2 NA  2 NA  6 NA NA  3  4 NA NA NA  2 NA  4 NA Females    some college  19
-## 1122 63991  3 NA NA NA  3  3 NA NA NA  3 NA  3 NA  3 NA NA  3  3 NA NA NA  3 NA  3 NA Females    some college  17
-## 2307 66546  6 NA NA NA  4  6 NA NA NA  4 NA  4 NA  6 NA NA  4  6 NA NA NA  4 NA  6 NA    Male            &lt;NA&gt;  17
-##      completed
-## 226          1
-## 244          1
-## 676          1
-## 1122         1
-## 2307         1</code></pre>
+<pre><code>##          X A1 A2 A3 A4 A5 C1 C2 C3 C4 C5 E1 E2 E3 E4 E5 N1 N2 N3 N4 N5 O1 O2 O3 O4 O5  gender       education age completed
+## 226  62102  1  6  6  6  4  1  5  6 NA NA NA NA NA NA NA  2  5  5  4  4  5  5  5  6  1 Females graduate degree  26         1
+## 244  62142  1  6  4  6  6  5  4  5  1  2 NA NA NA NA NA  1  2  2  1  1  4  2  5  5  3    Male    some college  40         1
+## 676  63030  1 NA NA NA  5  6 NA NA NA  2 NA  2 NA  6 NA NA  3  4 NA NA NA  2 NA  4 NA Females    some college  19         1
+## 1122 63991  3 NA NA NA  3  3 NA NA NA  3 NA  3 NA  3 NA NA  3  3 NA NA NA  3 NA  3 NA Females    some college  17         1
+## 2307 66546  6 NA NA NA  4  6 NA NA NA  4 NA  4 NA  6 NA NA  4  6 NA NA NA  4 NA  6 NA    Male            &lt;NA&gt;  17         1</code></pre>
 <pre class="r"><code># Neuroticism
 perNAneuro &lt;- rowMeans(is.na(subset(big5_complete, select = N1:N5))) 
 big5_complete[perNAneuro &gt; .5, ] </code></pre>
@@ -723,20 +720,13 @@ big5_complete[perNAopen &gt; .5, ] </code></pre>
 <p>เรารวบรวมแถว (rows) ที่มีปัญหาข้อมูลไม่ครบโดยด้วย OR |</p>
 <pre class="r"><code>tobedeleted &lt;- perNAagree &gt; .5 | perNAconsci &gt; .5 | perNAextra &gt; .5 | perNAneuro &gt; .5 | perNAopen &gt; .5
 big5_complete[tobedeleted, ]</code></pre>
-<pre><code>##          X A1 A2 A3 A4 A5 C1 C2 C3 C4 C5 E1 E2 E3 E4 E5 N1 N2 N3 N4 N5 O1 O2 O3 O4 O5  gender       education age
-## 226  62102  1  6  6  6  4  1  5  6 NA NA NA NA NA NA NA  2  5  5  4  4  5  5  5  6  1 Females graduate degree  26
-## 244  62142  1  6  4  6  6  5  4  5  1  2 NA NA NA NA NA  1  2  2  1  1  4  2  5  5  3    Male    some college  40
-## 676  63030  1 NA NA NA  5  6 NA NA NA  2 NA  2 NA  6 NA NA  3  4 NA NA NA  2 NA  4 NA Females    some college  19
-## 1122 63991  3 NA NA NA  3  3 NA NA NA  3 NA  3 NA  3 NA NA  3  3 NA NA NA  3 NA  3 NA Females    some college  17
-## 1648 65168  3  3 NA NA  5  1 NA NA NA  1 NA  1 NA  5  2 NA  5  5 NA NA NA  1 NA  1 NA Females            &lt;NA&gt;  13
-## 2307 66546  6 NA NA NA  4  6 NA NA NA  4 NA  4 NA  6 NA NA  4  6 NA NA NA  4 NA  6 NA    Male            &lt;NA&gt;  17
-##      completed
-## 226          1
-## 244          1
-## 676          1
-## 1122         1
-## 1648         1
-## 2307         1</code></pre>
+<pre><code>##          X A1 A2 A3 A4 A5 C1 C2 C3 C4 C5 E1 E2 E3 E4 E5 N1 N2 N3 N4 N5 O1 O2 O3 O4 O5  gender       education age completed
+## 226  62102  1  6  6  6  4  1  5  6 NA NA NA NA NA NA NA  2  5  5  4  4  5  5  5  6  1 Females graduate degree  26         1
+## 244  62142  1  6  4  6  6  5  4  5  1  2 NA NA NA NA NA  1  2  2  1  1  4  2  5  5  3    Male    some college  40         1
+## 676  63030  1 NA NA NA  5  6 NA NA NA  2 NA  2 NA  6 NA NA  3  4 NA NA NA  2 NA  4 NA Females    some college  19         1
+## 1122 63991  3 NA NA NA  3  3 NA NA NA  3 NA  3 NA  3 NA NA  3  3 NA NA NA  3 NA  3 NA Females    some college  17         1
+## 1648 65168  3  3 NA NA  5  1 NA NA NA  1 NA  1 NA  5  2 NA  5  5 NA NA NA  1 NA  1 NA Females            &lt;NA&gt;  13         1
+## 2307 66546  6 NA NA NA  4  6 NA NA NA  4 NA  4 NA  6 NA NA  4  6 NA NA NA  4 NA  6 NA    Male            &lt;NA&gt;  17         1</code></pre>
 <p>เราจะคัดข้อมูลด้านบนทิ้งไป แล้วสร้างเป็น dataframe ใหม่</p>
 <pre class="r"><code>big5_var_complete &lt;- big5_complete[!tobedeleted, ]
 # OR 
@@ -898,27 +888,27 @@ head(big5_scores$scores) # access calculated scores</code></pre>
 ## 6   4.6           5.6          5.6         3.0      5.0</code></pre>
 <pre class="r"><code>big5_calculated &lt;- cbind(big5_impute, big5_scores$scores) # combine data.frame
 head(big5_calculated)</code></pre>
-<pre><code>##       X A1 A2 A3 A4 A5 C1 C2 C3 C4 C5 E1 E2 E3 E4 E5 N1 N2 N3 N4 N5 O1 O2 O3 O4 O5  gender    education age completed
-## 1 61617  2  4  3  4  4  2  3  3  4  4  3  3  3  4  4  3  4  2  2  3  3  6  3  4  3    Male         &lt;NA&gt;  16         1
-## 2 61618  2  4  5  2  5  5  4  4  3  4  1  1  6  4  3  3  3  3  5  5  4  2  4  3  3 Females         &lt;NA&gt;  18         1
-## 3 61620  5  4  5  4  4  4  5  4  2  5  2  4  4  4  5  4  5  4  2  3  4  2  5  5  2 Females         &lt;NA&gt;  17         1
-## 4 61621  4  4  6  5  5  4  4  3  5  5  5  3  4  4  4  2  5  2  4  1  3  3  4  3  5 Females         &lt;NA&gt;  17         1
-## 5 61622  2  3  3  4  5  4  4  5  3  2  2  2  5  4  5  2  3  4  4  3  3  3  4  3  3    Male         &lt;NA&gt;  17         1
-## 6 61623  6  6  5  6  5  6  6  6  1  3  2  1  6  5  6  3  5  2  2  3  4  3  5  6  1 Females some college  21         1
-##   A1.im A2.im A3.im A4.im A5.im A1.re agree_mean C4.re C5.re conscientious_mean agree conscientious extraversion
-## 1     2     4     3     4     4     5        4.0     3     3                2.8   4.0           2.8          3.8
-## 2     2     4     5     2     5     5        4.2     4     3                4.0   4.2           4.0          5.0
-## 3     5     4     5     4     4     2        3.8     5     2                4.0   3.8           4.0          4.2
-## 4     4     4     6     5     5     3        4.6     2     2                3.0   4.6           3.0          3.6
-## 5     2     3     3     4     5     5        4.0     4     5                4.4   4.0           4.4          4.8
-## 6     6     6     5     6     5     1        4.6     6     4                5.6   4.6           5.6          5.6
-##   neuroticism openness
-## 1         2.8      3.0
-## 2         3.8      4.0
-## 3         3.6      4.8
-## 4         2.8      3.2
-## 5         3.2      3.6
-## 6         3.0      5.0</code></pre>
+<pre><code>##       X A1 A2 A3 A4 A5 C1 C2 C3 C4 C5 E1 E2 E3 E4 E5 N1 N2 N3 N4 N5 O1 O2 O3 O4 O5  gender    education age completed A1.im
+## 1 61617  2  4  3  4  4  2  3  3  4  4  3  3  3  4  4  3  4  2  2  3  3  6  3  4  3    Male         &lt;NA&gt;  16         1     2
+## 2 61618  2  4  5  2  5  5  4  4  3  4  1  1  6  4  3  3  3  3  5  5  4  2  4  3  3 Females         &lt;NA&gt;  18         1     2
+## 3 61620  5  4  5  4  4  4  5  4  2  5  2  4  4  4  5  4  5  4  2  3  4  2  5  5  2 Females         &lt;NA&gt;  17         1     5
+## 4 61621  4  4  6  5  5  4  4  3  5  5  5  3  4  4  4  2  5  2  4  1  3  3  4  3  5 Females         &lt;NA&gt;  17         1     4
+## 5 61622  2  3  3  4  5  4  4  5  3  2  2  2  5  4  5  2  3  4  4  3  3  3  4  3  3    Male         &lt;NA&gt;  17         1     2
+## 6 61623  6  6  5  6  5  6  6  6  1  3  2  1  6  5  6  3  5  2  2  3  4  3  5  6  1 Females some college  21         1     6
+##   A2.im A3.im A4.im A5.im A1.re agree_mean C4.re C5.re conscientious_mean agree conscientious extraversion neuroticism
+## 1     4     3     4     4     5        4.0     3     3                2.8   4.0           2.8          3.8         2.8
+## 2     4     5     2     5     5        4.2     4     3                4.0   4.2           4.0          5.0         3.8
+## 3     4     5     4     4     2        3.8     5     2                4.0   3.8           4.0          4.2         3.6
+## 4     4     6     5     5     3        4.6     2     2                3.0   4.6           3.0          3.6         2.8
+## 5     3     3     4     5     5        4.0     4     5                4.4   4.0           4.4          4.8         3.2
+## 6     6     5     6     5     1        4.6     6     4                5.6   4.6           5.6          5.6         3.0
+##   openness
+## 1      3.0
+## 2      4.0
+## 3      4.8
+## 4      3.2
+## 5      3.6
+## 6      5.0</code></pre>
 <pre class="r"><code>psych::describe(big5_calculated[, c(37,40:42)]) # group means for agree and conscientious from each method</code></pre>
 <pre><code>##                    vars    n mean   sd median trimmed  mad min max range  skew kurtosis   se
 ## agree_mean            1 2787 4.65 0.89    4.8    4.72 0.89   1   6     5 -0.77     0.42 0.02

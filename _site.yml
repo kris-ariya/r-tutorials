@@ -55,3 +55,5 @@ navbar:
       menu:
         - text: "Lab 08: Data Cleaning"
           href: SURVEY_Lab08.html
+        - text: "Lab 09: Multiple Regression"
+          href: SURVEY_Lab09.html
