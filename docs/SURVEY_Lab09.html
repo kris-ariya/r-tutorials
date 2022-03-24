@@ -657,8 +657,8 @@ head(dat)</code></pre>
 <pre class="r"><code>influenceIndexPlot(prestige.lm)</code></pre>
 <p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
-<div id="re-analysis" class="section level2">
-<h2>2.5 Re-analysis</h2>
+<div id="elimination" class="section level2">
+<h2>2.5 Elimination</h2>
 <p>ในการวิเคราะห์นี้ กรณีอาชีพ general.managers มีทั้ง Cook’s distance (influence) และ hat-values (distance) สูงที่สุดทั้งคู่ แต่ทว่ายังไม่ถึงเกณฑ์ที่ควรจะต้องตัดข้อมูลทิ้ง</p>
 <p>อย่างไรก็ดีเราลองลบอาชีพนี้ออกแล้ว วิเคราะห์ใหม่ดูว่าผลเปลี่ยนไปอย่างไร</p>
 <pre class="r"><code>re_dat &lt;- dat[row.names(dat) != &quot;general.managers&quot;, ]
@@ -690,7 +690,7 @@ summary(re.lm)</code></pre>
 </div>
 </div>
 <div id="assumption-violation" class="section level1">
-<h1>4. Assumption Violation</h1>
+<h1>3. Assumption Violation</h1>
 <p>ตรวจสอบข้อสมมติพื้นฐานของการวิเคราะห์ถดถอยแต่ละตัวด้วยคำสั่งดังต่อไปนี้</p>
 <div id="nonlinearity" class="section level2">
 <h2>Nonlinearity</h2>

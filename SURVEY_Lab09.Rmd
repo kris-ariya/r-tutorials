@@ -195,7 +195,7 @@ plot(prestige.lm, 4:5) # plot 4-5 of the model shows Cook's D & leverage
 influenceIndexPlot(prestige.lm)
 ```
 
-## 2.5 Re-analysis
+## 2.5 Elimination
 
 ในการวิเคราะห์นี้ กรณีอาชีพ general.managers มีทั้ง Cook's distance (influence) และ hat-values (distance) สูงที่สุดทั้งคู่ แต่ทว่ายังไม่ถึงเกณฑ์ที่ควรจะต้องตัดข้อมูลทิ้ง
 
@@ -211,7 +211,7 @@ influenceIndexPlot(re.lm)
 
 สังเกตว่าค่า $R^2$ เพิ่มขึ้นเล็กน้อยเมื่อเทียบกับโมเดลก่อนที่จะตัดข้อมูล แสดงให้เห็นว่าการตัดข้อมูลดังกล่าวช่วยให้โมเดลอธิบายข้อมูลได้ดีขึ้น (better fit) แต่ก็เล็กน้อยมาก เพราะผลการวิเคราะห์ในภาพรวมไม่ได้มีอะไรเปลี่ยนแปลงไป ช่วยยืนยันว่าในข้อมูลชุดนี้ไม่มีเคสที่จำเป็นต้องตัดทิ้ง
 
-# 4. Assumption Violation
+# 3. Assumption Violation
 
 ตรวจสอบข้อสมมติพื้นฐานของการวิเคราะห์ถดถอยแต่ละตัวด้วยคำสั่งดังต่อไปนี้
 
