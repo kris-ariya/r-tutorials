@@ -429,7 +429,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Lab 09: Multiple Regression</h1>
-<h4 class="date">Mar 23, 2022</h4>
+<h4 class="date">Mar 25, 2022</h4>
 
 </div>
 
@@ -437,18 +437,20 @@ div.tocify {
 <p>โหลดแพ็คเกจที่จะต้องใช้ในแบบฝึกหัดนี้</p>
 <pre class="r"><code>library(psych)
 library(car)
-library(carData)</code></pre>
+library(carData)
+library(QuantPsyc)</code></pre>
 <div id="multiple-regression" class="section level1">
 <h1>1. Multiple Regression</h1>
 <div id="linear-model" class="section level2">
 <h2>Linear model</h2>
-<p>ชุดข้อมูล <code>Prestige</code> จากแพ็คเกจ carData</p>
-<p><code>education</code> = ระยะเวลาการศึกษาเฉลี่ยของผู้ประกอบอาชีพ</p>
-<p><code>income</code> =</p>
-<p><code>women</code></p>
-<p><code>prestige</code></p>
-<p><code>census</code></p>
-<p><code>type</code></p>
+<p>การวิเคราะห์ถดถอยพหุคูณนี้จะใช้ชุดข้อมูล <code>Prestige</code> จากแพ็คเกจ carData ข้อมูลชุดนี้มีอาชีพเป็น observation (แต่ละแถวแทนอาชีพหนึ่งอาชีพ เคสเป็นระดับอาชีพ ไม่ใช่ระดับบุคคล) มีตัวแปรต่าง ๆ ดังนี้</p>
+<p><code>education</code> = ระยะเวลาการศึกษาเฉลี่ยของผู้ประกอบอาชีพนั้น</p>
+<p><code>income</code> = รายได้เฉลี่ยของผู้ประกอบอาชีพ หน่วยเป็นดอลลาห์</p>
+<p><code>women</code> = ร้อยละของผู้หญิงในอาชีพ</p>
+<p><code>prestige</code> = คะแนนมาตรความมีเกียรติ (Pineo-Porter prestige score) ของอาชีพ</p>
+<p><code>census</code> = รหัสอาชีพในสำมะโนประชากรของแคนาดา</p>
+<p><code>type</code> = ประเภทของอาชีพ <code>bc</code> = Blue Collar; <code>prof</code> = Professional, Managerial, and Technical; <code>wc</code> = White Collar</p>
+<p>เราจะใช้คำสั่ง <code>lm()</code> เพื่อสร้างโมเดลเชิงเส้นตรงทำนายความีเกียรติของอาชีพ <code>prestige</code> ด้วย <code>education</code>, <code>income</code>, และ <code>women</code></p>
 <pre class="r"><code># Import data 
 dat &lt;- carData::Prestige
 str(dat)</code></pre>
@@ -481,13 +483,56 @@ summary(prestige.lm)</code></pre>
 ## Residual standard error: 7.846 on 98 degrees of freedom
 ## Multiple R-squared:  0.7982, Adjusted R-squared:  0.792 
 ## F-statistic: 129.2 on 3 and 98 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>ค่า F ที่มีนัยสำคัญทางสถิติแสดงให้เห็นว่า ตัวแปร X ทั้ง 3 ตัว ร่วมกันทำนายตัวแปร Y ได้อย่างมีนัยสำคัญทางสถิติ (<span class="math inline">\(R^2 &gt; 0\)</span>)</p>
+<p>การวิเคราะห์นี้มีสัมประสิทธิ์ 4 ตัว ได้แก่ b0, beducation, b_income, bwomen ดังนั้น <span class="math inline">\(df = N - k = 102 - 4 = 98\)</span></p>
+<p>ในการวิเคราะห์นี้พบตัวแปรทำนายที่สัมพันธ์กับ Y อย่างมีนัยสำคัญทางสถิติ คือ <code>education</code> และ <code>income</code> ในขณะที่ <code>women</code> ไม่พบความสัมพันธ์อย่างมีนัยสำคัญ</p>
+<p>ค่าสัมประสิทธิ์แต่ละตัวถูกทดสอบว่าแตกต่างจาก 0 หรือไม่ <span class="math inline">\(H_0: b ≠ 0\)</span> โดยนำค่า b (<code>Estimate</code>) ไปหารด้วยความคลาดเคลื่อน <code>Std. Error</code> จะได้ค่า <code>t value</code> และค่า p-value <code>Pr(&gt;|t|)</code></p>
+<p>ค่าสัมประสิทธิ์เหล่านี้เป็นอยู่ในหน่วยของคะแนนดิบ หากต้องการเปรียบเทียบนำ้หนักของแต่ละตัวแปรในโมเดลนี้ ต้องใช้ค่าสัมประสิทธิ์มาตรฐาน (standardized coefficients)</p>
+<pre class="r"><code>lm.beta(prestige.lm)</code></pre>
+<pre><code>##   education      income       women 
+##  0.66395513  0.32417566 -0.01642104</code></pre>
+</div>
+<div id="extra" class="section level2">
+<h2>Extra</h2>
+<p>ค่า standardized coefficients จริง ๆ แล้วก็คือ การนำค่าตัวแปรทุกตัวไปแปลงเป็น standard score (z-scores) ก่อนแล้วนำมาใส่ในโมเดล ดังนั้นเราสามารถคำนวณค่า standardized coefficient เองได้ด้วย</p>
+<pre class="r"><code>prestige.zlm &lt;- lm(scale(prestige) ~ scale(education) + scale(income) + scale(women), data = dat)
+summary(prestige.zlm)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = scale(prestige) ~ scale(education) + scale(income) + 
+##     scale(women), data = dat)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.15229 -0.30999 -0.00793  0.29984  1.01744 
+## 
+## Coefficients:
+##                    Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)      -1.396e-17  4.516e-02   0.000     1.00    
+## scale(education)  6.640e-01  6.164e-02  10.771  &lt; 2e-16 ***
+## scale(income)     3.242e-01  6.855e-02   4.729 7.58e-06 ***
+## scale(women)     -1.642e-02  5.607e-02  -0.293     0.77    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.4561 on 98 degrees of freedom
+## Multiple R-squared:  0.7982, Adjusted R-squared:  0.792 
+## F-statistic: 129.2 on 3 and 98 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <div id="residual-plots" class="section level2">
 <h2>Residual plots</h2>
+<p>หากเรา <code>plot(model)</code> โปรแกรม R จะแสดงกราฟที่ใช้เพื่อวินิจฉัยโมเดลมาให้</p>
+<p>กราฟ <code>Residuals vs Fitted</code> ใช้ตรวจสอบ linearity assumption กราฟจะแสดงค่า <span class="math inline">\(\hat{Y}\)</span> (Fitted) และ <span class="math inline">\(e\)</span> (Residuals) หากความสัมพันธ์ระหว่างผลรวมเชิงเส้นตรงของตัวแปร X สัมพันธ์ทางบวกกับ Y เส้นสีแดงจะเป็นเส้นตรงตามเส้นประ</p>
+<p>กราฟ <code>Normal Q-Q</code> ใช้ดู normality ของ residuals หากความคลาดเคลื่อนมีการกระจายตัวเป็นปกติ จุดคะแนนต่าง ๆ จะเรียงตัวอยู่บนเส้นแทยง</p>
+<p>กราฟ <code>Scale-Location</code> หรือ Spread-Location ใช้ตรวจสอบ homoscedasticity (homogeneity of variance สำหรับ regression) ความแปรปรวนของ residual ควรเท่ากันในทุกช่วงคะแนน <span class="math inline">\(\hat{Y}\)</span> ดังนั้นการกระจายของจุดต่าง ๆ จะกว้างพอ ๆ กันตลอดแกน X ทำให้ได้เส้นสีแดงที่เป็นเส้นตรงแนวนอน</p>
+<p>กราฟ <code>Residuals vs Leverage</code> แสดงถึงข้อมูลสุดโต่งหรือข้อมูลที่มีอิทธิพลต่อโมเดลอย่างมาก ข้อมูลที่มีอิทธิพลสูงนี้สามารถทำให้ความชันของสมการเปลี่ยนแปลงไปได้ หากมีหรือไม่มีข้อมูลจุดนั้นอยู่ กรณีที่สุดโต่งจะมีค่า Leverage สูงแยกออกมาจากข้อมูลส่วนใหญ่</p>
 <pre class="r"><code>plot(prestige.lm)</code></pre>
-<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-1-1.png" width="672" /><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-1-2.png" width="672" /><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-1-3.png" width="672" /><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-1-4.png" width="672" /></p>
+<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-3-1.png" width="672" /><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-3-2.png" width="672" /><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-3-3.png" width="672" /><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-3-4.png" width="672" /></p>
+<p>คำสั่ง <code>plot()</code> นี้ทำให้เราเห็น assumption ต่าง ๆ ของโมเดลในภาพรวม แต่ยังไม่ช่วยบอกว่าตัวแปร <em>X</em> ตัวใดที่อาจจะเป็นต้นเหตุของปัญหา</p>
+<p>เราสามารถใช้คำสั่ง <code>residualPlots()</code> ในแพ็คเกจ car เพื่อตรวจสอบ linearity assumption เป็นรายตัวแปร <em>X</em> ได้ นอกจากนี้คำสั่งจะให้ค่าทดสอบของ Tukey’s nonadditivity test มาด้วย หากมีนัยสำคัญทางสถิติแสดงว่าความสัมพันธ์ของตัวแปร <em>X</em> นั้นกับ <em>Y</em> ไม่เป็นเส้นตรง</p>
+<p>ลองพิจารณาค่าสถิติและกราฟดูว่าตัวแปรใดน่าจะต้นเหตุของ nonlinearity ในโมเดลนี้</p>
 <pre class="r"><code>residualPlots(prestige.lm)</code></pre>
-<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-1-5.png" width="672" /></p>
+<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <pre><code>##            Test stat Pr(&gt;|Test stat|)    
 ## education     1.3268           0.1877    
 ## income       -4.2815        4.366e-05 ***
@@ -495,18 +540,21 @@ summary(prestige.lm)</code></pre>
 ## Tukey test   -1.4169           0.1565    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>อย่างไรก็ดี การใช้ตาตรวจดูค่าความผิดปกติต่าง ๆ อาจมีอคติหรือข้อผิดพลาด ทำให้ตัดสินใจผิดพลาดได้ว่าข้อมูลที่เป็นปัญหา คือ จุดใด ดังนั้นวิธีการตรวจทางสายตาจึงควรใช้ควบคู่กับการทดสอบด้วย</p>
 </div>
 </div>
 <div id="detecting-extreme-cases" class="section level1">
 <h1>2. Detecting Extreme Cases</h1>
 <div id="leverage" class="section level2">
-<h2>Leverage</h2>
-<p>เลฟเวอเรจ (leverage) คือ กรณีที่ค่าของตัวแปรทำนาย Xi นั้นมีระยะห่างจากค่าเฉลี่ย <span class="math inline">\(\bar{X}\)</span> อย่างมาก (ไม่เกี่ยวกับค่า Y) ในแบบฝึกหัดที่ผ่าน ๆ มา เราได้ใช้วิธีแปลงคะแนนค่า x เป็นคะแนนมาตรฐาน (z score) เพื่อดูว่าค่านั้นสุดโต่งหรือไม่ นี่คือแนวคิดของการหา univariate outlier คือพิจารณาค่าสุดโต่งของตัวแปรเดียว (ไม่พิจารณาร่วมกับตัวแปรอื่น) หากเรานำค่า z ที่ได้ไปยกกำลังสอง เราจะได้สูตรดังนี้</p>
+<h2>2.1 Leverage</h2>
+<p>เลฟเวอเรจ (leverage) คือ กรณีที่ค่าของตัวแปรทำนาย <span class="math inline">\(X_i\)</span> นั้นมีระยะห่างจากค่าเฉลี่ย <span class="math inline">\(\bar{X}\)</span> อย่างมาก (ไม่เกี่ยวกับค่า <em>Y</em>) ในแบบฝึกหัดที่ผ่าน ๆ มา เราได้ใช้วิธีแปลงคะแนนค่า <em>X</em> เป็นคะแนนมาตรฐาน (<em>z</em> score) เพื่อดูว่าค่านั้นสุดโต่งหรือไม่ นี่คือแนวคิดของการหา univariate outlier คือพิจารณาค่าสุดโต่งของตัวแปรเดียว (ไม่พิจารณาร่วมกับตัวแปรอื่น) หากเรานำค่า <em>z</em> ที่ได้ไปยกกำลังสอง เราจะได้สูตรดังนี้</p>
 <p><span class="math display">\[
 Z^2_{X_i} = \bigg{(}\frac{X_i - \bar{X}}{s_{X}^2}\bigg{)}^2
 \]</span></p>
-<p>เนื่องจากค่า z ถูกยกกำลังสองจึงเป็นค่าทางบวกเสมอที่แสดงถึงความห่างของค่าคะแนน Xi จากค่าเฉลี่ยของตัวแปร X โดยปกติแล้วเราจะใช้เกณฑ์ที่ ±3 SD เป็นจุดตัดของค่าสุดโต่ง</p>
-<p>แต่ในกรณีของการถดถอยพหุคูณ (multiple regression; MR) ค่าตัวแปร X ที่สุดโต่งอาจต้องพิจารณาร่วมกับตัวแปร X อื่น ๆ ด้วย เช่น คนที่สูง 180 อาจจะไม่เห็นค่าสุดโต่งในชุดข้อมูล แต่ผู้หญิงที่สูง 180 เป็นค่าที่มีเลฟเวอเรจสูง (พิจารณาตัวแปรเพศและความสูงร่วมกัน) เนื่องจากต้องพิจารณาหลายตัวแปรร่วมกันจึงเรียกว่าเป็น multivariate outlier โดยค่าสถิติที่ใช้พิจารณาก็พัฒนาต่อเนื่องมาจากสูตรด้านบนเป็นค่าที่เรียกว่า Mahalanobis distance</p>
+<p>เนื่องจากค่า <span class="math inline">\(Z^2\)</span> เป็นค่าทางบวกเสมอที่แสดงถึงความห่างของค่าคะแนน <span class="math inline">\(X_i\)</span> จากค่าเฉลี่ย <span class="math inline">\(\bar{X}\)</span> โดยปกติแล้วเราจะใช้เกณฑ์ที่ ±3 <em>SD</em> เป็นจุดตัดของค่าสุดโต่ง</p>
+<div id="mahalanobis-distance" class="section level3">
+<h3>Mahalanobis distance</h3>
+<p>แต่ในกรณีของการถดถอยพหุคูณ (multiple regression; MR) ค่าตัวแปร <em>X</em> ที่สุดโต่งอาจต้องพิจารณาร่วมกับตัวแปร <em>X</em> อื่น ๆ ด้วย เช่น คนที่สูง 180 อาจจะไม่นับว่าเป็นค่าสุดโต่งในชุดข้อมูล แต่ผู้หญิงที่สูง 180 เป็นค่าที่มีเลฟเวอเรจสูง (พิจารณาตัวแปรเพศและความสูงร่วมกันแล้วมีโอกาสเกิดขึ้นน้อย) เนื่องจากต้องพิจารณาหลายตัวแปรร่วมกันจึงเรียกว่าเป็น multivariate outlier โดยค่าสถิติที่ใช้พิจารณาก็พัฒนาต่อเนื่องมาจากสูตรด้านบนโดยใช้พีชคณิตเมทริกซ์ ได้เป็นค่าที่เรียกว่า Mahalanobis distance</p>
 <p>เราจะใช้คำสั่ง <code>outlier(x, plot = TRUE, bad = 5, na.rm = TRUE)</code> ในแพ็คเกจ psych</p>
 <p><code>x</code> คือ ชุดตัวแปร X</p>
 <p><code>plot</code> คือต้องการให้สร้างกราฟ QQ หรือไม่ (ค่าตั้งต้น = TRUE)</p>
@@ -537,8 +585,11 @@ head(dat)</code></pre>
 <pre><code>##                  education income women prestige census type maha_dis       maha_p
 ## general.managers     12.26  25879  4.02     69.1   1130 prof 33.57319 5.124761e-08
 ## physicians           15.96  25308 10.56     87.2   3111 prof 23.60481 7.486533e-06</code></pre>
-<div id="hat-values" class="section level3">
-<h3>hat values</h3>
+</div>
+<div id="hat-values-h-values" class="section level3">
+<h3>hat values (<em>h</em>-values)</h3>
+<p>อย่างไรก็ดีค่าสถิติอีกตัวหนึ่งที่ทำหน้าที่เหมือนกับ Mahalanobis distance จะเป็นที่นิยมมากกว่า นั่นคือค่า <em>h</em> values หรือ hat values</p>
+<p>ค่า <em>h</em> values จะอยู่ระหว่าง 0 ถึง 1 ทำให้อ่านค่าและกำหนดเกณฑ์ได้ง่ายกว่ามาก โดยมักจะกำหนดให้ค่า hat ต้องไม่เกิน <span class="math inline">\(2p/n\)</span> โดย <em>p</em> คือ จำนวน parameters ของโมเดล (จำนวน coefficients) และ <em>n</em> คือ จำนวนกลุ่มตัวอย่าง</p>
 <pre class="r"><code>dat$hat &lt;- hatvalues(prestige.lm)
 head(dat)</code></pre>
 <pre><code>##                     education income women prestige census type   maha_dis       maha_p        hat
@@ -548,57 +599,106 @@ head(dat)</code></pre>
 ## purchasing.officers     11.42   8865  9.11     56.8   1175 prof  0.4787457 7.871214e-01 0.01454398
 ## chemists                14.62   8403 11.68     73.5   2111 prof  3.6997050 1.572604e-01 0.04643466
 ## physicists              15.64  11030  5.13     77.6   2113 prof  4.4454380 1.083142e-01 0.05381816</code></pre>
+<pre class="r"><code>hat_cutoff &lt;- 2*4/nrow(dat)
+high_leverage_cases &lt;- subset(dat, subset = hat &gt; hat_cutoff)
+high_leverage_cases</code></pre>
+<pre><code>##                       education income women prestige census type  maha_dis       maha_p        hat
+## general.managers          12.26  25879  4.02     69.1   1130 prof 33.573194 5.124761e-08 0.34221178
+## lawyers                   15.77  19263  5.13     82.3   2343 prof  8.992782 1.114916e-02 0.09884136
+## ministers                 14.50   4686  4.14     72.8   2511 prof  9.325301 9.441403e-03 0.10213364
+## physicians                15.96  25308 10.56     87.2   3111 prof 23.604809 7.486533e-06 0.24351491
+## sewing.mach.operators      6.38   2847 90.67     28.2   8563   bc  8.889789 1.173835e-02 0.09782163</code></pre>
+<p>แม้เราจะพบว่ามีกรณีที่ข้อมูลมี leverage สูง แต่ก็ไม่ได้หมายความว่า ค่าเหล่านั้นจะส่งผลต่อโมเดลเสมอไป การตรวจ leverage นี้อาจใช้เพื่อตรวจสอบความถูกต้องของข้อมูลในเบื้องต้น เพื่อดูว่ามีกรณีที่ผิดปกติหรือมีการกรอกข้อมูลผิดหรือไม่ หากข้อมูลไม่ได้มีความผิดปกติอะไร เราอาจเก็บข้อมูลนั้นไว้ก่อนเพื่อไปตรวจสอบ influence ในภายหลัง</p>
 </div>
 </div>
 <div id="distance" class="section level2">
-<h2>Distance</h2>
-<p>Distance คือ ระยะห่างของค่า Y แต่ละตัวจากค่า <span class="math inline">\(\hat{Y}\)</span> (ค่า Y ทำนาย; predicted Y) นั่นก็คือค่า Y ที่ทำให้เกิดความคลาดเคลื่อนในการทำนายสูง (residual)</p>
+<h2>2.2 Distance</h2>
+<p>Distance คือ ระยะห่างของค่า <em>Y</em> แต่ละตัวจากค่า <span class="math inline">\(\hat{Y}\)</span> (ค่า <em>Y</em> ทำนาย; predicted <em>Y</em>) นั่นก็คือค่าที่ทำให้เกิดความคลาดเคลื่อนในการทำนายสูง (residual)</p>
+<p>เคสที่มี distance สูงจะทำให้ความคลาดเคลื่อนของโมเดลสูงไปด้วย และทำให้โมเดลไม่ fit กับข้อมูล (เช่น <span class="math inline">\(R^2\)</span> น้อยกว่าที่ควรจะเป็น)</p>
 <div id="studentized-residual" class="section level3">
 <h3>Studentized residual</h3>
-<pre class="r"><code>dat$tr &lt;- rstudent(prestige.lm)
-head(dat)</code></pre>
-<pre><code>##                     education income women prestige census type   maha_dis       maha_p        hat         tr
-## gov.administrators      13.11  12351 11.16     68.8   1113 prof  1.7323152 4.205644e-01 0.02695556  0.5901624
-## general.managers        12.26  25879  4.02     69.1   1130 prof 33.5731939 5.124761e-08 0.34221178 -1.4848372
-## accountants             12.77   9271 15.70     63.4   1171 prof  0.7825381 6.761982e-01 0.01755182  0.6014246
-## purchasing.officers     11.42   8865  9.11     56.8   1175 prof  0.4787457 7.871214e-01 0.01454398  0.5397302
-## chemists                14.62   8403 11.68     73.5   2111 prof  3.6997050 1.572604e-01 0.04643466  1.0646403
-## physicists              15.64  11030  5.13     77.6   2113 prof  4.4454380 1.083142e-01 0.05381816  0.5840069</code></pre>
+<p>วิธีตรวจสอบว่า residual นั้นมีขนาดใหญ่จนผิดปกติหรือไม่ ทำโดยการแปลง residual เป็น <em>t</em>-score แล้วเปรียบเทียบกับ <em>t</em>-distribution ค่านี้มีชื่อเรียกว่า Studentized residual (มาจากชื่อ Student’s <em>t</em> distribution) ซึ่งเหมาะสำหรับกลุ่มตัวอย่างที่ไม่ใหญ่มาก หากกลุ่มตัวอย่างใหญ่มากจะใช้วิธีแปลงเป็น <em>z</em>-score เทียบกับ normal distribution และเรียกว่า standardized residual</p>
+<p>เมื่อแปลงเป็นค่าคะแนน <em>t</em> แล้ว หากทดสอบพบว่าระดับนัยสำคัญ ก็แสดงว่าเป็น outlier</p>
+<p>แพ็คเกจ car มีคำสั่งที่ชื่อว่า <code>outlierTest()</code></p>
 <pre class="r"><code>outlierTest(prestige.lm)</code></pre>
 <pre><code>## No Studentized residuals with Bonferroni p &lt; 0.05
 ## Largest |rstudent|:
 ##           rstudent unadjusted p-value Bonferroni p
 ## newsboys -2.694442          0.0083101      0.84763</code></pre>
+<p>ในโมเดลนี้ newsboys เป็นอาชีพที่มี Studentized residual สูงที่สุด แต่ไม่ถึงระดับนัยสำคัญโดยดูจาก Bonferroni p จึงยังไม่ถือว่าเป็นข้อมูลสุดโต่งในตัวแปร <em>Y</em></p>
 </div>
 </div>
 <div id="influence" class="section level2">
-<h2>Influence</h2>
-<p>Influence คือ อิทธิพลที่เคสนั้นมีต่อสมการถดถอย นั่นคือ ถ้าเคสนี้หายไปค่า b จะเปลี่ยนไปเท่าใด</p>
+<h2>2.3 Influence</h2>
+<p>Influence คือ อิทธิพลที่เคสนั้นมีต่อสมการถดถอย นั่นคือ ถ้าเคสนี้หายไปค่า <em>b</em> จะเปลี่ยนไปเท่าใด</p>
+<p>ค่าที่มี leverage หรือ distance สูงอาจจะไม่ได้ส่งผลต่อโมเดลการถดถอยพหุคูณเสมอไป ค่าเหล่านี้จะทำให้ผลการวิเคราะห์ผิดเพี้ยนไปได้ก็เมื่อค่าเหล่านั้นมีอิทธิพล (influence) ต่อสัมประสิทธิ์ถดถอย นั่นคือ ข้อมูลกรณีนี้ทำให้เกิดการเปลี่ยนแปลงของเส้น fitted line อย่างมาก</p>
 <div id="cooks-distance" class="section level3">
 <h3>Cook’s distance</h3>
+<p>ค่า Cook’s distance ใช้บอกระดับอิทธิพลของเคสต่อผลการวิเคราะห์ถดถอย (ชื่ออาจทำให้สับสน เพราะเรียกว่า distance แต่ใช้วัด influence) โดยปกติแล้วค่า Cook’s <em>d</em> ที่มากกว่า 0.5 หรือ 1.0 จะถือว่าเป็นกรณีที่ต้องพิจารณาอย่างระมัดระวัง</p>
 <pre class="r"><code>dat$cook &lt;- cooks.distance(prestige.lm)
 head(dat)</code></pre>
-<pre><code>##                     education income women prestige census type   maha_dis       maha_p        hat         tr        cook
-## gov.administrators      13.11  12351 11.16     68.8   1113 prof  1.7323152 4.205644e-01 0.02695556  0.5901624 0.002428267
-## general.managers        12.26  25879  4.02     69.1   1130 prof 33.5731939 5.124761e-08 0.34221178 -1.4848372 0.283269734
-## accountants             12.77   9271 15.70     63.4   1171 prof  0.7825381 6.761982e-01 0.01755182  0.6014246 0.001626121
-## purchasing.officers     11.42   8865  9.11     56.8   1175 prof  0.4787457 7.871214e-01 0.01454398  0.5397302 0.001082658
-## chemists                14.62   8403 11.68     73.5   2111 prof  3.6997050 1.572604e-01 0.04643466  1.0646403 0.013779919
-## physicists              15.64  11030  5.13     77.6   2113 prof  4.4454380 1.083142e-01 0.05381816  0.5840069 0.004882702</code></pre>
+<pre><code>##                     education income women prestige census type   maha_dis       maha_p        hat        cook
+## gov.administrators      13.11  12351 11.16     68.8   1113 prof  1.7323152 4.205644e-01 0.02695556 0.002428267
+## general.managers        12.26  25879  4.02     69.1   1130 prof 33.5731939 5.124761e-08 0.34221178 0.283269734
+## accountants             12.77   9271 15.70     63.4   1171 prof  0.7825381 6.761982e-01 0.01755182 0.001626121
+## purchasing.officers     11.42   8865  9.11     56.8   1175 prof  0.4787457 7.871214e-01 0.01454398 0.001082658
+## chemists                14.62   8403 11.68     73.5   2111 prof  3.6997050 1.572604e-01 0.04643466 0.013779919
+## physicists              15.64  11030  5.13     77.6   2113 prof  4.4454380 1.083142e-01 0.05381816 0.004882702</code></pre>
+<pre class="r"><code>subset(dat, subset = cook &gt; .5) # No Cook&#39;s D more than 5</code></pre>
+<pre><code>##  [1] education income    women     prestige  census    type      maha_dis  maha_p    hat       cook     
+## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
+<pre class="r"><code>plot(prestige.lm, 4:5) # plot 4-5 of the model shows Cook&#39;s D &amp; leverage</code></pre>
+<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-6-1.png" width="672" /><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
 </div>
 </div>
-<div id="visualize" class="section level2">
-<h2>Visualize</h2>
+<div id="visualizing-extreme-cases" class="section level2">
+<h2>2.4 Visualizing Extreme Cases</h2>
+<p>คำสั่ง <code>influenceIndexPlot()</code> ใน car จะช่วย plot กราฟสำหรับตรวจสอบ influence, distance และ leverage</p>
 <pre class="r"><code>influenceIndexPlot(prestige.lm)</code></pre>
-<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+<div id="re-analysis" class="section level2">
+<h2>2.5 Re-analysis</h2>
+<p>ในการวิเคราะห์นี้ กรณีอาชีพ general.managers มีทั้ง Cook’s distance (influence) และ hat-values (distance) สูงที่สุดทั้งคู่ แต่ทว่ายังไม่ถึงเกณฑ์ที่ควรจะต้องตัดข้อมูลทิ้ง</p>
+<p>อย่างไรก็ดีเราลองลบอาชีพนี้ออกแล้ว วิเคราะห์ใหม่ดูว่าผลเปลี่ยนไปอย่างไร</p>
+<pre class="r"><code>re_dat &lt;- dat[row.names(dat) != &quot;general.managers&quot;, ]
+re.lm &lt;- lm(prestige ~ education + income + women, re_dat)
+summary(re.lm)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = prestige ~ education + income + women, data = re_dat)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -18.2210  -4.9874  -0.0928   4.9497  17.7093 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -6.4582585  3.2273074  -2.001   0.0482 *  
+## education    3.9469041  0.4187139   9.426 2.33e-15 ***
+## income       0.0016007  0.0003371   4.749 7.07e-06 ***
+## women        0.0058119  0.0318057   0.183   0.8554    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 7.799 on 97 degrees of freedom
+## Multiple R-squared:  0.7993, Adjusted R-squared:  0.7931 
+## F-statistic: 128.8 on 3 and 97 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>influenceIndexPlot(re.lm)</code></pre>
+<p><img src="SURVEY_Lab09_files/figure-html/re-analysis-1.png" width="672" /></p>
+<p>สังเกตว่าค่า <span class="math inline">\(R^2\)</span> เพิ่มขึ้นเล็กน้อยเมื่อเทียบกับโมเดลก่อนที่จะตัดข้อมูล แสดงให้เห็นว่าการตัดข้อมูลดังกล่าวช่วยให้โมเดลอธิบายข้อมูลได้ดีขึ้น (better fit) แต่ก็เล็กน้อยมาก เพราะผลการวิเคราะห์ในภาพรวมไม่ได้มีอะไรเปลี่ยนแปลงไป ช่วยยืนยันว่าในข้อมูลชุดนี้ไม่มีเคสที่จำเป็นต้องตัดทิ้ง</p>
 </div>
 </div>
 <div id="assumption-violation" class="section level1">
-<h1>3. Assumption Violation</h1>
+<h1>4. Assumption Violation</h1>
+<p>ตรวจสอบข้อสมมติพื้นฐานของการวิเคราะห์ถดถอยแต่ละตัวด้วยคำสั่งดังต่อไปนี้</p>
 <div id="nonlinearity" class="section level2">
 <h2>Nonlinearity</h2>
-<pre class="r"><code>crPlots(prestige.lm)</code></pre>
-<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>คำสั่ง <code>crPlots()</code> จาก car ใช้ plot เพื่อสังเกต nonlinearity ระหว่างตัวแปร X แต่ละตัวกับ Y</p>
+<p>คำสั่ง <code>ncvTest()</code> ใช้ทดสอบ nonconstant variance ผลการทดสอบที่มีนัยสำคัญแสดงให้เห็นว่าความสัมพันธ์ไม่ได้คงที่เป็นเส้นตรง</p>
+<pre class="r"><code>#car
+crPlots(prestige.lm)</code></pre>
+<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <pre class="r"><code>ncvTest(prestige.lm)</code></pre>
 <pre><code>## Non-constant Variance Score Test 
 ## Variance formula: ~ fitted.values 
@@ -606,24 +706,37 @@ head(dat)</code></pre>
 </div>
 <div id="non-normality" class="section level2">
 <h2>Non-Normality</h2>
-<pre class="r"><code>car::qqPlot(prestige.lm)</code></pre>
-<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>คำสั่ง <code>qqPlot()</code> ของ car (สังเกตว่าใช้ P ตัวใหญ่ แตกต่างจากคำสั่งของ base R) ใช้ plot เพื่อดูว่า residual กระจายตัวเป็นปกติหรือไม่</p>
+<p>โดยปกติแล้วสถิติ F นั้นแกร่งต่อการละเมิด normality assumption ถ้าผลไม่ได้ต่างไปจาก normal มากนัก ก็สามารถวิเคราะห์ด้วย regression ได้ตามปกติ แต่ถ้าหากมีการกระจายตัวไม่เป็น normal อาจจะต้อง transform ตัวแปรบางตัวก่อน</p>
+<pre class="r"><code># Base R
+plot(prestige.lm, 2)</code></pre>
+<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code># car
+car::qqPlot(prestige.lm)</code></pre>
+<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-9-2.png" width="672" /></p>
 <pre><code>## newsboys  farmers 
 ##       53       67</code></pre>
 </div>
 <div id="heteroscedasticity" class="section level2">
 <h2>Heteroscedasticity</h2>
-<pre class="r"><code>spreadLevelPlot(prestige.lm)</code></pre>
-<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>การทดสอบค่าความแปรปรวนของ residual เท่าเทียมกันในทุกช่วงคะแนนทำนายหรือไม่ ใช้คำสั่ง <code>spreadLevelPlot()</code> ของ car</p>
+<pre class="r"><code># Base R
+plot(prestige.lm, 3)</code></pre>
+<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code># car
+spreadLevelPlot(prestige.lm)</code></pre>
+<p><img src="SURVEY_Lab09_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
 <pre><code>## 
 ## Suggested power transformation:  1.12183</code></pre>
 </div>
 <div id="nonindependence" class="section level2">
 <h2>Nonindependence</h2>
-<p>Use MLM</p>
+<p>กรณีที่ข้อมูลของกลุ่มตัวอย่างแต่ละคนไม่เป็นอิสระจากกัน การให้ regression ปกติจะไม่เหมาะสม ควรใช้สถิติที่โมเดลข้อมูลที่ไม่เป็นอิสระจากกันได้ เช่น multi-level modeling (MLM) เป็นต้น</p>
 </div>
-<div id="multi-colinearity" class="section level2">
-<h2>Multi-colinearity</h2>
+<div id="multi-collinearity" class="section level2">
+<h2>Multi-collinearity</h2>
+<p>อีกหนึ่ง assumption ของ regression คือ ตัวแปร X นั้นไม่สัมพันธ์กันเอง เราสามารถตรวจสอบระดับความสัมพันธ์ระหว่างตัวแปร X ในโมเดลด้วยคำสั่ง <code>vif()</code> ซึ่งจะทำให้ได้ค่า variance inflation factors</p>
+<p>เกณฑ์ VIF นั้นมีหลากหลายมาก ตั้งแต่ ควรมีค่า VIF น้อยกว่า 2.5, น้อยกว่า 3, น้อยกว่า 5, น้อยกว่า 10 เป็นต้น การพิจารณาเรื่อง multi-collinearity จึงต้องพิจารณาบริบทของตัวแปรทำนายด้วยว่า มีความทับซ้อนกันมากน้อยเพียงใด เหมาะสมที่จะตัดตัวหนึ่งตัวใดออกไปหรือไม่ หรือทฤษฎีระบุไว้ว่าต้องพิจารณาทั้งสองตัวควบคู่กัน</p>
 <pre class="r"><code>vif(prestige.lm)</code></pre>
 <pre><code>## education    income     women 
 ##  1.845165  2.282038  1.526593</code></pre>

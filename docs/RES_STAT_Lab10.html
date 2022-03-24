@@ -533,28 +533,8 @@ The rest of the lines show</p>
 <h2>Standardized coefficients or betas</h2>
 <p>Raw coefficients are in a unit of variable <em>Y</em>, which make it hard to judge the strengh of relationship. To solve this problem, we could standardize the coefficient to make it easier to interpret. This standardized regression coefficients are also called <em>beta</em> (<span class="math inline">\(\beta\)</span>) by some statistical programs.</p>
 <pre class="r"><code># install.packages(&quot;QuantPsyc&quot;)
-library(QuantPsyc)</code></pre>
-<pre><code>## Loading required package: boot</code></pre>
-<pre><code>## 
-## Attaching package: &#39;boot&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:lattice&#39;:
-## 
-##     melanoma</code></pre>
-<pre><code>## The following object is masked from &#39;package:car&#39;:
-## 
-##     logit</code></pre>
-<pre><code>## The following object is masked from &#39;package:psych&#39;:
-## 
-##     logit</code></pre>
-<pre><code>## 
-## Attaching package: &#39;QuantPsyc&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:Matrix&#39;:
-## 
-##     norm</code></pre>
-<pre><code>## The following object is masked from &#39;package:base&#39;:
-## 
-##     norm</code></pre>
-<pre class="r"><code>lm.beta(reg_model)</code></pre>
+library(QuantPsyc)
+lm.beta(reg_model)</code></pre>
 <pre><code>##         wt 
 ## -0.8676594</code></pre>
 <p>The standardized coeff. of -.87 was quite a strong negative relationship.</p>

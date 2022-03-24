@@ -489,13 +489,8 @@ PlantGrowth</code></pre>
 <pre class="r"><code>boxplot(weight ~ group, data = PlantGrowth) </code></pre>
 <p><img src="EXPRM_Lab04_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 <p>Alternatively, you can use <code>ggplot2</code>.</p>
-<pre class="r"><code>library(ggplot2)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;ggplot2&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:psych&#39;:
-## 
-##     %+%, alpha</code></pre>
-<pre class="r"><code>ggplot(PlantGrowth, aes(x = group, y = weight)) +
+<pre class="r"><code>library(ggplot2)
+ggplot(PlantGrowth, aes(x = group, y = weight)) +
   geom_boxplot() +
   theme_classic()</code></pre>
 <p><img src="EXPRM_Lab04_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
@@ -514,12 +509,12 @@ PlantGrowth</code></pre>
 <pre class="r"><code>plant_aov &lt;- aov(weight ~ group, data = PlantGrowth)
 str(plant_aov) # Look at the structure of aov class object. </code></pre>
 <pre><code>## List of 13
-##  $ coefficients : Named num [1:3] 5.032 -0.371 0.494
-##   ..- attr(*, &quot;names&quot;)= chr [1:3] &quot;(Intercept)&quot; &quot;grouptrt1&quot; &quot;grouptrt2&quot;
+##  $ coefficients : Named num [1:3] 5.073 -0.041 -0.412
+##   ..- attr(*, &quot;names&quot;)= chr [1:3] &quot;(Intercept)&quot; &quot;group1&quot; &quot;group2&quot;
 ##  $ residuals    : Named num [1:30] -0.862 0.548 0.148 1.078 -0.532 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:30] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
-##  $ effects      : Named num [1:30] -27.786 -1.596 1.105 1.113 -0.497 ...
-##   ..- attr(*, &quot;names&quot;)= chr [1:30] &quot;(Intercept)&quot; &quot;grouptrt1&quot; &quot;grouptrt2&quot; &quot;&quot; ...
+##  $ effects      : Named num [1:30] -27.786 1.105 -1.596 1.088 -0.522 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:30] &quot;(Intercept)&quot; &quot;group1&quot; &quot;group2&quot; &quot;&quot; ...
 ##  $ rank         : int 3
 ##  $ fitted.values: Named num [1:30] 5.03 5.03 5.03 5.03 5.03 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:30] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
@@ -528,18 +523,18 @@ str(plant_aov) # Look at the structure of aov class object. </code></pre>
 ##   ..$ qr   : num [1:30, 1:3] -5.477 0.183 0.183 0.183 0.183 ...
 ##   .. ..- attr(*, &quot;dimnames&quot;)=List of 2
 ##   .. .. ..$ : chr [1:30] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
-##   .. .. ..$ : chr [1:3] &quot;(Intercept)&quot; &quot;grouptrt1&quot; &quot;grouptrt2&quot;
+##   .. .. ..$ : chr [1:3] &quot;(Intercept)&quot; &quot;group1&quot; &quot;group2&quot;
 ##   .. ..- attr(*, &quot;assign&quot;)= int [1:3] 0 1 1
 ##   .. ..- attr(*, &quot;contrasts&quot;)=List of 1
-##   .. .. ..$ group: chr &quot;contr.treatment&quot;
-##   ..$ qraux: num [1:3] 1.18 1.11 1.17
+##   .. .. ..$ group: chr &quot;contr.sum&quot;
+##   ..$ qraux: num [1:3] 1.18 1.19 1.09
 ##   ..$ pivot: int [1:3] 1 2 3
 ##   ..$ tol  : num 1e-07
 ##   ..$ rank : int 3
 ##   ..- attr(*, &quot;class&quot;)= chr &quot;qr&quot;
 ##  $ df.residual  : int 27
 ##  $ contrasts    :List of 1
-##   ..$ group: chr &quot;contr.treatment&quot;
+##   ..$ group: chr &quot;contr.sum&quot;
 ##  $ xlevels      :List of 1
 ##   ..$ group: chr [1:3] &quot;ctrl&quot; &quot;trt1&quot; &quot;trt2&quot;
 ##  $ call         : language aov(formula = weight ~ group, data = PlantGrowth)
@@ -634,26 +629,8 @@ shapiro.test(plant_aov$residuals) #Extract residuals from aov object and use the
 <h1>Effect Sizes</h1>
 <p>There are multiple ways to calculate effect sizes for ANOVA, e.g., Cohen’s <span class="math inline">\(f\)</span>, <span class="math inline">\(\eta^2\)</span>, and <span class="math inline">\(\omega^2\)</span>. We will use the <code>effectsize</code> package. Each function takes an input of a model object, in this case, <code>plant_aov</code>.</p>
 <pre class="r"><code>#install.packages(&quot;effectsize&quot;)
-library(effectsize)</code></pre>
-<pre><code>## Registered S3 methods overwritten by &#39;parameters&#39;:
-##   method                           from      
-##   as.double.parameters_kurtosis    datawizard
-##   as.double.parameters_skewness    datawizard
-##   as.double.parameters_smoothness  datawizard
-##   as.numeric.parameters_kurtosis   datawizard
-##   as.numeric.parameters_skewness   datawizard
-##   as.numeric.parameters_smoothness datawizard
-##   print.parameters_distribution    datawizard
-##   print.parameters_kurtosis        datawizard
-##   print.parameters_skewness        datawizard
-##   summary.parameters_kurtosis      datawizard
-##   summary.parameters_skewness      datawizard</code></pre>
-<pre><code>## 
-## Attaching package: &#39;effectsize&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:psych&#39;:
-## 
-##     phi</code></pre>
-<pre class="r"><code>eta_squared(plant_aov)</code></pre>
+library(effectsize)
+eta_squared(plant_aov)</code></pre>
 <pre><code>## For one-way between subjects designs, partial eta squared is equivalent to eta squared.
 ## Returning eta squared.</code></pre>
 <pre><code>## # Effect Size for ANOVA

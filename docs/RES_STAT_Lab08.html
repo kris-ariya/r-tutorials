@@ -456,12 +456,12 @@ library(psych)</code></pre>
 <p>กราฟด้านล่างจะแสดงค่าเฉลี่ยและ 95% CI ของกลุ่มตัวอย่างในการจำลองแต่ละรอบ (เรียงตั้งแต่ครั้งที่ 1 ถึง 100 จากล่างขึ้นบน) เห็นได้ว่าในการสุ่มตัวอย่างแต่ละครั้ง เราจะได้ค่า <span class="math inline">\(\bar{X}\)</span> ต่างกันไปในแต่ละครั้ง แต่ค่าเฉลี่ยกลุ่มตัวอย่างเหล่านี้ก็กระจายอยู่รอบ ๆ ค่าเฉลี่ยประชากร <span class="math inline">\(\mu\)</span></p>
 <pre class="r"><code>head(sim)</code></pre>
 <pre><code>##   survey_id     mean       sd        se       LL       UL contain
-## 1         1 49.94889 9.268652 0.3089551 49.34335 50.55443    TRUE
-## 2         2 50.10460 9.270810 0.3090270 49.49892 50.71029    TRUE
-## 3         3 50.44799 9.015943 0.3005314 49.85896 51.03702    TRUE
-## 4         4 50.58498 9.257960 0.3085987 49.98014 51.18983    TRUE
-## 5         5 50.17681 9.015126 0.3005042 49.58783 50.76578    TRUE
-## 6         6 49.79891 9.122816 0.3040939 49.20290 50.39493    TRUE</code></pre>
+## 1         1 50.03195 8.998839 0.2999613 49.44403 50.61986    TRUE
+## 2         2 50.21028 8.955646 0.2985215 49.62519 50.79537    TRUE
+## 3         3 49.73491 8.921281 0.2973760 49.15207 50.31776    TRUE
+## 4         4 49.95857 9.359935 0.3119978 49.34707 50.57008    TRUE
+## 5         5 49.94202 8.700159 0.2900053 49.37362 50.51042    TRUE
+## 6         6 50.24719 9.089598 0.3029866 49.65335 50.84103    TRUE</code></pre>
 <p><img src="RES_STAT_Lab08_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>ในการจำลอง 100 ครั้ง เส้นสีฟ้าแทนการจำลองครั้งที่ค่า 95% CI ครอบคลุมค่า <span class="math inline">\(\mu\)</span> ส่วนเส้นสีแดงแทนครั้งที่กลุ่มตัวอย่างคลาดเคลื่อนไปจน 95% CI ไม่ครอบคลุม <span class="math inline">\(\mu\)</span></p>
 <p>การจำลอง 100 ครั้งนี้ทำให้เราเห็นได้ว่า แม้ว่าเราจะสุ่มกลุ่มตัวอย่างจากประชากรเดียวกัน แต่เราพบ 5 ครั้ง (สีแดง)ที่เกิดความคลาดเคลื่อนจากการสุ่มจนทำให้ค่าเฉลี่ยกลุ่มตัวอย่าง <span class="math inline">\(\bar{X}\)</span> ที่ได้แตกต่างไปจากค่าเฉลี่ยประชากร <span class="math inline">\(\mu\)</span> จนถึงระดับนัยสำคัญทางสถิติ (นั่นคือ เราพบว่า <span class="math inline">\(\bar{X}\)</span> แตกต่างกับค่าที่เราคิดว่าเป็น <span class="math inline">\(\mu\)</span> มากเสียจนเราเชื่อว่ากลุ่มตัวอย่างนี้แตกต่างจากประชากรที่เราต้องการทดสอบ) แต่ในความเป็นจริงแล้วความแตกต่างดังกล่าวเป็นเพียงแค่ความคลาดเคลื่อนทางสถิติ ความผิดพลาดนี้เรียกว่า Type I Error ซึ่งเรากำหนดไว้ว่าไม่ควรเกิน 5% (<span class="math inline">\(\alpha = .05\)</span>) นั่นหมายความว่า หากเราเลือกใช้ 95% CI เราจะมั่นใจได้ว่า Type I error จะอยู่ที่ไม่เกิน 5% (นั่นคือ หากแท้จริงแล้วกลุ่มตัวอย่างของเราไม่ได้แตกต่างจากประชากร จะมีโอกาสเพียง 5% เท่านั้นที่เราจะบังเอิญได้ <span class="math inline">\(\bar{X}\)</span> ที่แตกต่างไปจาก <span class="math inline">\(\mu\)</span> จนถึงระดับนัยสำคัญทางสถิติ)</p>
@@ -523,14 +523,14 @@ print(paste0(&quot;95% CI [&quot;, LL,&quot;, &quot;, UL, &quot;]&quot;))</code>
 <h2>One sample <em>t</em>-test</h2>
 <p>การทดสอบด้วยสถิติ t แบบกลุ่มตัวอย่างเดียว เป็นการทดสอบค่าเฉลี่ยกับค่าที่ต้องการทดสอบ (เช่น 0 หรือค่าที่เราเชื่อว่าเป็น <span class="math inline">\(\mu\)</span>)</p>
 <p>ลองสมมติตัวอย่างการวิจัยที่ต้องการทดสอบว่านักเรียนอ่านหนังสือถึง 2 ชั่วโมงต่อวันหรือไม่ โดยเก็บข้อมูลว่านักเรียนใช้เวลาอ่านหนังสือจริงเท่าไหร่</p>
-<p>ให้ <em>M</em><sub>dailyreading</sub> = 93.07 นาที, <em>SD</em> = 61.14, <em>N</em> = 54.</p>
+<p>ให้ <em>M</em><sub>dailyreading</sub> = 96.61 นาที, <em>SD</em> = 54.04, <em>N</em> = 54.</p>
 <p>ข้อมูลอยู่ในตัวแปรที่ชื่อว่า <code>reading</code>.</p>
 <pre class="r"><code>reading</code></pre>
-<pre><code>##  [1]  18  74 170  18  59  52 174   0  38 106  34 210  28  35 266 118 103 200 110  16 115 162 123  83  29  95  44 135 109  80
-## [31] 215  36  22  98 123 153 158   1   0  41 100  65 156 138  71 133  98  38  43 111 143 126  58  95</code></pre>
+<pre><code>##  [1]  73 159 110  95  94 164 209 125  71  83  81   0 122 114 113 144  85 118 122 122  29 207  75 132 179 141  94 159 125  52
+## [31] 101  17  17   0 126  12  71  53  92 162 100  49  84   0  17   5 158 169  46 108 135 140  38 120</code></pre>
 <pre class="r"><code>psych::describe(reading)</code></pre>
-<pre><code>##    vars  n  mean    sd median trimmed   mad min max range skew kurtosis   se
-## X1    1 54 93.07 61.14   96.5   89.23 73.39   0 266   266 0.51    -0.27 8.32</code></pre>
+<pre><code>##    vars  n  mean    sd median trimmed   mad min max range  skew kurtosis   se
+## X1    1 54 96.61 54.04  100.5   97.09 48.93   0 209   209 -0.12    -0.74 7.35</code></pre>
 <p>เราต้องการทดสอบว่าค่าเฉลี่ยกลุ่มตัวอย่างนี้แตกต่างจากค่าที่เราตั้งสมมติฐานไว้ คือ 2 ชั่วโมงหรือ 120 นาทีต่อวันหรือไม่ <span class="math display">\[H_0: \mu = 120\]</span> หรือ <span class="math display">\[H_0: \mu - 120 = 0\]</span></p>
 <p>เราทดสอบด้วยสถิติ <em>t</em><br />
 <span class="math display">\[t = \frac{\bar{X} - 120}{SE}\]</span> โดย <span class="math inline">\(SE = \frac{SD}{\sqrt{N}}\)</span></p>
@@ -538,9 +538,9 @@ print(paste0(&quot;95% CI [&quot;, LL,&quot;, &quot;, UL, &quot;]&quot;))</code>
 se &lt;- sd(reading)/sqrt(n)
 t &lt;- (mean(reading)-120)/se
 se
-## [1] 8.320529
+## [1] 7.353385
 t
-## [1] -3.236083</code></pre>
+## [1] -3.180697</code></pre>
 <p>เราสามารถนำค่า t นี้ไปตรวจกับตาราง t distribution หรือนำไปเข้าเครื่องคำนวณค่าสถิติตามเว็บไซต์ต่าง ๆ (ค้นหา t test calculator) โดยใช้ค่า <span class="math inline">\(df = N - 1\)</span> หรือ 54 - 1 = 53 โดยเราจะพบว่าค่าสถิติดังกล่าวแสดงว่า เวลาในการอ่านหนังสือของนักเรียนน้อยกว่า 120 นาทีอย่างมีนัยสำคัญทางสถิติที่ระดับ <em>p</em> &lt; .05</p>
 </div>
 <div id="confidence-interval" class="section level2">
@@ -551,9 +551,9 @@ t
 LL &lt;- mean(reading) + (qt(.025, df) * se) #Lower limit
 UL &lt;- mean(reading) + (qt(.975, df) * se) #Upper limit
 LL
-## [1] 76.38521
+## [1] 81.86209
 UL
-## [1] 109.7629</code></pre>
+## [1] 111.3601</code></pre>
 <p><img src="RES_STAT_Lab08_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <p>ช่วงความเชื่อมั่น 95% ไม่ครอบคลุมค่าที่ต้องการทดสอบ (120 นาที) ซึ่งสอดคล้องกับผลที่พบว่านักเรียนอ่านหนังสือน้อยกว่า 120 นาทีอย่างมีนัยสำคัญทางสถิติ</p>
 </div>
@@ -565,25 +565,25 @@ UL
 ##  One Sample t-test
 ## 
 ## data:  reading
-## t = -3.2361, df = 53, p-value = 0.002091
+## t = -3.1807, df = 53, p-value = 0.002456
 ## alternative hypothesis: true mean is not equal to 120
 ## 95 percent confidence interval:
-##   76.38521 109.76294
+##   81.86209 111.36013
 ## sample estimates:
 ## mean of x 
-##  93.07407</code></pre>
+##  96.61111</code></pre>
 <pre class="r"><code>t.test(reading, mu = 120, alternative = &quot;less&quot;) #alternative lets you run a one-tailed test with &quot;less&quot; or &quot;greater&quot;.</code></pre>
 <pre><code>## 
 ##  One Sample t-test
 ## 
 ## data:  reading
-## t = -3.2361, df = 53, p-value = 0.001045
+## t = -3.1807, df = 53, p-value = 0.001228
 ## alternative hypothesis: true mean is less than 120
 ## 95 percent confidence interval:
-##      -Inf 107.0036
+##      -Inf 108.9215
 ## sample estimates:
 ## mean of x 
-##  93.07407</code></pre>
+##  96.61111</code></pre>
 </div>
 </div>
 

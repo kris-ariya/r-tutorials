@@ -463,8 +463,11 @@ pop_sd &lt;- sqrt(pop_var) #population standard deviation</code></pre>
 <p>จากประชากรนักเรียนนี้ เราจะสุ่มเลือกกลุ่มตัวอย่างออกมาวัดสภาวะอารมณ์ จำนวน 50 คน</p>
 <pre class="r"><code>survey &lt;- sample(pop$mood, 50)
 describe(survey) # sample statistics (function from psych package)</code></pre>
-<pre><code>##    vars  n mean   sd median trimmed  mad  min  max range  skew kurtosis   se
-## X1    1 50 3.24 1.32   3.32    3.28 1.41 0.34 5.58  5.24 -0.24    -0.78 0.19</code></pre>
+<pre><code>## survey 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1    3.245     1.52    1.140    1.427    2.408    3.318    4.274    4.747    5.165 
+## 
+## lowest : 0.3396683 0.5455081 1.0587986 1.2400032 1.2958668, highest: 5.1504713 5.1594940 5.1700502 5.5043376 5.5836801</code></pre>
 <pre class="r"><code>pop_mean</code></pre>
 <pre><code>## [1] 3.455544</code></pre>
 <pre class="r"><code>pop_sd</code></pre>
@@ -474,65 +477,125 @@ describe(survey) # sample statistics (function from psych package)</code></pre>
 <h2>1.1 จำลองการสุ่มซำ้ ๆ sampling, sampling, sampling, …</h2>
 <p>เพื่อจะให้เห็นภาพของความน่าจะเป็น เราจะลองสมมติว่า เราสุ่มกลุ่มตัวอย่างขึ้นมาใหม่ 50 คนเพื่อทำการสำรวจ (survey) แล้วคำนวณค่าสถิติ (เช่น ค่าเฉลี่ย) เก็บไว้ จากนั้นสุ่มใหม่อีก 50 คน ทำเช่นนี้ซ้ำไป 20 รอบ (กระบวนการนี้เรียกว่า resampling)</p>
 <pre><code>## [1] &quot;Survey 1&quot;
-##    vars  n mean   sd median trimmed  mad   min  max range skew kurtosis   se
-## X1    1 50 3.76 1.53      4    3.74 1.54 -0.59 8.15  8.73 0.05     0.61 0.22
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1    3.761    1.708    1.710    2.108    2.860    4.001    4.637    5.645    6.071 
+## 
+## lowest : -0.5851444  1.3263832  1.6402958  1.7943474  1.9837126, highest:  5.7278371  5.8840753  6.2241698  6.3062965  8.1453971
 ## [1] &quot;Survey 2&quot;
-##    vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
-## X1    1 50 3.68 1.27   3.63    3.69 0.93 0.03 6.75  6.72 -0.1     0.23 0.18
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1    3.678    1.426    1.820    1.999    3.076    3.630    4.285    5.482    5.583 
+## 
+## lowest : 0.03405778 1.67311826 1.79590445 1.85044628 1.90191345, highest: 5.52191845 5.53238502 5.62430664 5.69250172 6.75437934
 ## [1] &quot;Survey 3&quot;
-##    vars  n mean   sd median trimmed  mad   min  max range  skew kurtosis  se
-## X1    1 50 3.27 1.44   3.41    3.32 1.52 -0.35 5.73  6.08 -0.34    -0.63 0.2
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1    3.275    1.656    1.033    1.561    2.045    3.412    4.362    4.944    5.494 
+## 
+## lowest : -0.3509081  0.3593565  0.7747937  1.3495815  1.4077903, highest:  4.9659893  5.4915412  5.4960723  5.5523306  5.7313827
 ## [1] &quot;Survey 4&quot;
-##    vars  n mean  sd median trimmed mad   min  max range skew kurtosis  se
-## X1    1 50 3.43 1.4   3.31     3.4 1.2 -0.36 7.21  7.56 0.18     0.43 0.2
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1    3.434    1.556    1.400    2.060    2.534    3.307    4.170    5.331    5.815 
+## 
+## lowest : -0.3566126  1.0302375  1.3095529  1.5098780  1.8404673, highest:  5.6471394  5.7022385  5.9074416  5.9661831  7.2054526
 ## [1] &quot;Survey 5&quot;
-##    vars  n mean   sd median trimmed  mad  min  max range  skew kurtosis   se
-## X1    1 50 3.21 1.25   3.16    3.23 1.54 0.94 5.29  4.35 -0.06    -1.13 0.18
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1     3.21    1.452    1.069    1.687    2.230    3.158    4.326    4.773    5.106 
+## 
+## lowest : 0.9408535 0.9458472 0.9751200 1.1839695 1.6223521, highest: 4.9292899 5.0303970 5.1681473 5.2142279 5.2932495
 ## [1] &quot;Survey 6&quot;
-##    vars  n mean  sd median trimmed  mad   min  max range  skew kurtosis   se
-## X1    1 50 3.52 1.5   3.94     3.6 1.52 -0.06 6.21  6.27 -0.39    -0.72 0.21
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1     3.52     1.72   0.8752   1.3722   2.3461   3.9435   4.5193   5.1793   5.4823 
+## 
+## lowest : -0.0583227  0.6577948  0.8174576  0.9458472  1.2625100, highest:  5.3733617  5.3794167  5.5664901  6.0275752  6.2086863
 ## [1] &quot;Survey 7&quot;
-##    vars  n mean   sd median trimmed  mad   min  max range skew kurtosis   se
-## X1    1 50 3.26 1.61   3.14    3.24 1.41 -0.46 7.27  7.73  0.1     0.06 0.23
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1    3.262    1.798    1.023    1.183    2.422    3.145    4.169    5.586    5.952 
+## 
+## lowest : -0.4592843 -0.3768736  1.0158708  1.0308166  1.1784941, highest:  5.6581164  5.9204382  5.9772447  6.3141146  7.2696732
 ## [1] &quot;Survey 8&quot;
-##    vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
-## X1    1 50  3.6 1.28   3.62    3.54 1.29 1.08 7.71  6.63 0.65     1.02 0.18
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1    3.598    1.412    1.824    2.110    2.711    3.617    4.381    4.896    5.276 
+## 
+## lowest : 1.082446 1.210681 1.716943 1.954593 2.059776, highest: 5.068629 5.250571 5.296746 6.771325 7.709173
 ## [1] &quot;Survey 9&quot;
-##    vars  n mean   sd median trimmed  mad   min  max range skew kurtosis   se
-## X1    1 50  3.3 1.73   3.29    3.32 1.91 -1.32 6.91  8.23 -0.2    -0.14 0.25
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1      3.3     1.97   0.9682   1.3516   2.1766   3.2925   4.6543   5.4081   6.0310 
+## 
+## lowest : -1.3207181 -0.5162465  0.8286800  1.1387613  1.2041281, highest:  5.4598139  5.8766697  6.1572839  6.4090212  6.9090037
 ## [1] &quot;Survey 10&quot;
-##    vars  n mean  sd median trimmed  mad  min  max range skew kurtosis   se
-## X1    1 50 3.19 1.2   3.15    3.17 1.21 0.83 6.22  5.39 0.22    -0.32 0.17
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1    3.192     1.37    1.259    1.814    2.277    3.147    3.875    4.674    5.017 
+## 
+## lowest : 0.8263926 0.9771296 1.1839695 1.3498320 1.7942275, highest: 4.7321641 4.8636587 5.1421705 5.7947540 6.2210218
 ## [1] &quot;Survey 11&quot;
-##    vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
-## X1    1 50 3.46 1.37   3.29    3.44 1.55 1.03 5.88  4.85 0.15    -1.05 0.19
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1    3.457    1.587    1.429    1.713    2.337    3.286    4.544    5.447    5.763 
+## 
+## lowest : 1.026616 1.062976 1.266702 1.628371 1.708250, highest: 5.496039 5.738890 5.782091 5.872453 5.879275
 ## [1] &quot;Survey 12&quot;
-##    vars  n mean   sd median trimmed  mad min  max range  skew kurtosis   se
-## X1    1 50 3.57 1.29   3.55    3.62 1.36 0.5 5.82  5.32 -0.26    -0.65 0.18
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1    3.574    1.485    1.510    1.760    2.748    3.548    4.560    5.303    5.386 
+## 
+## lowest : 0.5041742 0.9297962 1.4577909 1.5739980 1.6966375, highest: 5.3071648 5.3808527 5.3903027 5.7732775 5.8207879
 ## [1] &quot;Survey 13&quot;
-##    vars  n mean   sd median trimmed  mad  min  max range skew kurtosis  se
-## X1    1 50 3.81 1.44   3.79    3.83 1.83 0.06 6.91  6.85 -0.1    -0.57 0.2
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1    3.809    1.647    1.764    2.225    2.703    3.789    5.088    5.572    5.715 
+## 
+## lowest : 0.06415119 1.46254780 1.63225186 1.92448255 2.07796272, highest: 5.66698524 5.68708222 5.73862887 6.15332407 6.91233096
 ## [1] &quot;Survey 14&quot;
-##    vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
-## X1    1 50 3.62 1.25   3.47    3.53 1.17 1.41 6.42     5 0.51    -0.47 0.18
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1    3.619     1.42    1.900    2.221    2.716    3.471    4.377    5.607    6.001 
+## 
+## lowest : 1.411185 1.722680 1.841720 1.972030 2.206769, highest: 5.892463 5.993529 6.007641 6.293465 6.416106
 ## [1] &quot;Survey 15&quot;
-##    vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
-## X1    1 50 3.33 1.24   3.18    3.27 1.35 1.06 6.47   5.4 0.39    -0.54 0.17
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1    3.335    1.414    1.742    1.887    2.297    3.176    4.112    5.083    5.412 
+## 
+## lowest : 1.062383 1.319485 1.697954 1.795927 1.864018, highest: 5.193949 5.314872 5.491575 5.714642 6.465295
 ## [1] &quot;Survey 16&quot;
-##    vars  n mean   sd median trimmed  mad min  max range skew kurtosis   se
-## X1    1 50 3.65 1.33   3.47    3.63 1.44 1.2 6.68  5.48 0.14    -0.68 0.19
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1    3.646    1.521    1.381    2.075    2.830    3.468    4.623    5.372    5.877 
+## 
+## lowest : 1.204128 1.274423 1.311415 1.466381 1.624625, highest: 5.736897 5.874397 5.879275 5.942414 6.679315
 ## [1] &quot;Survey 17&quot;
-##    vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
-## X1    1 50 3.37 1.22   3.22    3.32 1.26 0.74 6.31  5.57 0.29     -0.3 0.17
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1    3.371    1.392    1.644    1.954    2.424    3.216    4.074    4.830    5.451 
+## 
+## lowest : 0.7426884 1.4355623 1.5698092 1.7343988 1.9469584, highest: 5.0141631 5.3396618 5.5421841 6.2239297 6.3088505
 ## [1] &quot;Survey 18&quot;
-##    vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
-## X1    1 50  3.2 1.25   3.11     3.2 1.23 0.66 6.62  5.96 0.17    -0.17 0.18
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1    3.198    1.418    1.097    1.671    2.395    3.113    4.004    4.781    4.960 
+## 
+## lowest : 0.6571255 1.0379094 1.0885089 1.1064100 1.2430357, highest: 4.7861741 4.8989536 5.0105720 5.4051403 6.6198499
 ## [1] &quot;Survey 19&quot;
-##    vars  n mean   sd median trimmed  mad  min  max range  skew kurtosis   se
-## X1    1 50 3.59 1.32   3.76    3.68 1.26 0.11 5.85  5.74 -0.55    -0.29 0.19
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1    3.593    1.489    1.271    1.792    2.919    3.761    4.580    5.064    5.373 
+## 
+## lowest : 0.1120935 0.7996950 1.2177984 1.3359470 1.6729222, highest: 5.1179519 5.3449914 5.3954664 5.6416102 5.8511383
 ## [1] &quot;Survey 20&quot;
-##    vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
-## X1    1 50 3.45 1.05   3.41    3.42 1.16 1.24 5.87  4.62 0.19    -0.53 0.15</code></pre>
+## s 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90      .95 
+##       50        0       50        1    3.448    1.207    1.916    2.108    2.675    3.415    4.229    4.821    5.106 
+## 
+## lowest : 1.242170 1.729820 1.779309 2.083167 2.102844, highest: 5.006195 5.080847 5.126891 5.744355 5.865039</code></pre>
 <p><img src="RES_STAT_Lab07_files/figure-html/small%20resampling-1.png" width="672" /></p>
 <p>จากข้อมูลที่เราได้จากการสุ่มกลุ่มตัวอย่าง 20 ครั้งเพื่อสำรวจสภาวะอารมณ์ ค่าเฉลี่ยกลุ่มตัวอย่าง (<span class="math inline">\(\bar{X}\)</span>) แตกต่างกันไปในแต่ละครั้ง แต่อย่างไรก็ดี จะเห็นได้ว่าค่าเฉลี่ยกลุ่มตัวอย่างแต่ละครั้งจะกระจายตัวอยู่รอบ ๆ ค่าเฉลี่ยประชากร (<span class="math inline">\(\mu\)</span>)</p>
 <p>ในโค้ดที่ซ่อนอยู่เพื่อสร้างกราฟด้านบน ได้มีการบันทึกค่าเฉลี่ยกลุ่มตัวอย่างแต่ละครั้งไว้ในตัวแปร <code>m</code></p>

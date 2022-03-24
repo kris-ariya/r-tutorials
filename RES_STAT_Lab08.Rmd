@@ -71,6 +71,7 @@ $\sigma$ = 9.
 ค่าเฉลี่ยประชากร $\mu$
 
 ```{r echo = FALSE}
+set.seed(2475)
 n <- 900
 contain <- 1
 sim <- matrix(nrow = 100, ncol = 6)
