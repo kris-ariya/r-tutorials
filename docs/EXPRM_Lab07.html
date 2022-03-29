@@ -436,12 +436,34 @@ div.tocify {
 <pre class="r"><code># load all libraries for this tutorial
 library(car)
 library(ggplot2)
-library(afex)
-library(effectsize)
+library(afex)</code></pre>
+<pre><code>## Loading required package: lme4</code></pre>
+<pre><code>## Loading required package: Matrix</code></pre>
+<pre><code>## ************
+## Welcome to afex. For support visit: http://afex.singmann.science/</code></pre>
+<pre><code>## - Functions for ANOVAs: aov_car(), aov_ez(), and aov_4()
+## - Methods for calculating p-values with mixed(): &#39;S&#39;, &#39;KR&#39;, &#39;LRT&#39;, and &#39;PB&#39;
+## - &#39;afex_aov&#39; and &#39;mixed&#39; objects can be passed to emmeans() for follow-up tests
+## - NEWS: emmeans() for ANOVA models now uses model = &#39;multivariate&#39; as default.
+## - Get and set global package options with: afex_options()
+## - Set orthogonal sum-to-zero contrasts globally: set_sum_contrasts()
+## - For example analyses see: browseVignettes(&quot;afex&quot;)
+## ************</code></pre>
+<pre><code>## 
+## Attaching package: &#39;afex&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:lme4&#39;:
+## 
+##     lmer</code></pre>
+<pre class="r"><code>library(effectsize)
 library(psych)
 library(apaTables)
-library(jmv)
-library(emmeans)</code></pre>
+library(jmv)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;jmv&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:psych&#39;:
+## 
+##     pca, reliability</code></pre>
+<pre class="r"><code>library(emmeans)</code></pre>
 <p>เราจะใช้การวิเคราะห์ความแปรปรวนแบบแฟกทอเรียลในกรณีที่มีปัจจัย (factor) ที่ต้องการศึกษาตั้งแต่สองปัจจัยขึ้นไป</p>
 <div id="two-way-anova" class="section level1">
 <h1>Two-way ANOVA</h1>
@@ -657,8 +679,9 @@ tooth.Anova # car function. Capital A. </code></pre>
 <h2>Option 2: <code>afex</code> package</h2>
 <p>อีกทางเลือกหนึ่งคือใช้ <code>afex</code> (Analysis of Factorial Experiments) ซึ่งออกแบบมาเพื่อการวิเคราะห์ ANOVA ที่ซับซ้อนโดยเฉพาะ ในระดับโปรแกรมคำสั่ง <code>afex::aov_car()</code> จะดึงคำสั่งจากชุดคำสั่งใน <code>car</code> มาใช้งาน แต่คำสั่งใน <code>afex</code> อาจดูใช้งานง่ายกว่า</p>
 <p>ในคำสั่ง <code>aov_car()</code> จะต้องมีการเขียนโมเดล โดยโมเดลจะอยู่ในรูป <code>y ~ x1 * x2 + Error()</code> จุดที่แตกต่างจากเดิมคือต้องมีการระบุ <code>Error()</code> หรือความคลาดเคลื่อนของโมเดล ในกรณีนี้เป็นการออกแบบระหว่างกลุ่ม ความคลาดเคลื่อนจึงอยู่ที่กลุ่มตัวอย่าง ซึ่งเราระบุตัวได้ด้วยตัวแปร <code>id</code> (ขึ้นไปดูวิธีสร้างด้านบน)</p>
-<pre class="r"><code>tooth.afex &lt;- aov_car(len ~ supp * dose + Error(id), data = mydata)
-summary(tooth.afex)</code></pre>
+<pre class="r"><code>tooth.afex &lt;- aov_car(len ~ supp * dose + Error(id), data = mydata)</code></pre>
+<pre><code>## Contrasts set to contr.sum for the following variables: supp, dose</code></pre>
+<pre class="r"><code>summary(tooth.afex)</code></pre>
 <pre><code>## Anova Table (Type 3 tests)
 ## 
 ## Response: len

@@ -429,41 +429,43 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Lab 10: Simple Regression</h1>
+<h4 class="date">Mar 28, 2022</h4>
 
 </div>
 
 
+<pre class="r"><code># Load packages for this tutorial
+library(gridExtra)
+library(ggplot2)</code></pre>
 <div id="model-fitting" class="section level1">
 <h1>Model Fitting</h1>
-<p>To perform a statistical analysis in R, first, you need to write a formula to describe a statistical model. For example, a formula <code>y ~ x</code> means that you are predictng <code>y</code> with <code>x</code>. The variable on the left side of a tilde (<code>~</code>) is a dependent variable, and the variable on the right side is an independent variable.</p>
-<p>Then, you would use a function, such as <code>lm()</code>, <code>aov()</code>, or <code>glm()</code> to fit your model.To <em>fit</em> a model means that you are trying to use a mathematical model to describe data. For example, if a linear model is a good <em>fit</em> for your data, it means that it does a good job at describing a relationship pattern among variables in the model. For example, a <em>linear model</em> is a good fit to describe relationship between <code>wt</code> and <code>mpg</code>, but a <em>curvilinear model</em> seems to be a better fit for <code>disp</code> and <code>mpg</code> (see plots below).</p>
-<p>After fitting the model, we will use <code>summary()</code> to print an output of the analysis.</p>
-<pre class="r"><code>library(gridExtra)
-library(ggplot2)
-data(&quot;mtcars&quot;)
-p1 &lt;- ggplot(mtcars, aes(x = wt, y = mpg)) +
-  geom_point() + 
-  geom_smooth(method = lm, se = FALSE) + 
-  theme_classic()
-p2 &lt;- ggplot(mtcars, aes(x = hp, y = mpg)) +
-  geom_point() + 
-  geom_smooth(method = lm, formula = y ~ poly(x,3), se = FALSE) +
-  theme_classic()
-grid.arrange(p1,p2, ncol = 2)</code></pre>
-<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p>การวิเคราะห์ข้อมูลทางสถิตินั้นอาจเรียกได้ว่าเป็นการนำแบบจำลองทางคณิตศาสตร์มาใช้อธิบายข้อมูลเชิงประจักษ์ ยกตัวอย่างเช่น เรามีสมมติฐานว่าบุคลิกภาพแบบ A จะสัมพันธ์ทางบวกกับความดันโลหิต หากเราเชื่อว่าอัตราการเปลี่ยนแปลงความดันโลหิตนั้นคงที่เมื่อบุคลิกภาพแบบ A สูงขึ้นหรือลดลง (เช่น ความดันจะเพิ่มขึ้น 5 มม.ปรอท เมื่อคะแนนบุคลิกภาพเพิ่มขึ้น 1 หน่วยเสมอ) เรากำลังจำลองว่าตัวแปรทั้งสองสัมพันธ์กันเชิงเส้นตรง สามารถเขียนเป็นสมการเส้นตรง <span class="math inline">\(y = mx + c\)</span> โดยที่ y คือตัวแปรเกณฑ์ (ความดัน) m คือ ความชัน (ค่าที่บอกความสัมพันธ์ระหวางตัวแปร x และ y เช่น 5 มม.ปรอท ในตัวอย่างนี้) x คือตัวแปรทำนาย (ระดับบุคลิกภาพแบบ A) ส่วน c คือ จุดตัดแกน y ที่บอกว่าเส้นตรงนี้จะตัดแกน y (เมื่อ x = 0) ที่จุดไหน</p>
+<p>การวิเคราะห์สถิติจำนวนมากที่นิยมใช้ล้วนตั้งอยู่บนพื้นฐานของสมการเส้นตรง (เช่น t test, correlation, anova, regression) และโปรแกรม R ก็ใช้แนวทางของการสร้างโมเดลเป็นพื้นฐานในการเขียนคำสั่งเช่นกัน</p>
+<p>การเขียนโมเดลเส้นตรงให้ตัวแปร x ทำนายตัวแปร y จะอยู่ในรูปสมการ <code>y ~ x</code> โดยที่ y คือ ตัวแปรตาม/ตัวแปรเกณฑ์ ส่วน x คือตัวแปรอิสระ/ตัวแปรทำนาย</p>
+<p>คำสั่งในการ fit โมเดลเส้นตรงเข้ากับข้อมูลคือ <code>lm(formula = y ~ x, data)</code> โดย <code>y</code> และ <code>x</code> คือชื่อตัวแปรที่อยู่ใน <code>data</code> คำสั่งนี้จะทำงานโดยการประมาณค่าพารามิเตอร์ (ค่าslope ค่า intercept) คำนวณความคลาดเคลื่อนในการทำนาย ผลการทำนาย ฯลฯ ออกมาเป็น output ที่เราจะเรียกว่า lm object</p>
+<p>หลังจากที่เราได้ lm object แล้ว เราจึงค่อยนำมันไปใช้กับคำสั่งอื่นต่อไป เช่น <code>summary()</code> <code>plot()</code> <code>confint()</code> เป็นต้น</p>
+<p>ดังนั้นสิ่งที่สำคัญในการวิเคราะห์ข้อมูล คือ การเลือกโมเดลให้เหมาะสมกับข้อมูลที่เราต้องการจะอธิบาย ยกตัวอย่างด้านล่าง เช่น น้ำหนักของรถยนต์ <code>wt</code> สัมพันธ์เชิง<em>เส้นตรง</em>ใน<em>ทางลบ</em>กับอัตราประหยัดน้ำมัน <code>mpg</code> (ยิ่งหนักยิ่งประหยัดน้อย) ในขณะที่ขนาดกระบอกสูบ <code>disp</code> นั้นสัมพันธ์ทางลบแต่เป็นเส้นตรงโค้ง (curvilinear) กับอัตราประหยัดน้ำมั้น <code>mpg</code></p>
 <p><img src="RES_STAT_Lab10_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 </div>
 <div id="simple-regression" class="section level1">
 <h1>Simple Regression</h1>
-<p>For a simple regression analysis, we will need a <strong><em>linear model</em></strong> because we are testing for linear relationship between X-Y.</p>
-<div id="lm-function" class="section level2">
-<h2><code>lm()</code> function</h2>
-<p>The <code>lm()</code> function is used to fit a linear model. Its simplest form is <code>lm(formula, data)</code>, where <code>formula</code> is a statistical model and <code>data</code> is a data frame.</p>
-<p>Let’s look at <code>mtcars</code> dataset and say that we want to predict a car’s <code>mpg</code> with weight <code>wt</code>. The formula for this regression model is <code>mpg ~ wt</code>. We will save this model in to an object called <code>reg_model</code>. This object contains information from a linear regression analysis.</p>
-<p>We will then use <code>summary()</code> to output important information about regression analyses.</p>
+<p>สำหรับการวิเคราะห์ถดถอยอย่างง่าย (simple regression analysis) เราจะทดสอบความสัมพันธ์เชิงเส้นตรงระหว่างตัวแปรทำนาย (X) และตัวแปรเกณฑ์ (Y)</p>
+<p>การ fit โมเดลเส้นตรง ทำโดยใช้คำสั่ง <code>lm(formula, data)</code> โดย <code>formula</code> เป็นโมเดลทางสถิติที่บอกว่าตัวแปรใดเป็นตัวแปรทำนายตัวแปรใดเป็นตัวแปรเกณฑ์ ส่วน <code>data</code> คือ data frame</p>
+<p>ในตัวอย่างนี้เราจะใช้ชุดข้อมูล <code>mtcars</code> ซึ่งเป็นข้อมูลเกี่ยวกับรถยนต์รุ่นต่าง ๆ โดยเราต้องการทำนายอัตราการประหยัดน้ำมัน <code>mpg</code> ด้วยตัวแปรน้ำหนักของรถยนต์ <code>wt</code></p>
 <pre class="r"><code>data(mtcars)
-reg_model &lt;- lm(mpg ~ wt, mtcars)
-summary(reg_model)</code></pre>
+head(mtcars)</code></pre>
+<pre><code>##                    mpg cyl disp  hp drat    wt  qsec vs am gear carb
+## Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
+## Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
+## Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
+## Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
+## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
+## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</code></pre>
+<p>ในโปรแกรม R สมการจะเขียนอยู่ในรูปแบบ <code>y ~ x</code> ดังนั้นสมการ (formula) ของตัวอย่างนี้คือ <code>mpg ~ wt</code> (ใช้นำ้หนักทำนายอัตราประหยัดน้ำมัน)</p>
+<p>เมื่อเรา fit โมเดลนี้ด้วยคำสั่ง <code>lm()</code> เราจะบันทึกผลเป็น object ที่ชื่อว่า <code>reg.lm</code> ใน object นี้จะมีข้อมูลที่สำคัญเกี่ยวกับการวิเคราะห์ regression</p>
+<p>ในเบื้องต้นเราจะใช้คำสั่ง <code>summary()</code> เพื่อดู output ของการวิเคราะห์ถดถอย และใช้คำสั่ง <code>confint()</code> เพื่อดู 95% CI ของค่าประมาณการพารามิเตอร์ในโมเดล (เช่น ค่า intercept และ slope)</p>
+<pre class="r"><code>reg.lm &lt;- lm(mpg ~ wt, mtcars)
+summary(reg.lm)</code></pre>
 <pre><code>## 
 ## Call:
 ## lm(formula = mpg ~ wt, data = mtcars)
@@ -482,33 +484,62 @@ summary(reg_model)</code></pre>
 ## Residual standard error: 3.046 on 30 degrees of freedom
 ## Multiple R-squared:  0.7528, Adjusted R-squared:  0.7446 
 ## F-statistic: 91.38 on 1 and 30 DF,  p-value: 1.294e-10</code></pre>
-<p>The <code>Call:</code> section shows the formula of the model being analyzed.<br />
-The <code>Residuals:</code> section shows the summary of residuals, <span class="math inline">\(Y-\hat{Y}\)</span>.<br />
-The <code>Coefficients:</code> section show an intercept and slope estimates as well as their significance testing.<br />
-Asterisks (*) are used to noted significant values at different <span class="math inline">\(\alpha\)</span> level.<br />
-The rest of the lines show</p>
+<pre class="r"><code>confint(reg.lm)</code></pre>
+<pre><code>##                 2.5 %    97.5 %
+## (Intercept) 33.450500 41.119753
+## wt          -6.486308 -4.202635</code></pre>
+<p>ส่วน <code>Call:</code> แสดงสูตรโมเดลที่เรากำลังวิเคราะห์<br />
+ส่วน <code>Residuals:</code> แสดงความคลาดเคลื่อนในการทำนาย, <span class="math inline">\(Y-\hat{Y}\)</span>.<br />
+ส่วน <code>Coefficients:</code> แสดงค่าสัมประสิทธิ์ในสมการเส้นตรง ได้แก่ ค่าจุดตัดแกน Y (intercept) และความชัน (slope) ของตัวแปรทำนาย รวมไปถึงการทดสอบนัยสำคัญทางสถิติของค่าแต่ละตัว<br />
+เครื่องหมายดอกจัน (asterisks [*]) เป็นตัวบอกระดับนัยสำคัญทางสถิติที่ระดับ <span class="math inline">\(\alpha\)</span> ต่าง ๆ กัน</p>
+<p>ส่วนต่อไปแบ่งได้เป็นดังนี้</p>
 <ul>
-<li><code>Residual standard error</code> = standard deviation of residuals (errors),</li>
-<li>degrees of freedom of the residuals = <span class="math inline">\(N-k-1\)</span>,</li>
-<li>Multiple R-squared (<span class="math inline">\(R^2\)</span>) = proportion of variance in Y that was explained by X (predictor).</li>
-<li>Adjusted <span class="math inline">\(R^2\)</span> = <span class="math inline">\(R^2\)</span> adjusted for number of predictors. This will be relevant to multiple regression. For simple regression, unadjusted <span class="math inline">\(R^2\)</span> works fine.</li>
-<li><em>F</em> test of the whole regression model. In simple regression, this is the same as testing a coeffient (slope) of X.</li>
-<li><em>df</em> of the regression model = (<span class="math inline">\(k\)</span> or a number of predictors) and <em>df</em> of residuals (<span class="math inline">\(N-k-1\)</span>), and</li>
-<li><em>p</em>-value of the <em>F</em> statistics.</li>
+<li><code>Residual standard error</code> คือ ค่าส่วนเบี่ยงเบนมาตรฐานของความคลาดเคลื่อน (standard deviation of residuals) (errors),</li>
+<li>degrees of freedom คือ df ของ residual มีค่าเท่ากับ = <span class="math inline">\(N-k-1\)</span> (k = number of parameters</li>
+<li>Multiple R-squared (<span class="math inline">\(R^2\)</span>) คือค่าที่บอกว่าความแปรวนในตัวแปรตาม Y สามารถอธิบายได้ด้วยชุดของตัวแปร X มากน้อยเท่าไหร่</li>
+<li>Adjusted <span class="math inline">\(R^2\)</span> คือค่า <span class="math inline">\(R^2\)</span> ที่ปรับแก้จำนวนตัวแปรทำนายแล้วเพื่อให้แม่นยำมากขึ้น (สำหรับ simple regression ที่มีตัวแปรทำนายเพียงตัวเดียว ค่านี้มักใกล้เคียงกับ <span class="math inline">\(R^2\)</span> หรือ un-adjusted <span class="math inline">\(R^2\)</span> )</li>
+<li>ค่า <em>F</em> เป็นการทดสอบโมเดลในภาพรวม ใน simple regression ผลการทดสอบค่า F นี้จะสอดคล้องกับการทดสอบค่า slope</li>
+<li><em>df</em> เป็นของ regression model (<span class="math inline">\(k\)</span> คือจำนวน) และ <em>df</em> ของ residuals (<span class="math inline">\(N-k-1\)</span>)</li>
+<li><em>p</em>-value ของสถิติ <em>F</em></li>
 </ul>
-</div>
 <div id="coefficients" class="section level2">
 <h2>Coefficients</h2>
-<p>In this analysis, we can write a regression equation as <span class="math inline">\(\hat{Y}_{mpg} = 37.285 - 5.344X_{weight}\)</span>.</p>
+<p>ในการวิเคราะห์นี้ เราสามารถนำค่าสัมประสิทธิ์มาเขียนเป็นสมการทำนายได้เป็น <span class="math inline">\(\hat{Y}_{mpg} = 37.285 - 5.344X_{wt}\)</span> โดยค่า intercept และ slope มาจาก output ของ <code>summary()</code></p>
 <ul>
-<li><p>The intercept, <span class="math inline">\(b_0\)</span>, is a value of predicted <em>Y</em> when <em>X</em> = 0. In this case, it means that if a car weights zero tons, its could run 37.29 miles per a gallon of gasoline. However, in this case, the intercept does not means much because there is no car that weights zero tons.</p></li>
-<li><p>However, we are more interested in a <em>relationship</em> between <code>wt</code> and <code>mpg</code> that was a slope of <code>wt</code>, <em>b</em> = -5.34. This negative relationship means that if a car’s weight (<code>wt</code>) changes by one ton, its fuel economy (<code>mpg</code>) changes in an opposite direction by 5.34 miles per gallon.</p></li>
+<li><p>จุดตัดแกน Y (intercept, <span class="math inline">\(b_0\)</span>) เป็นค่าทำนายตัวแปร Y เมื่อ X = 0 ในตัวอย่างนี้คือ อัตราประหยัดน้ำมันของรถที่มีนำ้หนัก 0 ตัน คือ 37.29 ไมล์ต่อแกลลอน ในกรณี เราสังเกตได้ว่าค่าจุด intercept นั้นไม่ได้ความหมายโดยตัวมันเองเท่าใดนัก เพราะเราไม่ได้ต้องการรู้ว่ารถน้ำหนัก 0 ตันจะมีอัตราประหยัดน้ำมันเท่าใด</p></li>
+<li><p>ค่าที่เราสนใจคือ สัมประสิทธิ์ที่แสดงถึงความสัมพันธ์ระหว่าง <code>wt</code> และ <code>mpg</code> นั่นก็คือ ค่าความชันของตัวแปร <code>wt</code>, <em>b</em> = -5.34 ค่าทางลบแสดงว่าเมื่อน้ำหนักรถเปลี่ยนแปลงไปหนึ่งตัน อัตราประหยัดน้ำมันจะเปลี่ยนไปในทิศทางตรงกันข้าม 5.34 ไมล์ต่อแกลลอน</p></li>
 </ul>
-<p>We can use this equation to predict a car’s <code>mpg</code> given its <code>wt</code>. For example, if a car weight 1.5 ton, we could use the equation to predict its fuel economy. <span class="math display">\[ \begin{aligned}
+<pre class="r"><code>reg.lm$coefficients</code></pre>
+<pre><code>## (Intercept)          wt 
+##   37.285126   -5.344472</code></pre>
+</div>
+<div id="prediction" class="section level2">
+<h2>Prediction</h2>
+<p>เราสามารถใช้สมการนี้ทำนายค่า <code>mpg</code> สำหรับค่า <code>wt</code> ที่เราต้องการได้ เช่น หากมีรถที่หนัก 1.5 ตัน เราจะทำนายว่ารถคันนี้มีอัตราประหยัดน้ำมัน <span class="math display">\[ \begin{aligned}
 \hat{Y}_{mpg} &amp;= 37.285 - 5.344(1.5) \\
 &amp;= 37.285 - 8.016 \\
 &amp;= 29.269 
 \end{aligned} \]</span></p>
+<p>เราสามารถใช้คำสั่ง <code>predict(object, newdata)</code> ได้</p>
+<pre class="r"><code>predict(reg.lm, data.frame(wt = 1.5)) # newdata is a data frame with same variable name. </code></pre>
+<pre><code>##        1 
+## 29.26842</code></pre>
+<pre class="r"><code>predict(reg.lm, data.frame(wt = c(1.0, 1.2, 1.4, 1.6))) # predict multiple new values</code></pre>
+<pre><code>##        1        2        3        4 
+## 31.94065 30.87176 29.80287 28.73397</code></pre>
+<pre class="r"><code>predict(reg.lm) # show predicted value for current dataset</code></pre>
+<pre><code>##           Mazda RX4       Mazda RX4 Wag          Datsun 710      Hornet 4 Drive   Hornet Sportabout             Valiant 
+##           23.282611           21.919770           24.885952           20.102650           18.900144           18.793255 
+##          Duster 360           Merc 240D            Merc 230            Merc 280           Merc 280C          Merc 450SE 
+##           18.205363           20.236262           20.450041           18.900144           18.900144           15.533127 
+##          Merc 450SL         Merc 450SLC  Cadillac Fleetwood Lincoln Continental   Chrysler Imperial            Fiat 128 
+##           17.350247           17.083024            9.226650            8.296712            8.718926           25.527289 
+##         Honda Civic      Toyota Corolla       Toyota Corona    Dodge Challenger         AMC Javelin          Camaro Z28 
+##           28.653805           27.478021           24.111004           18.472586           18.926866           16.762355 
+##    Pontiac Firebird           Fiat X1-9       Porsche 914-2        Lotus Europa      Ford Pantera L        Ferrari Dino 
+##           16.735633           26.943574           25.847957           29.198941           20.343151           22.480940 
+##       Maserati Bora          Volvo 142E 
+##           18.205363           22.427495</code></pre>
 </div>
 <div id="hypothesis-testing" class="section level2">
 <h2>Hypothesis testing</h2>
@@ -518,11 +549,11 @@ The rest of the lines show</p>
 <div id="confidence-interval-of-coefficients" class="section level2">
 <h2>Confidence interval of coefficients</h2>
 <p>We can calculate a 95% CI for each coefficient.</p>
-<pre class="r"><code>confint(reg_model) #default setting is 95% CI</code></pre>
+<pre class="r"><code>confint(reg.lm) #default setting is 95% CI</code></pre>
 <pre><code>##                 2.5 %    97.5 %
 ## (Intercept) 33.450500 41.119753
 ## wt          -6.486308 -4.202635</code></pre>
-<pre class="r"><code>confint(reg_model, level = .99) # set to 99% CI</code></pre>
+<pre class="r"><code>confint(reg.lm, level = .99) # set to 99% CI</code></pre>
 <pre><code>##                 0.5 %    99.5 %
 ## (Intercept) 32.121659 42.448593
 ## wt          -6.881997 -3.806946</code></pre>
@@ -534,27 +565,25 @@ The rest of the lines show</p>
 <p>Raw coefficients are in a unit of variable <em>Y</em>, which make it hard to judge the strengh of relationship. To solve this problem, we could standardize the coefficient to make it easier to interpret. This standardized regression coefficients are also called <em>beta</em> (<span class="math inline">\(\beta\)</span>) by some statistical programs.</p>
 <pre class="r"><code># install.packages(&quot;QuantPsyc&quot;)
 library(QuantPsyc)
-lm.beta(reg_model)</code></pre>
+lm.beta(reg.lm)</code></pre>
 <pre><code>##         wt 
 ## -0.8676594</code></pre>
 <p>The standardized coeff. of -.87 was quite a strong negative relationship.</p>
 </div>
 </div>
-<div id="plot" class="section level1">
-<h1>Plot</h1>
+<div id="scatter-plot" class="section level1">
+<h1>Scatter Plot</h1>
 <p>To create a scatter plot with a fit line.</p>
 <ol style="list-style-type: decimal">
 <li>Use <code>ggplot(data, aes(x, y))</code> to specify the data and aesthetic mapping,</li>
 <li>Use <code>geom_point()</code> to make a scatter plot,</li>
 <li>Use <code>geom_smooth(method = , se = )</code> to add the best fit line. The <code>method</code> option refers to a method to create a smooth line, which would be <code>lm</code> for a linear model. The option <code>se</code> is for confidence interval around the predicted line, which is <code>TRUE</code> by default.</li>
 </ol>
-<pre class="r"><code>library(ggplot2)
-ggplot(mtcars, aes(x = wt, y = mpg)) +
+<pre class="r"><code>ggplot(mtcars, aes(x = wt, y = mpg)) +
   geom_point() + # scatter dots
   geom_smooth(method = lm, se = TRUE) + #add a linear fit line to the previous plot
   theme_classic()</code></pre>
-<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
-<p><img src="RES_STAT_Lab10_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="RES_STAT_Lab10_files/figure-html/scatterplot-1.png" width="672" /></p>
 </div>
 
 
