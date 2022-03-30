@@ -441,27 +441,27 @@ div.tocify {
 <p>Save a data file and an R script in the same directory. Set working directory to Source File Location. <code>setwd(dirname(rstudioapi::getSourceEditorContext()$path))</code> Then, load the data.</p>
 <pre class="r"><code>solar_data &lt;- read.csv(&quot;data/RES_STAT_Lab5_Data.csv&quot;)
 head(solar_data) ## view the first part of the data frame.</code></pre>
-<pre><code>##   id              user deci    sex age kno1 kno2 kno3 kno4 kno5 kno6 kno7 kno8           inno att1 att2 att3 att4 att5 att6
-## 1  1 regular residence    2 female  43    1    1    1    1    1    1    1    1 early majority    2    3    3    1    3    3
-## 2  2 regular residence    2 female  51    1    1    1    1    1    1    1    1       laggards    4    4    3    3    2    2
-## 3  3 regular residence    2   male  28    4    4    4    4    2    3    4    2 early adopters    2    5    5    3    4    5
-## 4  4 regular residence    2 female  32    1    1    1    1    1    1    1    1  late majority    3    4    4    4    5    5
-## 5  5 regular residence    2   male  38    4    4    4    3    3    3    3    4     innovators    4    4    4    3    5    5
-## 6  6 regular residence    2   male  51    1    1    1    1    1    1    1    1 early adopters    5    5    3    2    5    5
-##   att7 att8            interest re_att1 re_att2 re_att3 re_att4 re_att5 re_att6 re_att7 re_att8 re_kno1 re_kno2 re_kno3
-## 1    3    3        probably not       1       2       2       0       2       2       2       2       0       0       0
-## 2    2    1      definitely not       3       3       2       2       1       1       1       0       0       0       0
-## 3    4    4           likely to       1       4       4       2       3       4       3       3       3       3       3
-## 4    4    3       probably will       2       3       3       3       4       4       3       2       0       0       0
-## 5    5    3           likely to       3       3       3       2       4       4       4       2       3       3       3
-## 6    5    4 definitely going to       4       4       2       1       4       4       4       3       0       0       0
-##   re_kno4 re_kno5 re_kno6 re_kno7 re_kno8 attitude knowledge
-## 1       0       0       0       0       0    1.625     0.000
-## 2       0       0       0       0       0    1.625     0.000
-## 3       3       1       2       3       1    3.000     2.375
-## 4       0       0       0       0       0    3.000     0.000
-## 5       2       2       2       2       3    3.125     2.500
-## 6       0       0       0       0       0    3.250     0.000</code></pre>
+<pre><code>##   id              user deci    sex age kno1 kno2 kno3 kno4 kno5 kno6 kno7 kno8           inno att1 att2 att3 att4 att5 att6 att7 att8
+## 1  1 regular residence    2 female  43    1    1    1    1    1    1    1    1 early majority    2    3    3    1    3    3    3    3
+## 2  2 regular residence    2 female  51    1    1    1    1    1    1    1    1       laggards    4    4    3    3    2    2    2    1
+## 3  3 regular residence    2   male  28    4    4    4    4    2    3    4    2 early adopters    2    5    5    3    4    5    4    4
+## 4  4 regular residence    2 female  32    1    1    1    1    1    1    1    1  late majority    3    4    4    4    5    5    4    3
+## 5  5 regular residence    2   male  38    4    4    4    3    3    3    3    4     innovators    4    4    4    3    5    5    5    3
+## 6  6 regular residence    2   male  51    1    1    1    1    1    1    1    1 early adopters    5    5    3    2    5    5    5    4
+##              interest re_att1 re_att2 re_att3 re_att4 re_att5 re_att6 re_att7 re_att8 re_kno1 re_kno2 re_kno3 re_kno4 re_kno5 re_kno6
+## 1        probably not       1       2       2       0       2       2       2       2       0       0       0       0       0       0
+## 2      definitely not       3       3       2       2       1       1       1       0       0       0       0       0       0       0
+## 3           likely to       1       4       4       2       3       4       3       3       3       3       3       3       1       2
+## 4       probably will       2       3       3       3       4       4       3       2       0       0       0       0       0       0
+## 5           likely to       3       3       3       2       4       4       4       2       3       3       3       2       2       2
+## 6 definitely going to       4       4       2       1       4       4       4       3       0       0       0       0       0       0
+##   re_kno7 re_kno8 attitude knowledge
+## 1       0       0    1.625     0.000
+## 2       0       0    1.625     0.000
+## 3       3       1    3.000     2.375
+## 4       0       0    3.000     0.000
+## 5       2       3    3.125     2.500
+## 6       0       0    3.250     0.000</code></pre>
 </div>
 <div id="data-preparation" class="section level1">
 <h1>Data Preparation</h1>
@@ -507,15 +507,15 @@ head(solar_data$z_kno_f)</code></pre>
 <p>There are many methods to identify outliers. In this example, any values outside ±3 SD are considered outliers. Because <em>z</em>-scores are in a unit of SD, any <em>z</em> beyond ±3 will be marked as outliers.</p>
 <pre class="r"><code>outliers &lt;- solar_data$z_kno_f &gt; 3 | solar_data$z_kno_f &lt; -3
 solar_data[outliers, ]</code></pre>
-<pre><code>##      id              user deci  sex age kno1 kno2 kno3 kno4 kno5 kno6 kno7 kno8           inno att1 att2 att3 att4 att5
-## 167 211 regular residence    2 male  47    5    5    5    5    5    5    5    5 early adopters    4    4    5    4    5
-## 264 332 regular residence    2 male  30    5    5    5    5    5    5    5    5 early adopters    5    5    5    5    5
-##     att6 att7 att8      interest re_att1 re_att2 re_att3 re_att4 re_att5 re_att6 re_att7 re_att8 re_kno1 re_kno2 re_kno3
-## 167    5    5    4     likely to       3       3       4       3       4       4       4       3       4       4       4
-## 264    5    5    5 probably will       4       4       4       4       4       4       4       4       4       4       4
-##     re_kno4 re_kno5 re_kno6 re_kno7 re_kno8 attitude knowledge  z_kno_m  z_kno_f
-## 167       4       4       4       4       4      3.5         4 3.154265 3.154265
-## 264       4       4       4       4       4      4.0         4 3.154265 3.154265</code></pre>
+<pre><code>##      id              user deci  sex age kno1 kno2 kno3 kno4 kno5 kno6 kno7 kno8           inno att1 att2 att3 att4 att5 att6 att7 att8
+## 167 211 regular residence    2 male  47    5    5    5    5    5    5    5    5 early adopters    4    4    5    4    5    5    5    4
+## 264 332 regular residence    2 male  30    5    5    5    5    5    5    5    5 early adopters    5    5    5    5    5    5    5    5
+##          interest re_att1 re_att2 re_att3 re_att4 re_att5 re_att6 re_att7 re_att8 re_kno1 re_kno2 re_kno3 re_kno4 re_kno5 re_kno6 re_kno7
+## 167     likely to       3       3       4       3       4       4       4       3       4       4       4       4       4       4       4
+## 264 probably will       4       4       4       4       4       4       4       4       4       4       4       4       4       4       4
+##     re_kno8 attitude knowledge  z_kno_m  z_kno_f
+## 167       4      3.5         4 3.154265 3.154265
+## 264       4      4.0         4 3.154265 3.154265</code></pre>
 </div>
 <div id="z-score-by-group" class="section level3">
 <h3><em>z</em>-score by group</h3>
@@ -547,15 +547,15 @@ tapply(solar_data$z_kno_g, solar_data$inno, sd)</code></pre>
 <p>Now we find outliers that have z-score beyond ±3. Because the <em>z</em>-scores were calculated for each innovator group, any values beyond ±3 are outliers for that group.</p>
 <pre class="r"><code>outliers_g &lt;- solar_data$z_kno_g &gt; 3 | solar_data$z_kno_g &lt; -3
 solar_data[outliers_g, ]</code></pre>
-<pre><code>##      id            user deci    sex age kno1 kno2 kno3 kno4 kno5 kno6 kno7 kno8     inno att1 att2 att3 att4 att5 att6 att7
-## 115 136 small residence    2 female  55    3    3    4    3    3    3    4    3 laggards    4    4    5    4    4    5    5
-## 166 210 small residence    2   male  37    4    4    4    4    4    4    4    4 laggards    3    3    3    3    3    3    3
-##     att8     interest re_att1 re_att2 re_att3 re_att4 re_att5 re_att6 re_att7 re_att8 re_kno1 re_kno2 re_kno3 re_kno4
-## 115    5 probably not       3       3       4       3       3       4       4       4       2       2       3       2
-## 166    3    likely to       2       2       2       2       2       2       2       2       3       3       3       3
-##     re_kno5 re_kno6 re_kno7 re_kno8 attitude knowledge  z_kno_m  z_kno_f  z_kno_g
-## 115       2       2       3       2      3.5      2.25 1.407868 1.407868 3.038717
-## 166       3       3       3       3      2.0      3.00 2.156324 2.156324 4.249160</code></pre>
+<pre><code>##      id            user deci    sex age kno1 kno2 kno3 kno4 kno5 kno6 kno7 kno8     inno att1 att2 att3 att4 att5 att6 att7 att8
+## 115 136 small residence    2 female  55    3    3    4    3    3    3    4    3 laggards    4    4    5    4    4    5    5    5
+## 166 210 small residence    2   male  37    4    4    4    4    4    4    4    4 laggards    3    3    3    3    3    3    3    3
+##         interest re_att1 re_att2 re_att3 re_att4 re_att5 re_att6 re_att7 re_att8 re_kno1 re_kno2 re_kno3 re_kno4 re_kno5 re_kno6 re_kno7
+## 115 probably not       3       3       4       3       3       4       4       4       2       2       3       2       2       2       3
+## 166    likely to       2       2       2       2       2       2       2       2       3       3       3       3       3       3       3
+##     re_kno8 attitude knowledge  z_kno_m  z_kno_f  z_kno_g
+## 115       2      3.5      2.25 1.407868 1.407868 3.038717
+## 166       3      2.0      3.00 2.156324 2.156324 4.249160</code></pre>
 <p>In this case, we will remove outliers from the data. We will choose rows that are <strong>NOT</strong> outliers <code>!outliers_g</code>.</p>
 <pre class="r"><code>solar_data_new &lt;- solar_data[!outliers_g, ] # choose rows that are not outliers and choose all columns.
 nrow(solar_data) # Number of observation in the original data. </code></pre>
@@ -572,19 +572,19 @@ by(solar_data_new$knowledge, solar_data_new$inno, psych::describe)</code></pre>
 <pre><code>## solar_data_new$inno: early adopters
 ##    vars  n mean   sd median trimmed  mad min max range skew kurtosis   se
 ## X1    1 43 1.28 1.22   1.12    1.15 1.67   0   4     4 0.58    -0.78 0.19
-## --------------------------------------------------------------------------------------------- 
+## --------------------------------------------------------------------------------------------------------- 
 ## solar_data_new$inno: early majority
 ##    vars   n mean   sd median trimmed  mad min max range skew kurtosis   se
 ## X1    1 117 0.93 1.01   0.62    0.79 0.93   0 3.5   3.5 0.87    -0.36 0.09
-## --------------------------------------------------------------------------------------------- 
+## --------------------------------------------------------------------------------------------------------- 
 ## solar_data_new$inno: innovators
 ##    vars  n mean   sd median trimmed mad min max range skew kurtosis   se
 ## X1    1 17 1.08 0.98   1.12    1.06 1.3   0 2.5   2.5  0.2    -1.66 0.24
-## --------------------------------------------------------------------------------------------- 
+## --------------------------------------------------------------------------------------------------------- 
 ## solar_data_new$inno: laggards
 ##    vars  n mean  sd median trimmed mad min  max range skew kurtosis   se
 ## X1    1 46 0.27 0.4      0     0.2   0   0 1.25  1.25  1.3     0.37 0.06
-## --------------------------------------------------------------------------------------------- 
+## --------------------------------------------------------------------------------------------------------- 
 ## solar_data_new$inno: late majority
 ##    vars  n mean   sd median trimmed  mad min max range skew kurtosis   se
 ## X1    1 79 0.71 0.94   0.25    0.54 0.37   0 3.5   3.5 1.37     0.85 0.11</code></pre>

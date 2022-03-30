@@ -552,27 +552,27 @@ table(mydata$supp, mydata$dose)</code></pre>
 ## dose: D0.5
 ##    vars  n  mean   sd median trimmed mad min  max range skew kurtosis   se
 ## X1    1 10 13.23 4.46  12.25   12.82 4.3 8.2 21.5  13.3 0.44    -1.37 1.41
-## --------------------------------------------------------------------------------------------- 
+## --------------------------------------------------------------------------------------------------------- 
 ## supp: VC
 ## dose: D0.5
 ##    vars  n mean   sd median trimmed  mad min  max range skew kurtosis   se
 ## X1    1 10 7.98 2.75   7.15    8.01 3.56 4.2 11.5   7.3 0.13    -1.81 0.87
-## --------------------------------------------------------------------------------------------- 
+## --------------------------------------------------------------------------------------------------------- 
 ## supp: OJ
 ## dose: D1
 ##    vars  n mean   sd median trimmed  mad  min  max range  skew kurtosis   se
 ## X1    1 10 22.7 3.91  23.45   23.15 3.93 14.5 27.3  12.8 -0.68    -0.68 1.24
-## --------------------------------------------------------------------------------------------- 
+## --------------------------------------------------------------------------------------------------------- 
 ## supp: VC
 ## dose: D1
 ##    vars  n  mean   sd median trimmed mad  min  max range skew kurtosis  se
 ## X1    1 10 16.77 2.52   16.5   16.45 1.7 13.6 22.5   8.9 0.93     0.08 0.8
-## --------------------------------------------------------------------------------------------- 
+## --------------------------------------------------------------------------------------------------------- 
 ## supp: OJ
 ## dose: D2
 ##    vars  n  mean   sd median trimmed  mad  min  max range skew kurtosis   se
 ## X1    1 10 26.06 2.66  25.95   25.91 2.08 22.4 30.9   8.5 0.37    -1.09 0.84
-## --------------------------------------------------------------------------------------------- 
+## --------------------------------------------------------------------------------------------------------- 
 ## supp: VC
 ## dose: D2
 ##    vars  n  mean  sd median trimmed mad  min  max range skew kurtosis   se
@@ -709,9 +709,8 @@ summary(tooth.afex)</code></pre>
 <p>ในการคำนวณขนาดอิทธิพล สามารถใช้คำสั่งจาก <code>effectsize</code> ได้ เช่น ต้องการ <code>eta_squared()</code> หรือ <code>omega_squared</code> หรือ <code>cohens_f</code></p>
 <p>เนื่องจากการวิเคราะห์ที่เราใช้เป็น Type III SS เราจึงต้องใช้ object ที่เป็น Type III ในคำสั่งของ <code>effectsize</code> ซึ่งสามารถใช้ได้ทั้งโมเดลจาก <code>afex::aov_car()</code> หรือ output ที่ save จาก <code>car::Anova</code></p>
 <pre class="r"><code>eta_squared(tooth.Anova)</code></pre>
-<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with
-##   orthogonal contrasts (such as those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default
-##   &#39;contr.treatment&#39;).</code></pre>
+<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with orthogonal contrasts
+##   (such as those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default &#39;contr.treatment&#39;).</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type III)
 ## 
 ## Parameter | Eta2 (partial) |       90% CI
@@ -720,9 +719,8 @@ summary(tooth.afex)</code></pre>
 ## dose      |           0.77 | [0.68, 0.83]
 ## supp:dose |           0.13 | [0.01, 0.27]</code></pre>
 <pre class="r"><code>eta_squared(tooth.afex) #same as above</code></pre>
-<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with
-##   orthogonal contrasts (such as those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default
-##   &#39;contr.treatment&#39;).</code></pre>
+<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with orthogonal contrasts
+##   (such as those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default &#39;contr.treatment&#39;).</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type III)
 ## 
 ## Parameter | Eta2 (partial) |       90% CI
@@ -731,9 +729,8 @@ summary(tooth.afex)</code></pre>
 ## dose      |           0.77 | [0.68, 0.83]
 ## supp:dose |           0.13 | [0.01, 0.27]</code></pre>
 <pre class="r"><code>omega_squared(tooth.Anova)</code></pre>
-<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with
-##   orthogonal contrasts (such as those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default
-##   &#39;contr.treatment&#39;).</code></pre>
+<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with orthogonal contrasts
+##   (such as those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default &#39;contr.treatment&#39;).</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type III)
 ## 
 ## Parameter | Omega2 (partial) |       90% CI
@@ -742,9 +739,8 @@ summary(tooth.afex)</code></pre>
 ## dose      |             0.75 | [0.65, 0.81]
 ## supp:dose |             0.09 | [0.00, 0.22]</code></pre>
 <pre class="r"><code>omega_squared(tooth.afex) #same as above</code></pre>
-<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with
-##   orthogonal contrasts (such as those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default
-##   &#39;contr.treatment&#39;).</code></pre>
+<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with orthogonal contrasts
+##   (such as those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default &#39;contr.treatment&#39;).</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type III)
 ## 
 ## Parameter | Omega2 (partial) |       90% CI
@@ -753,9 +749,8 @@ summary(tooth.afex)</code></pre>
 ## dose      |             0.75 | [0.65, 0.81]
 ## supp:dose |             0.09 | [0.00, 0.22]</code></pre>
 <pre class="r"><code>cohens_f(tooth.Anova)</code></pre>
-<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with
-##   orthogonal contrasts (such as those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default
-##   &#39;contr.treatment&#39;).</code></pre>
+<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with orthogonal contrasts
+##   (such as those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default &#39;contr.treatment&#39;).</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type III)
 ## 
 ## Parameter | Cohen&#39;s f (partial) |       90% CI
@@ -764,9 +759,8 @@ summary(tooth.afex)</code></pre>
 ## dose      |                1.85 | [1.47, 2.20]
 ## supp:dose |                0.39 | [0.11, 0.60]</code></pre>
 <pre class="r"><code>cohens_f(tooth.afex) #same as above</code></pre>
-<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with
-##   orthogonal contrasts (such as those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default
-##   &#39;contr.treatment&#39;).</code></pre>
+<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with orthogonal contrasts
+##   (such as those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default &#39;contr.treatment&#39;).</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type III)
 ## 
 ## Parameter | Cohen&#39;s f (partial) |       90% CI

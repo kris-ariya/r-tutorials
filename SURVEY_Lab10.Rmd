@@ -12,7 +12,33 @@ output:
 library(psych)
 library(car)
 library(carData)
-library(QuantPsyc)
 ```
 
+
+```{r load data}
+data(Tal.Or)
+media <- Tal.Or
+head(media)
+```
+
+
+```{r model1}
+media.lm1 <- lm(reaction ~ pmi, media)
+car::scatterplot(reaction ~ pmi, media) # pmi seems negatively skewed
+hist(media$pmi)
+qqPlot(media$pmi) # not normal. Should it be transform?
+influenceIndexPlot(media.lm1) # only a few data point with high h values
+summary(media.lm1)
+
+media.lm2 <- lm(reaction ~ pmi + import, media)
+plot(media.lm2)
+summary(media.lm2)
+anova(media.lm1, media.lm2)
+
+media.lm3 <- lm(reaction ~ pmi + import + age, media)
+summary(media.lm3)
+anova(media.lm1, media.lm2, media.lm3) # no incremental R-squared for age
+
+# conclude with model 2
+```
 
