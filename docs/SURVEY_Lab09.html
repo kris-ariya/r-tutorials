@@ -414,6 +414,9 @@ div.tocify {
     <li>
       <a href="SURVEY_Lab09.html">Lab 09: Multiple Regression</a>
     </li>
+    <li>
+      <a href="SURVEY_Lab10.html">Lab 10: Hierarchical Regresion</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -483,14 +486,20 @@ summary(prestige.lm)</code></pre>
 ## Residual standard error: 7.846 on 98 degrees of freedom
 ## Multiple R-squared:  0.7982, Adjusted R-squared:  0.792 
 ## F-statistic: 129.2 on 3 and 98 DF,  p-value: &lt; 2.2e-16</code></pre>
-<p>ค่า F ที่มีนัยสำคัญทางสถิติแสดงให้เห็นว่า ตัวแปร X ทั้ง 3 ตัว ร่วมกันทำนายตัวแปร Y ได้อย่างมีนัยสำคัญทางสถิติ (<span class="math inline">\(R^2 &gt; 0\)</span>)</p>
-<p>การวิเคราะห์นี้มีสัมประสิทธิ์ 4 ตัว ได้แก่ b0, beducation, b_income, bwomen ดังนั้น <span class="math inline">\(df = N - k = 102 - 4 = 98\)</span></p>
+<p>ค่า <em>F</em> ที่มีนัยสำคัญทางสถิติแสดงให้เห็นว่า ตัวแปร X ทั้ง 3 ตัว ร่วมกันทำนายตัวแปร Y ได้อย่างมีนัยสำคัญทางสถิติ (<span class="math inline">\(R^2 &gt; 0\)</span>)</p>
+<p>การวิเคราะห์นี้มี intercept 1 ตัว (<span class="math inline">\(b_0\)</span>) และสัมประสิทธิ์ถดถอย 3 ตัว ได้แก่ <span class="math inline">\(b_{education}\)</span>, <span class="math inline">\(b_{income}\)</span>, <span class="math inline">\(b_{women}\)</span> ดังนั้น <span class="math inline">\(df = N - k -1 = 102 - 3 -1 = 98\)</span></p>
 <p>ในการวิเคราะห์นี้พบตัวแปรทำนายที่สัมพันธ์กับ Y อย่างมีนัยสำคัญทางสถิติ คือ <code>education</code> และ <code>income</code> ในขณะที่ <code>women</code> ไม่พบความสัมพันธ์อย่างมีนัยสำคัญ</p>
 <p>ค่าสัมประสิทธิ์แต่ละตัวถูกทดสอบว่าแตกต่างจาก 0 หรือไม่ <span class="math inline">\(H_0: b ≠ 0\)</span> โดยนำค่า b (<code>Estimate</code>) ไปหารด้วยความคลาดเคลื่อน <code>Std. Error</code> จะได้ค่า <code>t value</code> และค่า p-value <code>Pr(&gt;|t|)</code></p>
 <p>ค่าสัมประสิทธิ์เหล่านี้เป็นอยู่ในหน่วยของคะแนนดิบ หากต้องการเปรียบเทียบนำ้หนักของแต่ละตัวแปรในโมเดลนี้ ต้องใช้ค่าสัมประสิทธิ์มาตรฐาน (standardized coefficients)</p>
 <pre class="r"><code>lm.beta(prestige.lm)</code></pre>
 <pre><code>##   education      income       women 
 ##  0.66395513  0.32417566 -0.01642104</code></pre>
+<p><em>Update Mar 30, 2022</em>:</p>
+<p>Package ‘QuantPsyc’ was removed from the CRAN repository.<br />
+Formerly available versions can be obtained from the <a href="https://cran.r-project.org/src/contrib/Archive/QuantPsyc">archive</a>.<br />
+Archived on 2022-03-07 as check problems were not corrected despite reminders.<br />
+A summary of the most recent check results can be obtained from the <a href="https://cran-archive.r-project.org/web/checks/2022/2022-03-07_check_results_QuantPsyc.html">check results archive</a>.<br />
+Please use the canonical form <a href="https://cran.r-project.org/package=QuantPsyc">&lt;https://CRAN.R-project.org/package=QuantPsyc&gt;</a> to link to this page.</p>
 </div>
 <div id="extra" class="section level2">
 <h2>Extra</h2>

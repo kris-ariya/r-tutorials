@@ -414,6 +414,9 @@ div.tocify {
     <li>
       <a href="SURVEY_Lab09.html">Lab 09: Multiple Regression</a>
     </li>
+    <li>
+      <a href="SURVEY_Lab10.html">Lab 10: Hierarchical Regresion</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -429,31 +432,30 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Lab 10: Simple Regression</h1>
-<h4 class="date">Mar 28, 2022</h4>
+<h4 class="date">Mar 30, 2022</h4>
 
 </div>
 
 
 <pre class="r"><code># Load packages for this tutorial
-library(gridExtra)
 library(ggplot2)</code></pre>
 <div id="model-fitting" class="section level1">
 <h1>Model Fitting</h1>
-<p>การวิเคราะห์ข้อมูลทางสถิตินั้นอาจเรียกได้ว่าเป็นการนำแบบจำลองทางคณิตศาสตร์มาใช้อธิบายข้อมูลเชิงประจักษ์ ยกตัวอย่างเช่น เรามีสมมติฐานว่าบุคลิกภาพแบบ A จะสัมพันธ์ทางบวกกับความดันโลหิต หากเราเชื่อว่าอัตราการเปลี่ยนแปลงความดันโลหิตนั้นคงที่เมื่อบุคลิกภาพแบบ A สูงขึ้นหรือลดลง (เช่น ความดันจะเพิ่มขึ้น 5 มม.ปรอท เมื่อคะแนนบุคลิกภาพเพิ่มขึ้น 1 หน่วยเสมอ) เรากำลังจำลองว่าตัวแปรทั้งสองสัมพันธ์กันเชิงเส้นตรง สามารถเขียนเป็นสมการเส้นตรง <span class="math inline">\(y = mx + c\)</span> โดยที่ y คือตัวแปรเกณฑ์ (ความดัน) m คือ ความชัน (ค่าที่บอกความสัมพันธ์ระหวางตัวแปร x และ y เช่น 5 มม.ปรอท ในตัวอย่างนี้) x คือตัวแปรทำนาย (ระดับบุคลิกภาพแบบ A) ส่วน c คือ จุดตัดแกน y ที่บอกว่าเส้นตรงนี้จะตัดแกน y (เมื่อ x = 0) ที่จุดไหน</p>
-<p>การวิเคราะห์สถิติจำนวนมากที่นิยมใช้ล้วนตั้งอยู่บนพื้นฐานของสมการเส้นตรง (เช่น t test, correlation, anova, regression) และโปรแกรม R ก็ใช้แนวทางของการสร้างโมเดลเป็นพื้นฐานในการเขียนคำสั่งเช่นกัน</p>
-<p>การเขียนโมเดลเส้นตรงให้ตัวแปร x ทำนายตัวแปร y จะอยู่ในรูปสมการ <code>y ~ x</code> โดยที่ y คือ ตัวแปรตาม/ตัวแปรเกณฑ์ ส่วน x คือตัวแปรอิสระ/ตัวแปรทำนาย</p>
-<p>คำสั่งในการ fit โมเดลเส้นตรงเข้ากับข้อมูลคือ <code>lm(formula = y ~ x, data)</code> โดย <code>y</code> และ <code>x</code> คือชื่อตัวแปรที่อยู่ใน <code>data</code> คำสั่งนี้จะทำงานโดยการประมาณค่าพารามิเตอร์ (ค่าslope ค่า intercept) คำนวณความคลาดเคลื่อนในการทำนาย ผลการทำนาย ฯลฯ ออกมาเป็น output ที่เราจะเรียกว่า lm object</p>
-<p>หลังจากที่เราได้ lm object แล้ว เราจึงค่อยนำมันไปใช้กับคำสั่งอื่นต่อไป เช่น <code>summary()</code> <code>plot()</code> <code>confint()</code> เป็นต้น</p>
-<p>ดังนั้นสิ่งที่สำคัญในการวิเคราะห์ข้อมูล คือ การเลือกโมเดลให้เหมาะสมกับข้อมูลที่เราต้องการจะอธิบาย ยกตัวอย่างด้านล่าง เช่น น้ำหนักของรถยนต์ <code>wt</code> สัมพันธ์เชิง<em>เส้นตรง</em>ใน<em>ทางลบ</em>กับอัตราประหยัดน้ำมัน <code>mpg</code> (ยิ่งหนักยิ่งประหยัดน้อย) ในขณะที่ขนาดกระบอกสูบ <code>disp</code> นั้นสัมพันธ์ทางลบแต่เป็นเส้นตรงโค้ง (curvilinear) กับอัตราประหยัดน้ำมั้น <code>mpg</code></p>
+<p>การวิเคราะห์ข้อมูลทางสถิตินั้นอาจเรียกได้ว่าเป็นการนำแบบจำลองทางคณิตศาสตร์มาใช้อธิบายข้อมูลเชิงประจักษ์ ยกตัวอย่างเช่น เรามีสมมติฐานว่าบุคลิกภาพแบบ A จะสัมพันธ์ทางบวกกับความดันโลหิต หากเราเชื่อว่าอัตราการเปลี่ยนแปลงความดันโลหิตนั้นคงที่เมื่อบุคลิกภาพแบบ A สูงขึ้นหรือลดลง (เช่น ความดันจะเพิ่มขึ้น 5 มม.ปรอท เมื่อคะแนนบุคลิกภาพเพิ่มขึ้น 1 หน่วยเสมอ) เรากำลังจำลองว่าตัวแปรทั้งสองสัมพันธ์กันเชิงเส้นตรง สามารถเขียนเป็นสมการเส้นตรง <span class="math inline">\(y = mx + c\)</span> โดยที่ <em>y</em> คือตัวแปรเกณฑ์ (ความดัน) <em>m</em> คือ ความชัน (ค่าที่บอกความสัมพันธ์ระหวางตัวแปร <em>x</em> และ <em>y</em> เช่น 5 มม.ปรอท ในตัวอย่างนี้) <em>x</em> คือตัวแปรทำนาย (ระดับบุคลิกภาพแบบ A) ส่วน <em>c</em> คือ จุดตัดแกน <em>y</em> ที่บอกว่าเส้นตรงนี้จะตัดแกน <em>y</em> (เมื่อ <em>x</em> = 0) ที่จุดไหน</p>
+<p>การวิเคราะห์ทางสถิติจำนวนมากตั้งอยู่บนพื้นฐานของสมการเส้นตรง (เช่น <em>t</em> test, correlation, ANOVA, regression) และโปรแกรม R ก็ใช้แนวทางของการสร้างโมเดลเป็นพื้นฐานในการเขียนคำสั่งเช่นกัน</p>
+<p>การเขียนโมเดลเส้นตรงให้ตัวแปร <em>x</em> ทำนายตัวแปร <em>y</em> จะอยู่ในรูปสมการ <code>y ~ x</code> โดยที่ <em>y</em> คือ ตัวแปรตาม/ตัวแปรเกณฑ์ ส่วน <em>x</em> คือตัวแปรอิสระ/ตัวแปรทำนาย</p>
+<p>คำสั่งในการ fit โมเดลเส้นตรงเข้ากับข้อมูลคือ <code>lm(formula = y ~ x, data)</code> โดย <code>y</code> และ <code>x</code> คือชื่อตัวแปรที่อยู่ใน <code>data</code> คำสั่งนี้จะประมาณค่าพารามิเตอร์ (ค่า slope และ intercept) คำนวณความคลาดเคลื่อนในการทำนาย ผลการทำนาย ฯลฯ ออกมาเป็น output ที่เราจะเรียกว่า lm object</p>
+<p>หลังจากที่เราได้ lm object แล้ว เราจึงค่อยนำมันไปใช้กับคำสั่งอื่น เช่น <code>summary()</code> <code>plot()</code> <code>confint()</code> เป็นต้น</p>
+<p>ดังนั้นสิ่งที่สำคัญในการวิเคราะห์ข้อมูล คือ การเลือกโมเดลให้เหมาะสมกับข้อมูลที่เราต้องการจะอธิบาย ยกตัวอย่างด้านล่าง เช่น เราต้องการทดสอบว่าน้ำหนักของรถยนต์ <code>wt</code> สัมพันธ์เชิง<em>เส้นตรง</em>ใน<em>ทางลบ</em>กับอัตราประหยัดน้ำมัน <code>mpg</code> (ยิ่งหนักยิ่งประหยัดน้อย) หรือไม่</p>
 <p><img src="RES_STAT_Lab10_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 </div>
 <div id="simple-regression" class="section level1">
 <h1>Simple Regression</h1>
-<p>สำหรับการวิเคราะห์ถดถอยอย่างง่าย (simple regression analysis) เราจะทดสอบความสัมพันธ์เชิงเส้นตรงระหว่างตัวแปรทำนาย (X) และตัวแปรเกณฑ์ (Y)</p>
+<p>สำหรับการวิเคราะห์ถดถอยอย่างง่าย (simple regression analysis) เราจะทดสอบความสัมพันธ์เชิงเส้นตรงระหว่างตัวแปรทำนาย (<em>X</em>) และตัวแปรเกณฑ์ (<em>Y</em>)</p>
 <p>การ fit โมเดลเส้นตรง ทำโดยใช้คำสั่ง <code>lm(formula, data)</code> โดย <code>formula</code> เป็นโมเดลทางสถิติที่บอกว่าตัวแปรใดเป็นตัวแปรทำนายตัวแปรใดเป็นตัวแปรเกณฑ์ ส่วน <code>data</code> คือ data frame</p>
 <p>ในตัวอย่างนี้เราจะใช้ชุดข้อมูล <code>mtcars</code> ซึ่งเป็นข้อมูลเกี่ยวกับรถยนต์รุ่นต่าง ๆ โดยเราต้องการทำนายอัตราการประหยัดน้ำมัน <code>mpg</code> ด้วยตัวแปรน้ำหนักของรถยนต์ <code>wt</code></p>
-<pre class="r"><code>data(mtcars)
-head(mtcars)</code></pre>
+<pre class="r"><code>data(mtcars) #load dataset
+head(mtcars) #show first 6 rows</code></pre>
 <pre><code>##                    mpg cyl disp  hp drat    wt  qsec vs am gear carb
 ## Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
 ## Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
@@ -461,7 +463,7 @@ head(mtcars)</code></pre>
 ## Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
 ## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
 ## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</code></pre>
-<p>ในโปรแกรม R สมการจะเขียนอยู่ในรูปแบบ <code>y ~ x</code> ดังนั้นสมการ (formula) ของตัวอย่างนี้คือ <code>mpg ~ wt</code> (ใช้นำ้หนักทำนายอัตราประหยัดน้ำมัน)</p>
+<p>ในโปรแกรม R เราจะเขียนสมการในรูปแบบ <code>y ~ x</code> ดังนั้นสมการ (formula) ของตัวอย่างนี้คือ <code>mpg ~ wt</code> (ใช้นำ้หนักทำนายอัตราประหยัดน้ำมัน)</p>
 <p>เมื่อเรา fit โมเดลนี้ด้วยคำสั่ง <code>lm()</code> เราจะบันทึกผลเป็น object ที่ชื่อว่า <code>reg.lm</code> ใน object นี้จะมีข้อมูลที่สำคัญเกี่ยวกับการวิเคราะห์ regression</p>
 <p>ในเบื้องต้นเราจะใช้คำสั่ง <code>summary()</code> เพื่อดู output ของการวิเคราะห์ถดถอย และใช้คำสั่ง <code>confint()</code> เพื่อดู 95% CI ของค่าประมาณการพารามิเตอร์ในโมเดล (เช่น ค่า intercept และ slope)</p>
 <pre class="r"><code>reg.lm &lt;- lm(mpg ~ wt, mtcars)
@@ -488,30 +490,96 @@ summary(reg.lm)</code></pre>
 <pre><code>##                 2.5 %    97.5 %
 ## (Intercept) 33.450500 41.119753
 ## wt          -6.486308 -4.202635</code></pre>
+<div id="r-output" class="section level2">
+<h2>R Output</h2>
 <p>ส่วน <code>Call:</code> แสดงสูตรโมเดลที่เรากำลังวิเคราะห์<br />
 ส่วน <code>Residuals:</code> แสดงความคลาดเคลื่อนในการทำนาย, <span class="math inline">\(Y-\hat{Y}\)</span>.<br />
 ส่วน <code>Coefficients:</code> แสดงค่าสัมประสิทธิ์ในสมการเส้นตรง ได้แก่ ค่าจุดตัดแกน Y (intercept) และความชัน (slope) ของตัวแปรทำนาย รวมไปถึงการทดสอบนัยสำคัญทางสถิติของค่าแต่ละตัว<br />
 เครื่องหมายดอกจัน (asterisks [*]) เป็นตัวบอกระดับนัยสำคัญทางสถิติที่ระดับ <span class="math inline">\(\alpha\)</span> ต่าง ๆ กัน</p>
 <p>ส่วนต่อไปแบ่งได้เป็นดังนี้</p>
 <ul>
-<li><code>Residual standard error</code> คือ ค่าส่วนเบี่ยงเบนมาตรฐานของความคลาดเคลื่อน (standard deviation of residuals) (errors),</li>
-<li>degrees of freedom คือ df ของ residual มีค่าเท่ากับ = <span class="math inline">\(N-k-1\)</span> (k = number of parameters</li>
-<li>Multiple R-squared (<span class="math inline">\(R^2\)</span>) คือค่าที่บอกว่าความแปรวนในตัวแปรตาม Y สามารถอธิบายได้ด้วยชุดของตัวแปร X มากน้อยเท่าไหร่</li>
-<li>Adjusted <span class="math inline">\(R^2\)</span> คือค่า <span class="math inline">\(R^2\)</span> ที่ปรับแก้จำนวนตัวแปรทำนายแล้วเพื่อให้แม่นยำมากขึ้น (สำหรับ simple regression ที่มีตัวแปรทำนายเพียงตัวเดียว ค่านี้มักใกล้เคียงกับ <span class="math inline">\(R^2\)</span> หรือ un-adjusted <span class="math inline">\(R^2\)</span> )</li>
-<li>ค่า <em>F</em> เป็นการทดสอบโมเดลในภาพรวม ใน simple regression ผลการทดสอบค่า F นี้จะสอดคล้องกับการทดสอบค่า slope</li>
-<li><em>df</em> เป็นของ regression model (<span class="math inline">\(k\)</span> คือจำนวน) และ <em>df</em> ของ residuals (<span class="math inline">\(N-k-1\)</span>)</li>
-<li><em>p</em>-value ของสถิติ <em>F</em></li>
+<li><code>Residual standard error</code> คือ ค่าความคลาดเคลื่อนมาตรฐานของ residuals</li>
+<li><code>degrees of freedom</code> คือ <em>df</em> ของ residual = <span class="math inline">\(N-k-1\)</span> (<em>k</em> = number of parameters)</li>
+<li><code>Multiple R-squared</code> (<span class="math inline">\(R^2\)</span>) คือ สัดส่วนความแปรปรวนใน <em>Y</em> ที่อธิบายได้ด้วย <em>X</em> (variance explained)</li>
+<li><code>Adjusted R-squared</code> คือค่า <span class="math inline">\(R^2\)</span> ที่ปรับแก้จำนวนตัวแปรทำนายแล้วเพื่อให้แม่นยำมากขึ้น (สำหรับ simple regression ที่มีตัวแปรทำนายเพียงตัวเดียว ค่านี้มักใกล้เคียงกับ un-adjusted <span class="math inline">\(R^2\)</span> )</li>
+<li><code>F-statistic</code> เป็นการทดสอบโมเดลในภาพรวม ใน simple regression ผลการทดสอบค่า F นี้จะสอดคล้องกับการทดสอบค่า slope</li>
+<li><code>DF</code> ตัวแรกเป็น <em>df</em> ของ regression model = <span class="math inline">\(k\)</span> (จำนวนสัมประสิทธิ์ของตัวแปรทำนาย) และตัวที่สองเป็น <em>df</em> ของ residuals (<span class="math inline">\(N-k-1\)</span>)</li>
+<li><code>p-value</code> ของสถิติ <em>F</em></li>
 </ul>
+</div>
 <div id="coefficients" class="section level2">
 <h2>Coefficients</h2>
-<p>ในการวิเคราะห์นี้ เราสามารถนำค่าสัมประสิทธิ์มาเขียนเป็นสมการทำนายได้เป็น <span class="math inline">\(\hat{Y}_{mpg} = 37.285 - 5.344X_{wt}\)</span> โดยค่า intercept และ slope มาจาก output ของ <code>summary()</code></p>
+<p>ในการวิเคราะห์นี้ เราสามารถนำค่าสัมประสิทธิ์มาเขียนเป็นสมการทำนายได้เป็น <span class="math inline">\(\hat{Y}_{mpg} = 37.285 - 5.344X_{wt}\)</span> โดยดูค่า intercept และ slope จาก <code>summary()</code></p>
 <ul>
-<li><p>จุดตัดแกน Y (intercept, <span class="math inline">\(b_0\)</span>) เป็นค่าทำนายตัวแปร Y เมื่อ X = 0 ในตัวอย่างนี้คือ อัตราประหยัดน้ำมันของรถที่มีนำ้หนัก 0 ตัน คือ 37.29 ไมล์ต่อแกลลอน ในกรณี เราสังเกตได้ว่าค่าจุด intercept นั้นไม่ได้ความหมายโดยตัวมันเองเท่าใดนัก เพราะเราไม่ได้ต้องการรู้ว่ารถน้ำหนัก 0 ตันจะมีอัตราประหยัดน้ำมันเท่าใด</p></li>
+<li><p>จุดตัดแกน <em>Y</em> (intercept, <span class="math inline">\(b_0\)</span>) เป็นค่าทำนายตัวแปร <em>Y</em> เมื่อ <em>X</em> = 0 ในตัวอย่างนี้ อัตราประหยัดน้ำมันของรถที่มีนำ้หนัก 0 ตัน คือ 37.29 ไมล์ต่อแกลลอน เราจะสังเกตได้ว่าค่าจุด intercept นี้ไม่ใช่ค่าที่เราสนใจ เพราะเราไม่ได้ต้องการรู้ว่ารถน้ำหนัก 0 ตันจะมีอัตราประหยัดน้ำมันเท่าใด (แต่อาจจะเป็นค่าที่เราสนใจในกรณีอื่น เช่น คนที่ได้รับยา 0 mg จะมีผลเช่นไร)</p></li>
 <li><p>ค่าที่เราสนใจคือ สัมประสิทธิ์ที่แสดงถึงความสัมพันธ์ระหว่าง <code>wt</code> และ <code>mpg</code> นั่นก็คือ ค่าความชันของตัวแปร <code>wt</code>, <em>b</em> = -5.34 ค่าทางลบแสดงว่าเมื่อน้ำหนักรถเปลี่ยนแปลงไปหนึ่งตัน อัตราประหยัดน้ำมันจะเปลี่ยนไปในทิศทางตรงกันข้าม 5.34 ไมล์ต่อแกลลอน</p></li>
 </ul>
 <pre class="r"><code>reg.lm$coefficients</code></pre>
 <pre><code>## (Intercept)          wt 
 ##   37.285126   -5.344472</code></pre>
+</div>
+<div id="hypothesis-testing" class="section level2">
+<h2>Hypothesis testing</h2>
+<p>สถิติทดสอบ <em>t</em> ของค่าสัมประสิทธิ์แต่ละตัวมีสมมติฐานว่าง <span class="math inline">\(H_0: b = 0\)</span> จึงเป็นการทดสอบว่าค่า <em>b</em> แต่ละตัวแตกต่างจาก 0 อย่างมีนัยสำคัญทางสถิติหรือไม่ นั่นคือ ตัวแปร <em>X</em> มีความสัมพันธ์(ทางบวกหรือทางลบ) กับตัวแปร <em>Y</em> หรือไม่ (แค่บอกว่าค่าความสัมพันธ์นี้อาจแตกต่างจาก 0 แต่ยังไม่ได้บอกว่าสัมพันธ์กันมากหรือน้อย ซึ่งต้องไปดูที่ค่า <span class="math inline">\(R^2\)</span>)</p>
+<p>ค่าทดสอบ <em>t</em> ได้มาจากการนำค่า <code>Estimate</code> (intercept or slope) มาหารด้วย <code>Std. Error</code>(<em>SE</em>) จากนั้นนำค่า <em>t</em> ที่ได้ไปเทียบกับการแจกแจงของสถิติ <em>t</em> เพื่อดูว่าถึงระดับนัยสำคัญหรือไม่ (ในโปรแกรม สามารถดูที่ค่า <em>p</em> value ได้เลย)</p>
+<p>ค่า <em>p</em> เป็นความน่าจะเป็นที่จะพบค่าสัมประสิทธิ์ (<em>b</em>) ขนาดที่ได้หรือมากกว่า หากสมมติฐานว่างเป็นจริง (ไม่มีความสัมพันธ์กันในระดับประชากร) ค่า <em>p</em> ที่น้อยกว่า .05 แสดงว่า เรามีโอกาสน้อยมากที่จะเจอค่าสัมประสิทธิ์ขนาดนี้ หากจริง ๆ แล้วตัวแปรไม่สัมพันธ์กัน เราจึง<em>อนุมาน</em>ว่ามีความสัมพันธ์นี้อยู่จริง เราจึงอาจะสรุปได้ว่าค่าสัมประสิทธิ์ที่มีนัยสำคัญทางสถิติ <em>อาจจะแตกต่างจาก 0 (may no be zero)</em></p>
+</div>
+<div id="confidence-interval-of-coefficients" class="section level2">
+<h2>Confidence interval of coefficients</h2>
+<p>เราสามารถหาช่วงความเชื่อมั่น 95% ของค่าสัมประสิทธิ์แต่ละตัวเพื่อดูความคลาดเคลื่อนของการประมาณค่า โดยปกติแล้วค่า 95% CI นี้จะสอดคล้องกับการทดสอบนัยสำคัญทางสถิติ นั่นคือ หากค่าช่วงความเชื่อมั่นไม่ครอบคลุม 0 เราจะพบว่าสัมประสิทธิ์ตัวนั้นมีนัยสำคัญทางสถิติ (<em>อาจจะต่างจาก 0</em>)</p>
+<p>แต่ข้อดีของช่วงความเชื่อมั่นคือ มันช่วยให้เราเห็นภาพชัดเจนขึ้นว่าความสัมพันธ์นี้คลาดเคลื่อนได้มากน้อยเพียงใดโดยดูจากความกว้างของช่วงความเชื่อมั่น สำหรับตัวแปรที่อยู่ในหน่วยเดียวกันและมีระดับความเชื่อมั่น 95% เท่ากัน ช่วงที่แคบกว่าจะแสดงถึงความคลาดเคลื่อนที่น้อยกว่า</p>
+<pre class="r"><code>confint(reg.lm) #default setting is 95% CI</code></pre>
+<pre><code>##                 2.5 %    97.5 %
+## (Intercept) 33.450500 41.119753
+## wt          -6.486308 -4.202635</code></pre>
+<pre class="r"><code>confint(reg.lm, level = .99) # set to 99% CI</code></pre>
+<pre><code>##                 0.5 %    99.5 %
+## (Intercept) 32.121659 42.448593
+## wt          -6.881997 -3.806946</code></pre>
+<p>ถ้าเราขยับช่วงความเชื่อมั่นขึ้นเป็น 99% เราจะพบว่าช่วงความเชื่อมั่นจะกว้างขึ้นกว่า 95% ที่เป็นเช่นนี้เพราะเราต้องการมั่นใจได้มากขึ้นว่า ช่วงที่เราสร้างจะครอบคลุมค่าเฉลี่ยที่แท้จริงของประชากร จึงต้องใช้ช่วงที่กว้างขึ้นเพื่อเพิ่มโอกาสนั่นเอง</p>
+<p>ในตัวอย่างนี้ เราพบว่าช่วงความเชื่อมั่นของ <code>wt</code> ที่ระดับ 99% ก็ยังไม่ครอบคลุมศูนย์ (ซึ่งก็ตรงกับค่า <em>p</em> ที่น้อยกว่า .01) อยู่ระหว่าง [-6.88, -3.81 ทำให้เราเชื่อว่า ค่าความสัมพันธ์ในระดับประชากร<em>น่าจะ</em>อยู่ในช่วงดังกล่าว</p>
+</div>
+<div id="standardized-coefficients" class="section level2">
+<h2>Standardized coefficients</h2>
+<p>ค่าสัมประสิทธ์การถดถอยนั้นอยู่ในหน่วยของ <em>Y</em> ที่เปลี่ยนไปตาม 1 หน่วยของ <em>X</em> ทำให้เราไม่สามารถบอกขนาดของความสัมพันธ์จากค่า <em>b</em> ได้โดยตรง ดังนั้นนักวิจัยบางกลุ่มจึงนิยมคำนวณค่าสัมประสิทธิ์มาตรฐาน (standardized coefficients) แทน</p>
+<p>ค่า standardized coefficients คำนวณโดยนำ <em>X</em> และ <em>Y</em> ไปแปลงเป็นคะแนนมาตรฐาน (standard scores; <em>z</em> scores) ด้วยคำสั่ง <code>scale()</code> แล้วนำมาวิเคราะห์ regression</p>
+<p>ค่าสัมประสิทธิ์มาตรฐานหมายความว่า หาก <em>X</em> เปลี่ยนไป 1 <em>SD</em> ค่า <em>Y</em> จะเปลี่ยนไปกี่ <em>SD</em> ทำให้เราสามารถเปรียบเทียบขนาดความสัมพันธ์สัมพัทธ์ (relative strength) กับตัวแปรอื่น ๆ ในโมเดลได้ (ในกรณีของ multiple regression) ค่า standardized coefficients นี้มีชื่อเรียกต่างกันไปตามโปรแกรมสถิติ เช่น beta (<span class="math inline">\(\beta\)</span>), <span class="math inline">\(b^*\)</span>, <span class="math inline">\(\tilde{b}\)</span></p>
+<pre class="r"><code>std.lm &lt;- lm(scale(mpg) ~ scale(wt), mtcars)
+summary(std.lm)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = scale(mpg) ~ scale(wt), data = mtcars)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.75381 -0.39236 -0.02077  0.23388  1.14033 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  8.053e-17  8.934e-02   0.000        1    
+## scale(wt)   -8.677e-01  9.077e-02  -9.559 1.29e-10 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.5054 on 30 degrees of freedom
+## Multiple R-squared:  0.7528, Adjusted R-squared:  0.7446 
+## F-statistic: 91.38 on 1 and 30 DF,  p-value: 1.294e-10</code></pre>
+<p>ค่า intercept สำหรับ standardized coefficient = 0 เสมอ และค่า <span class="math inline">\(b_{wt}\)</span> =-0.87</p>
+<p><strong>สำหรับ simple regression เท่านั้น</strong> ค่า std. coefficient นี้จะเท่ากับค่า correlation ด้วย</p>
+<pre class="r"><code>cor(mtcars$mpg, mtcars$wt)</code></pre>
+<pre><code>## [1] -0.8676594</code></pre>
+<p>มีคำสั่งเฉพาะ <code>lm.beta()</code></p>
+<pre class="r"><code># install.packages(&quot;QuantPsyc&quot;)
+library(QuantPsyc)
+lm.beta(reg.lm)</code></pre>
+<pre><code>##         wt 
+## -0.8676594</code></pre>
+<p><em>Update Mar 30, 2022</em>:</p>
+<p>Package ‘QuantPsyc’ was removed from the CRAN repository.<br />
+Formerly available versions can be obtained from the <a href="https://cran.r-project.org/src/contrib/Archive/QuantPsyc">archive</a>.<br />
+Archived on 2022-03-07 as check problems were not corrected despite reminders.<br />
+A summary of the most recent check results can be obtained from the <a href="https://cran-archive.r-project.org/web/checks/2022/2022-03-07_check_results_QuantPsyc.html">check results archive</a>.<br />
+Please use the canonical form <a href="https://CRAN.R-project.org/package=QuantPsyc" class="uri">https://CRAN.R-project.org/package=QuantPsyc</a> to link to this page.</p>
 </div>
 <div id="prediction" class="section level2">
 <h2>Prediction</h2>
@@ -520,14 +588,14 @@ summary(reg.lm)</code></pre>
 &amp;= 37.285 - 8.016 \\
 &amp;= 29.269 
 \end{aligned} \]</span></p>
-<p>เราสามารถใช้คำสั่ง <code>predict(object, newdata)</code> ได้</p>
+<p>เราสามารถใช้คำสั่ง <code>predict(object, newdata)</code> ได้ โดยที่ newdata จะต้องเป็น data frame ที่มีตัวแปรชื่อตรงกับตัวแปรทำนายในโมเดล</p>
 <pre class="r"><code>predict(reg.lm, data.frame(wt = 1.5)) # newdata is a data frame with same variable name. </code></pre>
 <pre><code>##        1 
 ## 29.26842</code></pre>
 <pre class="r"><code>predict(reg.lm, data.frame(wt = c(1.0, 1.2, 1.4, 1.6))) # predict multiple new values</code></pre>
 <pre><code>##        1        2        3        4 
 ## 31.94065 30.87176 29.80287 28.73397</code></pre>
-<pre class="r"><code>predict(reg.lm) # show predicted value for current dataset</code></pre>
+<pre class="r"><code>predict(reg.lm) # omit newdata to show predicted value for current dataset</code></pre>
 <pre><code>##           Mazda RX4       Mazda RX4 Wag          Datsun 710      Hornet 4 Drive   Hornet Sportabout             Valiant 
 ##           23.282611           21.919770           24.885952           20.102650           18.900144           18.793255 
 ##          Duster 360           Merc 240D            Merc 230            Merc 280           Merc 280C          Merc 450SE 
@@ -541,48 +609,33 @@ summary(reg.lm)</code></pre>
 ##       Maserati Bora          Volvo 142E 
 ##           18.205363           22.427495</code></pre>
 </div>
-<div id="hypothesis-testing" class="section level2">
-<h2>Hypothesis testing</h2>
-<p>If we takes an <code>Estimate</code> (intercept or slope) and divide by its <code>Std. Error</code>(<em>SE</em>), you will get a <em>t</em>-value. We can then use a <em>t</em>-distribution to calculate a <em>p</em>-value to determine statistical significance. The <em>p</em>-value was a probability of obtaining that <em>t</em> value or more extreme given that a null hypothesis is true. The null hypothesis being tested here was <span class="math inline">\(H_0 : b = 0\)</span>.</p>
-<p>A significant test of coefficient (i.e., <em>p</em> &lt; .05) suggests that, if the relationship does not exist, it is very unlikely to obtain this magnitude of slope. Thus, we <em>infer</em> that the relationship <em>may</em> exist (accepting <span class="math inline">\(H_a\)</span>). In other words, the coefficient <em>may not be zero</em>.</p>
 </div>
-<div id="confidence-interval-of-coefficients" class="section level2">
-<h2>Confidence interval of coefficients</h2>
-<p>We can calculate a 95% CI for each coefficient.</p>
-<pre class="r"><code>confint(reg.lm) #default setting is 95% CI</code></pre>
-<pre><code>##                 2.5 %    97.5 %
-## (Intercept) 33.450500 41.119753
-## wt          -6.486308 -4.202635</code></pre>
-<pre class="r"><code>confint(reg.lm, level = .99) # set to 99% CI</code></pre>
-<pre><code>##                 0.5 %    99.5 %
-## (Intercept) 32.121659 42.448593
-## wt          -6.881997 -3.806946</code></pre>
-<p>The 99% CI is <em>wider</em> than the 95% CI because the 99% CI represents a higher chance of being correct about the population value. Thus, it includes a larger margin of error.</p>
-<p>Even with the 99% confidence level, the CI of <code>wt</code> slope does not contain zero. This gives us confidence that the negative relationship between <code>wt</code> and <code>mpg</code> may really exists.</p>
-</div>
-<div id="standardized-coefficients-or-betas" class="section level2">
-<h2>Standardized coefficients or betas</h2>
-<p>Raw coefficients are in a unit of variable <em>Y</em>, which make it hard to judge the strengh of relationship. To solve this problem, we could standardize the coefficient to make it easier to interpret. This standardized regression coefficients are also called <em>beta</em> (<span class="math inline">\(\beta\)</span>) by some statistical programs.</p>
-<pre class="r"><code># install.packages(&quot;QuantPsyc&quot;)
-library(QuantPsyc)
-lm.beta(reg.lm)</code></pre>
-<pre><code>##         wt 
-## -0.8676594</code></pre>
-<p>The standardized coeff. of -.87 was quite a strong negative relationship.</p>
-</div>
+<div id="diagnostic-plot" class="section level1">
+<h1>Diagnostic Plot</h1>
+<p>เราสามารถตรวจสอบ assumptions ต่าง ๆ ของ regression ได้ด้วยคำสั่ง <code>plot()</code></p>
+<p>คำสั่งนี้จะให้กราฟ 4 รูป</p>
+<ul>
+<li><p>Residuals vs Fitted แสดงความสัมพันธ์ระหว่างค่า residual (<span class="math inline">\(Y-\hat{Y}\)</span>) กับค่า <span class="math inline">\(\hat{Y}\)</span> ใช้ทดสอบ <strong>linearity</strong> assumption หากตัวแปรสัมพันธ์เป็นเส้นตรง เส้นสีแดงจะราบตามแกน Y</p></li>
+<li><p>Normal Q-Q ใช้ตรวจสอบ <strong>normality of residuals</strong> ถ้าความคลาดเคลื่อนกระจายตัวอย่างเป็นปกติ ค่าจะเรียงตัวอยู่บนเส้นแทยง</p></li>
+<li><p>Scale-Location หรือ Spread-Location ใช้ตรวจสอบ <strong>homoscedasticity</strong> เพื่อดูว่าความแปรปรวนของตัวแปร <em>Y</em> เท่ากับในทุกระดับของตัวแปร <em>X</em> หรือไม่ กราฟนี้ควรได้เส้นตรงสีแดง และจุดต่าง ๆ กระจายตัวเท่า ๆ กันทั้งข้างบนและข้างล่างในทุกช่วงของ Fitted values</p></li>
+<li><p>Residuals vs Leverage ไว้ตรวจสอบค่า leverage และ influence ในโมเดล ค่านี้ควรจะเกาะกลุ่มกันอยู่ในช่วงต้น ๆ ของแกน <em>X</em> เส้นสีแดงควรเป็นเส้นตรง และจุดต่าง ๆ อยู่ห่างจากเส้นประสีแดง (Cook’s distance)</p></li>
+</ul>
+<pre class="r"><code>plot(reg.lm)</code></pre>
+<p><img src="RES_STAT_Lab10_files/figure-html/diagnostic%20plot-1.png" width="672" /><img src="RES_STAT_Lab10_files/figure-html/diagnostic%20plot-2.png" width="672" /><img src="RES_STAT_Lab10_files/figure-html/diagnostic%20plot-3.png" width="672" /><img src="RES_STAT_Lab10_files/figure-html/diagnostic%20plot-4.png" width="672" /></p>
+<p>จะเห็นได้ว่าในโมเดลนี้ plot ต่าง ๆ ยังไม่เป็นไปตาม assumption ทั้งหมด อย่างไรก็ดี regression มีความแกร่งต่อการละเมิดข้อสมมติเบื้องต้นอยู่พอสมควร แม้ข้อมูลจะไม่ตรงตาม assumption ไปบ้าง แต่ข้อสรุปที่ว่า <code>wt</code> และ <code>mpg</code> สัมพันธ์กันทางลบก็ไม่ได้เปลี่ยนแปลงไป</p>
 </div>
 <div id="scatter-plot" class="section level1">
 <h1>Scatter Plot</h1>
-<p>To create a scatter plot with a fit line.</p>
+<p>การสร้าง scatter plot พร้อม fit line ทำโดยใช้คำสั่งจากแพ็คเกจ ggplot2</p>
 <ol style="list-style-type: decimal">
-<li>Use <code>ggplot(data, aes(x, y))</code> to specify the data and aesthetic mapping,</li>
-<li>Use <code>geom_point()</code> to make a scatter plot,</li>
-<li>Use <code>geom_smooth(method = , se = )</code> to add the best fit line. The <code>method</code> option refers to a method to create a smooth line, which would be <code>lm</code> for a linear model. The option <code>se</code> is for confidence interval around the predicted line, which is <code>TRUE</code> by default.</li>
+<li>ใช้คำสั่ง <code>ggplot(data, aes(x, y))</code> เพื่อกำหนดชุดข้อมูลและ aesthetic mapping</li>
+<li>บวก <code>geom_point()</code> สร้าง scatter plot</li>
+<li>บวก <code>geom_smooth(method = , se = )</code> เพื่อสร้างเส้นสมการทำนาย fit line โดยกำหนดตัวเลือก <code>method = lm</code> เพื่อสร้างเส้นตรงทำนาย และกำหนดตัวเลือก <code>se = TRUE</code> เพื่อวาด confidence interval รอบเส้นทำนาย fit line (ค่า <code>se = TRUE</code> เป็นค่าตั้งต้น แม้จะไม่ใส่ก็จะแสดงให้โดยอัตโนมัติ)</li>
 </ol>
 <pre class="r"><code>ggplot(mtcars, aes(x = wt, y = mpg)) +
   geom_point() + # scatter dots
   geom_smooth(method = lm, se = TRUE) + #add a linear fit line to the previous plot
-  theme_classic()</code></pre>
+  theme_classic() # optional theme to make a graph look nice</code></pre>
 <p><img src="RES_STAT_Lab10_files/figure-html/scatterplot-1.png" width="672" /></p>
 </div>
 

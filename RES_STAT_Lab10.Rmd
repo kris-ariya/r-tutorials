@@ -1,6 +1,6 @@
 ---
 title: 'Lab 10: Simple Regression'
-date: "Mar 28, 2022"
+date: "Mar 30, 2022"
 output:
   html_document:
     toc: true
@@ -10,51 +10,45 @@ output:
 
 ```{r load packages, message = FALSE}
 # Load packages for this tutorial
-library(gridExtra)
 library(ggplot2)
 ```
 
 # Model Fitting
 
-การวิเคราะห์ข้อมูลทางสถิตินั้นอาจเรียกได้ว่าเป็นการนำแบบจำลองทางคณิตศาสตร์มาใช้อธิบายข้อมูลเชิงประจักษ์ ยกตัวอย่างเช่น เรามีสมมติฐานว่าบุคลิกภาพแบบ A จะสัมพันธ์ทางบวกกับความดันโลหิต หากเราเชื่อว่าอัตราการเปลี่ยนแปลงความดันโลหิตนั้นคงที่เมื่อบุคลิกภาพแบบ A สูงขึ้นหรือลดลง (เช่น ความดันจะเพิ่มขึ้น 5 มม.ปรอท เมื่อคะแนนบุคลิกภาพเพิ่มขึ้น 1 หน่วยเสมอ) เรากำลังจำลองว่าตัวแปรทั้งสองสัมพันธ์กันเชิงเส้นตรง สามารถเขียนเป็นสมการเส้นตรง $y = mx + c$ โดยที่ y คือตัวแปรเกณฑ์ (ความดัน) m คือ ความชัน (ค่าที่บอกความสัมพันธ์ระหวางตัวแปร x และ y เช่น 5 มม.ปรอท ในตัวอย่างนี้) x คือตัวแปรทำนาย (ระดับบุคลิกภาพแบบ A) ส่วน c คือ จุดตัดแกน y ที่บอกว่าเส้นตรงนี้จะตัดแกน y (เมื่อ x = 0) ที่จุดไหน
+การวิเคราะห์ข้อมูลทางสถิตินั้นอาจเรียกได้ว่าเป็นการนำแบบจำลองทางคณิตศาสตร์มาใช้อธิบายข้อมูลเชิงประจักษ์ ยกตัวอย่างเช่น เรามีสมมติฐานว่าบุคลิกภาพแบบ A จะสัมพันธ์ทางบวกกับความดันโลหิต หากเราเชื่อว่าอัตราการเปลี่ยนแปลงความดันโลหิตนั้นคงที่เมื่อบุคลิกภาพแบบ A สูงขึ้นหรือลดลง (เช่น ความดันจะเพิ่มขึ้น 5 มม.ปรอท เมื่อคะแนนบุคลิกภาพเพิ่มขึ้น 1 หน่วยเสมอ) เรากำลังจำลองว่าตัวแปรทั้งสองสัมพันธ์กันเชิงเส้นตรง สามารถเขียนเป็นสมการเส้นตรง $y = mx + c$ โดยที่ *y* คือตัวแปรเกณฑ์ (ความดัน) *m* คือ ความชัน (ค่าที่บอกความสัมพันธ์ระหวางตัวแปร *x* และ *y* เช่น 5 มม.ปรอท ในตัวอย่างนี้) *x* คือตัวแปรทำนาย (ระดับบุคลิกภาพแบบ A) ส่วน *c* คือ จุดตัดแกน *y* ที่บอกว่าเส้นตรงนี้จะตัดแกน *y* (เมื่อ *x* = 0) ที่จุดไหน
 
-การวิเคราะห์สถิติจำนวนมากที่นิยมใช้ล้วนตั้งอยู่บนพื้นฐานของสมการเส้นตรง (เช่น t test, correlation, anova, regression) และโปรแกรม R ก็ใช้แนวทางของการสร้างโมเดลเป็นพื้นฐานในการเขียนคำสั่งเช่นกัน
+การวิเคราะห์ทางสถิติจำนวนมากตั้งอยู่บนพื้นฐานของสมการเส้นตรง (เช่น *t* test, correlation, ANOVA, regression) และโปรแกรม R ก็ใช้แนวทางของการสร้างโมเดลเป็นพื้นฐานในการเขียนคำสั่งเช่นกัน
 
-การเขียนโมเดลเส้นตรงให้ตัวแปร x ทำนายตัวแปร y จะอยู่ในรูปสมการ `y ~ x` โดยที่ y คือ ตัวแปรตาม/ตัวแปรเกณฑ์ ส่วน x คือตัวแปรอิสระ/ตัวแปรทำนาย
+การเขียนโมเดลเส้นตรงให้ตัวแปร *x* ทำนายตัวแปร *y* จะอยู่ในรูปสมการ `y ~ x` โดยที่ *y* คือ ตัวแปรตาม/ตัวแปรเกณฑ์ ส่วน *x* คือตัวแปรอิสระ/ตัวแปรทำนาย
 
-คำสั่งในการ fit โมเดลเส้นตรงเข้ากับข้อมูลคือ `lm(formula = y ~ x, data)` โดย `y` และ `x` คือชื่อตัวแปรที่อยู่ใน `data` คำสั่งนี้จะทำงานโดยการประมาณค่าพารามิเตอร์ (ค่าslope ค่า intercept) คำนวณความคลาดเคลื่อนในการทำนาย ผลการทำนาย ฯลฯ ออกมาเป็น output ที่เราจะเรียกว่า lm object
+คำสั่งในการ fit โมเดลเส้นตรงเข้ากับข้อมูลคือ `lm(formula = y ~ x, data)` โดย `y` และ `x` คือชื่อตัวแปรที่อยู่ใน `data` คำสั่งนี้จะประมาณค่าพารามิเตอร์ (ค่า slope และ intercept) คำนวณความคลาดเคลื่อนในการทำนาย ผลการทำนาย ฯลฯ ออกมาเป็น output ที่เราจะเรียกว่า lm object
 
-หลังจากที่เราได้ lm object แล้ว เราจึงค่อยนำมันไปใช้กับคำสั่งอื่นต่อไป เช่น `summary()` `plot()` `confint()` เป็นต้น
+หลังจากที่เราได้ lm object แล้ว เราจึงค่อยนำมันไปใช้กับคำสั่งอื่น เช่น `summary()` `plot()` `confint()` เป็นต้น
 
-ดังนั้นสิ่งที่สำคัญในการวิเคราะห์ข้อมูล คือ การเลือกโมเดลให้เหมาะสมกับข้อมูลที่เราต้องการจะอธิบาย ยกตัวอย่างด้านล่าง เช่น น้ำหนักของรถยนต์ `wt` สัมพันธ์เชิง*เส้นตรง*ใน*ทางลบ*กับอัตราประหยัดน้ำมัน `mpg` (ยิ่งหนักยิ่งประหยัดน้อย) ในขณะที่ขนาดกระบอกสูบ `disp` นั้นสัมพันธ์ทางลบแต่เป็นเส้นตรงโค้ง (curvilinear) กับอัตราประหยัดน้ำมั้น `mpg`
+ดังนั้นสิ่งที่สำคัญในการวิเคราะห์ข้อมูล คือ การเลือกโมเดลให้เหมาะสมกับข้อมูลที่เราต้องการจะอธิบาย ยกตัวอย่างด้านล่าง เช่น เราต้องการทดสอบว่าน้ำหนักของรถยนต์ `wt` สัมพันธ์เชิง*เส้นตรง*ใน*ทางลบ*กับอัตราประหยัดน้ำมัน `mpg` (ยิ่งหนักยิ่งประหยัดน้อย) หรือไม่
 
-```{r echo=FALSE, message = FALSE}
+```{r echo = FALSE, message=FALSE}
 data("mtcars")
-p1 <- ggplot(mtcars, aes(x = wt, y = mpg)) +
+ggplot(mtcars, aes(x = wt, y = mpg)) +
   geom_point() + 
   geom_smooth(method = lm, se = FALSE) +  # fit a linear line
   theme_classic()
-p2 <- ggplot(mtcars, aes(x = hp, y = mpg)) +
-  geom_point() + 
-  geom_smooth(method = lm, formula = y ~ poly(x,3), se = FALSE) + # fit a polynomial curve
-  theme_classic()
-grid.arrange(p1,p2, ncol = 2)
 ```
 
 # Simple Regression
 
-สำหรับการวิเคราะห์ถดถอยอย่างง่าย (simple regression analysis) เราจะทดสอบความสัมพันธ์เชิงเส้นตรงระหว่างตัวแปรทำนาย (X) และตัวแปรเกณฑ์ (Y)
+สำหรับการวิเคราะห์ถดถอยอย่างง่าย (simple regression analysis) เราจะทดสอบความสัมพันธ์เชิงเส้นตรงระหว่างตัวแปรทำนาย (*X*) และตัวแปรเกณฑ์ (*Y*)
 
 การ fit โมเดลเส้นตรง ทำโดยใช้คำสั่ง `lm(formula, data)` โดย `formula` เป็นโมเดลทางสถิติที่บอกว่าตัวแปรใดเป็นตัวแปรทำนายตัวแปรใดเป็นตัวแปรเกณฑ์ ส่วน `data` คือ data frame
 
 ในตัวอย่างนี้เราจะใช้ชุดข้อมูล `mtcars` ซึ่งเป็นข้อมูลเกี่ยวกับรถยนต์รุ่นต่าง ๆ โดยเราต้องการทำนายอัตราการประหยัดน้ำมัน `mpg` ด้วยตัวแปรน้ำหนักของรถยนต์ `wt`
 
 ```{r load data}
-data(mtcars)
-head(mtcars)
+data(mtcars) #load dataset
+head(mtcars) #show first 6 rows
 ```
 
-ในโปรแกรม R สมการจะเขียนอยู่ในรูปแบบ `y ~ x` ดังนั้นสมการ (formula) ของตัวอย่างนี้คือ `mpg ~ wt` (ใช้นำ้หนักทำนายอัตราประหยัดน้ำมัน)
+ในโปรแกรม R เราจะเขียนสมการในรูปแบบ `y ~ x` ดังนั้นสมการ (formula) ของตัวอย่างนี้คือ `mpg ~ wt` (ใช้นำ้หนักทำนายอัตราประหยัดน้ำมัน)
 
 เมื่อเรา fit โมเดลนี้ด้วยคำสั่ง `lm()` เราจะบันทึกผลเป็น object ที่ชื่อว่า `reg.lm` ใน object นี้จะมีข้อมูลที่สำคัญเกี่ยวกับการวิเคราะห์ regression
 
@@ -66,6 +60,8 @@ summary(reg.lm)
 confint(reg.lm)
 ```
 
+## R Output
+
 ส่วน `Call:` แสดงสูตรโมเดลที่เรากำลังวิเคราะห์\
 ส่วน `Residuals:` แสดงความคลาดเคลื่อนในการทำนาย, $Y-\hat{Y}$.\
 ส่วน `Coefficients:` แสดงค่าสัมประสิทธิ์ในสมการเส้นตรง ได้แก่ ค่าจุดตัดแกน Y (intercept) และความชัน (slope) ของตัวแปรทำนาย รวมไปถึงการทดสอบนัยสำคัญทางสถิติของค่าแต่ละตัว\
@@ -73,25 +69,85 @@ confint(reg.lm)
 
 ส่วนต่อไปแบ่งได้เป็นดังนี้
 
--   `Residual standard error` คือ ค่าส่วนเบี่ยงเบนมาตรฐานของความคลาดเคลื่อน (standard deviation of residuals) (errors),
--   degrees of freedom คือ df ของ residual มีค่าเท่ากับ = $N-k-1$ (k = number of parameters
--   Multiple R-squared ($R^2$) คือค่าที่บอกว่าความแปรวนในตัวแปรตาม Y สามารถอธิบายได้ด้วยชุดของตัวแปร X มากน้อยเท่าไหร่
--   Adjusted $R^2$ คือค่า $R^2$ ที่ปรับแก้จำนวนตัวแปรทำนายแล้วเพื่อให้แม่นยำมากขึ้น (สำหรับ simple regression ที่มีตัวแปรทำนายเพียงตัวเดียว ค่านี้มักใกล้เคียงกับ $R^2$ หรือ un-adjusted $R^2$ )
--   ค่า *F* เป็นการทดสอบโมเดลในภาพรวม ใน simple regression ผลการทดสอบค่า F นี้จะสอดคล้องกับการทดสอบค่า slope
--   *df* เป็นของ regression model ($k$ คือจำนวน) และ *df* ของ residuals ($N-k-1$)
--   *p*-value ของสถิติ *F*
+-   `Residual standard error` คือ ค่าความคลาดเคลื่อนมาตรฐานของ residuals
+-   `degrees of freedom` คือ *df* ของ residual = $N-k-1$ (*k* = number of parameters)
+-   `Multiple R-squared` ($R^2$) คือ สัดส่วนความแปรปรวนใน *Y* ที่อธิบายได้ด้วย *X* (variance explained)
+-   `Adjusted R-squared` คือค่า $R^2$ ที่ปรับแก้จำนวนตัวแปรทำนายแล้วเพื่อให้แม่นยำมากขึ้น (สำหรับ simple regression ที่มีตัวแปรทำนายเพียงตัวเดียว ค่านี้มักใกล้เคียงกับ un-adjusted $R^2$ )
+-   `F-statistic` เป็นการทดสอบโมเดลในภาพรวม ใน simple regression ผลการทดสอบค่า F นี้จะสอดคล้องกับการทดสอบค่า slope
+-   `DF` ตัวแรกเป็น *df* ของ regression model = $k$ (จำนวนสัมประสิทธิ์ของตัวแปรทำนาย) และตัวที่สองเป็น *df* ของ residuals ($N-k-1$)
+-   `p-value` ของสถิติ *F*
 
 ## Coefficients
 
-ในการวิเคราะห์นี้ เราสามารถนำค่าสัมประสิทธิ์มาเขียนเป็นสมการทำนายได้เป็น $\hat{Y}_{mpg} = 37.285 - 5.344X_{wt}$ โดยค่า intercept และ slope มาจาก output ของ `summary()`
+ในการวิเคราะห์นี้ เราสามารถนำค่าสัมประสิทธิ์มาเขียนเป็นสมการทำนายได้เป็น $\hat{Y}_{mpg} = 37.285 - 5.344X_{wt}$ โดยดูค่า intercept และ slope จาก `summary()`
 
--   จุดตัดแกน Y (intercept, $b_0$) เป็นค่าทำนายตัวแปร Y เมื่อ X = 0 ในตัวอย่างนี้คือ อัตราประหยัดน้ำมันของรถที่มีนำ้หนัก 0 ตัน คือ `r round(reg.lm$coefficients[1], 2)` ไมล์ต่อแกลลอน ในกรณี เราสังเกตได้ว่าค่าจุด intercept นั้นไม่ได้ความหมายโดยตัวมันเองเท่าใดนัก เพราะเราไม่ได้ต้องการรู้ว่ารถน้ำหนัก 0 ตันจะมีอัตราประหยัดน้ำมันเท่าใด
+-   จุดตัดแกน *Y* (intercept, $b_0$) เป็นค่าทำนายตัวแปร *Y* เมื่อ *X* = 0 ในตัวอย่างนี้ อัตราประหยัดน้ำมันของรถที่มีนำ้หนัก 0 ตัน คือ `r round(reg.lm$coefficients[1], 2)` ไมล์ต่อแกลลอน เราจะสังเกตได้ว่าค่าจุด intercept นี้ไม่ใช่ค่าที่เราสนใจ เพราะเราไม่ได้ต้องการรู้ว่ารถน้ำหนัก 0 ตันจะมีอัตราประหยัดน้ำมันเท่าใด (แต่อาจจะเป็นค่าที่เราสนใจในกรณีอื่น เช่น คนที่ได้รับยา 0 mg จะมีผลเช่นไร)
 
 -   ค่าที่เราสนใจคือ สัมประสิทธิ์ที่แสดงถึงความสัมพันธ์ระหว่าง `wt` และ `mpg` นั่นก็คือ ค่าความชันของตัวแปร `wt`, *b* = `r round(reg.lm$coefficients[2], 2)` ค่าทางลบแสดงว่าเมื่อน้ำหนักรถเปลี่ยนแปลงไปหนึ่งตัน อัตราประหยัดน้ำมันจะเปลี่ยนไปในทิศทางตรงกันข้าม `r abs(round(reg.lm$coefficients[2], 2))` ไมล์ต่อแกลลอน
 
 ```{r}
 reg.lm$coefficients
 ```
+
+## Hypothesis testing
+
+สถิติทดสอบ *t* ของค่าสัมประสิทธิ์แต่ละตัวมีสมมติฐานว่าง $H_0: b = 0$ จึงเป็นการทดสอบว่าค่า *b* แต่ละตัวแตกต่างจาก 0 อย่างมีนัยสำคัญทางสถิติหรือไม่ นั่นคือ ตัวแปร *X* มีความสัมพันธ์(ทางบวกหรือทางลบ) กับตัวแปร *Y* หรือไม่ (แค่บอกว่าค่าความสัมพันธ์นี้อาจแตกต่างจาก 0 แต่ยังไม่ได้บอกว่าสัมพันธ์กันมากหรือน้อย ซึ่งต้องไปดูที่ค่า $R^2$)
+
+ค่าทดสอบ *t* ได้มาจากการนำค่า `Estimate` (intercept or slope) มาหารด้วย `Std. Error`(*SE*) จากนั้นนำค่า *t* ที่ได้ไปเทียบกับการแจกแจงของสถิติ *t* เพื่อดูว่าถึงระดับนัยสำคัญหรือไม่ (ในโปรแกรม สามารถดูที่ค่า *p* value ได้เลย)
+
+ค่า *p* เป็นความน่าจะเป็นที่จะพบค่าสัมประสิทธิ์ (*b*) ขนาดที่ได้หรือมากกว่า หากสมมติฐานว่างเป็นจริง (ไม่มีความสัมพันธ์กันในระดับประชากร) ค่า *p* ที่น้อยกว่า .05 แสดงว่า เรามีโอกาสน้อยมากที่จะเจอค่าสัมประสิทธิ์ขนาดนี้ หากจริง ๆ แล้วตัวแปรไม่สัมพันธ์กัน เราจึง*อนุมาน*ว่ามีความสัมพันธ์นี้อยู่จริง เราจึงอาจะสรุปได้ว่าค่าสัมประสิทธิ์ที่มีนัยสำคัญทางสถิติ *อาจจะแตกต่างจาก 0 (may no be zero)*
+
+## Confidence interval of coefficients
+
+เราสามารถหาช่วงความเชื่อมั่น 95% ของค่าสัมประสิทธิ์แต่ละตัวเพื่อดูความคลาดเคลื่อนของการประมาณค่า โดยปกติแล้วค่า 95% CI นี้จะสอดคล้องกับการทดสอบนัยสำคัญทางสถิติ นั่นคือ หากค่าช่วงความเชื่อมั่นไม่ครอบคลุม 0 เราจะพบว่าสัมประสิทธิ์ตัวนั้นมีนัยสำคัญทางสถิติ (*อาจจะต่างจาก 0*)
+
+แต่ข้อดีของช่วงความเชื่อมั่นคือ มันช่วยให้เราเห็นภาพชัดเจนขึ้นว่าความสัมพันธ์นี้คลาดเคลื่อนได้มากน้อยเพียงใดโดยดูจากความกว้างของช่วงความเชื่อมั่น สำหรับตัวแปรที่อยู่ในหน่วยเดียวกันและมีระดับความเชื่อมั่น 95% เท่ากัน ช่วงที่แคบกว่าจะแสดงถึงความคลาดเคลื่อนที่น้อยกว่า
+
+```{r confint}
+confint(reg.lm) #default setting is 95% CI
+confint(reg.lm, level = .99) # set to 99% CI
+```
+
+ถ้าเราขยับช่วงความเชื่อมั่นขึ้นเป็น 99% เราจะพบว่าช่วงความเชื่อมั่นจะกว้างขึ้นกว่า 95% ที่เป็นเช่นนี้เพราะเราต้องการมั่นใจได้มากขึ้นว่า ช่วงที่เราสร้างจะครอบคลุมค่าเฉลี่ยที่แท้จริงของประชากร จึงต้องใช้ช่วงที่กว้างขึ้นเพื่อเพิ่มโอกาสนั่นเอง
+
+ในตัวอย่างนี้ เราพบว่าช่วงความเชื่อมั่นของ `wt` ที่ระดับ 99% ก็ยังไม่ครอบคลุมศูนย์ (ซึ่งก็ตรงกับค่า *p* ที่น้อยกว่า .01) อยู่ระหว่าง [`r round(confint(reg.lm, level = .99)[2,1],2)`, `r round(confint(reg.lm, level = .99)[2,2],2)` ทำให้เราเชื่อว่า ค่าความสัมพันธ์ในระดับประชากร*น่าจะ*อยู่ในช่วงดังกล่าว
+
+## Standardized coefficients
+
+ค่าสัมประสิทธ์การถดถอยนั้นอยู่ในหน่วยของ *Y* ที่เปลี่ยนไปตาม 1 หน่วยของ *X* ทำให้เราไม่สามารถบอกขนาดของความสัมพันธ์จากค่า *b* ได้โดยตรง ดังนั้นนักวิจัยบางกลุ่มจึงนิยมคำนวณค่าสัมประสิทธิ์มาตรฐาน (standardized coefficients) แทน
+
+ค่า standardized coefficients คำนวณโดยนำ *X* และ *Y* ไปแปลงเป็นคะแนนมาตรฐาน (standard scores; *z* scores) ด้วยคำสั่ง `scale()` แล้วนำมาวิเคราะห์ regression
+
+ค่าสัมประสิทธิ์มาตรฐานหมายความว่า หาก *X* เปลี่ยนไป 1 *SD* ค่า *Y* จะเปลี่ยนไปกี่ *SD* ทำให้เราสามารถเปรียบเทียบขนาดความสัมพันธ์สัมพัทธ์ (relative strength) กับตัวแปรอื่น ๆ ในโมเดลได้ (ในกรณีของ multiple regression) ค่า standardized coefficients นี้มีชื่อเรียกต่างกันไปตามโปรแกรมสถิติ เช่น beta ($\beta$), $b^*$, $\tilde{b}$
+
+```{r standardized coef}
+std.lm <- lm(scale(mpg) ~ scale(wt), mtcars)
+summary(std.lm)
+```
+
+ค่า intercept สำหรับ standardized coefficient = 0 เสมอ และค่า $b_{wt}$ =`r round(std.lm$coefficients[2], 2)`
+
+**สำหรับ simple regression เท่านั้น** ค่า std. coefficient นี้จะเท่ากับค่า correlation ด้วย
+
+```{r corr}
+cor(mtcars$mpg, mtcars$wt)
+```
+
+มีคำสั่งเฉพาะ `lm.beta()`
+
+```{r beta, message=FALSE}
+# install.packages("QuantPsyc")
+library(QuantPsyc)
+lm.beta(reg.lm)
+```
+
+*Update Mar 30, 2022*:
+
+Package 'QuantPsyc' was removed from the CRAN repository.\
+Formerly available versions can be obtained from the [archive](https://cran.r-project.org/src/contrib/Archive/QuantPsyc).\
+Archived on 2022-03-07 as check problems were not corrected despite reminders.\
+A summary of the most recent check results can be obtained from the [check results archive](https://cran-archive.r-project.org/web/checks/2022/2022-03-07_check_results_QuantPsyc.html).\
+Please use the canonical form <https://CRAN.R-project.org/package=QuantPsyc> to link to this page.
 
 ## Prediction
 
@@ -101,57 +157,45 @@ reg.lm$coefficients
 &= 29.269 
 \end{aligned} $$
 
-เราสามารถใช้คำสั่ง `predict(object, newdata)` ได้
+เราสามารถใช้คำสั่ง `predict(object, newdata)` ได้ โดยที่ newdata จะต้องเป็น data frame ที่มีตัวแปรชื่อตรงกับตัวแปรทำนายในโมเดล
 
 ```{r predict}
 predict(reg.lm, data.frame(wt = 1.5)) # newdata is a data frame with same variable name. 
 predict(reg.lm, data.frame(wt = c(1.0, 1.2, 1.4, 1.6))) # predict multiple new values
-predict(reg.lm) # show predicted value for current dataset
-
+predict(reg.lm) # omit newdata to show predicted value for current dataset
 ```
 
-## Hypothesis testing
+# Diagnostic Plot
 
-If we takes an `Estimate` (intercept or slope) and divide by its `Std. Error`(*SE*), you will get a *t*-value. We can then use a *t*-distribution to calculate a *p*-value to determine statistical significance. The *p*-value was a probability of obtaining that *t* value or more extreme given that a null hypothesis is true. The null hypothesis being tested here was $H_0 : b = 0$.
+เราสามารถตรวจสอบ assumptions ต่าง ๆ ของ regression ได้ด้วยคำสั่ง `plot()`
 
-A significant test of coefficient (i.e., *p* \< .05) suggests that, if the relationship does not exist, it is very unlikely to obtain this magnitude of slope. Thus, we *infer* that the relationship *may* exist (accepting $H_a$). In other words, the coefficient *may not be zero*.
+คำสั่งนี้จะให้กราฟ 4 รูป
 
-## Confidence interval of coefficients
+-   Residuals vs Fitted แสดงความสัมพันธ์ระหว่างค่า residual ($Y-\hat{Y}$) กับค่า $\hat{Y}$ ใช้ทดสอบ **linearity** assumption หากตัวแปรสัมพันธ์เป็นเส้นตรง เส้นสีแดงจะราบตามแกน Y
 
-We can calculate a 95% CI for each coefficient.
+-   Normal Q-Q ใช้ตรวจสอบ **normality of residuals** ถ้าความคลาดเคลื่อนกระจายตัวอย่างเป็นปกติ ค่าจะเรียงตัวอยู่บนเส้นแทยง
 
-```{r confint}
-confint(reg.lm) #default setting is 95% CI
-confint(reg.lm, level = .99) # set to 99% CI
+-   Scale-Location หรือ Spread-Location ใช้ตรวจสอบ **homoscedasticity** เพื่อดูว่าความแปรปรวนของตัวแปร *Y* เท่ากับในทุกระดับของตัวแปร *X* หรือไม่ กราฟนี้ควรได้เส้นตรงสีแดง และจุดต่าง ๆ กระจายตัวเท่า ๆ กันทั้งข้างบนและข้างล่างในทุกช่วงของ Fitted values
+
+-   Residuals vs Leverage ไว้ตรวจสอบค่า leverage และ influence ในโมเดล ค่านี้ควรจะเกาะกลุ่มกันอยู่ในช่วงต้น ๆ ของแกน *X* เส้นสีแดงควรเป็นเส้นตรง และจุดต่าง ๆ อยู่ห่างจากเส้นประสีแดง (Cook's distance)
+
+```{r diagnostic plot}
+plot(reg.lm)
 ```
 
-The 99% CI is *wider* than the 95% CI because the 99% CI represents a higher chance of being correct about the population value. Thus, it includes a larger margin of error.
-
-Even with the 99% confidence level, the CI of `wt` slope does not contain zero. This gives us confidence that the negative relationship between `wt` and `mpg` may really exists.
-
-## Standardized coefficients or betas
-
-Raw coefficients are in a unit of variable *Y*, which make it hard to judge the strengh of relationship. To solve this problem, we could standardize the coefficient to make it easier to interpret. This standardized regression coefficients are also called *beta* ($\beta$) by some statistical programs.
-
-```{r beta, message=FALSE}
-# install.packages("QuantPsyc")
-library(QuantPsyc)
-lm.beta(reg.lm)
-```
-
-The standardized coeff. of -.87 was quite a strong negative relationship.
+จะเห็นได้ว่าในโมเดลนี้ plot ต่าง ๆ ยังไม่เป็นไปตาม assumption ทั้งหมด อย่างไรก็ดี regression มีความแกร่งต่อการละเมิดข้อสมมติเบื้องต้นอยู่พอสมควร แม้ข้อมูลจะไม่ตรงตาม assumption ไปบ้าง แต่ข้อสรุปที่ว่า `wt` และ `mpg` สัมพันธ์กันทางลบก็ไม่ได้เปลี่ยนแปลงไป
 
 # Scatter Plot
 
-To create a scatter plot with a fit line.
+การสร้าง scatter plot พร้อม fit line ทำโดยใช้คำสั่งจากแพ็คเกจ ggplot2
 
-1.  Use `ggplot(data, aes(x, y))` to specify the data and aesthetic mapping,
-2.  Use `geom_point()` to make a scatter plot,
-3.  Use `geom_smooth(method = , se = )` to add the best fit line. The `method` option refers to a method to create a smooth line, which would be `lm` for a linear model. The option `se` is for confidence interval around the predicted line, which is `TRUE` by default.
+1.  ใช้คำสั่ง `ggplot(data, aes(x, y))` เพื่อกำหนดชุดข้อมูลและ aesthetic mapping
+2.  บวก `geom_point()` สร้าง scatter plot
+3.  บวก `geom_smooth(method = , se = )` เพื่อสร้างเส้นสมการทำนาย fit line โดยกำหนดตัวเลือก `method = lm` เพื่อสร้างเส้นตรงทำนาย และกำหนดตัวเลือก `se = TRUE` เพื่อวาด confidence interval รอบเส้นทำนาย fit line (ค่า `se = TRUE` เป็นค่าตั้งต้น แม้จะไม่ใส่ก็จะแสดงให้โดยอัตโนมัติ)
 
 ```{r scatterplot, message = FALSE}
 ggplot(mtcars, aes(x = wt, y = mpg)) +
   geom_point() + # scatter dots
   geom_smooth(method = lm, se = TRUE) + #add a linear fit line to the previous plot
-  theme_classic()
+  theme_classic() # optional theme to make a graph look nice
 ```

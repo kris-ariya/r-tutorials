@@ -11,7 +11,7 @@
 
 
 
-<title>Lab 03: Power &amp; Sample Size Planning</title>
+<title>Lab 10: Hierarchical Regression</title>
 
 <script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
@@ -431,100 +431,16 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Lab 03: Power &amp; Sample Size Planning</h1>
+<h1 class="title toc-ignore">Lab 10: Hierarchical Regression</h1>
+<h4 class="date">Mar 30, 2022</h4>
 
 </div>
 
 
-<p>There are two types of error a researcher can make when conductin a null hypothesis significance testing: Type I (<span class="math inline">\(\alpha\)</span>) and Type II (<span class="math inline">\(\beta\)</span>) errors. Type I error is the probability of rejecting the null hypothesis, <span class="math inline">\(H_0\)</span>, when it is true. In other words, it is the false positive rate. Conventionally, type I error is set at <span class="math inline">\(\alpha = .05\)</span>. Type II error is the probability of failing to detect a significant result, when <span class="math inline">\(H_0\)</span> is false; i.e., the false negative rate. Power is defined as <span class="math inline">\(1-\beta\)</span> or the probability of successfully detecting an effect, when <span class="math inline">\(H_0\)</span> is false.</p>
-<p>There are four parameters in power analysis.</p>
-<ol style="list-style-type: decimal">
-<li>Sample size</li>
-<li>Effect size</li>
-<li>Alpha level</li>
-<li>Power level</li>
-</ol>
-<p>Knowing 3 of these 4, we can determine the remaining one. For example, we can conduct a priori power analysis to determine a sample size for a study with an effect size <span class="math inline">\(d = .50\)</span>, power = .80, and alpha = .05.</p>
-<p>The current practice increasingly requires researchers to justify their sample size before conducting a study. This was done to encourage a better research practice as well as reducing wasteful resource in doing underpowered studies.</p>
-<p>We will look at two programs for power analysis G*Power and <code>pwr</code> package in R.</p>
-<div id="gpower" class="section level1">
-<h1>1. G*Power</h1>
-<p>G*Power, developed by a group of researchers at Heinrich-Heine-Universität Düsseldorf, provides a user-friendly GUI for conducting power analysis. It covers wide range of statistical analysis, although some complicated design are still missing. You can download the program <a href="https://www.psychologie.hhu.de/arbeitsgruppen/allgemeine-psychologie-und-arbeitspsychologie/gpower">here</a>.</p>
-<div class="figure">
-<img src="images/Lab_power/gpower.png" alt="" />
-<p class="caption">G*Power</p>
-</div>
-<ol style="list-style-type: decimal">
-<li>Select the test family, e.g., <em>t</em> tests, <em>F</em> tests, <span class="math inline">\(\chi^2\)</span> test. For this example, we will do an independent <em>t</em> test.</li>
-<li>Select a specific statistical test. For example, <em>t</em> tests can be used in many sitations: between-subject design, within-subject design, one-sample test, testing slopes or intercepts for regression. In this case, we will use “Means: Difference between two independent means (two groups)” for an independent <em>t</em> test.</li>
-<li>Select a type of power analysis. We will choose “A priori: Compute required sample size”</li>
-<li>Input relevant parameters
-<ol style="list-style-type: lower-roman">
-<li>Tail(s): Choose whether you use a one-tailed or two-tailed hypothesis.</li>
-<li>Effect size d: Cohen’<em>d</em>; hover the pointer above the box, it will show the conventional values. <strong>4.1</strong> The program can help you calculate <em>d</em> if you have information on <em>M</em> and <em>SD</em> for each group.</li>
-<li><span class="math inline">\(\alpha\)</span> err prob: set alpha to .05</li>
-<li>Power: set to .80</li>
-<li>Allocation ration N2/N1: If you will use balanced design (equal <em>n</em>), use 1.</li>
-</ol></li>
-<li>Click calculate</li>
-<li>The required sample size will appear here.</li>
-</ol>
-</div>
-<div id="pwr-package" class="section level1">
-<h1>2. <code>pwr</code> package</h1>
-<pre class="r"><code>#install.packages(&quot;pwr&quot;)
-library(pwr)</code></pre>
-<p>You can read more about the package <a href="https://cran.r-project.org/web/packages/pwr/vignettes/pwr-vignette.html">here</a>.</p>
-<p>The <code>pwr</code> package provides functions for power analysis of many statistical tests. However, for more complex design, e.g., factorial or repeated-measure, we will need to use a diferent package.</p>
-<p>We will take a look at <code>pwr.t.test</code> function, which is used to analyze power for <em>t</em> tests with two-sample(equal <em>n</em>), one-sample, and paired <em>t</em> tests.</p>
-<p>The function takes multiple arguments:</p>
-<pre><code>pwr.t.test(n = NULL, 
-d = NULL, 
-sig.level = 0.05, 
-power = NULL, 
-type = c(&quot;two.sample&quot;, &quot;one.sample&quot;, &quot;paired&quot;),
-alternative = c(&quot;two.sided&quot;, &quot;less&quot;, &quot;greater&quot;))</code></pre>
-<p>To determine <code>n</code>, you will leave it out and enter only <code>d</code> and <code>power</code>. You also need to specify <code>type</code> (of <em>t</em> test) and <code>alternative</code> (two-tail or one-tail tests).</p>
-<p>Following the same example.</p>
-<pre class="r"><code>pwr.t.test(d=.5, sig.level=.05, power = .8, type = &quot;two.sample&quot;, alternative = &quot;two.sided&quot;)</code></pre>
-<pre><code>## 
-##      Two-sample t test power calculation 
-## 
-##               n = 63.76561
-##               d = 0.5
-##       sig.level = 0.05
-##           power = 0.8
-##     alternative = two.sided
-## 
-## NOTE: n is number in *each* group</code></pre>
-<p>The n in the output tells us how many participants we need for each group.</p>
-</div>
-<div id="plotting-a-power-graph" class="section level1">
-<h1>Plotting a power graph</h1>
-<p>You can also plot the graph showing power level and sample size for a certain parameters.</p>
-<pre class="r"><code>medium_power &lt;- pwr.t.test(d=.5, sig.level=.05, power = .8, type = &quot;two.sample&quot;, alternative = &quot;two.sided&quot;)
-plot(medium_power)</code></pre>
-<p><img src="EXPRM_Lab03_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-</div>
-<div id="other-power-functions" class="section level1">
-<h1>Other power functions</h1>
-<div id="one-way-anova" class="section level2">
-<h2>One-way ANOVA</h2>
-<p>We can use <code>pwr.anova.test</code> to calculate required sample size for a particular effect size. We will need to specify <code>k</code> (number of groups), <code>f</code> (Cohen’s <em>f</em>), and <code>power</code> (desired power level).</p>
-<pre class="r"><code>library(pwr)
-pwr.anova.test(k = 3, f = .25, power = .8) # An example of medium effect size with three conditions. </code></pre>
-<pre><code>## 
-##      Balanced one-way analysis of variance power calculation 
-## 
-##               k = 3
-##               n = 52.3966
-##               f = 0.25
-##       sig.level = 0.05
-##           power = 0.8
-## 
-## NOTE: n is number in each group</code></pre>
-</div>
-</div>
+<pre class="r"><code>library(psych)
+library(car)
+library(carData)
+library(QuantPsyc)</code></pre>
 
 
 

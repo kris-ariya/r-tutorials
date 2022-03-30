@@ -57,3 +57,5 @@ navbar:
           href: SURVEY_Lab08.html
         - text: "Lab 09: Multiple Regression"
           href: SURVEY_Lab09.html
+        - text: "Lab 10: Hierarchical Regresion"
+          href: SURVEY_Lab10.html
