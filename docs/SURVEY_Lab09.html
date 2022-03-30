@@ -653,7 +653,7 @@ head(dat)</code></pre>
 ## purchasing.officers     11.42   8865  9.11     56.8   1175 prof  0.4787457 7.871214e-01 0.01454398 0.001082658
 ## chemists                14.62   8403 11.68     73.5   2111 prof  3.6997050 1.572604e-01 0.04643466 0.013779919
 ## physicists              15.64  11030  5.13     77.6   2113 prof  4.4454380 1.083142e-01 0.05381816 0.004882702</code></pre>
-<pre class="r"><code>subset(dat, subset = cook &gt; .5) # No Cook&#39;s D more than 5</code></pre>
+<pre class="r"><code>subset(dat, subset = cook &gt; .5) # No Cook&#39;s D more than 0.5</code></pre>
 <pre><code>##  [1] education income    women     prestige  census    type      maha_dis  maha_p    hat       cook     
 ## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
 <pre class="r"><code>plot(prestige.lm, 4:5) # plot 4-5 of the model shows Cook&#39;s D &amp; leverage</code></pre>

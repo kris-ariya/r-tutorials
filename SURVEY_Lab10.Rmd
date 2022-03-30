@@ -19,26 +19,39 @@ library(carData)
 data(Tal.Or)
 media <- Tal.Or
 head(media)
+boxplot(media)
+hist(media)
 ```
 
 
-```{r model1}
-media.lm1 <- lm(reaction ~ pmi, media)
-car::scatterplot(reaction ~ pmi, media) # pmi seems negatively skewed
-hist(media$pmi)
-qqPlot(media$pmi) # not normal. Should it be transform?
-influenceIndexPlot(media.lm1) # only a few data point with high h values
+```{r step1 control}
+wrong.lm <- lm(reaction ~ gender + age, media)
+summary(wrong.lm)
+
+media.lm1 <- lm(reaction ~ as.factor(gender) + age, media)
 summary(media.lm1)
+```
 
-media.lm2 <- lm(reaction ~ pmi + import, media)
-plot(media.lm2)
-summary(media.lm2)
-anova(media.lm1, media.lm2)
 
-media.lm3 <- lm(reaction ~ pmi + import + age, media)
-summary(media.lm3)
-anova(media.lm1, media.lm2, media.lm3) # no incremental R-squared for age
+```{r step2 pmi}
+media.lm2 <- lm(reaction ~ as.factor(gender) + age + pmi, media)
+plot(media.lm2) # scale-location plot suggest heteroscedasticity, perhaps because pmi is negatively skewed
+# check influence
+influenceIndexPlot(media.lm2) # only a few data point with high h values, one point with high cook's distance
+media$cook <- cooks.distance(media.lm2)
+subset(media, cook > .5) # no cook's distance > .5
+# Keep all data
+# Show regression output
+summary(media.lm2) # notice pmi slope for now
+```
 
-# conclude with model 2
+
+```{r step3 importance}
+media.lm3 <- lm(reaction ~ as.factor(gender) + age + pmi + import, media)
+plot(media.lm3)
+influenceIndexPlot(media.lm3) 
+summary(media.lm3) # notice change in R-squared and pmi's slope
+anova(media.lm1, media.lm2, media.lm3) 
+
 ```
 

@@ -191,7 +191,7 @@ Influence คือ อิทธิพลที่เคสนั้นมีต
 ```{r}
 dat$cook <- cooks.distance(prestige.lm)
 head(dat)
-subset(dat, subset = cook > .5) # No Cook's D more than 5
+subset(dat, subset = cook > .5) # No Cook's D more than 0.5
 plot(prestige.lm, 4:5) # plot 4-5 of the model shows Cook's D & leverage
 ```
 
