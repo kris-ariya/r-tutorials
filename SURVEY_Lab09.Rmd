@@ -150,7 +150,8 @@ dat[dat$maha_p < .001, ] # cases with p < .001 are considered outliers.
 ```{r}
 dat$hat <- hatvalues(prestige.lm)
 head(dat)
-hat_cutoff <- 2*4/nrow(dat)
+p = 3
+hat_cutoff <- 2*p/nrow(dat)
 high_leverage_cases <- subset(dat, subset = hat > hat_cutoff)
 high_leverage_cases
 

@@ -9,49 +9,110 @@ output:
 ---
 
 ```{r load_package, message = FALSE}
+# load all packages for this tutorial
 library(psych)
 library(car)
 library(carData)
+#install.packages("fastDummies")
+library(fastDummies)
 ```
 
+# 1. Explore Data
+
+`pmi` = presumed media influence รู้สึกว่าสื่อมีอิทธิพลแค่ไหน
+
+`import` = ความสำคัญของประเด็น (น้ำตาลขาดตลาด)
+
+`reaction` = ผู้เข้าร่วมการวิจัยเห็นว่าตนเองมีโอกาสจะตอบสนองมากน้อยแค่ไหน (เช่น จะไปซื้อน้ำตาลมาเก็บไว้)
 
 ```{r load data}
 data(Tal.Or)
 media <- Tal.Or
 head(media)
 boxplot(media)
-hist(media)
+str(media$gender) # gender is a numeric variable
+media$gender <- factor(media$gender, levels = c(1, 2), labels = c("male", "female"))
+str(media$gender)
 ```
 
+# 2. Dummy Coding
+
+## Option 1: Manual coding
+
+ให้ male เป็นระดับอ้างอิง (0)
+
+```{r dummy}
+media$genderDum <- ifelse(media$gender == "female", 1, 0)
+# if you have more levels
+# media$genderDum2 <- ifelse(media$gender == "other", 1, 0)
+
+```
+
+จำนวนตัวแปร dummy = k -1 ถ้ามี 3 ระดับต้องสร้าง 2ตัว ถ้ามี 4 ระดับต้องสร้าง 3 ตัว
+
+## Option 2: `dummy_cols`
+
+แพ็คเกจ fastDummies
+
+เลือก option `remove_first_dummy = TRUE`
+
+```{r dummy_cols}
+levels(media$gender) #check levels
+media <- dummy_cols(media, select_columns = "gender", remove_first_dummy = TRUE)
+# dummy varaible name is set to gender_*levelname*, which is gender_female
+media[c("gender","genderDum", "gender_female")] # check for errors in dummy coding
+```
+
+# 3. Step 1: Control variables
+
+## Dummy for categorical variables
 
 ```{r step1 control}
-wrong.lm <- lm(reaction ~ gender + age, media)
-summary(wrong.lm)
-
-media.lm1 <- lm(reaction ~ as.factor(gender) + age, media)
-summary(media.lm1)
+media1.lm <- lm(reaction ~ genderDum + age, media)
+summary(media1.lm)
 ```
 
+## Let R codes categorical variables for you
+
+เราสามารถใส่ตัวแปร factor ลงไปในสมการได้เลย R จะทำการ code ให้เราเอง (ในขั้นนี้ต้องระวัง ตัวแปรที่เป็น factor ต้องแปลงเป็น factor ให้เรียบร้อยก่อน)
+
+R แต่ละ version อาจจะมีวิธี code ให้แตกต่างกัน จึงควรกำหนด `contrasts = list(*var_name* = "contr.treatment")` เพื่อให้ R ใช้วิธี dummy code (ref level = 0) ใน R เรียกวิธีนี้ว่า `contr.treatment`
+
+```{r}
+media.R.lm <- lm(reaction ~ gender + age, media, contrasts = list(gender = "contr.treatment"))
+summary(media.R.lm)
+```
+
+# 4. Step 2: Add predictors
+
+## 4.1 `pmi`
 
 ```{r step2 pmi}
-media.lm2 <- lm(reaction ~ as.factor(gender) + age + pmi, media)
-plot(media.lm2) # scale-location plot suggest heteroscedasticity, perhaps because pmi is negatively skewed
+# For nonDummy version
+# media2.lm <- lm(reaction ~ gender + age + pmi, media, 
+#                 contrasts = list(gender = "contr.treatment"))
+# For dummy version
+media2.lm <- lm(reaction ~ genderDum + age + pmi, data = media)
+plot(media2.lm) # scale-location plot suggest heteroscedasticity, perhaps because pmi is negatively skewed
 # check influence
-influenceIndexPlot(media.lm2) # only a few data point with high h values, one point with high cook's distance
-media$cook <- cooks.distance(media.lm2)
-subset(media, cook > .5) # no cook's distance > .5
-# Keep all data
+influenceIndexPlot(media2.lm) # data seems fine
 # Show regression output
-summary(media.lm2) # notice pmi slope for now
+summary(media2.lm) # notice pmi slope for now
+# Compare models
+anova(media1.lm , media2.lm)
 ```
 
+## 4.2 `import`
 
 ```{r step3 importance}
-media.lm3 <- lm(reaction ~ as.factor(gender) + age + pmi + import, media)
-plot(media.lm3)
-influenceIndexPlot(media.lm3) 
-summary(media.lm3) # notice change in R-squared and pmi's slope
-anova(media.lm1, media.lm2, media.lm3) 
-
+# For nonDummy version
+# media3.lm <- lm(reaction ~ gender + age + pmi + import, media, 
+#                 contrasts = list(gender = "contr.treatment"))
+# For dummy version
+media3.lm <- lm(reaction ~ genderDum + age + pmi + import, media)
+plot(media3.lm) # some violation of hemoscedasticity, but regression is quite robust.
+influenceIndexPlot(media3.lm) 
+vif(media3.lm) # multi-collinearity seems fine
+summary(media3.lm) # notice change in R-squared and pmi's slope
+anova(media1.lm, media2.lm, media3.lm) # check if R-squared change was significant
 ```
-

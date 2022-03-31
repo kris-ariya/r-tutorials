@@ -608,15 +608,18 @@ head(dat)</code></pre>
 ## purchasing.officers     11.42   8865  9.11     56.8   1175 prof  0.4787457 7.871214e-01 0.01454398
 ## chemists                14.62   8403 11.68     73.5   2111 prof  3.6997050 1.572604e-01 0.04643466
 ## physicists              15.64  11030  5.13     77.6   2113 prof  4.4454380 1.083142e-01 0.05381816</code></pre>
-<pre class="r"><code>hat_cutoff &lt;- 2*4/nrow(dat)
+<pre class="r"><code>p = 3
+hat_cutoff &lt;- 2*p/nrow(dat)
 high_leverage_cases &lt;- subset(dat, subset = hat &gt; hat_cutoff)
 high_leverage_cases</code></pre>
-<pre><code>##                       education income women prestige census type  maha_dis       maha_p        hat
-## general.managers          12.26  25879  4.02     69.1   1130 prof 33.573194 5.124761e-08 0.34221178
-## lawyers                   15.77  19263  5.13     82.3   2343 prof  8.992782 1.114916e-02 0.09884136
-## ministers                 14.50   4686  4.14     72.8   2511 prof  9.325301 9.441403e-03 0.10213364
-## physicians                15.96  25308 10.56     87.2   3111 prof 23.604809 7.486533e-06 0.24351491
-## sewing.mach.operators      6.38   2847 90.67     28.2   8563   bc  8.889789 1.173835e-02 0.09782163</code></pre>
+<pre><code>##                          education income women prestige census type  maha_dis       maha_p        hat
+## general.managers             12.26  25879  4.02     69.1   1130 prof 33.573194 5.124761e-08 0.34221178
+## lawyers                      15.77  19263  5.13     82.3   2343 prof  8.992782 1.114916e-02 0.09884136
+## ministers                    14.50   4686  4.14     72.8   2511 prof  9.325301 9.441403e-03 0.10213364
+## physicians                   15.96  25308 10.56     87.2   3111 prof 23.604809 7.486533e-06 0.24351491
+## osteopaths.chiropractors     14.71  17498  6.91     68.4   3117 prof  6.614742 3.661230e-02 0.07529642
+## newsboys                      9.62    918  7.00     14.8   5143 &lt;NA&gt;  5.530371 6.296442e-02 0.06456007
+## sewing.mach.operators         6.38   2847 90.67     28.2   8563   bc  8.889789 1.173835e-02 0.09782163</code></pre>
 <p>แม้เราจะพบว่ามีกรณีที่ข้อมูลมี leverage สูง แต่ก็ไม่ได้หมายความว่า ค่าเหล่านั้นจะส่งผลต่อโมเดลเสมอไป การตรวจ leverage นี้อาจใช้เพื่อตรวจสอบความถูกต้องของข้อมูลในเบื้องต้น เพื่อดูว่ามีกรณีที่ผิดปกติหรือมีการกรอกข้อมูลผิดหรือไม่ หากข้อมูลไม่ได้มีความผิดปกติอะไร เราอาจเก็บข้อมูลนั้นไว้ก่อนเพื่อไปตรวจสอบ influence ในภายหลัง</p>
 </div>
 </div>
