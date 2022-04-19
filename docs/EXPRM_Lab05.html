@@ -415,7 +415,7 @@ div.tocify {
       <a href="SURVEY_Lab09.html">Lab 09: Multiple Regression</a>
     </li>
     <li>
-      <a href="SURVEY_Lab10.html">Lab 10: Hierarchical Regresion</a>
+      <a href="SURVEY_Lab10.">Lab 10: Hierarchical Regresion</a>
     </li>
   </ul>
 </li>
@@ -456,11 +456,11 @@ describeBy(weight ~ group, data = PlantGrowth) # This will give us detailed desc
 ## group: ctrl
 ##    vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
 ## X1    1 10 5.03 0.58   5.15       5 0.72 4.17 6.11  1.94 0.23    -1.12 0.18
-## --------------------------------------------------------------------------------------- 
+## ---------------------------------------------------------------------------- 
 ## group: trt1
 ##    vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
 ## X1    1 10 4.66 0.79   4.55    4.62 0.53 3.59 6.03  2.44 0.47     -1.1 0.25
-## --------------------------------------------------------------------------------------- 
+## ---------------------------------------------------------------------------- 
 ## group: trt2
 ##    vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
 ## X1    1 10 5.53 0.44   5.44     5.5 0.36 4.92 6.31  1.39 0.48    -1.16 0.14</code></pre>
@@ -580,23 +580,27 @@ plot(plant.contrast)</code></pre>
 <pre class="r"><code>trt1.trt2 &lt;- subset(PlantGrowth, group == &quot;trt1&quot; | group == &quot;trt2&quot;)
 describe(trt1.trt2$weight)</code></pre>
 <pre><code>## trt1.trt2$weight 
-##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-##       20        0       20        1    5.094   0.8978    3.818    4.136    4.620    5.190    5.605    6.042 
-##      .95 
-##    6.158 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75 
+##       20        0       20        1    5.094   0.8978    3.818    4.136    4.620    5.190    5.605 
+##      .90      .95 
+##    6.042    6.158 
 ## 
 ## lowest : 3.59 3.83 4.17 4.32 4.41, highest: 5.80 5.87 6.03 6.15 6.31
-##                                                                                                               
-## Value      3.59 3.83 4.17 4.32 4.41 4.69 4.81 4.89 4.92 5.12 5.26 5.29 5.37 5.50 5.54 5.80 5.87 6.03 6.15 6.31
-## Frequency     1    1    1    1    1    1    1    1    1    1    1    1    1    1    1    1    1    1    1    1
-## Proportion 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05</code></pre>
+##                                                                                                     
+## Value      3.59 3.83 4.17 4.32 4.41 4.69 4.81 4.89 4.92 5.12 5.26 5.29 5.37 5.50 5.54 5.80 5.87 6.03
+## Frequency     1    1    1    1    1    1    1    1    1    1    1    1    1    1    1    1    1    1
+## Proportion 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05
+##                     
+## Value      6.15 6.31
+## Frequency     1    1
+## Proportion 0.05 0.05</code></pre>
 <pre class="r"><code>ctrl &lt;- subset(PlantGrowth, group == &quot;ctrl&quot;)
 describe(ctrl$weight)</code></pre>
 <pre><code>## ctrl$weight 
-##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-##       10        0       10        1    5.032   0.6836    4.319    4.467    4.550    5.155    5.293    5.633 
-##      .95 
-##    5.871 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75 
+##       10        0       10        1    5.032   0.6836    4.319    4.467    4.550    5.155    5.293 
+##      .90      .95 
+##    5.633    5.871 
 ## 
 ## lowest : 4.17 4.50 4.53 4.61 5.14, highest: 5.17 5.18 5.33 5.58 6.11
 ##                                                             
@@ -665,15 +669,15 @@ describe(ctrl$weight)</code></pre>
 library(rstatix)</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;rstatix&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:MASS&#39;:
+## 
+##     select</code></pre>
 <pre><code>## The following objects are masked from &#39;package:plyr&#39;:
 ## 
 ##     desc, mutate</code></pre>
 <pre><code>## The following objects are masked from &#39;package:effectsize&#39;:
 ## 
 ##     cohens_d, eta_squared</code></pre>
-<pre><code>## The following object is masked from &#39;package:MASS&#39;:
-## 
-##     select</code></pre>
 <pre><code>## The following object is masked from &#39;package:stats&#39;:
 ## 
 ##     filter</code></pre>
@@ -732,6 +736,11 @@ ggplot(plant.summary, aes(x = Condition, y = emmean)) + #use Condition from plan
 </div>
 </div>
 
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2022 Kris Ariyabuddhiphongs</p>
+
+&nbsp;
 
 
 </div>
