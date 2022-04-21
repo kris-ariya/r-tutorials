@@ -1,0 +1,105 @@
+---
+title: 'Lab 11: Mediation Analysis'
+author: 
+  - name: "Kris Ariyabuddhiphongs"
+date: "Apr 20, 2022"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: TRUE
+---
+
+```{r load_package, message = FALSE}
+# load all packages for this tutorial
+library(psych)
+library(lavaan)
+```
+
+# Mediation Analysis
+
+เราจะใช้ชุดข้อมูล `Tal.Or` จาก psych
+
+X = `cond`
+
+M = `pmi`
+
+Y = `reaction`
+
+```{r load data}
+data(Tal.Or)
+media <- Tal.Or
+head(media)
+```
+
+## Calculation
+
+เส้น a: M \~ X (M is regressed on X)
+
+```{r a parameter}
+lm(pmi ~ cond, media)
+```
+
+แสดงว่าเงื่อนไข high media importance มี pmi สูงกว่า
+
+เส้น b และ c' : `Y ~ b * M + c * X`
+
+```{r b & c parameters}
+lm(reaction ~ pmi + cond, media)
+```
+
+Indirect effect (ab)
+
+```{r ab parameter}
+ab <- 0.4765 * 0.5064
+ab
+```
+
+# Process MACRO 4.1 for R
+
+Andrew Hayes <https://www.processmacro.org/download.html>
+
+วิธีใช้
+
+1.  Download ไฟล์ และ unzip
+2.  เปิดไฟล์ process.R
+3.  Run All แล้วรอสักพัก
+4.  จะมี Functions ที่ชื่อว่า `process` ขึ้นมาอยู่ใน environment
+5.  ต้อง Run script นี้ใหม่ทุกครั้งหลังจากปิด R
+
+หรือ save process.R ไว้ใน working directory แล้วใช้คำสั่ง `source()`
+
+```{r source process macro}
+source("process.R")
+```
+
+```{r process}
+process(data = media, y = "reaction", x = "cond", m = "pmi", model = 4, boot = 5000, seed = 17889)
+```
+
+# psych package
+
+มีคำสั่งชื่อ mediate
+
+```{r psych mediate}
+set.seed(17889)
+mediate(y = "reaction", x = "cond", m = "pmi", data = media, n.iter = 5000)
+```
+
+# lavaan package
+
+```{r lavaan}
+set.seed(17889)
+model = " # Regression models
+             pmi ~ a * cond
+             reaction ~ c * cond + b * pmi
+           # direct effect
+             direct := c
+           # indirect effect (a*b)
+             indirect := a*b
+           # total effect
+             total := c + (a*b)"
+media.fit <- sem(model, data = media, se = "bootstrap", bootstrap = 5000)
+summary(media.fit, ci = TRUE, rsquare = TRUE)
+parameterEstimates(media.fit, se = TRUE, boot.ci.type = "perc")
+```

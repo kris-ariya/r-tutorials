@@ -415,7 +415,10 @@ div.tocify {
       <a href="SURVEY_Lab09.html">Lab 09: Multiple Regression</a>
     </li>
     <li>
-      <a href="SURVEY_Lab10.">Lab 10: Hierarchical Regresion</a>
+      <a href="SURVEY_Lab10.html">Lab 10: Hierarchical Regresion</a>
+    </li>
+    <li>
+      <a href="SURVEY_Lab11.html">Lab 11: Mediation Analysis</a>
     </li>
   </ul>
 </li>
@@ -530,8 +533,7 @@ cov(mtcars$mpg, mtcars$hp)</code></pre>
 ##        cor 
 ## -0.7761684</code></pre>
 <pre class="r"><code>cor.test(mtcars$mpg, mtcars$hp, method = &quot;spearman&quot;)</code></pre>
-<pre><code>## Warning in cor.test.default(mtcars$mpg, mtcars$hp, method = &quot;spearman&quot;): Cannot compute exact p-value
-## with ties</code></pre>
+<pre><code>## Warning in cor.test.default(mtcars$mpg, mtcars$hp, method = &quot;spearman&quot;): Cannot compute exact p-value with ties</code></pre>
 <pre><code>## 
 ##  Spearman&#39;s rank correlation rho
 ## 
@@ -542,8 +544,7 @@ cov(mtcars$mpg, mtcars$hp)</code></pre>
 ##        rho 
 ## -0.8946646</code></pre>
 <pre class="r"><code>cor.test(mtcars$mpg, mtcars$hp, method = &quot;kendall&quot;)</code></pre>
-<pre><code>## Warning in cor.test.default(mtcars$mpg, mtcars$hp, method = &quot;kendall&quot;): Cannot compute exact p-value
-## with ties</code></pre>
+<pre><code>## Warning in cor.test.default(mtcars$mpg, mtcars$hp, method = &quot;kendall&quot;): Cannot compute exact p-value with ties</code></pre>
 <pre><code>## 
 ##  Kendall&#39;s rank correlation tau
 ## 
