@@ -20,11 +20,11 @@ library(lavaan)
 
 เราจะใช้ชุดข้อมูล `Tal.Or` จาก psych
 
-X = `cond`
+X = `cond` ตัวแปรเงื่อนไขการทดลอง 0 = low media importance; 1 = high media importance ตัวแปรนี้มีแค่สองระดับและถูกเขียนในรูป dummy code แล้ว จึงสามารถนำมาใส่สมการ regression ได้ แม้ไม่ได้แปลงเป็น factor
 
-M = `pmi`
+M = `pmi` presumed media influence ความรู้สึกว่าตนเองได้รับอิทธิพลจากสื่อเพียงใด
 
-Y = `reaction`
+Y = `reaction` ปฏิกิริยาต่อเรื่องที่อ่านในการทดลอง (เช่น บทความบอกว่าน้ำตาลจะขาดตลาอด คุณจะไปซื้อน้ำตาลมาตุนไหม)
 
 ```{r load data}
 data(Tal.Or)
@@ -34,13 +34,19 @@ head(media)
 
 ## Calculation
 
+การวิเคราะห์ตัวแปรส่งผ่านแบบง่าย (มี X, Y, M อย่างละตัว) จะต้องใช้สมการถดถอย 2 สมการ
+
+สมการแรกใช้หาความสัมพันธ์ระหว่างตัวแปรทำนาย X กับตัวแปรส่งผ่าน M
+
 เส้น a: M \~ X (M is regressed on X)
 
 ```{r a parameter}
-lm(pmi ~ cond, media)
+lm(pmi ~ cond, media) # if the model is called directly, a short output is shown. 
 ```
 
-แสดงว่าเงื่อนไข high media importance มี pmi สูงกว่า
+เนื่องจาก `cond` เป็นตัวแปรจัดประเภท (ทำเป็น dummy) ค่า coefficient จึงแสดงความแตกต่างระหว่างสองกลุ่ม เห็นได้ว่าเงื่อนไข high media importance มี pmi สูงกว่า
+
+สมการที่ 2 เป็นการทำนายตัวแปร Y โดยใช้ทั้งตัวแปร X และ M เพื่อหาเส้น b และ c'
 
 เส้น b และ c' : `Y ~ b * M + c * X`
 
@@ -48,16 +54,24 @@ lm(pmi ~ cond, media)
 lm(reaction ~ pmi + cond, media)
 ```
 
-Indirect effect (ab)
+ค่า coefficient ของ pmi คือ เส้น b
+
+ค่า coefficient ของ cond คือ เส้น c' หรือ direct effect เป็นความสัมพันธ์ที่ยังเหลืออยู่จาก X ไป Y เมื่อส่งผ่าน M ไปแล้ว
+
+เส้นอิทธิพลทางอ้อม Indirect effect (ab)
+
+เกิดจากการนำค่า coefficient a และ b มาคูณกัน
 
 ```{r ab parameter}
 ab <- 0.4765 * 0.5064
 ab
 ```
 
-# Process MACRO 4.1 for R
+การทดสอบ indirect effect จะใช้วิธี bootstrap ซึ่งจะทำได้ผ่านโปรแกรมต่าง ๆ
 
-Andrew Hayes <https://www.processmacro.org/download.html>
+# PROCESS v4.1 for R
+
+Macro โดย Andrew Hayes <https://www.processmacro.org/download.html>
 
 วิธีใช้
 
@@ -73,20 +87,29 @@ Andrew Hayes <https://www.processmacro.org/download.html>
 source("process.R")
 ```
 
+ในคำสั่งของ `process()` เราจะต้องระบุบทบาทของตัวแปรแต่ละตัว และเลือกรหัส `model` ที่ Hayes กำหนดไว้ (สามารถหาอ่านได้ในหนังสือของ Hayes) สำหรับ simple mediation ใช้ `model = 4`
+
 ```{r process}
 process(data = media, y = "reaction", x = "cond", m = "pmi", model = 4, boot = 5000, seed = 17889)
 ```
 
 # psych package
 
-มีคำสั่งชื่อ mediate
+มีคำสั่งชื่อ `mediate()`
 
 ```{r psych mediate}
-set.seed(17889)
-mediate(y = "reaction", x = "cond", m = "pmi", data = media, n.iter = 5000)
+set.seed(17889) #set seed to the same number for consistent results
+m <- mediate(y = "reaction", x = "cond", m = "pmi", data = media, n.iter = 5000)
+summary(m)
 ```
 
 # lavaan package
+
+แพ็คเกจนี้ใช้วิเคราะห์โมเดลสมการเชิงโครงสร้าง (Structural Equation Model; SEM)
+
+เราจะต้องเขียนโมเดลและกำหนดชื่อพารามิเตอร์ที่ต้องการจะทดสอบ จากนั้น fit model ด้วยคำสั่ง `sem()` และเลือกวิธีคำนวณ Standard Error ด้วย `"bootstrap"` และกำหนดจำนวนครั้งที่จะ `bootstrap = 5000`
+
+ผลที่ได้จากคำสั่งนี้จะแตกต่างจาก packages ก่อนหน้าเล็กน้อย เนื่องจากมันจะคำนวณการทดสอบนัยสำคัญของพารามิเตอร์ทุกตัว (ทั้ง a, b, c, และ ab) ด้วยวิธี bootstrap ทั้งหมด ในขณะที่ package ก่อนหน้าจะใช้วิธี bootstrap เฉพาะ ab
 
 ```{r lavaan}
 set.seed(17889)
@@ -101,5 +124,5 @@ model = " # Regression models
              total := c + (a*b)"
 media.fit <- sem(model, data = media, se = "bootstrap", bootstrap = 5000)
 summary(media.fit, ci = TRUE, rsquare = TRUE)
-parameterEstimates(media.fit, se = TRUE, boot.ci.type = "perc")
+parameterEstimates(media.fit, se = TRUE, boot.ci.type = "perc") #show summary of parameter estimates for easy readout
 ```

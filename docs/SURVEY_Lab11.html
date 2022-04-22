@@ -435,6 +435,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Lab 11: Mediation Analysis</h1>
+<h4 class="author">Kris Ariyabuddhiphongs</h4>
 <h4 class="date">Apr 20, 2022</h4>
 
 </div>
@@ -446,9 +447,9 @@ library(lavaan)</code></pre>
 <div id="mediation-analysis" class="section level1">
 <h1>Mediation Analysis</h1>
 <p>เราจะใช้ชุดข้อมูล <code>Tal.Or</code> จาก psych</p>
-<p>X = <code>cond</code></p>
-<p>M = <code>pmi</code></p>
-<p>Y = <code>reaction</code></p>
+<p>X = <code>cond</code> ตัวแปรเงื่อนไขการทดลอง 0 = low media importance; 1 = high media importance ตัวแปรนี้มีแค่สองระดับและถูกเขียนในรูป dummy code แล้ว จึงสามารถนำมาใส่สมการ regression ได้ แม้ไม่ได้แปลงเป็น factor</p>
+<p>M = <code>pmi</code> presumed media influence ความรู้สึกว่าตนเองได้รับอิทธิพลจากสื่อเพียงใด</p>
+<p>Y = <code>reaction</code> ปฏิกิริยาต่อเรื่องที่อ่านในการทดลอง (เช่น บทความบอกว่าน้ำตาลจะขาดตลาอด คุณจะไปซื้อน้ำตาลมาตุนไหม)</p>
 <pre class="r"><code>data(Tal.Or)
 media &lt;- Tal.Or
 head(media)</code></pre>
@@ -461,8 +462,10 @@ head(media)</code></pre>
 ## 6    0 5.5      1     1.25      1  25</code></pre>
 <div id="calculation" class="section level2">
 <h2>Calculation</h2>
+<p>การวิเคราะห์ตัวแปรส่งผ่านแบบง่าย (มี X, Y, M อย่างละตัว) จะต้องใช้สมการถดถอย 2 สมการ</p>
+<p>สมการแรกใช้หาความสัมพันธ์ระหว่างตัวแปรทำนาย X กับตัวแปรส่งผ่าน M</p>
 <p>เส้น a: M ~ X (M is regressed on X)</p>
-<pre class="r"><code>lm(pmi ~ cond, media)</code></pre>
+<pre class="r"><code>lm(pmi ~ cond, media) # if the model is called directly, a short output is shown. </code></pre>
 <pre><code>## 
 ## Call:
 ## lm(formula = pmi ~ cond, data = media)
@@ -470,7 +473,8 @@ head(media)</code></pre>
 ## Coefficients:
 ## (Intercept)         cond  
 ##      5.3769       0.4765</code></pre>
-<p>แสดงว่าเงื่อนไข high media importance มี pmi สูงกว่า</p>
+<p>เนื่องจาก <code>cond</code> เป็นตัวแปรจัดประเภท (ทำเป็น dummy) ค่า coefficient จึงแสดงความแตกต่างระหว่างสองกลุ่ม เห็นได้ว่าเงื่อนไข high media importance มี pmi สูงกว่า</p>
+<p>สมการที่ 2 เป็นการทำนายตัวแปร Y โดยใช้ทั้งตัวแปร X และ M เพื่อหาเส้น b และ c’</p>
 <p>เส้น b และ c’ : <code>Y ~ b * M + c * X</code></p>
 <pre class="r"><code>lm(reaction ~ pmi + cond, media)</code></pre>
 <pre><code>## 
@@ -480,15 +484,19 @@ head(media)</code></pre>
 ## Coefficients:
 ## (Intercept)          pmi         cond  
 ##      0.5269       0.5064       0.2544</code></pre>
-<p>Indirect effect (ab)</p>
+<p>ค่า coefficient ของ pmi คือ เส้น b</p>
+<p>ค่า coefficient ของ cond คือ เส้น c’ หรือ direct effect เป็นความสัมพันธ์ที่ยังเหลืออยู่จาก X ไป Y เมื่อส่งผ่าน M ไปแล้ว</p>
+<p>เส้นอิทธิพลทางอ้อม Indirect effect (ab)</p>
+<p>เกิดจากการนำค่า coefficient a และ b มาคูณกัน</p>
 <pre class="r"><code>ab &lt;- 0.4765 * 0.5064
 ab</code></pre>
 <pre><code>## [1] 0.2412996</code></pre>
+<p>การทดสอบ indirect effect จะใช้วิธี bootstrap ซึ่งจะทำได้ผ่านโปรแกรมต่าง ๆ</p>
 </div>
 </div>
-<div id="process-macro-4.1-for-r" class="section level1">
-<h1>Process MACRO 4.1 for R</h1>
-<p>Andrew Hayes <a href="https://www.processmacro.org/download.html" class="uri">https://www.processmacro.org/download.html</a></p>
+<div id="process-v4.1-for-r" class="section level1">
+<h1>PROCESS v4.1 for R</h1>
+<p>Macro โดย Andrew Hayes <a href="https://www.processmacro.org/download.html" class="uri">https://www.processmacro.org/download.html</a></p>
 <p>วิธีใช้</p>
 <ol style="list-style-type: decimal">
 <li>Download ไฟล์ และ unzip</li>
@@ -511,6 +519,7 @@ ab</code></pre>
 ## Copyright 2022 by Andrew F. Hayes ALL RIGHTS RESERVED
 ## Workshop schedule at http://haskayne.ucalgary.ca/CCRAM
 ## </code></pre>
+<p>ในคำสั่งของ <code>process()</code> เราจะต้องระบุบทบาทของตัวแปรแต่ละตัว และเลือกรหัส <code>model</code> ที่ Hayes กำหนดไว้ (สามารถหาอ่านได้ในหนังสือของ Hayes) สำหรับ simple mediation ใช้ <code>model = 4</code></p>
 <pre class="r"><code>process(data = media, y = &quot;reaction&quot;, x = &quot;cond&quot;, m = &quot;pmi&quot;, model = 4, boot = 5000, seed = 17889)</code></pre>
 <pre><code>## 
 ## ********************** PROCESS for R Version 4.1 ********************** 
@@ -903,27 +912,45 @@ ab</code></pre>
 </div>
 <div id="psych-package" class="section level1">
 <h1>psych package</h1>
-<p>มีคำสั่งชื่อ mediate</p>
-<pre class="r"><code>set.seed(17889)
-mediate(y = &quot;reaction&quot;, x = &quot;cond&quot;, m = &quot;pmi&quot;, data = media, n.iter = 5000)</code></pre>
+<p>มีคำสั่งชื่อ <code>mediate()</code></p>
+<pre class="r"><code>set.seed(17889) #set seed to the same number for consistent results
+m &lt;- mediate(y = &quot;reaction&quot;, x = &quot;cond&quot;, m = &quot;pmi&quot;, data = media, n.iter = 5000)</code></pre>
 <p><img src="SURVEY_Lab11_files/figure-html/psych%20mediate-1.png" width="672" /></p>
-<pre><code>## 
-## Mediation/Moderation Analysis 
-## Call: mediate(y = &quot;reaction&quot;, x = &quot;cond&quot;, m = &quot;pmi&quot;, data = media, 
+<pre class="r"><code>summary(m)</code></pre>
+<pre><code>## Call: mediate(y = &quot;reaction&quot;, x = &quot;cond&quot;, m = &quot;pmi&quot;, data = media, 
 ##     n.iter = 5000)
 ## 
-## The DV (Y) was  reaction . The IV (X) was  cond . The mediating variable(s) =  pmi .
+## Direct effect estimates (traditional regression)    (c&#39;) X + M on Y 
+##           reaction   se    t  df     Prob
+## Intercept     0.53 0.55 0.96 120 3.40e-01
+## cond          0.25 0.26 0.99 120 3.22e-01
+## pmi           0.51 0.10 5.22 120 7.66e-07
 ## 
-## Total effect(c) of  cond  on  reaction  =  0.5   S.E. =  0.28  t  =  1.79  df=  121   with p =  0.077
-## Direct effect (c&#39;) of  cond  on  reaction  removing  pmi  =  0.25   S.E. =  0.26  t  =  0.99  df=  120   with p =  0.32
-## Indirect effect (ab) of  cond  on  reaction  through  pmi   =  0.24 
-## Mean bootstrapped indirect effect =  0.25  with standard error =  0.13  Lower CI =  0.01    Upper CI =  0.53
-## R = 0.45 R2 = 0.21   F = 15.56 on 2 and 120 DF   p-value:  1.31e-08 
+## R = 0.45 R2 = 0.21   F = 15.56 on 2 and 120 DF   p-value:  9.83e-07 
 ## 
-##  To see the longer output, specify short = FALSE in the print statement or ask for the summary</code></pre>
+##  Total effect estimates (c) (X on Y) 
+##           reaction   se     t  df     Prob
+## Intercept     3.25 0.19 17.05 121 5.68e-34
+## cond          0.50 0.28  1.79 121 7.66e-02
+## 
+##  &#39;a&#39;  effect estimates (X on M) 
+##            pmi   se     t  df     Prob
+## Intercept 5.38 0.16 33.22 121 1.16e-62
+## cond      0.48 0.24  2.02 121 4.54e-02
+## 
+##  &#39;b&#39;  effect estimates (M on Y controlling for X) 
+##     reaction  se    t  df     Prob
+## pmi     0.51 0.1 5.22 120 7.66e-07
+## 
+##  &#39;ab&#39;  effect estimates (through mediators)
+##      reaction boot   sd lower upper
+## cond     0.24 0.24 0.13  0.01  0.52</code></pre>
 </div>
 <div id="lavaan-package" class="section level1">
 <h1>lavaan package</h1>
+<p>แพ็คเกจนี้ใช้วิเคราะห์โมเดลสมการเชิงโครงสร้าง (Structural Equation Model; SEM)</p>
+<p>เราจะต้องเขียนโมเดลและกำหนดชื่อพารามิเตอร์ที่ต้องการจะทดสอบ จากนั้น fit model ด้วยคำสั่ง <code>sem()</code> และเลือกวิธีคำนวณ Standard Error ด้วย <code>"bootstrap"</code> และกำหนดจำนวนครั้งที่จะ <code>bootstrap = 5000</code></p>
+<p>ผลที่ได้จากคำสั่งนี้จะแตกต่างจาก packages ก่อนหน้าเล็กน้อย เนื่องจากมันจะคำนวณการทดสอบนัยสำคัญของพารามิเตอร์ทุกตัว (ทั้ง a, b, c, และ ab) ด้วยวิธี bootstrap ทั้งหมด ในขณะที่ package ก่อนหน้าจะใช้วิธี bootstrap เฉพาะ ab</p>
 <pre class="r"><code>set.seed(17889)
 model = &quot; # Regression models
              pmi ~ a * cond
@@ -978,7 +1005,7 @@ summary(media.fit, ci = TRUE, rsquare = TRUE)</code></pre>
 ##     direct            0.254    0.258    0.984    0.325   -0.264    0.733
 ##     indirect          0.241    0.131    1.844    0.065    0.002    0.517
 ##     total             0.496    0.274    1.807    0.071   -0.036    1.025</code></pre>
-<pre class="r"><code>parameterEstimates(media.fit, se = TRUE, boot.ci.type = &quot;perc&quot;)</code></pre>
+<pre class="r"><code>parameterEstimates(media.fit, se = TRUE, boot.ci.type = &quot;perc&quot;) #show summary of parameter estimates for easy readout</code></pre>
 <pre><code>##        lhs op      rhs    label   est    se     z pvalue ci.lower ci.upper
 ## 1      pmi  ~     cond        a 0.477 0.235 2.028  0.043    0.003    0.940
 ## 2 reaction  ~     cond        c 0.254 0.258 0.984  0.325   -0.264    0.733
