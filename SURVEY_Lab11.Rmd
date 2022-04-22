@@ -126,3 +126,5 @@ media.fit <- sem(model, data = media, se = "bootstrap", bootstrap = 5000)
 summary(media.fit, ci = TRUE, rsquare = TRUE)
 parameterEstimates(media.fit, se = TRUE, boot.ci.type = "perc") #show summary of parameter estimates for easy readout
 ```
+
+จะสังเกตได้ว่าค่า 95% bootstrap CI จาก lavaan จะแตกต่างไปจาก process หรือ psych ตรงนี้อาจะเป็นเพราะโค้ดมีวิธีการใช้ตัวเลขสุ่มแตกต่างกันเล็กน้อย แต่ไม่ส่งผลต่อความน่าเชื่อถือของผล เพื่อให้สามารถวิเคราะห์ผลซ้ำได้ เราจึงควรระบุชื่อโปรแกรม เวอร์ชัน และ seed ที่ใช้ในการวิเคราะห์ด้วย
