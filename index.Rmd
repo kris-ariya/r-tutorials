@@ -1,5 +1,6 @@
 ---
-title: "R Tutorials at PSY Chula"
+title: " ตำรับตำอาร์ | R Tutorials at PSY Chula"
+output: html_document
 ---
 
 Hello, World!
