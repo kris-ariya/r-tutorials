@@ -11,7 +11,7 @@
 
 
 
-<title>Lab 02: Randomization</title>
+<title>Lab 12: Moderation Analysis</title>
 
 <script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
@@ -437,99 +437,173 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Lab 02: Randomization</h1>
+<h1 class="title toc-ignore">Lab 12: Moderation Analysis</h1>
+<h4 class="author">Kris Ariyabuddhiphongs</h4>
+<h4 class="date">Apr 28, 2022</h4>
 
 </div>
 
 
-<div id="random-assignment" class="section level1">
-<h1>Random Assignment</h1>
-<p>We could try to experimentally control all known potential confounds (e.g., gender, age, intelligence, personality, room temperature, etc.). Nonetheless, we could not pracically control for ALL variables (e.g., we might not know those variables or they are too expensive to control). Random assignment is one way to equalize those extraneous variables. When participants are randomly assigned to each group in an experiment, all person variables are equally likely to be assigned to any group (e.g., each group has about the same number of participants with high, averge, and low extraversion). Given that we have a large enough sample, as we sum up those values for each group, any variation around the means will cancel out each other (i.e., each group will have the same average extraversion). Nonetheless, random assignment does not gaurantee matched or equivalent groups. Any differences of pre-existing characteristics is due to chance. While random assignment does not completely eliminate pre-existing differences, it greatly reduce it.</p>
-<p>In this lab, we will learn how to conduct a random assignment with three tools: Microsoft Excel, R, and a randomizer website.</p>
-<div id="excel" class="section level2">
-<h2>1. Excel</h2>
-<p>Let’s consider an example of randomizing 30 participants to 5 groups. We could just roll a dice for each participant at the beginning of the experiment. However, we could plan the randomization <em>before</em> the experiment.</p>
-<p>First, we will create two columns: group, and random number. Then fill out the group number from 1-6 and repeat this 5 times.</p>
-<p><img src="images/Lab_randomization/fill_group_number.png" /></p>
-<p>Then, fill <code>random num</code> column with a <code>rand()</code> function. The function will generate a random number between 0 and 1 using a uniform distribution, i.e., each value has equal chance.</p>
-<p><img src="images/Lab_randomization/rand.png" /></p>
-<p>Here are the results.</p>
-<p><img src="images/Lab_randomization/fill_rand.png" /></p>
-<p>Then, select the entire values for both <code>group</code> and <code>random num</code> column. <strong>This is VERY important. You need to select ALL values that you want to randomly sort.</strong></p>
-<p><img src="images/Lab_randomization/select_values.png" /></p>
-<p>Then, sort the data with <code>random num</code> column.</p>
-<p><img src="images/Lab_randomization/sort.png" /></p>
-<p>The results will be a randomized order of <code>group</code>.</p>
-<p><img src="images/Lab_randomization/resort.png" /></p>
-<p>Then you can add an <code>id</code> column to assign participant to the group. (As you type into Excel, the random values will keep changing, but you can ignore them at this point.)</p>
-<p><img src="images/Lab_randomization/add_id.png" /></p>
-<div id="randomize-within-a-set" class="section level3">
-<h3>Randomize within a set</h3>
-<p>Sometimes you would like to run an experiment as a set, i.e., within each set you want to assign participants to every group before moving on. This setup will make sure that for each set that you run, you will have participants for all conditions.</p>
-<p>To do this, you need <code>group</code>, <code>set</code>, and <code>random num</code>. Groups within the same set will have the same <code>set</code> value.</p>
-<p><img src="images/Lab_randomization/set.png" /></p>
-<p>Next, fill the random numbers</p>
-<p><img src="images/Lab_randomization/set_rand.png" /></p>
-<p>Then, select all values and sort. In the sort option box, click + and choose the first option to sort by Column <code>set</code>, then by <code>random num</code>. This way, Excel will sort your data by <code>set</code>, then within each set, sort by <code>random num</code>.</p>
-<p><img src="images/Lab_randomization/set_sort.png" /></p>
-<p>Here are the results.</p>
-<p><img src="images/Lab_randomization/set_result.png" /></p>
-</div>
-</div>
-<div id="r-code" class="section level2">
-<h2>2. R code</h2>
-<p>There are multiple ways to create a vector of random values in R. The ways shown here are not exhaustive.</p>
-</div>
-<div id="rep-function-sortation" class="section level2">
-<h2><code>rep()</code> function &amp; sortation</h2>
-<p>First, create a vector of group numbers (1-5) for 6 times (<em>N</em> = 30).</p>
-<pre class="r"><code>unsorted_group &lt;- rep(1:5, times = 6)
-unsorted_group</code></pre>
-<pre><code>##  [1] 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5</code></pre>
-<p>Then, create a random vector with <code>sample.int()</code>.</p>
-<pre class="r"><code>set.seed(2475) # you can pick any value for a seed. This will help when you need to replicate the results.
-random_vector &lt;- sample.int(30, size = 30, replace = FALSE)
-random_vector</code></pre>
-<pre><code>##  [1] 30 22 23 12 26 11  7 10 20 28 13  4 16 18 24 14 25 17 29  9  1 21  6  2 27 19 15  5  8  3</code></pre>
-<p>Sort the group with <code>random_vector</code>.</p>
-<pre class="r"><code>random_sorted &lt;- unsorted_group[random_vector]
-random_sorted</code></pre>
-<pre><code>##  [1] 5 2 3 2 1 1 2 5 5 3 3 4 1 3 4 4 5 2 4 4 1 1 1 2 2 4 5 5 3 3</code></pre>
-<p>You can use <code>random_sorted</code> to assign participants into conditions. Also, check that all groups have equal <em>n</em>.</p>
-<pre class="r"><code>table(random_sorted)</code></pre>
-<pre><code>## random_sorted
-## 1 2 3 4 5 
-## 6 6 6 6 6</code></pre>
-<div id="sample.int-function-and-for-loop" class="section level3">
-<h3><code>sample.int()</code> function and <code>for</code> loop</h3>
-<p>To randomize within each set, we will use <code>sample.int()</code> to randomize group 1-5, then repeat it with <code>for</code> loops for 6 times, then combine the results.</p>
-<p>We can use <code>sample.int()</code> function to pick integer values from 1 to 5 (<code>n</code> = 5) for <code>size</code> = 5 times. The function will randomly select an interger from 1 to 5 without replacement. By doing this 5 times, you will get a random oder of 1-5. However, because our total sample size has <em>N</em> = 30, we will need to use a <code>for</code> loop to repeat this process 6 times (<code>for (i in 1:6)</code>)</p>
-<pre class="r"><code>set.seed(2475)
-s &lt;- matrix(nrow = 5, ncol = 6) # Create a matrix, s, with 5 rows (for 5 groups) and 6 columns (for 6 sets) as a holder for future data.
-for (i in 1:6) {
-  s[,i] &lt;- sample.int(n = 5, size = 5, replace = FALSE) #randomize 5 groups then put them in each column
-}
-s # results ini matrix</code></pre>
-<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6]
-## [1,]    4    2    2    1    1    1
-## [2,]    2    5    4    4    3    2
-## [3,]    5    1    1    3    5    4
-## [4,]    1    4    5    2    2    5
-## [5,]    3    3    3    5    4    3</code></pre>
-<pre class="r"><code>as.integer(s) #show the matrix as interger vector. </code></pre>
-<pre><code>##  [1] 4 2 5 1 3 2 5 1 4 3 2 4 1 5 3 1 4 3 2 5 1 3 5 2 4 1 2 4 5 3</code></pre>
-<pre class="r"><code>table(as.integer(s)) #check if n are equal in all groups. </code></pre>
+<pre class="r"><code># load all packages for this tutorial
+library(emmeans)
+library(psych)
+library(carData)</code></pre>
+<div id="interaction-between-continuous-and-continuous-variables" class="section level1">
+<h1>Interaction between Continuous and Continuous Variables</h1>
+<p>เราจะใช้ชุดข้อมูล <code>Ginzberg</code> จาก carData ซึ่งเป็นข้อมูลผู้ป่วยโรคซึมเศร้า</p>
+<p>X = <code>fatalism</code> คะแนนมาตร fatalism ความเชื่อว่าทุกสิ่งถูกกำหนดไว้แล้ว</p>
+<p>W = <code>simplicity</code> การมองโลกมีแค่ขาว-ดำ</p>
+<p>Y = <code>depression</code> มาตรวัดภาวะซึมเศร้าของ Beck</p>
+<p>ตัวแปรที่มีชื่อ adj นำหน้าเป็นตัวแปรเดียวกันแต่มีการปรับแก้ทางสถิติ เราจะไม่ได้ใช้ตัวแปรเหล่านั้น</p>
+<pre class="r"><code>data(Ginzberg)
+depression &lt;- Ginzberg
+head(depression)</code></pre>
+<pre><code>##   simplicity fatalism depression adjsimp adjfatal  adjdep
+## 1    0.92983  0.35589    0.59870 0.75934  0.10673 0.41865
+## 2    0.91097  1.18439    0.72787 0.72717  0.99915 0.51688
+## 3    0.53366 -0.05837    0.53411 0.62176  0.03811 0.70699
+## 4    0.74118  0.35589    0.56641 0.83522  0.42218 0.65639
+## 5    0.53366  0.77014    0.50182 0.47697  0.81423 0.53518
+## 6    0.62799  1.39152    0.56641 0.40664  1.23261 0.34042</code></pre>
+<pre class="r"><code>boxplot(depression)</code></pre>
+<p><img src="SURVEY_Lab12_files/figure-html/load%20data-1.png" width="672" /></p>
+<p>สังเกตว่าตัวแปรทั้งหมดอยู่ใน scale ใกล้เคียงกัน แสดงว่าผู้วิจัยน่าจะมีการแปลงคะแนนให้อยู่ในสเกลประมาณ 1 ตรงกลาง เพื่อให้อ่านค่าง่าย อย่างไรก็ดีการ scale นี้ไม่ส่งผลกระทบต่อการทดสอบความสัมพันธ์</p>
+<div id="lm" class="section level2">
+<h2><code>lm()</code></h2>
+<p>หลักการของตัวแปรกำกับคือ ปฏิสัมพันธ์ (interaction) ระหว่างตัวแปรทำนาย เราจึงสามารถเขียนสมการถดถดอยเชิงเส้นตรงได้ตามนี้</p>
+<pre class="r"><code>depression.lm &lt;- lm(depression ~ fatalism + simplicity + fatalism:simplicity, data = depression) 
+summary(depression.lm)</code></pre>
 <pre><code>## 
-## 1 2 3 4 5 
-## 6 6 6 6 6</code></pre>
+## Call:
+## lm(formula = depression ~ fatalism + simplicity + fatalism:simplicity, 
+##     data = depression)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.55988 -0.20390 -0.03806  0.15617  1.01101 
+## 
+## Coefficients:
+##                     Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)          -0.2962     0.1918  -1.544  0.12665    
+## fatalism              0.8259     0.1685   4.902 5.05e-06 ***
+## simplicity            0.9372     0.2121   4.418 3.17e-05 ***
+## fatalism:simplicity  -0.4039     0.1370  -2.949  0.00421 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.3353 on 78 degrees of freedom
+## Multiple R-squared:  0.567,  Adjusted R-squared:  0.5504 
+## F-statistic: 34.05 on 3 and 78 DF,  p-value: 3.587e-14</code></pre>
+<pre class="r"><code>plot(depression.lm) # assumption checks</code></pre>
+<p><img src="SURVEY_Lab12_files/figure-html/a%20parameter-1.png" width="672" /><img src="SURVEY_Lab12_files/figure-html/a%20parameter-2.png" width="672" /><img src="SURVEY_Lab12_files/figure-html/a%20parameter-3.png" width="672" /><img src="SURVEY_Lab12_files/figure-html/a%20parameter-4.png" width="672" /></p>
+<p>แม้การทดสอบ assumptions จะไม่ได้ดูสมบูรณ์แบบแต่ ไม่ได้มีการละเมิดอย่างร้ายแรง ด้วยความที่ regression นั้นแกร่ง (robust) ต่อการละเมิดอยู่แล้ว เราจึงดำเนินการวิเคราะห์ต่อไปโดยไม่ได้ปรับแก้อะไร</p>
+<p>โดยรวมแล้วโมเดลนี้ทำนายภาวะซึมเศร้าได้ค่อนข้างดี สังเกตจากค่า <span class="math inline">\(R^2\)</span> ที่สูงถึง .57</p>
+</div>
+<div id="probing-interaction" class="section level2">
+<h2>Probing Interaction</h2>
+<p>เราพบว่าอิทธิพลปฏิสัมพันธ์นั้นมีนัยสำคัญทางสถิติ</p>
+<p>เนื่องจาก W เป็นตัวแปรต่อเนื่อง เราจะกำหนดให้โปรแกรมคำนวณค่า simple slope ที่ 3 ตำแหน่งของค่า W</p>
+<pre class="r"><code>simp_minus1 &lt;- mean(depression$simplicity) - sd(depression$simplicity)
+simp_mean &lt;- mean(depression$simplicity)
+simp_plus1 &lt;- mean(depression$simplicity) + sd(depression$simplicity)
+locations &lt;- list(simplicity = c(simp_minus1, simp_mean, simp_plus1))
+locations</code></pre>
+<pre><code>## $simplicity
+## [1] 0.5000005 1.0000005 1.5000005</code></pre>
+<pre class="r"><code>emtrends(depression.lm, ~ simplicity , var = &quot;fatalism&quot;, at = locations)</code></pre>
+<pre><code>##  simplicity fatalism.trend     SE df lower.CL upper.CL
+##         0.5          0.624 0.1188 78   0.3874    0.860
+##         1.0          0.422 0.0961 78   0.2307    0.613
+##         1.5          0.220 0.1172 78  -0.0132    0.453
+## 
+## Confidence level used: 0.95</code></pre>
+<p>สังเกตว่าค่า slope ระหว่าง fatalism กับ depression ลดลงเมื่อ simplicity สูงขึ้น</p>
+<pre class="r"><code>xy_value &lt;- list(fatalism = c(seq(min(depression$simplicity), max(depression$simplicity),
+                                  by = .3)),
+                 simplicity = c(simp_minus1, simp_mean, simp_plus1))
+emmip(depression.lm, simplicity ~ fatalism, at = xy_value, CIs = TRUE)</code></pre>
+<p><img src="SURVEY_Lab12_files/figure-html/interaction%20plot-1.png" width="672" /></p>
 </div>
 </div>
-<div id="randomizer-websites" class="section level2">
-<h2>3. Randomizer Websites</h2>
-<p>There are muliple websites that offer randomization. Try</p>
-<p><a href="https://www.randomizer.org" class="uri">https://www.randomizer.org</a></p>
-<p><a href="https://www.graphpad.com/quickcalcs/randomize2/" class="uri">https://www.graphpad.com/quickcalcs/randomize2/</a></p>
-</div>
+<div id="process-v4.1-for-r" class="section level1">
+<h1>PROCESS v4.1 for R</h1>
+<p>Macro โดย Andrew Hayes <a href="https://www.processmacro.org/download.html" class="uri">https://www.processmacro.org/download.html</a></p>
+<p>วิธีใช้</p>
+<ol style="list-style-type: decimal">
+<li>Download ไฟล์ และ unzip</li>
+<li>เปิดไฟล์ process.R</li>
+<li>Run All แล้วรอสักพัก</li>
+<li>จะมี Functions ที่ชื่อว่า <code>process</code> ขึ้นมาอยู่ใน environment</li>
+<li>ต้อง Run script นี้ใหม่ทุกครั้งหลังจากปิด R</li>
+</ol>
+<p>หรือ save process.R ไว้ใน working directory แล้วใช้คำสั่ง <code>source()</code></p>
+<pre class="r"><code>source(&quot;process.R&quot;)</code></pre>
+<pre><code>## 
+## ********************** PROCESS for R Version 4.1 ********************** 
+##  
+##            Written by Andrew F. Hayes, Ph.D.  www.afhayes.com              
+##    Documentation available in Hayes (2022). www.guilford.com/p/hayes3   
+##  
+## *********************************************************************** 
+##  
+## PROCESS is now ready for use.
+## Copyright 2022 by Andrew F. Hayes ALL RIGHTS RESERVED
+## Workshop schedule at http://haskayne.ucalgary.ca/CCRAM
+## </code></pre>
+<p>เราจะกำหนด <code>w =</code> ชื่อตัวแปรกำกับ และใช้ <code>model = 1</code> ซึ่งเป็นโมเดลตัวแปรกำกับอย่างง่าย</p>
+<pre class="r"><code>process(data = depression, y = &quot;depression&quot;, x = &quot;fatalism&quot;, w = &quot;simplicity&quot;, model = 1)</code></pre>
+<pre><code>## 
+## ********************** PROCESS for R Version 4.1 ********************** 
+##  
+##            Written by Andrew F. Hayes, Ph.D.  www.afhayes.com              
+##    Documentation available in Hayes (2022). www.guilford.com/p/hayes3   
+##  
+## *********************************************************************** 
+##                   
+## Model : 1         
+##     Y : depression
+##     X : fatalism  
+##     W : simplicity
+## 
+## Sample size: 82
+## 
+## 
+## *********************************************************************** 
+## Outcome Variable: depression
+## 
+## Model Summary: 
+##           R      R-sq       MSE         F       df1       df2         p
+##      0.7530    0.5670    0.1124   34.0510    3.0000   78.0000    0.0000
+## 
+## Model: 
+##                coeff        se         t         p      LLCI      ULCI
+## constant     -0.2962    0.1918   -1.5439    0.1267   -0.6781    0.0857
+## fatalism      0.8259    0.1685    4.9021    0.0000    0.4905    1.1613
+## simplicity    0.9372    0.2121    4.4182    0.0000    0.5149    1.3594
+## Int_1        -0.4039    0.1370   -2.9486    0.0042   -0.6766   -0.1312
+## 
+## Product terms key:
+## Int_1  :  fatalism  x  simplicity      
+## 
+## Test(s) of highest order unconditional interaction(s):
+##       R2-chng         F       df1       df2         p
+## X*W    0.0483    8.6945    1.0000   78.0000    0.0042
+## ----------
+## Focal predictor: fatalism (X)
+##       Moderator: simplicity (W)
+## 
+## Conditional effects of the focal predictor at values of the moderator(s):
+##   simplicity    effect        se         t         p      LLCI      ULCI
+##       0.5337    0.6103    0.1162    5.2542    0.0000    0.3791    0.8416
+##       0.8827    0.4694    0.0976    4.8069    0.0000    0.2750    0.6638
+##       1.4203    0.2522    0.1113    2.2668    0.0262    0.0307    0.4737
+## 
+## ******************** ANALYSIS NOTES AND ERRORS ************************ 
+## 
+## Level of confidence for all confidence intervals in output: 95
+## 
+## W values in conditional tables are the 16th, 50th, and 84th percentiles.</code></pre>
+<p>สังเกตตำแหน่งในการคำนวณ simple slope (เรียกว่า conditional effect ใน output) จะอยู่ที่ 16 th, 50th, และ 84th percentile ซึ่งเป็นตำแหน่งที่ใกล้เคียงกับ -1SD, mean, +1SD แต่ก็ยังไม่ใช่ค่าเดียวกัน ผลจึงอาจแตกต่างจากวิธีด้านบน</p>
 </div>
 
 &nbsp;

@@ -420,6 +420,9 @@ div.tocify {
     <li>
       <a href="SURVEY_Lab11.html">Lab 11: Mediation Analysis</a>
     </li>
+    <li>
+      <a href="SURVEY_Lab12.html">Lab 12: Moderation Analysis</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -444,6 +447,7 @@ div.tocify {
 <pre class="r"><code># load all packages for this tutorial
 library(psych)
 library(lavaan)</code></pre>
+<pre><code>## Warning: package &#39;lavaan&#39; was built under R version 4.0.5</code></pre>
 <div id="mediation-analysis" class="section level1">
 <h1>Mediation Analysis</h1>
 <p>เราจะใช้ชุดข้อมูล <code>Tal.Or</code> จาก psych</p>
@@ -944,7 +948,7 @@ m &lt;- mediate(y = &quot;reaction&quot;, x = &quot;cond&quot;, m = &quot;pmi&qu
 ## 
 ##  &#39;ab&#39;  effect estimates (through mediators)
 ##      reaction boot   sd lower upper
-## cond     0.24 0.24 0.13  0.01  0.52</code></pre>
+## cond     0.24 0.24 0.13  0.01  0.51</code></pre>
 </div>
 <div id="lavaan-package" class="section level1">
 <h1>lavaan package</h1>

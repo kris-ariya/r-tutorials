@@ -1,0 +1,106 @@
+---
+title: 'Lab 12: Moderation Analysis'
+author: 
+  - name: "Kris Ariyabuddhiphongs"
+date: "Apr 28, 2022"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: TRUE
+---
+
+```{r load_package, message = FALSE}
+# load all packages for this tutorial
+library(emmeans)
+library(psych)
+library(carData)
+```
+
+# Interaction between Continuous and Continuous Variables
+
+เราจะใช้ชุดข้อมูล `Ginzberg` จาก carData ซึ่งเป็นข้อมูลผู้ป่วยโรคซึมเศร้า
+
+X = `fatalism` คะแนนมาตร fatalism ความเชื่อว่าทุกสิ่งถูกกำหนดไว้แล้ว
+
+W = `simplicity` การมองโลกมีแค่ขาว-ดำ
+
+Y = `depression` มาตรวัดภาวะซึมเศร้าของ Beck
+
+ตัวแปรที่มีชื่อ adj นำหน้าเป็นตัวแปรเดียวกันแต่มีการปรับแก้ทางสถิติ เราจะไม่ได้ใช้ตัวแปรเหล่านั้น
+
+```{r load data}
+data(Ginzberg)
+depression <- Ginzberg
+head(depression)
+boxplot(depression)
+```
+
+สังเกตว่าตัวแปรทั้งหมดอยู่ใน scale ใกล้เคียงกัน แสดงว่าผู้วิจัยน่าจะมีการแปลงคะแนนให้อยู่ในสเกลประมาณ 1 ตรงกลาง เพื่อให้อ่านค่าง่าย อย่างไรก็ดีการ scale นี้ไม่ส่งผลกระทบต่อการทดสอบความสัมพันธ์
+
+## `lm()`
+
+หลักการของตัวแปรกำกับคือ ปฏิสัมพันธ์ (interaction) ระหว่างตัวแปรทำนาย เราจึงสามารถเขียนสมการถดถดอยเชิงเส้นตรงได้ตามนี้
+
+```{r a parameter}
+depression.lm <- lm(depression ~ fatalism + simplicity + fatalism:simplicity, data = depression) 
+summary(depression.lm)
+plot(depression.lm) # assumption checks
+```
+
+แม้การทดสอบ assumptions จะไม่ได้ดูสมบูรณ์แบบแต่ ไม่ได้มีการละเมิดอย่างร้ายแรง ด้วยความที่ regression นั้นแกร่ง (robust) ต่อการละเมิดอยู่แล้ว เราจึงดำเนินการวิเคราะห์ต่อไปโดยไม่ได้ปรับแก้อะไร
+
+โดยรวมแล้วโมเดลนี้ทำนายภาวะซึมเศร้าได้ค่อนข้างดี สังเกตจากค่า $R^2$ ที่สูงถึง .57
+
+## Probing Interaction
+
+เราพบว่าอิทธิพลปฏิสัมพันธ์นั้นมีนัยสำคัญทางสถิติ
+
+เนื่องจาก W เป็นตัวแปรต่อเนื่อง เราจะกำหนดให้โปรแกรมคำนวณค่า simple slope ที่ 3 ตำแหน่งของค่า W
+
+```{r slope location}
+simp_minus1 <- mean(depression$simplicity) - sd(depression$simplicity)
+simp_mean <- mean(depression$simplicity)
+simp_plus1 <- mean(depression$simplicity) + sd(depression$simplicity)
+locations <- list(simplicity = c(simp_minus1, simp_mean, simp_plus1))
+locations
+```
+
+```{r simple slopes}
+emtrends(depression.lm, ~ simplicity , var = "fatalism", at = locations)
+```
+
+สังเกตว่าค่า slope ระหว่าง fatalism กับ depression ลดลงเมื่อ simplicity สูงขึ้น
+
+```{r interaction plot}
+xy_value <- list(fatalism = c(seq(min(depression$simplicity), max(depression$simplicity),
+                                  by = .3)),
+                 simplicity = c(simp_minus1, simp_mean, simp_plus1))
+emmip(depression.lm, simplicity ~ fatalism, at = xy_value, CIs = TRUE)
+```
+
+# PROCESS v4.1 for R
+
+Macro โดย Andrew Hayes <https://www.processmacro.org/download.html>
+
+วิธีใช้
+
+1.  Download ไฟล์ และ unzip
+2.  เปิดไฟล์ process.R
+3.  Run All แล้วรอสักพัก
+4.  จะมี Functions ที่ชื่อว่า `process` ขึ้นมาอยู่ใน environment
+5.  ต้อง Run script นี้ใหม่ทุกครั้งหลังจากปิด R
+
+หรือ save process.R ไว้ใน working directory แล้วใช้คำสั่ง `source()`
+
+```{r source process macro}
+source("process.R")
+```
+
+เราจะกำหนด `w =` ชื่อตัวแปรกำกับ และใช้ `model = 1` ซึ่งเป็นโมเดลตัวแปรกำกับอย่างง่าย
+
+```{r process}
+process(data = depression, y = "depression", x = "fatalism", w = "simplicity", model = 1)
+```
+
+สังเกตตำแหน่งในการคำนวณ simple slope (เรียกว่า conditional effect ใน output) จะอยู่ที่ 16 th, 50th, และ 84th percentile ซึ่งเป็นตำแหน่งที่ใกล้เคียงกับ -1SD, mean, +1SD แต่ก็ยังไม่ใช่ค่าเดียวกัน ผลจึงอาจแตกต่างจากวิธีด้านบน

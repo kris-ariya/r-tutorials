@@ -61,6 +61,8 @@ navbar:
           href: SURVEY_Lab10.html
         - text: "Lab 11: Mediation Analysis"
           href: SURVEY_Lab11.html
+        - text: "Lab 12: Moderation Analysis"
+          href: SURVEY_Lab12.html
 output:
   html_document:
     include:

@@ -344,6 +344,9 @@ $(document).ready(function () {
     <li>
       <a href="SURVEY_Lab11.html">Lab 11: Mediation Analysis</a>
     </li>
+    <li>
+      <a href="SURVEY_Lab12.html">Lab 12: Moderation Analysis</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -428,7 +431,7 @@ summary(one.ancova.emm)  # estimated (adjusted) mean</code></pre>
 <pre class="r"><code>by(stress$score, stress$treatment, mean) # raw (unadjusted mean)</code></pre>
 <pre><code>## stress$treatment: yes
 ## [1] 82.15667
-## ------------------------------------------------------------------------------------------------------- 
+## --------------------------------------------------------------------------------------------------------------- 
 ## stress$treatment: no
 ## [1] 86.99667</code></pre>
 <pre class="r"><code>pairs(one.ancova.emm) #pariwise comparison</code></pre>
