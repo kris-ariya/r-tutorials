@@ -510,6 +510,7 @@ locations &lt;- list(simplicity = c(simp_minus1, simp_mean, simp_plus1))
 locations</code></pre>
 <pre><code>## $simplicity
 ## [1] 0.5000005 1.0000005 1.5000005</code></pre>
+<p>ใช้คำสั่ง <code>emtrends()</code> เพื่อคำนวณค่า simple slopes ของตัวแปรทำนาย <code>fatalism</code> ที่ตำแหน่งต่าง ๆ ของตัวแปรกำกับ (W) <code>simplicity</code></p>
 <pre class="r"><code>emtrends(depression.lm, ~ simplicity , var = &quot;fatalism&quot;, at = locations)</code></pre>
 <pre><code>##  simplicity fatalism.trend     SE df lower.CL upper.CL
 ##         0.5          0.624 0.1188 78   0.3874    0.860
@@ -518,8 +519,16 @@ locations</code></pre>
 ## 
 ## Confidence level used: 0.95</code></pre>
 <p>สังเกตว่าค่า slope ระหว่าง fatalism กับ depression ลดลงเมื่อ simplicity สูงขึ้น</p>
-<pre class="r"><code>xy_value &lt;- list(fatalism = c(seq(min(depression$simplicity), max(depression$simplicity),
-                                  by = .3)),
+</div>
+<div id="plotting-interaction" class="section level2">
+<h2>Plotting interaction</h2>
+<p>ใช้คำสั่ง <code>emmip()</code> ในการสร้างกราฟ โดยจะต้องระบุว่าจะให้ plot ค่าตัวแปร x และ y ที่จุดใดบ้าง</p>
+<p>เราจะสร้าง list กำหนดค่าแกน x ตั้งชื่อตามตัวแปร <code>fatalism</code> โดยกำหนดให้มีค่าตั้งแต่ <code>min()</code> ถึง <code>max()</code> ของ <code>fatalism</code> ขยับขึ้นทีละ 0.3 หน่วย</p>
+<p>กำหนดค่าตัวแปรกำกับ 3 ตำแหน่ง ที่ -1 SD, mean, +1SD ของตัวแปร <code>simplicity</code></p>
+<p>ในคำสั่ง <code>emmip()</code> กำหนดว่าตัวแปรใดเป็นตัวแปรทำนายหรือตัวแปรกำกับ ในรูปแบบ <code>W ~ X</code></p>
+<p>คำสั่ง <code>at =</code> ใช้บอกว่าจะให้สร้างกราฟที่ค่า x y เท่าใด และ <code>CIs =</code> กำหนดว่าจะสร้าง error bars หรือไม่</p>
+<pre class="r"><code>xy_value &lt;- list(fatalism = c(seq(min(depression$fatalism), max(depression$fatalism),
+                                  by = 0.3)),
                  simplicity = c(simp_minus1, simp_mean, simp_plus1))
 emmip(depression.lm, simplicity ~ fatalism, at = xy_value, CIs = TRUE)</code></pre>
 <p><img src="SURVEY_Lab12_files/figure-html/interaction%20plot-1.png" width="672" /></p>

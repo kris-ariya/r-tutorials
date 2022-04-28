@@ -66,15 +66,29 @@ locations <- list(simplicity = c(simp_minus1, simp_mean, simp_plus1))
 locations
 ```
 
+ใช้คำสั่ง `emtrends()` เพื่อคำนวณค่า simple slopes ของตัวแปรทำนาย `fatalism` ที่ตำแหน่งต่าง ๆ ของตัวแปรกำกับ (W) `simplicity`
+
 ```{r simple slopes}
 emtrends(depression.lm, ~ simplicity , var = "fatalism", at = locations)
 ```
 
 สังเกตว่าค่า slope ระหว่าง fatalism กับ depression ลดลงเมื่อ simplicity สูงขึ้น
 
+## Plotting interaction
+
+ใช้คำสั่ง `emmip()` ในการสร้างกราฟ โดยจะต้องระบุว่าจะให้ plot ค่าตัวแปร x และ y ที่จุดใดบ้าง
+
+เราจะสร้าง list กำหนดค่าแกน x ตั้งชื่อตามตัวแปร `fatalism` โดยกำหนดให้มีค่าตั้งแต่ `min()` ถึง `max()` ของ `fatalism` ขยับขึ้นทีละ 0.3 หน่วย
+
+กำหนดค่าตัวแปรกำกับ 3 ตำแหน่ง ที่ -1 SD, mean, +1SD ของตัวแปร `simplicity`
+
+ในคำสั่ง `emmip()` กำหนดว่าตัวแปรใดเป็นตัวแปรทำนายหรือตัวแปรกำกับ ในรูปแบบ `W ~ X`
+
+คำสั่ง `at =` ใช้บอกว่าจะให้สร้างกราฟที่ค่า x y เท่าใด และ `CIs =` กำหนดว่าจะสร้าง error bars หรือไม่
+
 ```{r interaction plot}
-xy_value <- list(fatalism = c(seq(min(depression$simplicity), max(depression$simplicity),
-                                  by = .3)),
+xy_value <- list(fatalism = c(seq(min(depression$fatalism), max(depression$fatalism),
+                                  by = 0.3)),
                  simplicity = c(simp_minus1, simp_mean, simp_plus1))
 emmip(depression.lm, simplicity ~ fatalism, at = xy_value, CIs = TRUE)
 ```
