@@ -13,8 +13,8 @@
 
 <title>Lab 13: Analysis of Covariance</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -60,6 +60,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -80,6 +81,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -232,7 +236,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -245,7 +249,7 @@ $(document).ready(function () {
   <a href="index.html">Home</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     RES MTHD/STAT PSY Lab
      
     <span class="caret"></span>
@@ -284,7 +288,7 @@ $(document).ready(function () {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     EXPRM DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -326,7 +330,7 @@ $(document).ready(function () {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     SURVEY DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -375,8 +379,11 @@ library(ggplot2)</code></pre>
 <p>Tutorial นี้จะแสดงวิธีการวิเคราะห์ความแปรปรวนร่วม (ANCOVA)</p>
 <div id="one-way-ancova" class="section level1">
 <h1>One-way ANCOVA</h1>
-<p>ในตัวอย่างนี้ เราจะใช้ข้อมูล <code>stress</code> จาก datarium package</p>
-<p>ข้อมูลนี้เป็นการทดลองว่า <code>treatment</code> และ <code>exercise</code> มีผลต่อ <code>score</code> หรือไม่ โดยมี <code>age</code> เป็น covariate</p>
+<p>ในตัวอย่างนี้ เราจะใช้ข้อมูล <code>stress</code> จาก datarium
+package</p>
+<p>ข้อมูลนี้เป็นการทดลองว่า <code>treatment</code> และ
+<code>exercise</code> มีผลต่อ <code>score</code> หรือไม่ โดยมี
+<code>age</code> เป็น covariate</p>
 <p>ตัวแปรทุกตัวได้รับตั้งค่าประเภทตัวแปรแล้ว</p>
 <pre class="r"><code>data(stress)
 str(stress)</code></pre>
@@ -393,9 +400,15 @@ str(stress)</code></pre>
 ##   ..- attr(*, &quot;format.spss&quot;)= chr &quot;F8.2&quot;</code></pre>
 <div id="afex" class="section level2">
 <h2>afex</h2>
-<p>ในการวิเคราะห์ความแปรปรวนร่วมทางเดียว เราจะใช้ <code>treatment</code> เป็นตัวแปรอิสระ และ <code>age</code> เป็น covariate</p>
-<p>โมเดลคือ ตัวแปรสองตัวนี้ร่วมกันอธิบายตัวแปรตาม <code>score</code> จึงใช้ <code>treatment + age</code></p>
-<p>ใช้ option <code>factorize = FALSE</code> เนื่องจากคำสั่ง <code>aov_car</code> จะแปลงตัวแปรเป็น factor โดยอัตโนมัติ เผื่อในกรณีที่ผู้ใช้ลืมแปลงตัวแปรเป็น factor (ถ้าหากไม่กำหนด option นี้ <code>aov_car</code> จะพยายามแปลง <code>age</code> เป็น factor แล้วทำให้เกิด error)</p>
+<p>ในการวิเคราะห์ความแปรปรวนร่วมทางเดียว เราจะใช้ <code>treatment</code>
+เป็นตัวแปรอิสระ และ <code>age</code> เป็น covariate</p>
+<p>โมเดลคือ ตัวแปรสองตัวนี้ร่วมกันอธิบายตัวแปรตาม <code>score</code>
+จึงใช้ <code>treatment + age</code></p>
+<p>ใช้ option <code>factorize = FALSE</code> เนื่องจากคำสั่ง
+<code>aov_car</code> จะแปลงตัวแปรเป็น factor โดยอัตโนมัติ
+เผื่อในกรณีที่ผู้ใช้ลืมแปลงตัวแปรเป็น factor (ถ้าหากไม่กำหนด option นี้
+<code>aov_car</code> จะพยายามแปลง <code>age</code> เป็น factor
+แล้วทำให้เกิด error)</p>
 <pre class="r"><code>one.ancova.afex &lt;- aov_car(score ~ treatment + age + Error(id), data = stress, factorize = FALSE)</code></pre>
 <pre><code>## Warning: Numerical variables NOT centered on 0 (i.e., likely bogus results): age</code></pre>
 <pre class="r"><code>summary(one.ancova.afex)</code></pre>
@@ -416,11 +429,21 @@ str(stress)</code></pre>
 ## 2       age 1, 57 45.13 21.37 *** .273   &lt;.001
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;+&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>จะเห็นว่ามีคำเตือนว่าตัวแปรเชิงตัวเลข ไม่ถูกแปลงเป็นค่ากึ่งกลาง (centered variable; ค่าตัวแปรที่ลบออกด้วยค่าเฉลี่ยของตัวมันเอง) การแปลงเป็นค่ากึ่งกลางจะช่วยให้ค่า intercept แสดงถึงค่าเฉลี่ยของกลุ่มอ้างอิง (reference group) เมื่อควบคุมให้ covariate อยู่ที่ค่าเฉลี่ย ซึ่งไม่ใช่สิ่งที่เราสนใจในกรณีนี้ เราจึงไม่ต้องสนใจคำเตือนนี้ก็ได้ (หากต้องการลองวิเคราะห์โดยใช้ค่าที่ center แล้ว สามารถใช้คำสั่ง <code>scale()</code> เพื่อแปลงตัวแปร <code>age</code> เป็นค่ากึ่งกลางก่อนนำไปวิเคราะห์ข้อมูล)</p>
+<p>จะเห็นว่ามีคำเตือนว่าตัวแปรเชิงตัวเลข ไม่ถูกแปลงเป็นค่ากึ่งกลาง
+(centered variable; ค่าตัวแปรที่ลบออกด้วยค่าเฉลี่ยของตัวมันเอง)
+การแปลงเป็นค่ากึ่งกลางจะช่วยให้ค่า intercept
+แสดงถึงค่าเฉลี่ยของกลุ่มอ้างอิง (reference group) เมื่อควบคุมให้
+covariate อยู่ที่ค่าเฉลี่ย ซึ่งไม่ใช่สิ่งที่เราสนใจในกรณีนี้
+เราจึงไม่ต้องสนใจคำเตือนนี้ก็ได้ (หากต้องการลองวิเคราะห์โดยใช้ค่าที่
+center แล้ว สามารถใช้คำสั่ง <code>scale()</code> เพื่อแปลงตัวแปร
+<code>age</code> เป็นค่ากึ่งกลางก่อนนำไปวิเคราะห์ข้อมูล)</p>
 <div id="emmeans" class="section level3">
 <h3>EMMEANS</h3>
-<p>ค่าเฉลี่ยประมาณตามขอบ (estimated marginal means) เป็นค่าเฉลี่ยของเงื่อนไขแต่ละกลุ่มเมื่อควบคุมค่าตัวแปรร่วม <code>age</code> ให้คงที่ที่ค่าเฉลี่ยของตัวมันเอง</p>
-<p>สังเกตว่าค่า emmeans และค่าเฉลี่ยที่ยังไม่ปรับของแต่ละกลุ่ม จะแตกต่างกันเล็กน้อย</p>
+<p>ค่าเฉลี่ยประมาณตามขอบ (estimated marginal means)
+เป็นค่าเฉลี่ยของเงื่อนไขแต่ละกลุ่มเมื่อควบคุมค่าตัวแปรร่วม
+<code>age</code> ให้คงที่ที่ค่าเฉลี่ยของตัวมันเอง</p>
+<p>สังเกตว่าค่า emmeans และค่าเฉลี่ยที่ยังไม่ปรับของแต่ละกลุ่ม
+จะแตกต่างกันเล็กน้อย</p>
 <pre class="r"><code>one.ancova.emm &lt;- emmeans(one.ancova.afex, ~ treatment)
 summary(one.ancova.emm)  # estimated (adjusted) mean</code></pre>
 <pre><code>##  treatment emmean   SE df lower.CL upper.CL
@@ -431,7 +454,7 @@ summary(one.ancova.emm)  # estimated (adjusted) mean</code></pre>
 <pre class="r"><code>by(stress$score, stress$treatment, mean) # raw (unadjusted mean)</code></pre>
 <pre><code>## stress$treatment: yes
 ## [1] 82.15667
-## --------------------------------------------------------------------------------------------------------------- 
+## ------------------------------------------------------------------------------------------------------------------- 
 ## stress$treatment: no
 ## [1] 86.99667</code></pre>
 <pre class="r"><code>pairs(one.ancova.emm) #pariwise comparison</code></pre>
@@ -453,9 +476,14 @@ ggplot(emm.summary, aes(x = treatment, y = emmean)) +
 </div>
 <div id="base-r-lm" class="section level2">
 <h2>base R: lm()</h2>
-<p>การวิเคราะห์ ANCOVA เป็นกรณีพิเศษของ regression เราสามารถใช้ <code>lm()</code> ในการวิเคราะห์ได้เช่นกัน</p>
-<p>แต่ผลการวิเคราะห์จาก <code>summary()</code> ของ <code>lm()</code> นั้นจะอยู่ในรูปแบบ output สำหรับ regression</p>
-<p>ค่า coefficient ของ <code>treatment</code> คือความแตกต่างของค่าเฉลี่ยในสองเงื่อนไขโดยมี <code>no</code> เป็นกลุ่มอ้างอิง ค่านี้จะสอดคล้องกับการเปรียบเทียบรายคู่ด้านบน (แต่กลับทิศทางเป็นบวก)</p>
+<p>การวิเคราะห์ ANCOVA เป็นกรณีพิเศษของ regression เราสามารถใช้
+<code>lm()</code> ในการวิเคราะห์ได้เช่นกัน</p>
+<p>แต่ผลการวิเคราะห์จาก <code>summary()</code> ของ <code>lm()</code>
+นั้นจะอยู่ในรูปแบบ output สำหรับ regression</p>
+<p>ค่า coefficient ของ <code>treatment</code>
+คือความแตกต่างของค่าเฉลี่ยในสองเงื่อนไขโดยมี <code>no</code>
+เป็นกลุ่มอ้างอิง ค่านี้จะสอดคล้องกับการเปรียบเทียบรายคู่ด้านบน
+(แต่กลับทิศทางเป็นบวก)</p>
 <pre class="r"><code>one.ancova.lm &lt;- lm(score ~ treatment + age, data = stress)
 summary(one.ancova.lm) # summary in regression styled output</code></pre>
 <pre><code>## 
@@ -487,13 +515,20 @@ summary(one.ancova.lm) # summary in regression styled output</code></pre>
 ## Residuals 57 2572.52   45.13                      
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>หากเราใช้ <code>anova</code> วิเคราะห์โมเดลนี้ เราจะได้ค่า <em>F</em> ที่แตกต่างจากผลด้านบน เนื่องจากคำสั่ง <code>anova()</code> ของ R นั้นใช้ Type I SS</p>
+<p>หากเราใช้ <code>anova</code> วิเคราะห์โมเดลนี้ เราจะได้ค่า <em>F</em>
+ที่แตกต่างจากผลด้านบน เนื่องจากคำสั่ง <code>anova()</code> ของ R นั้นใช้
+Type I SS</p>
 </div>
 <div id="homogeneity-of-regression-assumptions" class="section level2">
 <h2>Homogeneity of Regression Assumptions</h2>
-<p>การวิเคราะห์ความแปรปรวนร่วม มีข้อสมมติพื้นฐานข้อหนึ่งคือ ค่า slope ระหว่างตัวแปรร่วมและตัวแปรตาม จะเท่ากันในทุกเงื่อนไขของตัวแปรอิสระ กล่าวคือ slope ของ covariate และ DV ในแต่ละเงื่อนไขการทดลองจะต้องขนานกัน</p>
-<p>การที่ slope ขนานกันในทุกเงื่อนไขคือการบอกว่าตัวแปรอิสระและตัวแปรร่วม นั้นไม่มีปฏิสัมพันธ์กัน</p>
-<p>เราสามารถทดสอบได้โดยการสร้างโมเดลที่มีการทดสอบปฏิสัมพันธ์ของตัวแปรอิสระและตัวแปรร่วม <code>treatment * age</code></p>
+<p>การวิเคราะห์ความแปรปรวนร่วม มีข้อสมมติพื้นฐานข้อหนึ่งคือ ค่า slope
+ระหว่างตัวแปรร่วมและตัวแปรตาม จะเท่ากันในทุกเงื่อนไขของตัวแปรอิสระ
+กล่าวคือ slope ของ covariate และ DV
+ในแต่ละเงื่อนไขการทดลองจะต้องขนานกัน</p>
+<p>การที่ slope ขนานกันในทุกเงื่อนไขคือการบอกว่าตัวแปรอิสระและตัวแปรร่วม
+นั้นไม่มีปฏิสัมพันธ์กัน</p>
+<p>เราสามารถทดสอบได้โดยการสร้างโมเดลที่มีการทดสอบปฏิสัมพันธ์ของตัวแปรอิสระและตัวแปรร่วม
+<code>treatment * age</code></p>
 <pre class="r"><code>one.ancova.afex2 &lt;- aov_car(score ~ treatment * age + Error(id), data = stress, factorize = FALSE)</code></pre>
 <pre><code>## Warning: Numerical variables NOT centered on 0 (i.e., likely bogus results): age</code></pre>
 <pre class="r"><code>summary(one.ancova.afex2)</code></pre>
@@ -506,12 +541,16 @@ summary(one.ancova.lm) # summary in regression styled output</code></pre>
 ## treatment:age      1     56 44.453  1.8705 0.032322    0.1769    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>เราพบว่าปฏิสัมพันธ์ระหว่างตัวแปรอิสระและตัวแปรร่วมไม่มีนัยสำคัญทางสถิติ ข้อสมมติฐานพื้นฐานนี้ไม่ถูกละเมิด เราจึงเลือกที่จะใช้ผลจากการวิเคราะห์ ANCOVA <code>one.ancova.afex</code> ตัวแรกด้านบน</p>
+<p>เราพบว่าปฏิสัมพันธ์ระหว่างตัวแปรอิสระและตัวแปรร่วมไม่มีนัยสำคัญทางสถิติ
+ข้อสมมติฐานพื้นฐานนี้ไม่ถูกละเมิด เราจึงเลือกที่จะใช้ผลจากการวิเคราะห์
+ANCOVA <code>one.ancova.afex</code> ตัวแรกด้านบน</p>
 </div>
 </div>
 <div id="two-way-ancova" class="section level1">
 <h1>Two-way ANCOVA</h1>
-<p>การวิเคราะห์ตัวแปรร่วมสามารถทำใน factorial design ก็ได้ ใน factorial design นี้มีตัวแปรอิสระแบบจัดประเภทสองตัว คือ <code>treatment</code> และ <code>exercise</code> ส่วนตัวแปรร่วมคือ <code>age</code></p>
+<p>การวิเคราะห์ตัวแปรร่วมสามารถทำใน factorial design ก็ได้ ใน factorial
+design นี้มีตัวแปรอิสระแบบจัดประเภทสองตัว คือ <code>treatment</code> และ
+<code>exercise</code> ส่วนตัวแปรร่วมคือ <code>age</code></p>
 <pre class="r"><code>two.ancova &lt;- aov_car(score ~ treatment * exercise + age + Error(id), data = stress, factorize = FALSE)</code></pre>
 <pre><code>## Warning: Numerical variables NOT centered on 0 (i.e., likely bogus results): age</code></pre>
 <pre class="r"><code>summary(two.ancova)</code></pre>
@@ -554,12 +593,17 @@ summary(one.ancova.lm) # summary in regression styled output</code></pre>
 ## treatment:exercise:age      2     48 27.08 0.0730 0.003034 0.92967  
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>ตัวแปร age ไม่มีปฏิสัมพันธ์กับตัวแปรอิสระใด ๆ และไม่มีปฏิสัมพันธ์สามทาง จึงไม่ละเมิดเรื่อง homogeneity of regression เราจึงเลือกใช้ผลการวิเคราะห์จาก โมเดล ANCOVA <code>treatment * exercise + age</code> ได้</p>
+<p>ตัวแปร age ไม่มีปฏิสัมพันธ์กับตัวแปรอิสระใด ๆ
+และไม่มีปฏิสัมพันธ์สามทาง จึงไม่ละเมิดเรื่อง homogeneity of regression
+เราจึงเลือกใช้ผลการวิเคราะห์จาก โมเดล ANCOVA
+<code>treatment * exercise + age</code> ได้</p>
 </div>
 <div id="emmeans-1" class="section level3">
 <h3>EMMEANS</h3>
-<p>ค่าเฉลี่ยประมาณตามขอบในการวิเคราะห์นี้เป็นค่าตัวแปรตามที่ถูกควบคุมเมื่อตัวแปรร่วม <code>age</code> คงที่อยู่ที่ค่าเฉลี่ย</p>
-<p>วิธีการสร้าง emmeans และการเปรียบเทียบรายคู่ ทำเหมือน factorial ANOVA ตามปกติ ค่าที่ได้จะเป็นค่าจากโมเดลซึ่งควบคุมตัวแปรร่วมแล้ว</p>
+<p>ค่าเฉลี่ยประมาณตามขอบในการวิเคราะห์นี้เป็นค่าตัวแปรตามที่ถูกควบคุมเมื่อตัวแปรร่วม
+<code>age</code> คงที่อยู่ที่ค่าเฉลี่ย</p>
+<p>วิธีการสร้าง emmeans และการเปรียบเทียบรายคู่ ทำเหมือน factorial ANOVA
+ตามปกติ ค่าที่ได้จะเป็นค่าจากโมเดลซึ่งควบคุมตัวแปรร่วมแล้ว</p>
 <pre class="r"><code>two.ancova.emm &lt;- emmeans(two.ancova, ~ treatment | exercise)
 mean(stress$age) # control age at its mean</code></pre>
 <pre><code>## [1] 59.95</code></pre>
@@ -592,7 +636,9 @@ mean(stress$age) # control age at its mean</code></pre>
 ## exercise = high:
 ##  contrast estimate   SE df t.ratio p.value
 ##  yes - no    -9.75 2.23 53  -4.362  0.0001</code></pre>
-<p>หากต้องการประมาณค่าเฉลี่ยตามขอบ (ค่าเฉลี่ยของแต่ละเงื่อนไข) โดยกำหนดค่าตัวแปรควบคุมเป็นค่าอื่น สามารถใช้ option <code>at = list()</code> กำหนดค่าของตัวแปรควบคุมที่ต้องการได้</p>
+<p>หากต้องการประมาณค่าเฉลี่ยตามขอบ (ค่าเฉลี่ยของแต่ละเงื่อนไข)
+โดยกำหนดค่าตัวแปรควบคุมเป็นค่าอื่น สามารถใช้ option
+<code>at = list()</code> กำหนดค่าของตัวแปรควบคุมที่ต้องการได้</p>
 <pre class="r"><code>emmeans(two.ancova, ~ treatment | exercise, at = list(age = 30))</code></pre>
 <pre><code>## exercise = low:
 ##  treatment emmean   SE df lower.CL upper.CL

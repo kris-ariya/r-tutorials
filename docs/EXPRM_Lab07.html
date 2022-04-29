@@ -13,8 +13,8 @@
 
 <title>Lab 07: Factorial ANOVA</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -308,7 +312,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -321,7 +325,7 @@ div.tocify {
   <a href="index.html">Home</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     RES MTHD/STAT PSY Lab
      
     <span class="caret"></span>
@@ -360,7 +364,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     EXPRM DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -402,7 +406,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     SURVEY DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -445,40 +449,23 @@ div.tocify {
 <pre class="r"><code># load all libraries for this tutorial
 library(car)
 library(ggplot2)
-library(afex)</code></pre>
-<pre><code>## Warning: package &#39;afex&#39; was built under R version 4.0.5</code></pre>
-<pre><code>## Loading required package: lme4</code></pre>
-<pre><code>## Loading required package: Matrix</code></pre>
-<pre><code>## ************
-## Welcome to afex. For support visit: http://afex.singmann.science/</code></pre>
-<pre><code>## - Functions for ANOVAs: aov_car(), aov_ez(), and aov_4()
-## - Methods for calculating p-values with mixed(): &#39;S&#39;, &#39;KR&#39;, &#39;LRT&#39;, and &#39;PB&#39;
-## - &#39;afex_aov&#39; and &#39;mixed&#39; objects can be passed to emmeans() for follow-up tests
-## - NEWS: emmeans() for ANOVA models now uses model = &#39;multivariate&#39; as default.
-## - Get and set global package options with: afex_options()
-## - Set orthogonal sum-to-zero contrasts globally: set_sum_contrasts()
-## - For example analyses see: browseVignettes(&quot;afex&quot;)
-## ************</code></pre>
-<pre><code>## 
-## Attaching package: &#39;afex&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:lme4&#39;:
-## 
-##     lmer</code></pre>
-<pre class="r"><code>library(effectsize)
+library(afex)
+library(effectsize)
 library(psych)
 library(apaTables)
-library(jmv)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;jmv&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:psych&#39;:
-## 
-##     pca, reliability</code></pre>
-<pre class="r"><code>library(emmeans)</code></pre>
-<p>เราจะใช้การวิเคราะห์ความแปรปรวนแบบแฟกทอเรียลในกรณีที่มีปัจจัย (factor) ที่ต้องการศึกษาตั้งแต่สองปัจจัยขึ้นไป</p>
+library(jmv)
+library(emmeans)</code></pre>
+<p>เราจะใช้การวิเคราะห์ความแปรปรวนแบบแฟกทอเรียลในกรณีที่มีปัจจัย
+(factor) ที่ต้องการศึกษาตั้งแต่สองปัจจัยขึ้นไป</p>
 <div id="two-way-anova" class="section level1">
 <h1>Two-way ANOVA</h1>
-<p>การวิเคราะห์ความแปรปรวนสองทางใช้ในกรณีที่มีปัจจัยที่เป็นตัวแปรอิสระสองตัว ในตัวอย่างนี้เราจะใช้ชุดข้อมูล <code>ToothGrowth</code> ที่มีอยู่แล้วใน R</p>
-<p>ชุดข้อมูลนี้มาจากการศึกษาความยาวของเซลล์ที่เกี่ยวข้องกับการเติบโตของฟันในหนูตะเภา ตัวแปรอิสระตัวแรกคือโดสของวิตามินซีที่ได้รับในแต่ละวัน (0.5, 1, และ 2 มิลลิกรัม/วัน) โดยมีตัวแปรอิสระตัวที่สองคือ แหล่งที่มาของวิตามิน ได้แก่ น้ำส้ม (OJ) หรือ กรดแอสคอร์บิกที่มีวิตามินซี (VC)</p>
+<p>การวิเคราะห์ความแปรปรวนสองทางใช้ในกรณีที่มีปัจจัยที่เป็นตัวแปรอิสระสองตัว
+ในตัวอย่างนี้เราจะใช้ชุดข้อมูล <code>ToothGrowth</code> ที่มีอยู่แล้วใน
+R</p>
+<p>ชุดข้อมูลนี้มาจากการศึกษาความยาวของเซลล์ที่เกี่ยวข้องกับการเติบโตของฟันในหนูตะเภา
+ตัวแปรอิสระตัวแรกคือโดสของวิตามินซีที่ได้รับในแต่ละวัน (0.5, 1, และ 2
+มิลลิกรัม/วัน) โดยมีตัวแปรอิสระตัวที่สองคือ แหล่งที่มาของวิตามิน ได้แก่
+น้ำส้ม (OJ) หรือ กรดแอสคอร์บิกที่มีวิตามินซี (VC)</p>
 <pre class="r"><code>mydata &lt;- ToothGrowth
 mydata$id &lt;- 1:nrow(mydata) #add id column
 mydata</code></pre>
@@ -546,8 +533,12 @@ mydata</code></pre>
 </div>
 <div id="data-preparation" class="section level1">
 <h1>Data Preparation</h1>
-<p>ใช้คำสั่ง <code>str()</code> เพื่อตรวจสอบว่าโครงสร้างของข้อมูลเป็นไปตามที่ต้องการหรือไม่</p>
-<p>ในกรณีนี้พบว่าตัวแปร dose นั้นถูกบันทึกเป็น <code>num</code> จึงต้องแปลงให้เป็น <code>factor</code> ให้เรียบร้อย กำหนด <code>levels</code> และ <code>labels</code> ให้ตรงกับที่ต้องการจะให้ปรากฎเวลาวิเคราะห์ข้อมูล</p>
+<p>ใช้คำสั่ง <code>str()</code>
+เพื่อตรวจสอบว่าโครงสร้างของข้อมูลเป็นไปตามที่ต้องการหรือไม่</p>
+<p>ในกรณีนี้พบว่าตัวแปร dose นั้นถูกบันทึกเป็น <code>num</code>
+จึงต้องแปลงให้เป็น <code>factor</code> ให้เรียบร้อย กำหนด
+<code>levels</code> และ <code>labels</code>
+ให้ตรงกับที่ต้องการจะให้ปรากฎเวลาวิเคราะห์ข้อมูล</p>
 <pre class="r"><code>str(mydata)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    60 obs. of  4 variables:
 ##  $ len : num  4.2 11.5 7.3 5.8 6.4 10 11.2 11.2 5.2 7 ...
@@ -564,7 +555,8 @@ str(mydata)</code></pre>
 </div>
 <div id="descriptive-statistics" class="section level1">
 <h1>Descriptive Statistics</h1>
-<p>ลำดับต่อไปคือการตรวจสอบค่าสถิติพื้นฐาน เช่น ค่าเฉลี่ย ส่วนเบี่ยงเบนมาตรฐาน จำนวนกลุ่มตัวอย่าง เป็นต้น</p>
+<p>ลำดับต่อไปคือการตรวจสอบค่าสถิติพื้นฐาน เช่น ค่าเฉลี่ย
+ส่วนเบี่ยงเบนมาตรฐาน จำนวนกลุ่มตัวอย่าง เป็นต้น</p>
 <pre class="r"><code># checking sample size
 table(mydata$supp, mydata$dose)</code></pre>
 <pre><code>##     
@@ -572,40 +564,43 @@ table(mydata$supp, mydata$dose)</code></pre>
 ##   OJ   10 10 10
 ##   VC   10 10 10</code></pre>
 <p>ในกรณีนี้เรามีกลุ่มตัวอย่างเท่ากันในทุกช่อง (balanced design)</p>
-<p>สำหรับสถิติเชิงพรรณาให้ใช้คำสั่ง <code>describeBy()</code> จาก package <code>psych</code> เพื่อตรวจสอบค่าต่าง ๆ เช่น ค่าสูงสุดต่ำสุด ว่าข้อมูลมีจุดผิดพลาดอะไรหรือไม่</p>
-<p>ส่วนคำสั่ง <code>apa.2way.table()</code> เหมาะสำหรับใช้สร้างตารางเป็นไฟล์ Word เพื่อนำไปใช้เขียนรายงาน</p>
+<p>สำหรับสถิติเชิงพรรณาให้ใช้คำสั่ง <code>describeBy()</code> จาก
+package <code>psych</code> เพื่อตรวจสอบค่าต่าง ๆ เช่น ค่าสูงสุดต่ำสุด
+ว่าข้อมูลมีจุดผิดพลาดอะไรหรือไม่</p>
+<p>ส่วนคำสั่ง <code>apa.2way.table()</code>
+เหมาะสำหรับใช้สร้างตารางเป็นไฟล์ Word เพื่อนำไปใช้เขียนรายงาน</p>
 <pre class="r"><code>describeBy(len ~ supp * dose, data = mydata) # This will give us detailed descriptive stats by group</code></pre>
 <pre><code>## 
 ##  Descriptive statistics by group 
 ## supp: OJ
 ## dose: D0.5
-##    vars  n  mean   sd median trimmed mad min  max range skew kurtosis   se
-## X1    1 10 13.23 4.46  12.25   12.82 4.3 8.2 21.5  13.3 0.44    -1.37 1.41
-## --------------------------------------------------------------------------------------------------------------- 
+##     vars  n  mean   sd median trimmed mad min  max range skew kurtosis   se
+## len    1 10 13.23 4.46  12.25   12.82 4.3 8.2 21.5  13.3 0.44    -1.37 1.41
+## ------------------------------------------------------------------------------------------------------------------- 
 ## supp: VC
 ## dose: D0.5
-##    vars  n mean   sd median trimmed  mad min  max range skew kurtosis   se
-## X1    1 10 7.98 2.75   7.15    8.01 3.56 4.2 11.5   7.3 0.13    -1.81 0.87
-## --------------------------------------------------------------------------------------------------------------- 
+##     vars  n mean   sd median trimmed  mad min  max range skew kurtosis   se
+## len    1 10 7.98 2.75   7.15    8.01 3.56 4.2 11.5   7.3 0.13    -1.81 0.87
+## ------------------------------------------------------------------------------------------------------------------- 
 ## supp: OJ
 ## dose: D1
-##    vars  n mean   sd median trimmed  mad  min  max range  skew kurtosis   se
-## X1    1 10 22.7 3.91  23.45   23.15 3.93 14.5 27.3  12.8 -0.68    -0.68 1.24
-## --------------------------------------------------------------------------------------------------------------- 
+##     vars  n mean   sd median trimmed  mad  min  max range  skew kurtosis   se
+## len    1 10 22.7 3.91  23.45   23.15 3.93 14.5 27.3  12.8 -0.68    -0.68 1.24
+## ------------------------------------------------------------------------------------------------------------------- 
 ## supp: VC
 ## dose: D1
-##    vars  n  mean   sd median trimmed mad  min  max range skew kurtosis  se
-## X1    1 10 16.77 2.52   16.5   16.45 1.7 13.6 22.5   8.9 0.93     0.08 0.8
-## --------------------------------------------------------------------------------------------------------------- 
+##     vars  n  mean   sd median trimmed mad  min  max range skew kurtosis  se
+## len    1 10 16.77 2.52   16.5   16.45 1.7 13.6 22.5   8.9 0.93     0.08 0.8
+## ------------------------------------------------------------------------------------------------------------------- 
 ## supp: OJ
 ## dose: D2
-##    vars  n  mean   sd median trimmed  mad  min  max range skew kurtosis   se
-## X1    1 10 26.06 2.66  25.95   25.91 2.08 22.4 30.9   8.5 0.37    -1.09 0.84
-## --------------------------------------------------------------------------------------------------------------- 
+##     vars  n  mean   sd median trimmed  mad  min  max range skew kurtosis   se
+## len    1 10 26.06 2.66  25.95   25.91 2.08 22.4 30.9   8.5 0.37    -1.09 0.84
+## ------------------------------------------------------------------------------------------------------------------- 
 ## supp: VC
 ## dose: D2
-##    vars  n  mean  sd median trimmed mad  min  max range skew kurtosis   se
-## X1    1 10 26.14 4.8  25.95   26.12 4.6 18.5 33.9  15.4 0.16    -1.23 1.52</code></pre>
+##     vars  n  mean  sd median trimmed mad  min  max range skew kurtosis   se
+## len    1 10 26.14 4.8  25.95   26.12 4.6 18.5 33.9  15.4 0.16    -1.23 1.52</code></pre>
 <pre class="r"><code>apa.2way.table(dv = len, iv1 = supp, iv2 = dose , data = mydata, filename = &quot;twowaydesciptive.doc&quot;)</code></pre>
 <pre><code>## 
 ## 
@@ -621,8 +616,10 @@ table(mydata$supp, mydata$dose)</code></pre>
 </div>
 <div id="quick-visualization" class="section level1">
 <h1>Quick Visualization</h1>
-<p>เพื่อให้เห็นภาพของข้อมูลโดยรวม การใช้วาดกราฟจะช่วยได้เป็นอย่างดี ในจุดนี้เราไม่ต้องการภาพที่สวยงานแค่ใช้พิจารณาข้อมูลได้ก็เพียงพอ</p>
-<p>เราสามาถใช้ <code>boxplot()</code> ใน Base R หรือใช้ <code>ggplot()</code> ก็ได้</p>
+<p>เพื่อให้เห็นภาพของข้อมูลโดยรวม การใช้วาดกราฟจะช่วยได้เป็นอย่างดี
+ในจุดนี้เราไม่ต้องการภาพที่สวยงานแค่ใช้พิจารณาข้อมูลได้ก็เพียงพอ</p>
+<p>เราสามาถใช้ <code>boxplot()</code> ใน Base R หรือใช้
+<code>ggplot()</code> ก็ได้</p>
 <pre class="r"><code>boxplot(len ~ supp * dose, data = mydata, col = c(&quot;dodgerblue&quot;, &quot;lightyellow&quot;))</code></pre>
 <p><img src="EXPRM_Lab07_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <pre class="r"><code>ggplot(mydata, aes(x = supp, y = len, fill = dose)) +
@@ -631,11 +628,17 @@ table(mydata$supp, mydata$dose)</code></pre>
 </div>
 <div id="two-way-anova-1" class="section level1">
 <h1>Two-way ANOVA</h1>
-<p>ในขั้นตอนการวิเคราะห์ความแปรปรวนสองทางนี้ เราต้องระมัดระวังว่าจะเลือกใช้คำสั่งใด เพราะแต่ละคำสั่งจะใช้วิธีคำนวณ SS ละคนประเภทกัน</p>
-<p>ในตัวอย่างนี้ ข้อมูลเป็นแบบ balanced ผลของ SS Type I, II, และ III จะเท่ากัน แต่หากกลุ่มตัวอย่างไม่เท่ากัน การเลือกใช้ SS Type ที่แตกต่างกันจะทำให้ได้ผลที่ไม่เหมือนกันไปด้วย</p>
+<p>ในขั้นตอนการวิเคราะห์ความแปรปรวนสองทางนี้
+เราต้องระมัดระวังว่าจะเลือกใช้คำสั่งใด เพราะแต่ละคำสั่งจะใช้วิธีคำนวณ SS
+ละคนประเภทกัน</p>
+<p>ในตัวอย่างนี้ ข้อมูลเป็นแบบ balanced ผลของ SS Type I, II, และ III
+จะเท่ากัน แต่หากกลุ่มตัวอย่างไม่เท่ากัน การเลือกใช้ SS Type
+ที่แตกต่างกันจะทำให้ได้ผลที่ไม่เหมือนกันไปด้วย</p>
 <div id="base-r-type-i-ss" class="section level2">
 <h2>Base R (Type I SS)</h2>
-<p>สำหรับการวิเคราะห์ที่มีตัวแปรต้นตั้งแต่สองตัวขึ้นไป ควรหลีกเลี่ยงการสร้างโมเดล <code>aov</code> ใน R เพราะเป็นวิธีที่ใช้ Type I SS ซึ่งมักจะไม่เหมาะสมในการทดสอบสมมติฐานใน unbalanced design</p>
+<p>สำหรับการวิเคราะห์ที่มีตัวแปรต้นตั้งแต่สองตัวขึ้นไป
+ควรหลีกเลี่ยงการสร้างโมเดล <code>aov</code> ใน R เพราะเป็นวิธีที่ใช้
+Type I SS ซึ่งมักจะไม่เหมาะสมในการทดสอบสมมติฐานใน unbalanced design</p>
 <pre class="r"><code>tooth.aov &lt;- aov(len ~ supp * dose, data = mydata)
 summary(tooth.aov)</code></pre>
 <pre><code>##             Df Sum Sq Mean Sq F value   Pr(&gt;F)    
@@ -649,12 +652,21 @@ summary(tooth.aov)</code></pre>
 </div>
 <div id="option-1-car-package" class="section level2">
 <h2>Option 1: <code>car</code> package</h2>
-<p>ใช้คำสั่ง <code>Anova()</code> ใน <code>car</code> (สังเกตว่าใช้ A ตัวพิมพ์ใหญ่)</p>
-<p>เพื่อจะใช้งานคำสั่งนี้ เราจะต้องสร้างโมเดลเชิงเส้นตรง (linear model) ด้วยคำสั่ง <code>lm()</code></p>
-<p>ในส่วนโมเดล เราจะเขียน <code>y ~ x1 * x2</code> หรือ <code>y ~ x1 + x2 + x1:x2</code> ก็ได้ (ได้ผลเหมือนกัน)</p>
-<p>นอกจากนี้ให้กำหนดตัวเลือก <code>contrast</code> เป็น <code>contr.sum</code> สำหรับตัวแปรอิสระทั้งสองตัว เมื่อทำตามนี้แล้วจะได้โมเดลที่ให้ผลเท่ากับการวิเคราะห์ ANOVA (ANOVA เป็นกรณีเฉพาะแบบหนึ่งของ linear model)</p>
-<p>สำหรับคำสั่ง <code>Anova()</code> นั้นจะมี input เป็นโมเดล <code>lm</code> ที่เราสร้างขึ้น และมี option <code>type</code> ให้กำหนดชนิดของ SS</p>
-<p>เราสามารถเรียกคำสั่ง <code>Anova()</code> เพื่อดูผลได้เลย หรือ save เป็นตัวแปรเพื่อใช้งานในอนาคตต่อไปก็ได้</p>
+<p>ใช้คำสั่ง <code>Anova()</code> ใน <code>car</code> (สังเกตว่าใช้ A
+ตัวพิมพ์ใหญ่)</p>
+<p>เพื่อจะใช้งานคำสั่งนี้ เราจะต้องสร้างโมเดลเชิงเส้นตรง (linear model)
+ด้วยคำสั่ง <code>lm()</code></p>
+<p>ในส่วนโมเดล เราจะเขียน <code>y ~ x1 * x2</code> หรือ
+<code>y ~ x1 + x2 + x1:x2</code> ก็ได้ (ได้ผลเหมือนกัน)</p>
+<p>นอกจากนี้ให้กำหนดตัวเลือก <code>contrast</code> เป็น
+<code>contr.sum</code> สำหรับตัวแปรอิสระทั้งสองตัว
+เมื่อทำตามนี้แล้วจะได้โมเดลที่ให้ผลเท่ากับการวิเคราะห์ ANOVA (ANOVA
+เป็นกรณีเฉพาะแบบหนึ่งของ linear model)</p>
+<p>สำหรับคำสั่ง <code>Anova()</code> นั้นจะมี input เป็นโมเดล
+<code>lm</code> ที่เราสร้างขึ้น และมี option <code>type</code>
+ให้กำหนดชนิดของ SS</p>
+<p>เราสามารถเรียกคำสั่ง <code>Anova()</code> เพื่อดูผลได้เลย หรือ save
+เป็นตัวแปรเพื่อใช้งานในอนาคตต่อไปก็ได้</p>
 <pre class="r"><code>tooth.lm &lt;- lm(len ~ supp + dose + supp:dose, data = mydata, 
                contrast = list(supp = contr.sum, dose = contr.sum)) # same as aov
 
@@ -687,11 +699,19 @@ tooth.Anova # car function. Capital A. </code></pre>
 </div>
 <div id="option-2-afex-package" class="section level2">
 <h2>Option 2: <code>afex</code> package</h2>
-<p>อีกทางเลือกหนึ่งคือใช้ <code>afex</code> (Analysis of Factorial Experiments) ซึ่งออกแบบมาเพื่อการวิเคราะห์ ANOVA ที่ซับซ้อนโดยเฉพาะ ในระดับโปรแกรมคำสั่ง <code>afex::aov_car()</code> จะดึงคำสั่งจากชุดคำสั่งใน <code>car</code> มาใช้งาน แต่คำสั่งใน <code>afex</code> อาจดูใช้งานง่ายกว่า</p>
-<p>ในคำสั่ง <code>aov_car()</code> จะต้องมีการเขียนโมเดล โดยโมเดลจะอยู่ในรูป <code>y ~ x1 * x2 + Error()</code> จุดที่แตกต่างจากเดิมคือต้องมีการระบุ <code>Error()</code> หรือความคลาดเคลื่อนของโมเดล ในกรณีนี้เป็นการออกแบบระหว่างกลุ่ม ความคลาดเคลื่อนจึงอยู่ที่กลุ่มตัวอย่าง ซึ่งเราระบุตัวได้ด้วยตัวแปร <code>id</code> (ขึ้นไปดูวิธีสร้างด้านบน)</p>
-<pre class="r"><code>tooth.afex &lt;- aov_car(len ~ supp * dose + Error(id), data = mydata)</code></pre>
-<pre><code>## Contrasts set to contr.sum for the following variables: supp, dose</code></pre>
-<pre class="r"><code>summary(tooth.afex)</code></pre>
+<p>อีกทางเลือกหนึ่งคือใช้ <code>afex</code> (Analysis of Factorial
+Experiments) ซึ่งออกแบบมาเพื่อการวิเคราะห์ ANOVA ที่ซับซ้อนโดยเฉพาะ
+ในระดับโปรแกรมคำสั่ง <code>afex::aov_car()</code>
+จะดึงคำสั่งจากชุดคำสั่งใน <code>car</code> มาใช้งาน แต่คำสั่งใน
+<code>afex</code> อาจดูใช้งานง่ายกว่า</p>
+<p>ในคำสั่ง <code>aov_car()</code> จะต้องมีการเขียนโมเดล
+โดยโมเดลจะอยู่ในรูป <code>y ~ x1 * x2 + Error()</code>
+จุดที่แตกต่างจากเดิมคือต้องมีการระบุ <code>Error()</code>
+หรือความคลาดเคลื่อนของโมเดล ในกรณีนี้เป็นการออกแบบระหว่างกลุ่ม
+ความคลาดเคลื่อนจึงอยู่ที่กลุ่มตัวอย่าง ซึ่งเราระบุตัวได้ด้วยตัวแปร
+<code>id</code> (ขึ้นไปดูวิธีสร้างด้านบน)</p>
+<pre class="r"><code>tooth.afex &lt;- aov_car(len ~ supp * dose + Error(id), data = mydata)
+summary(tooth.afex)</code></pre>
 <pre><code>## Anova Table (Type 3 tests)
 ## 
 ## Response: len
@@ -713,12 +733,24 @@ tooth.Anova # car function. Capital A. </code></pre>
 ## Residuals     712.1 54                       
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>ข้อความเตือนแสดงให้เราเห็นว่า โปรแกรมได้ปรับ option <code>contrast</code> อัตโนมัติให้เป็น <code>contr.sum</code></p>
-<p>ตาราง ANOVA ของคำสั่ง <code>aov_car()</code> จะไม่เหมือนกับตาราง ANOVA ทั่วไปที่จะแสดง SS หรือ MS ให้ หากต้องการได้ตารางที่มีค่า SS สามารถใช้คำสั่ง <code>car::Anova()</code> เรียกวิเคราะห์โมเดล <code>lm</code> ที่ซ่อนอยู่ใน object ของ <code>aov_car</code> ได้</p>
+<p>ข้อความเตือนแสดงให้เราเห็นว่า โปรแกรมได้ปรับ option
+<code>contrast</code> อัตโนมัติให้เป็น <code>contr.sum</code></p>
+<p>ตาราง ANOVA ของคำสั่ง <code>aov_car()</code> จะไม่เหมือนกับตาราง
+ANOVA ทั่วไปที่จะแสดง SS หรือ MS ให้ หากต้องการได้ตารางที่มีค่า SS
+สามารถใช้คำสั่ง <code>car::Anova()</code> เรียกวิเคราะห์โมเดล
+<code>lm</code> ที่ซ่อนอยู่ใน object ของ <code>aov_car</code> ได้</p>
 </div>
 <div id="option-3-jmv" class="section level2">
 <h2>Option 3: <code>jmv</code></h2>
-<p>คำสั่ง <code>ANOVA()</code> ใน <code>jmv</code> จะวิเคราะห์ด้วย Type III SS เป็นค่าตั้งต้น ลักษณะการใช้งานของคำสั่งใน <code>jmv</code> จะแตกต่างจากคำสั่ง <code>R</code> ทั่วไป ที่จะให้ผู้ใช้เรียกคำสั่งตามที่ต้องการทีละตัว แต่คำสั่งใน <code>jmv</code> จะมีลักษณะเป็นคำสั่งเดียว (เช่น ANOVA) แล้วมี options ให้เลือกจำนวนมาก (เช่น คำนวณ effect size ตัวไหน ต้องการทำ post-hoc หรือไม่ จะดู estimated marginal means ไหม จะ plot estimated marginal means ไหม จะแสดง 95% CI หรือไม่ ฯลฯ) สำหรับ options ในคำสั่ง สามารถดูได้ที่ <code>?ANOVA</code></p>
+<p>คำสั่ง <code>ANOVA()</code> ใน <code>jmv</code> จะวิเคราะห์ด้วย Type
+III SS เป็นค่าตั้งต้น ลักษณะการใช้งานของคำสั่งใน <code>jmv</code>
+จะแตกต่างจากคำสั่ง <code>R</code> ทั่วไป
+ที่จะให้ผู้ใช้เรียกคำสั่งตามที่ต้องการทีละตัว แต่คำสั่งใน
+<code>jmv</code> จะมีลักษณะเป็นคำสั่งเดียว (เช่น ANOVA) แล้วมี options
+ให้เลือกจำนวนมาก (เช่น คำนวณ effect size ตัวไหน ต้องการทำ post-hoc
+หรือไม่ จะดู estimated marginal means ไหม จะ plot estimated marginal
+means ไหม จะแสดง 95% CI หรือไม่ ฯลฯ) สำหรับ options ในคำสั่ง
+สามารถดูได้ที่ <code>?ANOVA</code></p>
 <pre class="r"><code>ANOVA(formula = len ~ supp * dose, data = mydata, effectSize = list(&quot;partEta&quot;, &quot;omega&quot;))</code></pre>
 <pre><code>## 
 ##  ANOVA
@@ -736,73 +768,91 @@ tooth.Anova # car function. Capital A. </code></pre>
 </div>
 <div id="effect-size" class="section level1">
 <h1>Effect size</h1>
-<p>ในการคำนวณขนาดอิทธิพล สามารถใช้คำสั่งจาก <code>effectsize</code> ได้ เช่น ต้องการ <code>eta_squared()</code> หรือ <code>omega_squared</code> หรือ <code>cohens_f</code></p>
-<p>เนื่องจากการวิเคราะห์ที่เราใช้เป็น Type III SS เราจึงต้องใช้ object ที่เป็น Type III ในคำสั่งของ <code>effectsize</code> ซึ่งสามารถใช้ได้ทั้งโมเดลจาก <code>afex::aov_car()</code> หรือ output ที่ save จาก <code>car::Anova</code></p>
+<p>ในการคำนวณขนาดอิทธิพล สามารถใช้คำสั่งจาก <code>effectsize</code> ได้
+เช่น ต้องการ <code>eta_squared()</code> หรือ <code>omega_squared</code>
+หรือ <code>cohens_f</code></p>
+<p>เนื่องจากการวิเคราะห์ที่เราใช้เป็น Type III SS เราจึงต้องใช้ object
+ที่เป็น Type III ในคำสั่งของ <code>effectsize</code>
+ซึ่งสามารถใช้ได้ทั้งโมเดลจาก <code>afex::aov_car()</code> หรือ output
+ที่ save จาก <code>car::Anova</code></p>
 <pre class="r"><code>eta_squared(tooth.Anova)</code></pre>
-<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with orthogonal contrasts (such as
-##   those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default &#39;contr.treatment&#39;).</code></pre>
+<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with orthogonal contrasts (such as those
+##   produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default &#39;contr.treatment&#39;).</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type III)
 ## 
-## Parameter | Eta2 (partial) |       90% CI
+## Parameter | Eta2 (partial) |       95% CI
 ## -----------------------------------------
-## supp      |           0.22 | [0.08, 0.37]
-## dose      |           0.77 | [0.68, 0.83]
-## supp:dose |           0.13 | [0.01, 0.27]</code></pre>
+## supp      |           0.22 | [0.08, 1.00]
+## dose      |           0.77 | [0.68, 1.00]
+## supp:dose |           0.13 | [0.01, 1.00]
+## 
+## - One-sided CIs: upper bound fixed at (1).</code></pre>
 <pre class="r"><code>eta_squared(tooth.afex) #same as above</code></pre>
-<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with orthogonal contrasts (such as
-##   those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default &#39;contr.treatment&#39;).</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type III)
 ## 
-## Parameter | Eta2 (partial) |       90% CI
+## Parameter | Eta2 (partial) |       95% CI
 ## -----------------------------------------
-## supp      |           0.22 | [0.08, 0.37]
-## dose      |           0.77 | [0.68, 0.83]
-## supp:dose |           0.13 | [0.01, 0.27]</code></pre>
+## supp      |           0.22 | [0.08, 1.00]
+## dose      |           0.77 | [0.68, 1.00]
+## supp:dose |           0.13 | [0.01, 1.00]
+## 
+## - One-sided CIs: upper bound fixed at (1).</code></pre>
 <pre class="r"><code>omega_squared(tooth.Anova)</code></pre>
-<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with orthogonal contrasts (such as
-##   those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default &#39;contr.treatment&#39;).</code></pre>
+<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with orthogonal contrasts (such as those
+##   produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default &#39;contr.treatment&#39;).</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type III)
 ## 
-## Parameter | Omega2 (partial) |       90% CI
+## Parameter | Omega2 (partial) |       95% CI
 ## -------------------------------------------
-## supp      |             0.20 | [0.06, 0.35]
-## dose      |             0.75 | [0.65, 0.81]
-## supp:dose |             0.09 | [0.00, 0.22]</code></pre>
+## supp      |             0.20 | [0.06, 1.00]
+## dose      |             0.75 | [0.65, 1.00]
+## supp:dose |             0.09 | [0.00, 1.00]
+## 
+## - One-sided CIs: upper bound fixed at (1).</code></pre>
 <pre class="r"><code>omega_squared(tooth.afex) #same as above</code></pre>
-<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with orthogonal contrasts (such as
-##   those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default &#39;contr.treatment&#39;).</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type III)
 ## 
-## Parameter | Omega2 (partial) |       90% CI
+## Parameter | Omega2 (partial) |       95% CI
 ## -------------------------------------------
-## supp      |             0.20 | [0.06, 0.35]
-## dose      |             0.75 | [0.65, 0.81]
-## supp:dose |             0.09 | [0.00, 0.22]</code></pre>
+## supp      |             0.20 | [0.06, 1.00]
+## dose      |             0.75 | [0.65, 1.00]
+## supp:dose |             0.09 | [0.00, 1.00]
+## 
+## - One-sided CIs: upper bound fixed at (1).</code></pre>
 <pre class="r"><code>cohens_f(tooth.Anova)</code></pre>
-<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with orthogonal contrasts (such as
-##   those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default &#39;contr.treatment&#39;).</code></pre>
+<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with orthogonal contrasts (such as those
+##   produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default &#39;contr.treatment&#39;).</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type III)
 ## 
-## Parameter | Cohen&#39;s f (partial) |       90% CI
-## ----------------------------------------------
-## supp      |                0.54 | [0.30, 0.77]
-## dose      |                1.85 | [1.47, 2.20]
-## supp:dose |                0.39 | [0.11, 0.60]</code></pre>
+## Parameter | Cohen&#39;s f (partial) |      95% CI
+## ---------------------------------------------
+## supp      |                0.54 | [0.30, Inf]
+## dose      |                1.85 | [1.47, Inf]
+## supp:dose |                0.39 | [0.11, Inf]
+## 
+## - One-sided CIs: upper bound fixed at (Inf).</code></pre>
 <pre class="r"><code>cohens_f(tooth.afex) #same as above</code></pre>
-<pre><code>## Type 3 ANOVAs only give sensible and informative results when covariates are mean-centered and factors are coded with orthogonal contrasts (such as
-##   those produced by &#39;contr.sum&#39;, &#39;contr.poly&#39;, or &#39;contr.helmert&#39;, but *not* by the default &#39;contr.treatment&#39;).</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type III)
 ## 
-## Parameter | Cohen&#39;s f (partial) |       90% CI
-## ----------------------------------------------
-## supp      |                0.54 | [0.30, 0.77]
-## dose      |                1.85 | [1.47, 2.20]
-## supp:dose |                0.39 | [0.11, 0.60]</code></pre>
+## Parameter | Cohen&#39;s f (partial) |      95% CI
+## ---------------------------------------------
+## supp      |                0.54 | [0.30, Inf]
+## dose      |                1.85 | [1.47, Inf]
+## supp:dose |                0.39 | [0.11, Inf]
+## 
+## - One-sided CIs: upper bound fixed at (Inf).</code></pre>
 </div>
 <div id="simple-effect" class="section level1">
 <h1>Simple effect</h1>
-<p>เนื่องจากเราพบว่าตัวแปร <code>supp</code> และ <code>dose</code> มีปฏิสัมพันธ์กัน เราจึงต้องสำรวจต่อในระดับอิทธิพลอย่างง่าย (simple effects)</p>
-<p>ก่อนอื่นเราต้องสร้าง โมเดลค่าเฉลี่ยของแต่ละเงื่อนไขด้วย <code>emmeans()</code> โดยมี input เป็นโมเดลสถิติจากคำสั่ง <code>lm()</code> หรือ <code>afex::aov_car</code> และกำหนดโมเดลว่าเราต้องการดูค่าเฉลี่ยของตัวแปรใน เช่น <code>~ x1 * x2</code> คือ สร้างตารางค่าเฉลี่ยของทุกช่อง (ทุกระดับในตัวแปร 1 และ 2)</p>
+<p>เนื่องจากเราพบว่าตัวแปร <code>supp</code> และ <code>dose</code>
+มีปฏิสัมพันธ์กัน เราจึงต้องสำรวจต่อในระดับอิทธิพลอย่างง่าย (simple
+effects)</p>
+<p>ก่อนอื่นเราต้องสร้าง โมเดลค่าเฉลี่ยของแต่ละเงื่อนไขด้วย
+<code>emmeans()</code> โดยมี input เป็นโมเดลสถิติจากคำสั่ง
+<code>lm()</code> หรือ <code>afex::aov_car</code>
+และกำหนดโมเดลว่าเราต้องการดูค่าเฉลี่ยของตัวแปรใน เช่น
+<code>~ x1 * x2</code> คือ สร้างตารางค่าเฉลี่ยของทุกช่อง
+(ทุกระดับในตัวแปร 1 และ 2)</p>
 <pre class="r"><code>tooth.emm1 &lt;- emmeans(tooth.lm, ~ supp * dose)
 tooth.emm2 &lt;- emmeans(tooth.afex, ~ supp * dose) #same as above
 tooth.emm1</code></pre>
@@ -825,8 +875,14 @@ tooth.emm1</code></pre>
 ##  VC   D2    26.14 1.15 54    23.84     28.4
 ## 
 ## Confidence level used: 0.95</code></pre>
-<p>หากผู้วิจัยต้องการศึกษาว่า แหล่งของวิตามิน <code>supp</code> แตกต่างหรือไม่ แยกตามระดับ <code>dose</code></p>
-<p>เราสามารถใช้คำสั่ง <code>emmeans::contrast()</code> โดยให้ input เป็นโมเดลตารางค่าเฉลี่ย (จากคำสั่ง <code>emmeans</code> ด้านบน) และเลือก <code>method = "pairwise"</code> คือให้เปรียบเทียบรายคู่ และ กำหนดให้การทดสอบอิทธิพลอย่างง่าย <code>simple = "supp"</code> ซึ่งเป็นตัวแปรที่ต้องการเปรียบเทียบ (หรือใช้คำสั่ง <code>by</code> = ตัวแปรที่ต้องการแยก ก็ได้)</p>
+<p>หากผู้วิจัยต้องการศึกษาว่า แหล่งของวิตามิน <code>supp</code>
+แตกต่างหรือไม่ แยกตามระดับ <code>dose</code></p>
+<p>เราสามารถใช้คำสั่ง <code>emmeans::contrast()</code> โดยให้ input
+เป็นโมเดลตารางค่าเฉลี่ย (จากคำสั่ง <code>emmeans</code> ด้านบน) และเลือก
+<code>method = "pairwise"</code> คือให้เปรียบเทียบรายคู่ และ
+กำหนดให้การทดสอบอิทธิพลอย่างง่าย <code>simple = "supp"</code>
+ซึ่งเป็นตัวแปรที่ต้องการเปรียบเทียบ (หรือใช้คำสั่ง <code>by</code> =
+ตัวแปรที่ต้องการแยก ก็ได้)</p>
 <pre class="r"><code>suppBydose &lt;- contrast(tooth.emm1, &quot;pairwise&quot;, simple = &quot;supp&quot;)
 contrast(tooth.emm1, &quot;pairwise&quot;, by = &quot;dose&quot;) #same as above</code></pre>
 <pre><code>## dose = D0.5:
@@ -840,7 +896,12 @@ contrast(tooth.emm1, &quot;pairwise&quot;, by = &quot;dose&quot;) #same as above
 ## dose = D2:
 ##  contrast estimate   SE df t.ratio p.value
 ##  OJ - VC     -0.08 1.62 54  -0.049  0.9609</code></pre>
-<p>เนื่องจากการทดสอบ <code>supp</code> ในแต่ละเงื่อนไข <code>dose</code> จะทำให้มีการทดสอบทั้งสิ้น 3 คู่ เราจึงต้องปรับแก้ค่า <em>p</em> เพื่อป้องกัน <span class="math inline">\(\alpha_{fw}\)</span> ดังนั้นเราจึงต้องรวมการทดสอบทั้ง 3 คู่ให้อยู่ใน family เดียวกันด้วย <code>rbind()</code> จากนั้นใช้คำสั่ง <code>summary()</code> เรียกดูค่าสถิติ โดยกำหนดให้ปรับแก้ <code>adjust = "sidak"</code></p>
+<p>เนื่องจากการทดสอบ <code>supp</code> ในแต่ละเงื่อนไข <code>dose</code>
+จะทำให้มีการทดสอบทั้งสิ้น 3 คู่ เราจึงต้องปรับแก้ค่า <em>p</em>
+เพื่อป้องกัน <span class="math inline">\(\alpha_{fw}\)</span>
+ดังนั้นเราจึงต้องรวมการทดสอบทั้ง 3 คู่ให้อยู่ใน family เดียวกันด้วย
+<code>rbind()</code> จากนั้นใช้คำสั่ง <code>summary()</code>
+เรียกดูค่าสถิติ โดยกำหนดให้ปรับแก้ <code>adjust = "sidak"</code></p>
 <pre class="r"><code>fam_suppBydose&lt;- rbind(suppBydose)
 summary(fam_suppBydose, adjust = &quot;sidak&quot;, infer = TRUE)</code></pre>
 <pre><code>##  dose contrast estimate   SE df lower.CL upper.CL t.ratio p.value
@@ -853,7 +914,9 @@ summary(fam_suppBydose, adjust = &quot;sidak&quot;, infer = TRUE)</code></pre>
 ## P value adjustment: sidak method for 3 tests</code></pre>
 <pre class="r"><code>plot(fam_suppBydose, adjust = &quot;sidak&quot;) </code></pre>
 <p><img src="EXPRM_Lab07_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
-<p>หากต้องการเปรียบเทียบค่าเฉลี่ยของ <code>dose</code> โดยแบ่งตาม <code>supp</code> ก็สามารถทำได้โดยแก้ไข option <code>simple = "dose"</code> หรือ <code>by = "supp"</code></p>
+<p>หากต้องการเปรียบเทียบค่าเฉลี่ยของ <code>dose</code> โดยแบ่งตาม
+<code>supp</code> ก็สามารถทำได้โดยแก้ไข option
+<code>simple = "dose"</code> หรือ <code>by = "supp"</code></p>
 <pre class="r"><code>doseBysupp &lt;- contrast(tooth.emm1, &quot;pairwise&quot;, simple = &quot;dose&quot;)
 
 fam_doseBysupp&lt;- rbind(doseBysupp)
@@ -871,7 +934,12 @@ summary(fam_doseBysupp, adjust = &quot;sidak&quot;, infer = TRUE)</code></pre>
 ## P value adjustment: sidak method for 6 tests</code></pre>
 <pre class="r"><code>plot(fam_doseBysupp, adjust = &quot;sidak&quot;) </code></pre>
 <p><img src="EXPRM_Lab07_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
-<p>ในกรณีที่ต้องการดู simple effects ทุกคู่ที่เป็นไปได้ ให้กำหนด <code>simple = "each"</code> โปรแกรมจะคำนวณ simple effects ในทุก ๆ รายคู่ที่เป็นไปได้ให้ เราควรเพิ่มคำสั่ง <code>combine = TRUE</code> เพื่อรวมการวิเคราะห์รายคู่ทั้งหมดอยู่ด้วยกัน แล้วปรับแก้พร้อมกันทีเดียวใน <code>summary()</code> ด้วยวิธีของ <code>sidak</code></p>
+<p>ในกรณีที่ต้องการดู simple effects ทุกคู่ที่เป็นไปได้ ให้กำหนด
+<code>simple = "each"</code> โปรแกรมจะคำนวณ simple effects ในทุก ๆ
+รายคู่ที่เป็นไปได้ให้ เราควรเพิ่มคำสั่ง <code>combine = TRUE</code>
+เพื่อรวมการวิเคราะห์รายคู่ทั้งหมดอยู่ด้วยกัน
+แล้วปรับแก้พร้อมกันทีเดียวใน <code>summary()</code> ด้วยวิธีของ
+<code>sidak</code></p>
 <pre class="r"><code>allsimple &lt;- contrast(tooth.emm1, &quot;pairwise&quot;, simple = &quot;each&quot;, combine = TRUE)
 summary(allsimple, adjust = &quot;sidak&quot;, infer = TRUE)</code></pre>
 <pre><code>##  dose supp contrast  estimate   SE df lower.CL upper.CL t.ratio p.value
@@ -891,8 +959,11 @@ summary(allsimple, adjust = &quot;sidak&quot;, infer = TRUE)</code></pre>
 </div>
 <div id="post-hoc-for-main-effects" class="section level1">
 <h1>Post-hoc for main effects</h1>
-<p>โดยปกติแล้วหากพบผลปฏิสัมพันธ์ ผู้วิจัยมักไม่มีความจำเป็นที่จะต้องวิเคราะห์รายคู่ในระดับ main effect (เนื่องจากวิเคราะห์ simple effect ไปแล้ว)</p>
-<p>แต่ถ้าหากไม่พบปฏิสัมพันธ์ แต่พบอิทธิพลหลัก เราอาจวิเคราะห์ post-hoc ของอิทธิพลหลักได้ด้วยคำสั่งด้านล่างนี้</p>
+<p>โดยปกติแล้วหากพบผลปฏิสัมพันธ์
+ผู้วิจัยมักไม่มีความจำเป็นที่จะต้องวิเคราะห์รายคู่ในระดับ main effect
+(เนื่องจากวิเคราะห์ simple effect ไปแล้ว)</p>
+<p>แต่ถ้าหากไม่พบปฏิสัมพันธ์ แต่พบอิทธิพลหลัก เราอาจวิเคราะห์ post-hoc
+ของอิทธิพลหลักได้ด้วยคำสั่งด้านล่างนี้</p>
 <pre class="r"><code>supp.emm &lt;- emmeans(tooth.afex, ~ supp) # use only main effect of interest</code></pre>
 <pre><code>## NOTE: Results may be misleading due to involvement in interactions</code></pre>
 <pre class="r"><code>supp.emm</code></pre>
@@ -929,16 +1000,35 @@ summary(allsimple, adjust = &quot;sidak&quot;, infer = TRUE)</code></pre>
 </div>
 <div id="pretty-graphs" class="section level1">
 <h1>Pretty graphs</h1>
-<p>กราฟิกใน R อาจจะใช้เวลาเรียนรู้นานกว่าโปรแกรมอื่น ๆ แต่เมื่อใช้งานเป็นแล้วจะสามารถสร้างกราฟที่สวยงามได้ตามที่ต้องการในเวลาที่รวดเร็ว</p>
-<p>เริ่มแรกให้เราสร้าง dataframe ที่มีค่าเฉลี่ยของแต่ละเงื่อนไขเพื่อเอาไปสร้างกราฟ โดย save ผลจาก <code>summary()</code> ของตัวโมเดลตารางค่าเฉลี่ย (จาก <code>emmeans</code>)</p>
-<p>จากนั้นนำไปใส่ในคำสั่ง <code>ggplot()</code> แล้วกำหนด aestheic <code>aes()</code> ให้</p>
+<p>กราฟิกใน R อาจจะใช้เวลาเรียนรู้นานกว่าโปรแกรมอื่น ๆ
+แต่เมื่อใช้งานเป็นแล้วจะสามารถสร้างกราฟที่สวยงามได้ตามที่ต้องการในเวลาที่รวดเร็ว</p>
+<p>เริ่มแรกให้เราสร้าง dataframe
+ที่มีค่าเฉลี่ยของแต่ละเงื่อนไขเพื่อเอาไปสร้างกราฟ โดย save ผลจาก
+<code>summary()</code> ของตัวโมเดลตารางค่าเฉลี่ย (จาก
+<code>emmeans</code>)</p>
+<p>จากนั้นนำไปใส่ในคำสั่ง <code>ggplot()</code> แล้วกำหนด aestheic
+<code>aes()</code> ให้</p>
 <p>x เป็นตัวแปรอิสระตัวที่ 1</p>
 <p>y เป็นตัวแปรตาม</p>
 <p>color กำหนดให้ใช้กลุ่มสีแทนตัวแปรอิสระตัวที่ 2</p>
-<p>จากนั้นเพิ่ม geometry ชนิด column <code>geom_col</code> กำหนด <code>aes(fill =)</code> ตัวแปรอิสระตัวที่ 2 (เพื่อให้เติมสีใน column ตามตัวแปร) ส่วน option <code>alpha</code> ใช้กำหนดความโปร่งแสง (transparency) และ option <code>position = position_dodge(.9)</code> กำหนดไว้ให้คอลัมน์วางอยู่ข้างกัน (หากไม่กำหนดคอลัมน์จะทับกัน)</p>
-<p><code>geom_errorbar()</code> ใช้สร้างขีดบอกความคลาดเคลื่อน (ในโมเดลตารางค่าเฉลี่ยมี 95% CI อยู่) ให้กำหนด <code>ymin</code> เป็นตัวแปรที่มีค่าขอบล่างของขีด และ xmin เป็นค่าขอบบนของขีด (เราสามารถเลือกค่า error bar ได้ตามต้องการ เช่น นักวิจัยบางคนใช้ค่า SE แทนค่า 95% CI) ส่วน option <code>width</code> เป็นตัวบอกขนาดของขีด สำหรับ <code>position</code> เราใช้ค่าเดียวกับใน <code>geom_col</code> เพื่อให้ error bar กับ column เรียงตรงกัน</p>
-<p><code>xlab</code> คือ ชื่อของแกน X <code>ylab</code> คือชื่อบนแกน Y ส่วน <code>theme_classic</code> มีลักษณะค่อนข้างใกล้เคียง APA (ผู้ใช้งานระดับสูงมักนิยมสร้าง theme ใหม่ของตัวเองไว้ใช้งาน)</p>
-<p>สำหรับสอง option สุดท้าย คือ สีสำหรับ <code>color</code> (สีเส้นขอบ) และ <code>fill</code> (สีช่องในคอลัมน์) สามารถดูชุดสีได้ด้วยคำสั่ง <code>RColorBrewer::display.brewer.all()</code></p>
+<p>จากนั้นเพิ่ม geometry ชนิด column <code>geom_col</code> กำหนด
+<code>aes(fill =)</code> ตัวแปรอิสระตัวที่ 2 (เพื่อให้เติมสีใน column
+ตามตัวแปร) ส่วน option <code>alpha</code> ใช้กำหนดความโปร่งแสง
+(transparency) และ option <code>position = position_dodge(.9)</code>
+กำหนดไว้ให้คอลัมน์วางอยู่ข้างกัน (หากไม่กำหนดคอลัมน์จะทับกัน)</p>
+<p><code>geom_errorbar()</code> ใช้สร้างขีดบอกความคลาดเคลื่อน
+(ในโมเดลตารางค่าเฉลี่ยมี 95% CI อยู่) ให้กำหนด <code>ymin</code>
+เป็นตัวแปรที่มีค่าขอบล่างของขีด และ xmin เป็นค่าขอบบนของขีด
+(เราสามารถเลือกค่า error bar ได้ตามต้องการ เช่น นักวิจัยบางคนใช้ค่า SE
+แทนค่า 95% CI) ส่วน option <code>width</code> เป็นตัวบอกขนาดของขีด
+สำหรับ <code>position</code> เราใช้ค่าเดียวกับใน <code>geom_col</code>
+เพื่อให้ error bar กับ column เรียงตรงกัน</p>
+<p><code>xlab</code> คือ ชื่อของแกน X <code>ylab</code> คือชื่อบนแกน Y
+ส่วน <code>theme_classic</code> มีลักษณะค่อนข้างใกล้เคียง APA
+(ผู้ใช้งานระดับสูงมักนิยมสร้าง theme ใหม่ของตัวเองไว้ใช้งาน)</p>
+<p>สำหรับสอง option สุดท้าย คือ สีสำหรับ <code>color</code> (สีเส้นขอบ)
+และ <code>fill</code> (สีช่องในคอลัมน์) สามารถดูชุดสีได้ด้วยคำสั่ง
+<code>RColorBrewer::display.brewer.all()</code></p>
 <pre class="r"><code>emm.summary &lt;- summary(tooth.emm1)
 emm.summary</code></pre>
 <pre><code>##  supp dose emmean   SE df lower.CL upper.CL

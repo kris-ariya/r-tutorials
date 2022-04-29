@@ -12,9 +12,11 @@ output:
 
 ```{r load_package, message = FALSE}
 # load all packages for this tutorial
+#install.packages("rockchalk")
 library(emmeans)
 library(psych)
 library(carData)
+library(rockchalk)
 ```
 
 # Interaction between Continuous and Continuous Variables
@@ -38,13 +40,16 @@ boxplot(depression)
 
 สังเกตว่าตัวแปรทั้งหมดอยู่ใน scale ใกล้เคียงกัน แสดงว่าผู้วิจัยน่าจะมีการแปลงคะแนนให้อยู่ในสเกลประมาณ 1 ตรงกลาง เพื่อให้อ่านค่าง่าย อย่างไรก็ดีการ scale นี้ไม่ส่งผลกระทบต่อการทดสอบความสัมพันธ์
 
+# Base R
+
 ## `lm()`
 
 หลักการของตัวแปรกำกับคือ ปฏิสัมพันธ์ (interaction) ระหว่างตัวแปรทำนาย เราจึงสามารถเขียนสมการถดถดอยเชิงเส้นตรงได้ตามนี้
 
 ```{r a parameter}
 depression.lm <- lm(depression ~ fatalism + simplicity + fatalism:simplicity, data = depression) 
-summary(depression.lm)
+summary(depression.lm, confint = TRUE)
+
 plot(depression.lm) # assumption checks
 ```
 
@@ -93,6 +98,24 @@ xy_value <- list(fatalism = c(seq(min(depression$fatalism), max(depression$fatal
 emmip(depression.lm, simplicity ~ fatalism, at = xy_value, CIs = TRUE)
 ```
 
+# rockchalk Package
+
+แพ็คเกจ rockchalk มีคำสั่งที่ช่วยให้เราสร้าง simple slope plot ได้อย่างสะดวก `plotSlopes(model, modx = moderator, plotx = predictorX, modxVals = Focal values of plot)`
+
+คำสั่ง `testSlopes(plotSlopesObject)` จะคำนวณ t-test ของ simple slopes แต่ละเส้นตามที่กำหนดไว้ใน `plotSlopes()`
+
+```{r}
+# Plot simple slopes
+ps <- plotSlopes(depression.lm, modx = "simplicity", plotx = "fatalism", modxVals = "std.dev")
+# test simpleslopes and save to an object
+tps <- testSlopes(ps)
+# Call t-tests table
+tps$hypotests
+# plotCurves can include confidence interval bands
+plotCurves(depression.lm, modx = "simplicity", plotx = "fatalism", modxVals = "std.dev",
+           interval = "confidence")
+```
+
 # PROCESS v4.1 for R
 
 Macro โดย Andrew Hayes <https://www.processmacro.org/download.html>
@@ -118,3 +141,33 @@ process(data = depression, y = "depression", x = "fatalism", w = "simplicity", m
 ```
 
 สังเกตตำแหน่งในการคำนวณ simple slope (เรียกว่า conditional effect ใน output) จะอยู่ที่ 16 th, 50th, และ 84th percentile ซึ่งเป็นตำแหน่งที่ใกล้เคียงกับ -1SD, mean, +1SD แต่ก็ยังไม่ใช่ค่าเดียวกัน ผลจึงอาจแตกต่างจากวิธีด้านบน
+
+# Mean Centering
+
+การแปลงค่าศูนย์กลางจะช่วยลด multicollinearity ระหว่างตัวแปรทำนายกับพจน์ปฏิสัมพันธ์ (interaction term) ซึ่งจะทำให้ค่าจุดตัดแกน Y และสัมประสิทธิ์ของตัวแปรทำนาย X เปลี่ยนแปลงไป แต่ไม่ส่งผลต่อค่าสัมประสิทธิ์ของพจน์ปฏิสัมพันธ์ (coefficient of an interaction term; `X:W`)
+
+การตัดสินใจแปลงค่าศูนย์กลางจึงขึ้นอยู่กับว่าคำถามในการวิเคราะห์สนใจตอบคำถามใดเป็นหลัก หากเป็นปฏิสัมพันธ์ก็อาจไม่จำเป็นต้องทำ mean centering ก็ได้
+
+```{r centering}
+# Mean centering
+depression$cen.fatalism <- depression$fatalism - mean(depression$fatalism)
+depression$cen.simplicity <- depression$simplicity - mean(depression$simplicity)
+# Regression with centered variables
+dep.cen.lm <- lm(depression ~  cen.fatalism + cen.simplicity + cen.fatalism:cen.simplicity, data = depression)
+```
+
+สังเกตว่าค่าสัมประสิทธิ์ของ `cen.fatalism` และ `cen.simplicity` จะแตกต่างไปจากโมเดลที่ไม่ได้ปรับค่าศูนย์กลาง แต่ `cen.fatialism:cen.simplicity` นั้นไม่แตกต่างจาก `fatalism:simplicity` ในโมเดลก่อนหน้านี้
+
+```{r simple slopes-centered}
+summary(dep.cen.lm)
+# rockchalk::plotSlopes
+cen.ps <- plotSlopes(dep.cen.lm, 
+                plotx = "cen.fatalism", 
+                modx = "cen.simplicity", 
+                modxVals = "std.dev")
+cen.tps <- testSlopes(cen.ps)
+# Simple slopes analysis
+cen.tps$hypotests
+```
+
+สังเกตว่า การปรับค่าศูนย์กลางไม่ส่งผลต่อการวิเคราะห์ simple slopes

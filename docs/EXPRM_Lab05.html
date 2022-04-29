@@ -13,8 +13,8 @@
 
 <title>Lab 05: Multiple Comparisons</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -308,7 +312,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -321,7 +325,7 @@ div.tocify {
   <a href="index.html">Home</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     RES MTHD/STAT PSY Lab
      
     <span class="caret"></span>
@@ -360,7 +364,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     EXPRM DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -402,7 +406,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     SURVEY DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -442,8 +446,10 @@ div.tocify {
 </div>
 
 
-<p>In this lab, we will learn how to perform planned contrasts and post hoc analysis for one-way ANOVA.</p>
-<p>First, we need an <code>aov</code> object. We will continue with the <code>PlantGrowth</code> dataset from the previous lab.</p>
+<p>In this lab, we will learn how to perform planned contrasts and post
+hoc analysis for one-way ANOVA.</p>
+<p>First, we need an <code>aov</code> object. We will continue with the
+<code>PlantGrowth</code> dataset from the previous lab.</p>
 <pre class="r"><code>data(&quot;PlantGrowth&quot;)
 plant.aov &lt;- aov(weight ~ group, data = PlantGrowth)
 summary(plant.aov)</code></pre>
@@ -454,22 +460,25 @@ summary(plant.aov)</code></pre>
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <div id="descriptive-statistics" class="section level1">
 <h1>Descriptive Statistics</h1>
-<p>There are multiple functions from many packages that provide descriptive statistics (e.g., group means, <em>SD</em>). We will use <code>psych::describeBY</code> and <code>apaTables::apa.1way.table</code></p>
+<p>There are multiple functions from many packages that provide
+descriptive statistics (e.g., group means, <em>SD</em>). We will use
+<code>psych::describeBY</code> and
+<code>apaTables::apa.1way.table</code></p>
 <pre class="r"><code>library(psych)
 describeBy(weight ~ group, data = PlantGrowth) # This will give us detailed descriptive stats by group</code></pre>
 <pre><code>## 
 ##  Descriptive statistics by group 
 ## group: ctrl
-##    vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
-## X1    1 10 5.03 0.58   5.15       5 0.72 4.17 6.11  1.94 0.23    -1.12 0.18
-## --------------------------------------------------------------------------------------------------------------- 
+##        vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
+## weight    1 10 5.03 0.58   5.15       5 0.72 4.17 6.11  1.94 0.23    -1.12 0.18
+## ------------------------------------------------------------------------------------------------------------------- 
 ## group: trt1
-##    vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
-## X1    1 10 4.66 0.79   4.55    4.62 0.53 3.59 6.03  2.44 0.47     -1.1 0.25
-## --------------------------------------------------------------------------------------------------------------- 
+##        vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
+## weight    1 10 4.66 0.79   4.55    4.62 0.53 3.59 6.03  2.44 0.47     -1.1 0.25
+## ------------------------------------------------------------------------------------------------------------------- 
 ## group: trt2
-##    vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
-## X1    1 10 5.53 0.44   5.44     5.5 0.36 4.92 6.31  1.39 0.48    -1.16 0.14</code></pre>
+##        vars  n mean   sd median trimmed  mad  min  max range skew kurtosis   se
+## weight    1 10 5.53 0.44   5.44     5.5 0.36 4.92 6.31  1.39 0.48    -1.16 0.14</code></pre>
 <pre class="r"><code>library(apaTables)
 apa.1way.table(dv = weight, iv = group, data = PlantGrowth)</code></pre>
 <pre><code>## 
@@ -503,32 +512,56 @@ apa.aov.table(plant.aov, filename = &quot;anovatable.doc&quot;)</code></pre>
 ## ANOVA results using weight as the dependent variable
 ##  
 ## 
-##    Predictor     SS df     MS      F    p partial_eta2 CI_90_partial_eta2
-##  (Intercept) 253.21  1 253.21 651.60 .000                                
-##        group   3.77  2   1.89   4.85 .016          .26         [.03, .43]
-##        Error  10.49 27   0.39                                            
+##    Predictor     SS df     MS       F    p partial_eta2 CI_90_partial_eta2
+##  (Intercept) 772.06  1 772.06 1986.79 .000                                
+##        group   3.77  2   1.89    4.85 .016          .26         [.03, .43]
+##        Error  10.49 27   0.39                                             
 ## 
 ## Note: Values in square brackets indicate the bounds of the 90% confidence interval for partial eta-squared</code></pre>
 </div>
 <div id="planned-contrasts" class="section level1">
 <h1>Planned contrasts</h1>
-<p>In <em>a priori</em> contrasts (usually just ‘contrasts’), we determine a set of comparisons beforehand (i.e., before the data collection). The number of planned comparisons are determined prior to the data collection. Hence, the familiy-wise error rate are known beforehand.</p>
-<p>In a modern standard, these specific hypotheses are usually “pre-registered” on a public site (such as the Open Science Framework website: <a href="http://osf.io" class="uri">http://osf.io</a>).</p>
-<p>Recall that in the <code>PlantGrowth</code> dataset, we have three conditions: control, treatment 1, treament 2 (in this particular order). The order of levels in a factor is VERY IMPORTANT when analyzing contrasts. <strong>This is the order that you will use in a coefficient matrix.</strong></p>
+<p>In <em>a priori</em> contrasts (usually just ‘contrasts’), we
+determine a set of comparisons beforehand (i.e., before the data
+collection). The number of planned comparisons are determined prior to
+the data collection. Hence, the familiy-wise error rate are known
+beforehand.</p>
+<p>In a modern standard, these specific hypotheses are usually
+“pre-registered” on a public site (such as the Open Science Framework
+website: <a href="http://osf.io" class="uri">http://osf.io</a>).</p>
+<p>Recall that in the <code>PlantGrowth</code> dataset, we have three
+conditions: control, treatment 1, treament 2 (in this particular order).
+The order of levels in a factor is VERY IMPORTANT when analyzing
+contrasts. <strong>This is the order that you will use in a coefficient
+matrix.</strong></p>
 <pre class="r"><code>summary(PlantGrowth$group)</code></pre>
 <pre><code>## ctrl trt1 trt2 
 ##   10   10   10</code></pre>
 <pre class="r"><code>#or
 levels(PlantGrowth$group)</code></pre>
 <pre><code>## [1] &quot;ctrl&quot; &quot;trt1&quot; &quot;trt2&quot;</code></pre>
-<p>Suppose that we have two contrasts in our mind. We believe that treatmant 1 and treatment 2 will result in more weight than the control group. In other words, we plan to contrast (<code>trt1</code> + <code>trt2</code>)/2 with <code>ctrl</code>. The other contrast is between <code>trt1</code> and <code>trt2</code> because we want to know which one is better for plant growth.</p>
-<p>In sum, we have <em>two comparisons</em> to make (<code>trt1</code> + <code>trt2</code>)/2 - <code>ctrl</code> and <code>trt1</code> - <code>trt2</code> (or <code>trt2</code> - <code>trt1</code>, depending on which direction you want to investigate).</p>
+<p>Suppose that we have two contrasts in our mind. We believe that
+treatmant 1 and treatment 2 will result in more weight than the control
+group. In other words, we plan to contrast (<code>trt1</code> +
+<code>trt2</code>)/2 with <code>ctrl</code>. The other contrast is
+between <code>trt1</code> and <code>trt2</code> because we want to know
+which one is better for plant growth.</p>
+<p>In sum, we have <em>two comparisons</em> to make (<code>trt1</code> +
+<code>trt2</code>)/2 - <code>ctrl</code> and <code>trt1</code> -
+<code>trt2</code> (or <code>trt2</code> - <code>trt1</code>, depending
+on which direction you want to investigate).</p>
 <div id="emmeans-package" class="section level2">
 <h2><code>emmeans</code> package</h2>
-<p>To calculate contrasts and post hocs, we will use the <code>emmeans</code> (estimated marginal means) package.</p>
+<p>To calculate contrasts and post hocs, we will use the
+<code>emmeans</code> (estimated marginal means) package.</p>
 <pre class="r"><code>#install.packages(&quot;emmeans&quot;)
 library(emmeans)</code></pre>
-<p>First, we need to specify how many comparions do we want and represent each comparison in a coefficient matrix. Each row in the matrix represent level of a factor, in this case, <code>ctrl</code>, <code>trt1</code>, and <code>trt2</code>. It is important to note that an order of coefficients must correspond to levels of a factor. Each column represents our comparisons/contrasts.</p>
+<p>First, we need to specify how many comparions do we want and
+represent each comparison in a coefficient matrix. Each row in the
+matrix represent level of a factor, in this case, <code>ctrl</code>,
+<code>trt1</code>, and <code>trt2</code>. It is important to note that
+an order of coefficients must correspond to levels of a factor. Each
+column represents our comparisons/contrasts.</p>
 <pre class="r"><code>contrast_m &lt;- data.frame(&quot;trt1trt2.vs.ctrl&quot;  = c(-1,  1/2, 1/2), # trt1 and trt2 were averaged (each weight 1/2) to compare against crl (-1)
                          &quot;trt1.vs.trt2&quot;      = c( 0,    1,  -1)) # trt1 (+1) against trt2 (-1). ctrl is leftout (0).
 contrast_m</code></pre>
@@ -536,10 +569,15 @@ contrast_m</code></pre>
 ## 1             -1.0            0
 ## 2              0.5            1
 ## 3              0.5           -1</code></pre>
-<p>Next, we will use <code>emmeans</code> to create an emmGrid object, which is an object containing estimated marginal means for each group (i.e., group mean). For this analysis we need two arguments in <code>emmeans(object, specs)</code></p>
+<p>Next, we will use <code>emmeans</code> to create an emmGrid object,
+which is an object containing estimated marginal means for each group
+(i.e., group mean). For this analysis we need two arguments in
+<code>emmeans(object, specs)</code></p>
 <ul>
-<li>For <code>object</code>, we will use the <code>aov</code> object.</li>
-<li>For <code>specs</code>, we will specify that we want means for each group with <code>~ group</code>.</li>
+<li>For <code>object</code>, we will use the <code>aov</code>
+object.</li>
+<li>For <code>specs</code>, we will specify that we want means for each
+group with <code>~ group</code>.</li>
 </ul>
 <pre class="r"><code>emmeans(plant.aov, ~ group)</code></pre>
 <pre><code>##  group emmean    SE df lower.CL upper.CL
@@ -549,16 +587,31 @@ contrast_m</code></pre>
 ## 
 ## Confidence level used: 0.95</code></pre>
 <pre class="r"><code>plant.emm &lt;- emmeans(plant.aov, ~ group) # save to an object for later use</code></pre>
-<p><em>Note</em>: Looking at the means, you might notice that <code>trt1</code> was actually lower than <code>ctrl</code>. Combining <code>trt1</code> and <code>trt2</code> will likely cancel each other out. Combining treatment conditions only make sense if they are similar in some aspects. In this case, it is likely that <code>trt1</code> and <code>trt2</code> are totally different kind of treatment and should not be combined. However, we will proceed with this contrast for a demontration purpose.</p>
+<p><em>Note</em>: Looking at the means, you might notice that
+<code>trt1</code> was actually lower than <code>ctrl</code>. Combining
+<code>trt1</code> and <code>trt2</code> will likely cancel each other
+out. Combining treatment conditions only make sense if they are similar
+in some aspects. In this case, it is likely that <code>trt1</code> and
+<code>trt2</code> are totally different kind of treatment and should not
+be combined. However, we will proceed with this contrast for a
+demontration purpose.</p>
 </div>
 <div id="emmeanscontrast-function" class="section level2">
 <h2><code>emmeans::contrast</code> function</h2>
-<p>Next we will run contrasts on those group means. The <code>contrast</code> function will need four arguments <code>contrast(object, method, adjust, infer)</code></p>
+<p>Next we will run contrasts on those group means. The
+<code>contrast</code> function will need four arguments
+<code>contrast(object, method, adjust, infer)</code></p>
 <ul>
-<li><code>oject</code> is an emmGrid object from the <code>emmeans</code> function.</li>
-<li><code>method</code> will be our coefficient matrix <code>contrast_m</code>.</li>
-<li><code>adjust</code> is a <em>p</em> value adjustment method for multiplicity. Let’s use <code>"bonferroni"</code>. Some other options are (<code>"tukey", "scheffe", "sidak", "mvt", "none"</code>)</li>
-<li><code>infer</code> is an option for inferential stats. Choose <code>TRUE</code> to display both <em>t</em> tests and <em>CI</em>s.</li>
+<li><code>oject</code> is an emmGrid object from the
+<code>emmeans</code> function.</li>
+<li><code>method</code> will be our coefficient matrix
+<code>contrast_m</code>.</li>
+<li><code>adjust</code> is a <em>p</em> value adjustment method for
+multiplicity. Let’s use <code>"bonferroni"</code>. Some other options
+are (<code>"tukey", "scheffe", "sidak", "mvt", "none"</code>)</li>
+<li><code>infer</code> is an option for inferential stats. Choose
+<code>TRUE</code> to display both <em>t</em> tests and
+<em>CI</em>s.</li>
 </ul>
 <pre class="r"><code>contrast(plant.emm, method = contrast_m, adjust = &quot;none&quot;, infer = TRUE) # results with no p value adjustment</code></pre>
 <pre><code>##  contrast         estimate    SE df lower.CL upper.CL t.ratio p.value
@@ -578,11 +631,20 @@ contrast_m</code></pre>
 <pre class="r"><code># Plotting contrasts and their confidence interval
 plot(plant.contrast)</code></pre>
 <p><img src="EXPRM_Lab05_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
-<p>Looking at the results after adjustment, we can see that the <code>trt1trt2 vs ctrl</code> contrast was not significant (<em>p</em> value above .05 and 95% CI contains zero). That is, when combining <code>trt1</code> and <code>trt2</code> together, the plant weight was not different from <code>ctrl</code>. On the other hand, <code>trt2</code> resulted in significantly heavier plants than <code>trt1</code>.</p>
+<p>Looking at the results after adjustment, we can see that the
+<code>trt1trt2 vs ctrl</code> contrast was not significant (<em>p</em>
+value above .05 and 95% CI contains zero). That is, when combining
+<code>trt1</code> and <code>trt2</code> together, the plant weight was
+not different from <code>ctrl</code>. On the other hand,
+<code>trt2</code> resulted in significantly heavier plants than
+<code>trt1</code>.</p>
 </div>
 <div id="finding-m-and-sd-for-complex-contrasts" class="section level2">
 <h2>Finding <em>M</em> and <em>SD</em> for complex contrasts</h2>
-<p>For a contrast that combine groups together, their mean and <em>SD</em> would not be readily available in a regular descriptive statistics table. You will need to extract those groups from the dataset to calclate their means and standard deviations.</p>
+<p>For a contrast that combine groups together, their mean and
+<em>SD</em> would not be readily available in a regular descriptive
+statistics table. You will need to extract those groups from the dataset
+to calclate their means and standard deviations.</p>
 <pre class="r"><code>trt1.trt2 &lt;- subset(PlantGrowth, group == &quot;trt1&quot; | group == &quot;trt2&quot;)
 describe(trt1.trt2$weight)</code></pre>
 <pre><code>##    vars  n mean   sd median trimmed  mad  min  max range  skew kurtosis   se
@@ -595,7 +657,12 @@ describe(ctrl$weight)</code></pre>
 </div>
 <div id="post-hoc" class="section level1">
 <h1>Post hoc</h1>
-<p>A <em>post hoc</em> analysis is usually done in a pairwise manner (i.e., looking at all possible pairs). Because of a larger number of comparisons, conservative adjustment, such as Bonferroni method, is not recommended. We will use Tukey’s Honest Significant Differences (HSD) instead. There are multiple ways to run Tukey’s HSD. We will mention the Base R <code>TukeyHSD</code> and <code>emmeans::pairs</code>.</p>
+<p>A <em>post hoc</em> analysis is usually done in a pairwise manner
+(i.e., looking at all possible pairs). Because of a larger number of
+comparisons, conservative adjustment, such as Bonferroni method, is not
+recommended. We will use Tukey’s Honest Significant Differences (HSD)
+instead. There are multiple ways to run Tukey’s HSD. We will mention the
+Base R <code>TukeyHSD</code> and <code>emmeans::pairs</code>.</p>
 <div id="base-r" class="section level2">
 <h2>Base R</h2>
 <pre class="r"><code>TukeyHSD(plant.aov) # input is an aov object. </code></pre>
@@ -611,7 +678,10 @@ describe(ctrl$weight)</code></pre>
 ## trt2-trt1  0.865  0.1737839 1.5562161 0.0120064</code></pre>
 <pre class="r"><code>plot(TukeyHSD(plant.aov))</code></pre>
 <p><img src="EXPRM_Lab05_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-<p>Among the three groups, only <code>trt2</code> was significantly higher than <code>trt1</code>. The <code>ctrl</code> was to be somewhere in the middle between <code>trt1</code> and <code>trt2</code> and was not significantly different from either of them.</p>
+<p>Among the three groups, only <code>trt2</code> was significantly
+higher than <code>trt1</code>. The <code>ctrl</code> was to be somewhere
+in the middle between <code>trt1</code> and <code>trt2</code> and was
+not significantly different from either of them.</p>
 </div>
 <div id="emmeanspairs" class="section level2">
 <h2><code>emmeans::pairs</code></h2>
@@ -635,7 +705,9 @@ describe(ctrl$weight)</code></pre>
 ## Confidence level used: 0.95 
 ## Conf-level adjustment: tukey method for comparing a family of 3 estimates 
 ## P value adjustment: tukey method for comparing a family of 3 estimates</code></pre>
-<p>You can use the <code>coef</code> function to look at a coefficient matrix for <code>"pairwise"</code> method. You can see how each combinaiton was compared.</p>
+<p>You can use the <code>coef</code> function to look at a coefficient
+matrix for <code>"pairwise"</code> method. You can see how each
+combinaiton was compared.</p>
 <pre class="r"><code>coef(plant.pairs)</code></pre>
 <pre><code>##      group c.1 c.2 c.3
 ## ctrl  ctrl   1   1   0
@@ -648,11 +720,19 @@ describe(ctrl$weight)</code></pre>
 </div>
 <div id="post-hoc-for-unequal-variance" class="section level1">
 <h1>Post hoc for unequal variance</h1>
-<p>If a homogeneity of variance assumption is violated, you should use Welch’s one-way test instead of ANOVA. For post-hoc, you can use Game-Howell Post-hoc test from the <code>rstatix</code> package.</p>
+<p>If a homogeneity of variance assumption is violated, you should use
+Welch’s one-way test instead of ANOVA. For post-hoc, you can use
+Game-Howell Post-hoc test from the <code>rstatix</code> package.</p>
 <pre class="r"><code># install.packages(&quot;rstatix&quot;)
 library(rstatix)</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;rstatix&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:MASS&#39;:
+## 
+##     select</code></pre>
+<pre><code>## The following objects are masked from &#39;package:plyr&#39;:
+## 
+##     desc, mutate</code></pre>
 <pre><code>## The following objects are masked from &#39;package:effectsize&#39;:
 ## 
 ##     cohens_d, eta_squared</code></pre>
@@ -670,7 +750,8 @@ library(rstatix)</code></pre>
 </div>
 <div id="plotting" class="section level1">
 <h1>Plotting</h1>
-<p>To create a plot for a report, <code>ggplot2</code> is prefered over the Base R graphic.</p>
+<p>To create a plot for a report, <code>ggplot2</code> is prefered over
+the Base R graphic.</p>
 <div id="bar-graph" class="section level2">
 <h2>Bar graph</h2>
 <pre class="r"><code>plant.summary &lt;- summary(plant.emm) # create a variable containing means and SDs for each condition

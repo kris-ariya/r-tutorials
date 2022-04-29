@@ -13,8 +13,8 @@
 
 <title>Lab 14: Moderation Analysis</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -60,6 +60,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -80,6 +81,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -232,7 +236,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -245,7 +249,7 @@ $(document).ready(function () {
   <a href="index.html">Home</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     RES MTHD/STAT PSY Lab
      
     <span class="caret"></span>
@@ -284,7 +288,7 @@ $(document).ready(function () {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     EXPRM DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -326,7 +330,7 @@ $(document).ready(function () {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     SURVEY DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -372,10 +376,13 @@ library(carData)
 library(ggplot2)</code></pre>
 <div id="categorical-by-continuous-variables" class="section level1">
 <h1>Categorical by Continuous Variables</h1>
-<p>ใน tutorial นี้ เราจะใช้ข้อมูล <code>Salaries</code> จาก carData package ซึ่งเป็นข้อมูลเงินเดือนของอาจารย์มหาวิทยาลัยในสหรัฐอเมริกา เพื่อศึกษาปัญหาความไม่เท่าเทียมกันระหว่างอาจารย์ชายและหญิง</p>
+<p>ใน tutorial นี้ เราจะใช้ข้อมูล <code>Salaries</code> จาก carData
+package ซึ่งเป็นข้อมูลเงินเดือนของอาจารย์มหาวิทยาลัยในสหรัฐอเมริกา
+เพื่อศึกษาปัญหาความไม่เท่าเทียมกันระหว่างอาจารย์ชายและหญิง</p>
 <p>ข้อมูลนี้มีตัวแปรที่จะใช้ในการวิเคราะห์นี้ ได้แก่</p>
 <p><code>salary</code> เงินดือน</p>
-<p><code>sex</code> เพศ แบ่งเป็น <code>Female</code> และ <code>Male</code></p>
+<p><code>sex</code> เพศ แบ่งเป็น <code>Female</code> และ
+<code>Male</code></p>
 <p><code>yrs.service</code> จำนวนปีที่ทำงาน</p>
 <pre class="r"><code>data(&quot;Salaries&quot;)
 str(Salaries)</code></pre>
@@ -389,7 +396,12 @@ str(Salaries)</code></pre>
 </div>
 <div id="linear-model" class="section level1">
 <h1>Linear Model</h1>
-<p>การวิเคราะห์เริ่มด้วยการสร้างโมเดลสมการเชิงเส้นตรงด้วยคำสั่ง <code>lm()</code> โดยสามารถกำหนดให้วิเคราะห์ปฏิสัมพันธ์ด้วยเครื่องหมาย <code>*</code> ระหว่างตัวแปรทำนาย เช่น <code>x1 * x2</code> หรือ เขียนตัวแปรที่ต้องการใส่ไว้ในโมเดลทีละตัว เช่น <code>x1 + x2 + x1:x2</code> เครื่องหมาย <code>:</code> ใช้สร้าง interaction term ระหว่างตัวแปร</p>
+<p>การวิเคราะห์เริ่มด้วยการสร้างโมเดลสมการเชิงเส้นตรงด้วยคำสั่ง
+<code>lm()</code> โดยสามารถกำหนดให้วิเคราะห์ปฏิสัมพันธ์ด้วยเครื่องหมาย
+<code>*</code> ระหว่างตัวแปรทำนาย เช่น <code>x1 * x2</code> หรือ
+เขียนตัวแปรที่ต้องการใส่ไว้ในโมเดลทีละตัว เช่น
+<code>x1 + x2 + x1:x2</code> เครื่องหมาย <code>:</code> ใช้สร้าง
+interaction term ระหว่างตัวแปร</p>
 <pre class="r"><code>salary.lm &lt;- lm(salary ~ yrs.service * sex, Salaries)
 salary.lm2 &lt;- lm(salary ~ yrs.service + sex + yrs.service:sex, Salaries) # same analysis
 identical(salary.lm$coefficients, salary.lm2$coefficients) #same results</code></pre>
@@ -416,24 +428,57 @@ identical(salary.lm$coefficients, salary.lm2$coefficients) #same results</code><
 ## Multiple R-squared:  0.1266, Adjusted R-squared:  0.1199 
 ## F-statistic: 18.98 on 3 and 393 DF,  p-value: 1.622e-11</code></pre>
 <p>ผลการวิเคราะห์แสดงค่าสัมประสิทธิ์ถดถอยแต่ละตัว</p>
-<p><code>Intercept</code> คือค่าทำนายตัวแปร Y (เงินเดือน) หากจำนวนปีที่ทำงาน <code>yrs.service</code>เป็น 0 และเป็นเพศหญิง <code>sex = 0</code></p>
-<p>ค่าความชันของ <code>yrs.service</code> แสดงให้เห็นว่าเมื่ออายุงานเพิ่มขึ้น 1 ปี เงินเดือนจะเพิ่มขึ้น $1,637.3 อย่างมีนัยสำคัญทางสถิติ ในกลุ่มอาจารย์ผู้หญิง (<code>sex = 0</code>)</p>
-<p>ค่าความชันของ <code>sex</code> คือค่าความแตกต่างระหว่างเพศชายและหญิง หากควบคุมให้อายุงานเป็น 0 ปี จากโมเดลนี้เราจะทำนายได้ว่าผู้ชายจะได้เงินเดือนสูงกว่าผู้หญิงตอนเริ่มงานใหม่ $20,128.6</p>
-<p><code>yrs.service:sex</code> คือ ค่าความแตกต่างความชันระหว่างปีที่ทำงานและเงินเดือน เมื่อเทียบกับกลุ่มอ้างอิง (เพศหญิง) ค่าตัวนี้แสดงถึงปฏิสัมพันธ์ระหว่างตัวแปรทำนายทั้งสองตัว กล่าวคือความสัมพันธ์ระหว่างเงินเดือนกับอายุงานนั้นขึ้นอยู่กับเพศ โดยพบว่าความชันระหว่างอายุงานกับเงินเดือนในกลุ่มตัวอย่างชาย น้อยกว่าความชันในกลุ่มตัวอย่างหญิง (ความชันของกลุ่มเปรียบเทียบน้อยกว่ากลุ่มควบคุม จึงมีค่าติดลบ) แสดงให้เห็นว่ากลุ่มตัวอย่างหญิงจะมีอัตราการเพิ่มของเงินเดือนที่สูงกว่าผู้ชาย อย่างไรก็ดีค่าสัมประสิทธิ์ตัวนี้ไม่ถึงระดับนัยสำคัญทางสถิติ จึงยังไม่สามารถสรุปอะไรได้ชัดเจน</p>
-<p>โดยปกติแล้ว หากไม่พบ interaction ในการทดลองผู้วิจัยไม่ควร probe interaction ต่อเพราะอาจเสี่ยงให้เกิด Type I error ขึ้น แต่ในกรณีนี้เราจะใช้ตัวอย่างนี้ต่อเพื่อสาธิตการใช้งาน R</p>
+<p><code>Intercept</code> คือค่าทำนายตัวแปร Y (เงินเดือน)
+หากจำนวนปีที่ทำงาน <code>yrs.service</code>เป็น 0 และเป็นเพศหญิง
+<code>sex = 0</code></p>
+<p>ค่าความชันของ <code>yrs.service</code>
+แสดงให้เห็นว่าเมื่ออายุงานเพิ่มขึ้น 1 ปี เงินเดือนจะเพิ่มขึ้น $1,637.3
+อย่างมีนัยสำคัญทางสถิติ ในกลุ่มอาจารย์ผู้หญิง (<code>sex = 0</code>)</p>
+<p>ค่าความชันของ <code>sex</code> คือค่าความแตกต่างระหว่างเพศชายและหญิง
+หากควบคุมให้อายุงานเป็น 0 ปี
+จากโมเดลนี้เราจะทำนายได้ว่าผู้ชายจะได้เงินเดือนสูงกว่าผู้หญิงตอนเริ่มงานใหม่
+$20,128.6</p>
+<p><code>yrs.service:sex</code> คือ
+ค่าความแตกต่างความชันระหว่างปีที่ทำงานและเงินเดือน
+เมื่อเทียบกับกลุ่มอ้างอิง (เพศหญิง)
+ค่าตัวนี้แสดงถึงปฏิสัมพันธ์ระหว่างตัวแปรทำนายทั้งสองตัว
+กล่าวคือความสัมพันธ์ระหว่างเงินเดือนกับอายุงานนั้นขึ้นอยู่กับเพศ
+โดยพบว่าความชันระหว่างอายุงานกับเงินเดือนในกลุ่มตัวอย่างชาย
+น้อยกว่าความชันในกลุ่มตัวอย่างหญิง
+(ความชันของกลุ่มเปรียบเทียบน้อยกว่ากลุ่มควบคุม จึงมีค่าติดลบ)
+แสดงให้เห็นว่ากลุ่มตัวอย่างหญิงจะมีอัตราการเพิ่มของเงินเดือนที่สูงกว่าผู้ชาย
+อย่างไรก็ดีค่าสัมประสิทธิ์ตัวนี้ไม่ถึงระดับนัยสำคัญทางสถิติ
+จึงยังไม่สามารถสรุปอะไรได้ชัดเจน</p>
+<p>โดยปกติแล้ว หากไม่พบ interaction ในการทดลองผู้วิจัยไม่ควร probe
+interaction ต่อเพราะอาจเสี่ยงให้เกิด Type I error ขึ้น
+แต่ในกรณีนี้เราจะใช้ตัวอย่างนี้ต่อเพื่อสาธิตการใช้งาน R</p>
 <div id="emmeans" class="section level3">
 <h3>EMMEANS</h3>
-<p>เมื่อมีตัวแปรต่อเนื่อง <code>W</code> ในโมเดล หากผู้วิจัยต้องการคำนวณ EM means ของอิทธิพลตัวแปร <code>X</code> ในแต่ละช่วงของตัวแปร <code>W</code> เรามักนิยมกำหนดให้ควบคุมค่าตัวแปรต่อเนื่อง <code>W</code> ไว้ที่ -1 SD, Mean, +1 SD ให้ง่ายต่อการเปรียบเทียบ</p>
-<p>เช่น ต้องการเปรียบเทียบว่า เงินเดือนชายหญิงแตกต่างกันหรือไม่ในกลุ่มคนเริ่มทำงาน (-1SD) กลุ่มทำงานมาระยะหนึ่งแล้ว (Mean) กลุ่มที่ทำงานมานานแล้ว (+1SD)</p>
-<p>เราจะต้องสร้าง list ขึ้นมาเพื่อบรรจุรายละเอียดของการวิเคราะห์เข้าไป โดยกำหนดให้ วิเคราะห์ที่ <code>yrs.service</code> มี [ค่าน้อยกว่าค่าเฉลี่ย 1 SD] [ค่าเฉลี่ย] และ [ค่ามากกว่าค่าเฉลี่ย 1 SD] นอกจากนี้ยังกำหนดด้วยว่าจะให้เทียบตัวแปรเพศโดยให้ <code>female</code> เป็นกลุ่มอ้างอิง (ให้ใส่กลุ่มอ้างอิงไว้ข้างหลัง [ต่างจากคำสั่ง <code>factor()</code>])</p>
-<p>ตอนที่สร้าง <code>emmeans()</code> จะต้องเพิ่มตัวเลือก <code>at = list()</code> โดยใช้ list ที่สร้างไว้ก่อนนี้มากำหนดค่าที่ต้องการเปรียบเทียบ</p>
+<p>เมื่อมีตัวแปรต่อเนื่อง <code>W</code> ในโมเดล หากผู้วิจัยต้องการคำนวณ
+EM means ของอิทธิพลตัวแปร <code>X</code> ในแต่ละช่วงของตัวแปร
+<code>W</code> เรามักนิยมกำหนดให้ควบคุมค่าตัวแปรต่อเนื่อง <code>W</code>
+ไว้ที่ -1 SD, Mean, +1 SD ให้ง่ายต่อการเปรียบเทียบ</p>
+<p>เช่น ต้องการเปรียบเทียบว่า
+เงินเดือนชายหญิงแตกต่างกันหรือไม่ในกลุ่มคนเริ่มทำงาน (-1SD)
+กลุ่มทำงานมาระยะหนึ่งแล้ว (Mean) กลุ่มที่ทำงานมานานแล้ว (+1SD)</p>
+<p>เราจะต้องสร้าง list ขึ้นมาเพื่อบรรจุรายละเอียดของการวิเคราะห์เข้าไป
+โดยกำหนดให้ วิเคราะห์ที่ <code>yrs.service</code> มี
+[ค่าน้อยกว่าค่าเฉลี่ย 1 SD] [ค่าเฉลี่ย] และ [ค่ามากกว่าค่าเฉลี่ย 1 SD]
+นอกจากนี้ยังกำหนดด้วยว่าจะให้เทียบตัวแปรเพศโดยให้ <code>female</code>
+เป็นกลุ่มอ้างอิง (ให้ใส่กลุ่มอ้างอิงไว้ข้างหลัง [ต่างจากคำสั่ง
+<code>factor()</code>])</p>
+<p>ตอนที่สร้าง <code>emmeans()</code> จะต้องเพิ่มตัวเลือก
+<code>at = list()</code> โดยใช้ list
+ที่สร้างไว้ก่อนนี้มากำหนดค่าที่ต้องการเปรียบเทียบ</p>
 <pre class="r"><code>at_value &lt;- list(yrs.service = c(mean(Salaries$yrs.service) - sd(Salaries$yrs.service), #-1SD
                           mean(Salaries$yrs.service), # Mean
                           mean(Salaries$yrs.service) + sd(Salaries$yrs.service)  #+1 SD
                          ), #yearof
                 sex = c(&quot;Male&quot;, &quot;Female&quot;))  #Order for mean comparison,i.e., Order 1 - Order 2
 salary.emm &lt;- emmeans(salary.lm2,  ~ sex | yrs.service, at = at_value )</code></pre>
-<p>เมื่อเราใช้คำสั่ง <code>summary()</code> หรือ <code>contrast()</code> เราจะเห็นว่าการเปรียบเทียบจะเกิดขึ้นตามตำแหน่ง <code>yrs.service</code> ที่เรากำหนดไว้</p>
+<p>เมื่อเราใช้คำสั่ง <code>summary()</code> หรือ <code>contrast()</code>
+เราจะเห็นว่าการเปรียบเทียบจะเกิดขึ้นตามตำแหน่ง <code>yrs.service</code>
+ที่เรากำหนดไว้</p>
 <pre class="r"><code>summary(salary.emm)  # estimated (adjusted) mean</code></pre>
 <pre><code>## yrs.service =  4.61:
 ##  sex    emmean    SE  df lower.CL upper.CL
@@ -463,20 +508,33 @@ salary.emm &lt;- emmeans(salary.lm2,  ~ sex | yrs.service, at = at_value )</code
 ## yrs.service = 30.62:
 ##  contrast      estimate    SE  df t.ratio p.value
 ##  Male - Female    -8402 11148 393  -0.754  0.4515</code></pre>
-<p>เราใช้คำสั่ง <code>emmip</code> เพื่อสร้าง interaction plot คำสั่งนี้จะมีโครงสร้าง <code>emmip(object, formula, at, CIs)</code></p>
-<p><code>object</code> เป็นโมเดลที่ถูกสร้างจากคำสั่งเช่น <code>lm()</code> หรือ <code>aov()</code></p>
-<p><code>fomula</code> เป็นสูตรเพื่อบอกคำสั่งว่าจะให้วาดกราฟอย่างไร โดยกำหนดให้อยู่ในรูป <code>w ~ x</code> โดย <code>x</code> คือตัวแปรที่ต้องการให้ปรากฏบนแกนนอน และ <code>w</code> คือตัวแปรที่ต้องการให้พล็อตแยกระดับ</p>
+<p>เราใช้คำสั่ง <code>emmip</code> เพื่อสร้าง interaction plot
+คำสั่งนี้จะมีโครงสร้าง <code>emmip(object, formula, at, CIs)</code></p>
+<p><code>object</code> เป็นโมเดลที่ถูกสร้างจากคำสั่งเช่น
+<code>lm()</code> หรือ <code>aov()</code></p>
+<p><code>fomula</code> เป็นสูตรเพื่อบอกคำสั่งว่าจะให้วาดกราฟอย่างไร
+โดยกำหนดให้อยู่ในรูป <code>w ~ x</code> โดย <code>x</code>
+คือตัวแปรที่ต้องการให้ปรากฏบนแกนนอน และ <code>w</code>
+คือตัวแปรที่ต้องการให้พล็อตแยกระดับ</p>
 <p><code>at</code> เป็น list ที่ใช้กำหนดจุดที่จะเปรียบเทียบ</p>
-<p><code>CIs</code> เป็น logical ว่าจะให้แสดง error bar 95% CI หรือไม่</p>
+<p><code>CIs</code> เป็น logical ว่าจะให้แสดง error bar 95% CI
+หรือไม่</p>
 <pre class="r"><code>emmip(salary.lm2, yrs.service ~ sex, at = at_value, CIs = TRUE)</code></pre>
 <p><img src="EXPRM_Lab14_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 <div id="looking-from-the-other-angle" class="section level2">
 <h2>Looking from the other angle</h2>
-<p>เราสามารถมองภาพของปฏิสัมพันธ์นี้จากอีกมุมหนึ่งได้ ซึ่งอาจจะช่วยให้เห็นภาพความสัมพันธ์ระหว่างเวลาการทำงานกับเงินเดือนใแต่ละเพศได้ชัดเจนกว่า นั่นคือ การวิเคราะห์ดูค่าความชันอย่างง่าย (simple slopes) ของระยะเวลาทำงาน โดยแบ่งตามเพศ</p>
-<p>ในการทดสอบความชัน จะใช้คำสั่ง <code>emtrends(object, specs, var)</code></p>
-<p><code>object</code> คือ โมเดลจากการวิเคราะห์เชิงเส้น เช่น <code>lm()</code></p>
-<p><code>specs</code> คือ ข้อกำหนดว่าจะเปรียบเทียบแบ่งตามตัวแปรใด เช่น <code>~ sex</code> แต่ถ้าหากใส่ <code>pairwise ~ sex</code> คำสั่งจะทดสอบความแตกต่างของค่าความชันให้ด้วย</p>
+<p>เราสามารถมองภาพของปฏิสัมพันธ์นี้จากอีกมุมหนึ่งได้
+ซึ่งอาจจะช่วยให้เห็นภาพความสัมพันธ์ระหว่างเวลาการทำงานกับเงินเดือนใแต่ละเพศได้ชัดเจนกว่า
+นั่นคือ การวิเคราะห์ดูค่าความชันอย่างง่าย (simple slopes)
+ของระยะเวลาทำงาน โดยแบ่งตามเพศ</p>
+<p>ในการทดสอบความชัน จะใช้คำสั่ง
+<code>emtrends(object, specs, var)</code></p>
+<p><code>object</code> คือ โมเดลจากการวิเคราะห์เชิงเส้น เช่น
+<code>lm()</code></p>
+<p><code>specs</code> คือ ข้อกำหนดว่าจะเปรียบเทียบแบ่งตามตัวแปรใด เช่น
+<code>~ sex</code> แต่ถ้าหากใส่ <code>pairwise ~ sex</code>
+คำสั่งจะทดสอบความแตกต่างของค่าความชันให้ด้วย</p>
 <p><code>var</code> คือ ตัวแปร x ที่เราต้องการหาความชัน</p>
 <pre class="r"><code>emtrends(salary.lm2, pairwise ~ sex, var = &quot;yrs.service&quot;)</code></pre>
 <pre><code>## $emtrends
@@ -491,7 +549,12 @@ salary.emm &lt;- emmeans(salary.lm2,  ~ sex | yrs.service, at = at_value )</code
 ##  Female - Male      932 535 393   1.741  0.0825</code></pre>
 <pre class="r"><code>emmip(salary.lm2, sex ~ yrs.service, at = at_value, CIs = TRUE)</code></pre>
 <p><img src="EXPRM_Lab14_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<p>เราจะเห็นได้ว่าในกลุ่มผู้หญิง เมื่ออายุงานเพิ่ม 1 ปี เงินเดือนจะเพิ่มขึ้น $1637 ส่วนกลุ่มผู้ชายจะเพิ่มขึ้น $706 ค่าความชันทั้งสองนี้แตกต่างกัน $932 (ซึ่งเท่ากับค่าสัมประสิทธิ์การถดถอยของปฏิสัมพันธ์และสถิติทดสอบเหมือนกับการวิเคราะห์ <code>summary(salary.lm2)</code> เพียงแค่กลับสัญลักษณ์เนื่องจากวิธีตั้งค่ากลุ่มอ้างอิงของแต่ละคำสั่ง)</p>
+<p>เราจะเห็นได้ว่าในกลุ่มผู้หญิง เมื่ออายุงานเพิ่ม 1 ปี
+เงินเดือนจะเพิ่มขึ้น $1637 ส่วนกลุ่มผู้ชายจะเพิ่มขึ้น $706
+ค่าความชันทั้งสองนี้แตกต่างกัน $932
+(ซึ่งเท่ากับค่าสัมประสิทธิ์การถดถอยของปฏิสัมพันธ์และสถิติทดสอบเหมือนกับการวิเคราะห์
+<code>summary(salary.lm2)</code>
+เพียงแค่กลับสัญลักษณ์เนื่องจากวิธีตั้งค่ากลุ่มอ้างอิงของแต่ละคำสั่ง)</p>
 <p>สำหรับกราฟเปรียบเทียบความชันจะเห็นภาพความสัมพันธ์ระหว่างอายุงานกับเงินเดือนของแต่ละเพศได้อย่างชัดเจน</p>
 <div id="plot" class="section level3">
 <h3>Plot</h3>

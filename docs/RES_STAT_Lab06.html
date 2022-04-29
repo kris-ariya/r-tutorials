@@ -13,8 +13,8 @@
 
 <title>Lab 06: Visualizing Distribution</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -308,7 +312,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -321,7 +325,7 @@ div.tocify {
   <a href="index.html">Home</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     RES MTHD/STAT PSY Lab
      
     <span class="caret"></span>
@@ -360,7 +364,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     EXPRM DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -402,7 +406,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     SURVEY DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -452,7 +456,9 @@ head(solar_data$inno)</code></pre>
 ## Levels: innovators &lt; early adopters &lt; early majority &lt; late majority &lt; laggards</code></pre>
 <div id="boxplot" class="section level1">
 <h1>Boxplot</h1>
-<p>A boxplot is a classic visualization of a distribution. You can run the function in the base R or with the <code>ggplot2</code> package. ## Base R</p>
+<p>A boxplot is a classic visualization of a distribution. You can run
+the function in the base R or with the <code>ggplot2</code> package. ##
+Base R</p>
 <pre class="r"><code>boxplot(solar_data$attitude)</code></pre>
 <p><img src="RES_STAT_Lab06_files/figure-html/boxplot-1.png" width="672" /></p>
 <p>You can also assign an object name for your plot.</p>
@@ -483,52 +489,72 @@ head(solar_data$inno)</code></pre>
 ## 
 ## $names
 ## [1] &quot;1&quot;</code></pre>
-<p>The object <code>bp</code> is a list containing information about the plot.<br />
-<code>$stat</code> contains 1) lower whisker or -1.5 IQR, 2) lower hinge or 25th quantile, 3) median or 50th quantile, 4) upper hinge or 75th quantile, and 5) upper whisker or +1.5 IQR. <code>$n</code> is the number of observations. <code>$out</code> list are values of outliers that lie outside the whiskers See <code>help(boxplot)</code> for more information.</p>
-<p>The values in boxplot object can be access as a list. This can be useful. For example, we could use <code>$out</code> to identify outliers data in the dataset.</p>
+<p>The object <code>bp</code> is a list containing information about the
+plot.<br />
+<code>$stat</code> contains 1) lower whisker or -1.5 IQR, 2) lower hinge
+or 25th quantile, 3) median or 50th quantile, 4) upper hinge or 75th
+quantile, and 5) upper whisker or +1.5 IQR. <code>$n</code> is the
+number of observations. <code>$out</code> list are values of outliers
+that lie outside the whiskers See <code>help(boxplot)</code> for more
+information.</p>
+<p>The values in boxplot object can be access as a list. This can be
+useful. For example, we could use <code>$out</code> to identify outliers
+data in the dataset.</p>
 <pre class="r"><code>solar_data[solar_data$attitude %in% bp$out, ] </code></pre>
-<pre><code>##      id              user deci    sex age kno1 kno2 kno3 kno4 kno5 kno6 kno7 kno8           inno att1 att2 att3 att4 att5 att6 att7 att8
-## 19   22 regular residence    2   male  47    3    1    5    5    5    5    5    1 early majority    1    1    1    1    3    1    1    1
-## 38   44 regular residence    2 female  59    2    2    2    2    2    2    2    2 early adopters    1    1    1    1    1    1    1    1
-## 118 141 regular residence    2 female  59    1    1    1    1    1    1    1    1       laggards    1    1    1    1    1    1    1    1
-## 128 158 regular residence    2 female  39    1    1    1    1    1    1    1    1  late majority    1    3    2    1    1    1    1    1
-## 157 198   small residence    2   male  72    1    3    2    1    1    1    1    1       laggards    1    1    1    1    1    1    1    1
-## 281 350   small residence    2 female  50    2    1    1    1    1    2    1    1  late majority    2    1    1    1    1    1    1    2
-##           interest re_att1 re_att2 re_att3 re_att4 re_att5 re_att6 re_att7 re_att8 re_kno1 re_kno2 re_kno3 re_kno4 re_kno5 re_kno6 re_kno7 re_kno8
-## 19  definitely not       0       0       0       0       2       0       0       0       2       0       4       4       4       4       4       0
-## 38    probably not       0       0       0       0       0       0       0       0       1       1       1       1       1       1       1       1
-## 118  probably will       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0
-## 128  probably will       0       2       1       0       0       0       0       0       0       0       0       0       0       0       0       0
-## 157 definitely not       0       0       0       0       0       0       0       0       0       2       1       0       0       0       0       0
-## 281   probably not       1       0       0       0       0       0       0       1       1       0       0       0       0       1       0       0
-##     attitude knowledge
-## 19     0.250     2.750
-## 38     0.000     1.000
-## 118    0.000     0.000
-## 128    0.375     0.000
-## 157    0.000     0.375
-## 281    0.250     0.250</code></pre>
+<pre><code>##      id              user deci    sex age kno1 kno2 kno3 kno4 kno5 kno6 kno7 kno8           inno att1 att2 att3 att4 att5 att6 att7 att8       interest
+## 19   22 regular residence    2   male  47    3    1    5    5    5    5    5    1 early majority    1    1    1    1    3    1    1    1 definitely not
+## 38   44 regular residence    2 female  59    2    2    2    2    2    2    2    2 early adopters    1    1    1    1    1    1    1    1   probably not
+## 118 141 regular residence    2 female  59    1    1    1    1    1    1    1    1       laggards    1    1    1    1    1    1    1    1  probably will
+## 128 158 regular residence    2 female  39    1    1    1    1    1    1    1    1  late majority    1    3    2    1    1    1    1    1  probably will
+## 157 198   small residence    2   male  72    1    3    2    1    1    1    1    1       laggards    1    1    1    1    1    1    1    1 definitely not
+## 281 350   small residence    2 female  50    2    1    1    1    1    2    1    1  late majority    2    1    1    1    1    1    1    2   probably not
+##     re_att1 re_att2 re_att3 re_att4 re_att5 re_att6 re_att7 re_att8 re_kno1 re_kno2 re_kno3 re_kno4 re_kno5 re_kno6 re_kno7 re_kno8 attitude knowledge
+## 19        0       0       0       0       2       0       0       0       2       0       4       4       4       4       4       0    0.250     2.750
+## 38        0       0       0       0       0       0       0       0       1       1       1       1       1       1       1       1    0.000     1.000
+## 118       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0    0.000     0.000
+## 128       0       2       1       0       0       0       0       0       0       0       0       0       0       0       0       0    0.375     0.000
+## 157       0       0       0       0       0       0       0       0       0       2       1       0       0       0       0       0    0.000     0.375
+## 281       1       0       0       0       0       0       0       1       1       0       0       0       0       1       0       0    0.250     0.250</code></pre>
 <pre class="r"><code>#%in% is a value matching function. We match value in $attitude with the outliers, $out.</code></pre>
 <div id="multiple-boxes" class="section level3">
 <h3>Multiple Boxes</h3>
-<p>When exploring the data, you can use boxplot to simultaneously check distributions of multiple items at once.</p>
+<p>When exploring the data, you can use boxplot to simultaneously check
+distributions of multiple items at once.</p>
 <pre class="r"><code>boxplot(solar_data[, c(&quot;att1&quot;, &quot;att2&quot;, &quot;att3&quot;, &quot;att4&quot;, &quot;att5&quot;)]) #check distributions of item att1-5</code></pre>
 <p><img src="RES_STAT_Lab06_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 </div>
 <div id="boxplots-by-group" class="section level3">
 <h3>Boxplots by group</h3>
-<p>You can use formula to create boxplots by each level of a factor. In the formula <code>attitude ~ inno</code>, <code>attitude</code> is split by the factor <code>inno</code>. The <code>solar_data</code> is the dataset of variables in a formula.<br />
-<code>xlab</code> and <code>ylab</code> are labels for x- and y-axis, respectively.</p>
+<p>You can use formula to create boxplots by each level of a factor. In
+the formula <code>attitude ~ inno</code>, <code>attitude</code> is split
+by the factor <code>inno</code>. The <code>solar_data</code> is the
+dataset of variables in a formula.<br />
+<code>xlab</code> and <code>ylab</code> are labels for x- and y-axis,
+respectively.</p>
 <pre class="r"><code>boxplot(attitude ~ inno, solar_data, xlab = &quot;Innovator Groups&quot;, ylab = &quot;Attitude Score&quot;)</code></pre>
 <p><img src="RES_STAT_Lab06_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 </div>
 <div id="boxplot-with-ggplot2" class="section level2">
 <h2>Boxplot with <code>ggplot2</code></h2>
-<p>While the base R is simple, <code>ggplot2</code> offers a more coherent way of writing a code for graphics. It employs the “<em>Grammar of Graphics</em>.” The main components are 1) a <strong>data</strong>, 2) <strong>aesthethics</strong>, and 3) <strong>geometries</strong>.</p>
-<p>Data is the data you want to plot. Aesthetics <code>aes()</code> is how you want to map the data to the plot scale. Geommetries (geom) is the visual elements of the plot (e.g., lines, dots, bars)</p>
-<p>There are other option layers, such as <em>themes</em>, <em>statistics</em>, <em>coordinates</em>, and <em>facet</em>. The graphics are built by the multiple layers.</p>
-<p>The function <code>ggplot</code> is the main function to plot graphics. The first argument is the data <code>solar_data</code>. The second argument is aesthetics <code>aes()</code>. Inside we specify <code>y = attitude</code>, meaning that we want to plot the value on <em>attitude</em> on the y-axis. After that, we use a <code>+</code> sign to tell the function that we still want to add more layers.<br />
-Then we add a geometry layer <code>geom_boxplot()</code> to create a boxplot. Then <code>+</code> the theme layer <code>theme_classic()</code>.</p>
+<p>While the base R is simple, <code>ggplot2</code> offers a more
+coherent way of writing a code for graphics. It employs the “<em>Grammar
+of Graphics</em>.” The main components are 1) a <strong>data</strong>,
+2) <strong>aesthethics</strong>, and 3) <strong>geometries</strong>.</p>
+<p>Data is the data you want to plot. Aesthetics <code>aes()</code> is
+how you want to map the data to the plot scale. Geommetries (geom) is
+the visual elements of the plot (e.g., lines, dots, bars)</p>
+<p>There are other option layers, such as <em>themes</em>,
+<em>statistics</em>, <em>coordinates</em>, and <em>facet</em>. The
+graphics are built by the multiple layers.</p>
+<p>The function <code>ggplot</code> is the main function to plot
+graphics. The first argument is the data <code>solar_data</code>. The
+second argument is aesthetics <code>aes()</code>. Inside we specify
+<code>y = attitude</code>, meaning that we want to plot the value on
+<em>attitude</em> on the y-axis. After that, we use a <code>+</code>
+sign to tell the function that we still want to add more layers.<br />
+Then we add a geometry layer <code>geom_boxplot()</code> to create a
+boxplot. Then <code>+</code> the theme layer
+<code>theme_classic()</code>.</p>
 <pre class="r"><code>library(ggplot2) #load the ggplot2 package
 ggplot(solar_data, aes(y = attitude)) +
   geom_boxplot() +
@@ -536,7 +562,9 @@ ggplot(solar_data, aes(y = attitude)) +
 <p><img src="RES_STAT_Lab06_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <div id="boxplot-by-groups" class="section level3">
 <h3>Boxplot by groups</h3>
-<p>You can specify a factor <code>x</code> in <code>aes()</code> to create boxplots by groups. In this case, we use <code>inno</code> for grouping on the <em>x</em>-axis.</p>
+<p>You can specify a factor <code>x</code> in <code>aes()</code> to
+create boxplots by groups. In this case, we use <code>inno</code> for
+grouping on the <em>x</em>-axis.</p>
 <pre class="r"><code>ggplot(solar_data, aes(x = inno, y = attitude)) +
   geom_boxplot() +
   theme_classic()</code></pre>
@@ -546,7 +574,8 @@ ggplot(solar_data, aes(y = attitude)) +
 </div>
 <div id="histogram" class="section level1">
 <h1>Histogram</h1>
-<p>If you want to see the shape of a distribution, you will need a histogram.</p>
+<p>If you want to see the shape of a distribution, you will need a
+histogram.</p>
 <div id="base-r" class="section level2">
 <h2>Base R</h2>
 <pre class="r"><code>h &lt;- hist(solar_data$attitude)</code></pre>
@@ -572,8 +601,16 @@ ggplot(solar_data, aes(y = attitude)) +
 ## 
 ## attr(,&quot;class&quot;)
 ## [1] &quot;histogram&quot;</code></pre>
-<p>The object <code>h</code> is a list of values for a histogram. <code>breaks</code> = the boundary of bins. <code>counts</code> = frequencies for each bin. <code>density</code> = estimated density values. <code>mid</code> = midpoints for each bin. <code>equidist</code> = logical, if the bin sizes are equal.</p>
-<p>R will automatically decide how to bins look like. If you want your histogram to look a certain way, you will use the argument <code>breaks</code>. There are multiple ways to use the argument <code>breaks</code> (see Help). We will use a vector to determine the boundary of the bins.</p>
+<p>The object <code>h</code> is a list of values for a histogram.
+<code>breaks</code> = the boundary of bins. <code>counts</code> =
+frequencies for each bin. <code>density</code> = estimated density
+values. <code>mid</code> = midpoints for each bin. <code>equidist</code>
+= logical, if the bin sizes are equal.</p>
+<p>R will automatically decide how to bins look like. If you want your
+histogram to look a certain way, you will use the argument
+<code>breaks</code>. There are multiple ways to use the argument
+<code>breaks</code> (see Help). We will use a vector to determine the
+boundary of the bins.</p>
 <pre class="r"><code># First create a vector from 0 to 4 with a 0.25 step.
 b &lt;- seq(0, 4, 0.25)
 b</code></pre>
@@ -584,11 +621,15 @@ hist(solar_data$attitude, breaks = b) # alternative: hist(solar_data$attitude, b
 <pre class="r"><code># use col for color and ylim for the range of y-axis.
 hist(solar_data$attitude, breaks = seq(0, 4, 0.25), col = &quot;lightsteelblue&quot;, ylim = c(0, 80))</code></pre>
 <p><img src="RES_STAT_Lab06_files/figure-html/customize%20histrogram-2.png" width="672" /></p>
-<p>See <a href="http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf" class="uri">http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf</a> for color names in R.</p>
+<p>See <a href="http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf"
+class="uri">http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf</a>
+for color names in R.</p>
 </div>
 <div id="histogram-with-ggplot2" class="section level2">
 <h2>Histogram with <code>ggplot2</code></h2>
-<p>For histogram <code>aes()</code>, we use <code>x = attitude</code> as we plot the value of attitude on the <em>x</em>-axis. Then we add a layer of <code>geom_histogram</code>.<br />
+<p>For histogram <code>aes()</code>, we use <code>x = attitude</code> as
+we plot the value of attitude on the <em>x</em>-axis. Then we add a
+layer of <code>geom_histogram</code>.<br />
 By default, it will use 30 bins.</p>
 <pre class="r"><code>ggplot(solar_data, aes(x = attitude)) +
   geom_histogram() +  
@@ -600,14 +641,17 @@ By default, it will use 30 bins.</p>
   geom_histogram(binwidth = 0.5) +
   theme_classic() </code></pre>
 <p><img src="RES_STAT_Lab06_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p>We can also change a border and a filll color with <code>color</code> and <code>fill</code>.</p>
+<p>We can also change a border and a filll color with <code>color</code>
+and <code>fill</code>.</p>
 <pre class="r"><code>ggplot(solar_data, aes(x = attitude)) +
   geom_histogram(binwidth = 0.5, color = &quot;red&quot;, fill = &quot;pink&quot;) + 
   theme_classic()</code></pre>
 <p><img src="RES_STAT_Lab06_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <div id="histogram-by-groups" class="section level3">
 <h3>Histogram by groups</h3>
-<p>Because historgram is plot on the x-axis, if we want to split histogram by groups, we need to create multiple of them and put them to gether using a facet layer <code>facet_wrap()</code>.</p>
+<p>Because historgram is plot on the x-axis, if we want to split
+histogram by groups, we need to create multiple of them and put them to
+gether using a facet layer <code>facet_wrap()</code>.</p>
 <pre class="r"><code>ggplot(solar_data, aes(x = attitude)) +
   geom_histogram(binwidth = .5,
                  aes(y = ..density..), #plot density instead of frequency
@@ -621,7 +665,8 @@ By default, it will use 30 bins.</p>
 </div>
 <div id="density-plot" class="section level1">
 <h1>Density Plot</h1>
-<p>Density plot shows the probability density of the distribution. ## Base R</p>
+<p>Density plot shows the probability density of the distribution. ##
+Base R</p>
 <pre class="r"><code>plot(density(solar_data$attitude))</code></pre>
 <p><img src="RES_STAT_Lab06_files/figure-html/density%20plot-1.png" width="672" /></p>
 <div id="ggplot2" class="section level2">
@@ -630,7 +675,8 @@ By default, it will use 30 bins.</p>
   geom_density(color = &quot;red&quot;, fill = &quot;pink&quot;) +
   theme_classic()</code></pre>
 <p><img src="RES_STAT_Lab06_files/figure-html/ggplot%20density-1.png" width="672" /></p>
-<p>We can overlay the density plot on the histogram plot by layer them together.</p>
+<p>We can overlay the density plot on the histogram plot by layer them
+together.</p>
 <pre class="r"><code>ggplot(solar_data, aes(attitude)) +
   # histogram layer
   geom_histogram(binwidth = .25, 
@@ -646,14 +692,21 @@ By default, it will use 30 bins.</p>
 </div>
 <div id="violin-plot" class="section level1">
 <h1>Violin Plot</h1>
-<p>A violin plot is a hybrid between a density and a boxplot. ## Violin with <code>ggplot2</code> Violin plots are usualy used to compare distributions for each leve of a factor. For the <code>aes()</code>, we use <code>x = inno</code> to split plots by innovator groups. <code>y = attitude</code> to plot the distribution on the <em>y</em>-axis. <code>fill = inno</code> to fill color automatically by innovator groups.</p>
+<p>A violin plot is a hybrid between a density and a boxplot. ## Violin
+with <code>ggplot2</code> Violin plots are usualy used to compare
+distributions for each leve of a factor. For the <code>aes()</code>, we
+use <code>x = inno</code> to split plots by innovator groups.
+<code>y = attitude</code> to plot the distribution on the
+<em>y</em>-axis. <code>fill = inno</code> to fill color automatically by
+innovator groups.</p>
 <pre class="r"><code>ggplot(solar_data, aes(x = inno, y = attitude, fill = inno)) +
   geom_violin() +
   theme_classic()</code></pre>
 <p><img src="RES_STAT_Lab06_files/figure-html/violin%20plot-1.png" width="672" /></p>
 <div id="violin-plot-with-data-points" class="section level2">
 <h2>Violin plot with data points</h2>
-<p>We can add <code>geom_jitter</code> layer to illustrate how data points distribute in the plot.</p>
+<p>We can add <code>geom_jitter</code> layer to illustrate how data
+points distribute in the plot.</p>
 <pre class="r"><code>ggplot(solar_data, aes(x = inno, y = attitude, fill = inno)) +
   geom_violin() +
   geom_jitter(width = .15) + #width = 15% to keep most dots in each violin.

@@ -13,8 +13,8 @@
 
 <title>Lab 11: Factorial ANOVA in Repeated-Measures Design</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -308,7 +312,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -321,7 +325,7 @@ div.tocify {
   <a href="index.html">Home</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     RES MTHD/STAT PSY Lab
      
     <span class="caret"></span>
@@ -360,7 +364,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     EXPRM DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -402,7 +406,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     SURVEY DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -437,7 +441,8 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Lab 11: Factorial ANOVA in Repeated-Measures Design</h1>
+<h1 class="title toc-ignore">Lab 11: Factorial ANOVA in
+Repeated-Measures Design</h1>
 
 </div>
 
@@ -451,13 +456,20 @@ library(afex)
 library(effectsize)
 library(emmeans)
 library(datarium)</code></pre>
-<div id="mixed-anova-between--within-subjects-factor" class="section level1">
+<div id="mixed-anova-between--within-subjects-factor"
+class="section level1">
 <h1>Mixed ANOVA (Between- &amp; Within-Subjects Factor)</h1>
 <div id="data-preparation" class="section level2">
 <h2>Data Preparation</h2>
-<p>ใน tutorial นี้เราจะใช้ข้อมูล <code>ChickWeight</code> จาก dataset ของ R ข้อมูลชุดนี้แสดงน้ำหนักของลูกไก่ <code>weight</code> วัดซ้ำ 12 ครั้ง <code>Time</code> ภายใต้เงื่อนอาหาร 4 แบบ <code>Diet</code> โดยมีหมายเลขลูกไก่คือ <code>Chick</code></p>
-<p>ข้อมูลชุดนี้เป็นข้อมูลแบบยาว (long format) ที่แต่ละแถวแสดงการสังเกต (observation) แต่ละช่วงเวลาซ้อนอยู่ในตัวลูกไก่</p>
-<p>ตัวแปรอิสระแบบภายในกลุ่มตัวอย่าง คือ <code>Time</code> และตัวแปรอิสระแบบระหว่างกลุ่มตัวอย่างคือ <code>Diet</code> ตัวแปรตามคือ <code>Weight</code></p>
+<p>ใน tutorial นี้เราจะใช้ข้อมูล <code>ChickWeight</code> จาก dataset
+ของ R ข้อมูลชุดนี้แสดงน้ำหนักของลูกไก่ <code>weight</code> วัดซ้ำ 12
+ครั้ง <code>Time</code> ภายใต้เงื่อนอาหาร 4 แบบ <code>Diet</code>
+โดยมีหมายเลขลูกไก่คือ <code>Chick</code></p>
+<p>ข้อมูลชุดนี้เป็นข้อมูลแบบยาว (long format) ที่แต่ละแถวแสดงการสังเกต
+(observation) แต่ละช่วงเวลาซ้อนอยู่ในตัวลูกไก่</p>
+<p>ตัวแปรอิสระแบบภายในกลุ่มตัวอย่าง คือ <code>Time</code>
+และตัวแปรอิสระแบบระหว่างกลุ่มตัวอย่างคือ <code>Diet</code> ตัวแปรตามคือ
+<code>Weight</code></p>
 <pre class="r"><code>data(&quot;ChickWeight&quot;)
 head(ChickWeight, n = 25)</code></pre>
 <pre><code>## Grouped Data: weight ~ Time | Chick
@@ -513,11 +525,18 @@ str(ChickWeight)</code></pre>
 </div>
 <div id="base-r" class="section level2">
 <h2>Base R</h2>
-<p>สำหรับการวิเคราะห์ mixed design นี้เราจะไม่ใช้คำสั่ง base R เนื่องจาก base R จะใช้ SS Type I แต่ว่าในกรณีที่กลุ่มตัวอย่างไม่เท่ากันในแต่ละเงื่อนไข ในกรณีที่มีตัวแปรมากกว่า 1 ตัว (เช่น การวิเคราะห์ปฏิสัมพันธ์ระหว่างตัวแปรสองตัว) ควรใช้ SS Type II หรือ Type III ดังนั้นเราจะใช้ afex ในการคำนวณแทน</p>
+<p>สำหรับการวิเคราะห์ mixed design นี้เราจะไม่ใช้คำสั่ง base R เนื่องจาก
+base R จะใช้ SS Type I
+แต่ว่าในกรณีที่กลุ่มตัวอย่างไม่เท่ากันในแต่ละเงื่อนไข
+ในกรณีที่มีตัวแปรมากกว่า 1 ตัว (เช่น
+การวิเคราะห์ปฏิสัมพันธ์ระหว่างตัวแปรสองตัว) ควรใช้ SS Type II หรือ Type
+III ดังนั้นเราจะใช้ afex ในการคำนวณแทน</p>
 </div>
 <div id="afex" class="section level2">
 <h2>afex</h2>
-<p>เนื่องจากมีตัวแปรภายในบุคคล หนึ่งตัว คือ เวลา <code>Time</code> จึงกำหนดให้ <code>Error()</code> เป็น เวลาในการวัด ซ้อนอยู่ในลูกไก่แต่ละตัว <code>Error(Chick/Time)</code></p>
+<p>เนื่องจากมีตัวแปรภายในบุคคล หนึ่งตัว คือ เวลา <code>Time</code>
+จึงกำหนดให้ <code>Error()</code> เป็น เวลาในการวัด
+ซ้อนอยู่ในลูกไก่แต่ละตัว <code>Error(Chick/Time)</code></p>
 <pre class="r"><code>chick.afex &lt;- aov_car(weight ~ Diet*Time + Error(Chick/Time), data = ChickWeight) </code></pre>
 <pre><code>## Warning: Missing values for following ID(s):
 ## 18, 16, 15, 8, 44
@@ -572,11 +591,13 @@ str(ChickWeight)</code></pre>
 <pre class="r"><code>eta_squared(chick.afex)</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type III)
 ## 
-## Parameter | Eta2 (partial) |       90% CI
+## Parameter | Eta2 (partial) |       95% CI
 ## -----------------------------------------
-## Diet      |           0.27 | [0.06, 0.42]
-## Time      |           0.87 | [0.86, 0.89]
-## Diet:Time |           0.22 | [0.11, 0.23]</code></pre>
+## Diet      |           0.27 | [0.06, 1.00]
+## Time      |           0.87 | [0.86, 1.00]
+## Diet:Time |           0.22 | [0.11, 1.00]
+## 
+## - One-sided CIs: upper bound fixed at (1).</code></pre>
 </div>
 <div id="estimated-marginal-means" class="section level2">
 <h2>Estimated Marginal Means</h2>
@@ -832,15 +853,29 @@ chick.emm.summary</code></pre>
 <h2>jmv</h2>
 <div id="convert-to-wide-format" class="section level3">
 <h3>Convert to wide format</h3>
-<p>เพื่อใช้คำสั่งใน jmv จะต้องเปลี่ยนข้อมูลเป็นแบบกว้าง (wide format)</p>
-<p>ในข้อมูลแบบกว้าง แต่ละแถวจะแทนกลุ่มตัวอย่าง ตัวแปรตาม (น้ำหนัก) จะถูกแสดงแยกคอลัมน์ตามจำนวนการวัดซ้ำ (เช่น weight.time0 ถึง time21 จำนวน 12 คอลัมน์)</p>
-<p>ตัวแปรระหว่างบุคคล (between-subjects) จะถูกแสดงด้วยคอลัมน์ตัวแปรตามตัวจำนวนตัวแปรระหว่างบุคคล เช่น เงื่อนไข Diet 1 คอลัมน์</p>
-<p>คำสั่งที่ใช้คือ <code>tidyr::pivot_wider</code> โดยกำหนด option ดังนี้</p>
-<p><code>data</code> = data frame ข้อมูลแบบยาวที่ต้องการแปลงเป็นกว้าง</p>
-<p><code>id_cols</code> = ข้อมูลที่เป็นระหว่างบุคคล (เช่น รหัสประจำตัว <code>Chick</code> และ เงื่อนไขอาหาร <code>Diet</code>)</p>
-<p><code>names_from</code> = ชื่อของตัวแปรที่วัดซ้ำ (ปกติคือ ​level ของ within-subject factor เช่น <code>Time</code> มีระดับ Time0, Time2, Time4, …</p>
-<p><code>names_prefix</code> = string ที่ต้องการใส่หน้าชื่อ level ที่มาจาก <code>names_from</code> เช่น “weight.” จะนำหน้า 0, 2, 4, .., 21 ซึ่งเป็น level ของตัวแปร <code>Time</code> ทำให้ได้ชื่อตัวแปร เช่น <code>weight.Time2</code> เป็นต้น</p>
-<p><code>values_from</code> = ค่าของตัวแปรตามที่มีการวัดซ้ำ เช่น <code>weight</code></p>
+<p>เพื่อใช้คำสั่งใน jmv จะต้องเปลี่ยนข้อมูลเป็นแบบกว้าง (wide
+format)</p>
+<p>ในข้อมูลแบบกว้าง แต่ละแถวจะแทนกลุ่มตัวอย่าง ตัวแปรตาม (น้ำหนัก)
+จะถูกแสดงแยกคอลัมน์ตามจำนวนการวัดซ้ำ (เช่น weight.time0 ถึง time21 จำนวน
+12 คอลัมน์)</p>
+<p>ตัวแปรระหว่างบุคคล (between-subjects)
+จะถูกแสดงด้วยคอลัมน์ตัวแปรตามตัวจำนวนตัวแปรระหว่างบุคคล เช่น เงื่อนไข
+Diet 1 คอลัมน์</p>
+<p>คำสั่งที่ใช้คือ <code>tidyr::pivot_wider</code> โดยกำหนด option
+ดังนี้</p>
+<p><code>data</code> = data frame
+ข้อมูลแบบยาวที่ต้องการแปลงเป็นกว้าง</p>
+<p><code>id_cols</code> = ข้อมูลที่เป็นระหว่างบุคคล (เช่น รหัสประจำตัว
+<code>Chick</code> และ เงื่อนไขอาหาร <code>Diet</code>)</p>
+<p><code>names_from</code> = ชื่อของตัวแปรที่วัดซ้ำ (ปกติคือ ​level ของ
+within-subject factor เช่น <code>Time</code> มีระดับ Time0, Time2,
+Time4, …</p>
+<p><code>names_prefix</code> = string ที่ต้องการใส่หน้าชื่อ level
+ที่มาจาก <code>names_from</code> เช่น “weight.” จะนำหน้า 0, 2, 4, .., 21
+ซึ่งเป็น level ของตัวแปร <code>Time</code> ทำให้ได้ชื่อตัวแปร เช่น
+<code>weight.Time2</code> เป็นต้น</p>
+<p><code>values_from</code> = ค่าของตัวแปรตามที่มีการวัดซ้ำ เช่น
+<code>weight</code></p>
 <pre class="r"><code>chick_wide &lt;- pivot_wider(data = ChickWeight, id_cols = c(Chick, Diet), names_from = Time, names_prefix = &quot;weight.&quot;, values_from = weight)
 head(chick_wide)</code></pre>
 <pre><code>## # A tibble: 6 × 14
@@ -929,13 +964,17 @@ head(chick_wide)</code></pre>
 </div>
 </div>
 </div>
-<div id="two-way-repeated-anova-within--within-subjects-factor" class="section level1">
+<div id="two-way-repeated-anova-within--within-subjects-factor"
+class="section level1">
 <h1>Two-Way Repeated ANOVA (Within- &amp; Within-Subjects Factor)</h1>
 <div id="data-preparation-1" class="section level2">
 <h2>Data preparation</h2>
-<p><code>selfesteem2</code> เป็นข้อมูล <span class="math inline">\(2 \times 3\)</span> repeated measures</p>
-<p>กลุ่มตัวอย่าง 12 คน ผ่าน 2 เงื่อนไข คือ Diet <code>Diet</code> และ control <code>ctr</code> และวัดซ้ำ 3 ครั้ง</p>
-<p>ข้อมูลชุดนี้อยู่ในรูปแบบผสมระหว่างแบบกว้าง (เวลา) และแบบยาว (เงื่อนไข) จึงจำเป็นต้องเปลี่ยนให้อยู่ในแบบยาวทั้งหมดก่อน</p>
+<p><code>selfesteem2</code> เป็นข้อมูล <span class="math inline">\(2
+\times 3\)</span> repeated measures</p>
+<p>กลุ่มตัวอย่าง 12 คน ผ่าน 2 เงื่อนไข คือ Diet <code>Diet</code> และ
+control <code>ctr</code> และวัดซ้ำ 3 ครั้ง</p>
+<p>ข้อมูลชุดนี้อยู่ในรูปแบบผสมระหว่างแบบกว้าง (เวลา) และแบบยาว
+(เงื่อนไข) จึงจำเป็นต้องเปลี่ยนให้อยู่ในแบบยาวทั้งหมดก่อน</p>
 <pre class="r"><code>data(&quot;selfesteem2&quot;)
 selfesteem2</code></pre>
 <pre><code>## # A tibble: 24 × 5
@@ -978,7 +1017,8 @@ selfesteem_long</code></pre>
 </div>
 <div id="afex-1" class="section level2">
 <h2>afex</h2>
-<p>เนื่องจากมีตัวแปรภายในบุคคล 2 ตัว ความคลาดเคลื่อนจึงเป็น <code>Error(id/treatment * time)</code></p>
+<p>เนื่องจากมีตัวแปรภายในบุคคล 2 ตัว ความคลาดเคลื่อนจึงเป็น
+<code>Error(id/treatment * time)</code></p>
 <pre class="r"><code>self.afex &lt;- aov_car(se ~ treatment * time + Error(id/treatment * time), data = selfesteem_long)
 summary(self.afex)</code></pre>
 <pre><code>## 

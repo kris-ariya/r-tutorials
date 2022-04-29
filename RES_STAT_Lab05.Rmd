@@ -58,7 +58,8 @@ head(solar_data$z_kno_m)
 
 The scale function will *center* the value by substracting the column mean.
 Then it *scales* the centered value by the column standard deviation.\
-Let create a variable name `z_kno_f`. `f` for function.
+Let create a variable name `z_kno_f`.
+`f` for function.
 
 ```{r scale function}
 solar_data$z_kno_f <- scale(solar_data$knowledge)

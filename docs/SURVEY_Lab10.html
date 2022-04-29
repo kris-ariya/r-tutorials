@@ -13,8 +13,8 @@
 
 <title>Lab 10: Hierarchical Regression</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -308,7 +312,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -321,7 +325,7 @@ div.tocify {
   <a href="index.html">Home</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     RES MTHD/STAT PSY Lab
      
     <span class="caret"></span>
@@ -360,7 +364,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     EXPRM DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -402,7 +406,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     SURVEY DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -452,9 +456,12 @@ library(carData)
 library(fastDummies)</code></pre>
 <div id="explore-data" class="section level1">
 <h1>1. Explore Data</h1>
-<p><code>pmi</code> = presumed media influence รู้สึกว่าสื่อมีอิทธิพลแค่ไหน</p>
+<p><code>pmi</code> = presumed media influence
+รู้สึกว่าสื่อมีอิทธิพลแค่ไหน</p>
 <p><code>import</code> = ความสำคัญของประเด็น (น้ำตาลขาดตลาด)</p>
-<p><code>reaction</code> = ผู้เข้าร่วมการวิจัยเห็นว่าตนเองมีโอกาสจะตอบสนองมากน้อยแค่ไหน (เช่น จะไปซื้อน้ำตาลมาเก็บไว้)</p>
+<p><code>reaction</code> =
+ผู้เข้าร่วมการวิจัยเห็นว่าตนเองมีโอกาสจะตอบสนองมากน้อยแค่ไหน (เช่น
+จะไปซื้อน้ำตาลมาเก็บไว้)</p>
 <pre class="r"><code>data(Tal.Or)
 media &lt;- Tal.Or
 head(media)</code></pre>
@@ -483,7 +490,8 @@ str(media$gender)</code></pre>
 <pre class="r"><code>media$genderDum &lt;- ifelse(media$gender == &quot;female&quot;, 1, 0)
 # if you have more levels
 # media$genderDum2 &lt;- ifelse(media$gender == &quot;other&quot;, 1, 0)</code></pre>
-<p>จำนวนตัวแปร dummy = k -1 ถ้ามี 3 ระดับต้องสร้าง 2ตัว ถ้ามี 4 ระดับต้องสร้าง 3 ตัว</p>
+<p>จำนวนตัวแปร dummy = k -1 ถ้ามี 3 ระดับต้องสร้าง 2ตัว ถ้ามี 4
+ระดับต้องสร้าง 3 ตัว</p>
 </div>
 <div id="option-2-dummy_cols" class="section level2">
 <h2>Option 2: <code>dummy_cols</code></h2>
@@ -646,10 +654,16 @@ summary(media1.lm)</code></pre>
 ## Multiple R-squared:  0.007179,   Adjusted R-squared:  -0.009368 
 ## F-statistic: 0.4338 on 2 and 120 DF,  p-value: 0.649</code></pre>
 </div>
-<div id="let-r-codes-categorical-variables-for-you" class="section level2">
+<div id="let-r-codes-categorical-variables-for-you"
+class="section level2">
 <h2>Let R codes categorical variables for you</h2>
-<p>เราสามารถใส่ตัวแปร factor ลงไปในสมการได้เลย R จะทำการ code ให้เราเอง (ในขั้นนี้ต้องระวัง ตัวแปรที่เป็น factor ต้องแปลงเป็น factor ให้เรียบร้อยก่อน)</p>
-<p>R แต่ละ version อาจจะมีวิธี code ให้แตกต่างกัน จึงควรกำหนด <code>contrasts = list(*var_name* = "contr.treatment")</code> เพื่อให้ R ใช้วิธี dummy code (ref level = 0) ใน R เรียกวิธีนี้ว่า <code>contr.treatment</code></p>
+<p>เราสามารถใส่ตัวแปร factor ลงไปในสมการได้เลย R จะทำการ code ให้เราเอง
+(ในขั้นนี้ต้องระวัง ตัวแปรที่เป็น factor ต้องแปลงเป็น factor
+ให้เรียบร้อยก่อน)</p>
+<p>R แต่ละ version อาจจะมีวิธี code ให้แตกต่างกัน จึงควรกำหนด
+<code>contrasts = list(*var_name* = "contr.treatment")</code> เพื่อให้ R
+ใช้วิธี dummy code (ref level = 0) ใน R เรียกวิธีนี้ว่า
+<code>contr.treatment</code></p>
 <pre class="r"><code>media.R.lm &lt;- lm(reaction ~ gender + age, media, contrasts = list(gender = &quot;contr.treatment&quot;))
 summary(media.R.lm)</code></pre>
 <pre><code>## 

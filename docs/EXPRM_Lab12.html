@@ -13,8 +13,8 @@
 
 <title>Lab 12: Means Comparison in Regression</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -308,7 +312,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -321,7 +325,7 @@ div.tocify {
   <a href="index.html">Home</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     RES MTHD/STAT PSY Lab
      
     <span class="caret"></span>
@@ -360,7 +364,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     EXPRM DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -402,7 +406,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     SURVEY DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -446,10 +450,12 @@ div.tocify {
 library(datarium)
 library(dplyr)
 library(emmeans)</code></pre>
-<p>Tutorial นี้จะแสดงวิธีการวิเคราะห์ t-test และ one-way ANOVA ในรูปแบบของสมการถดถอย</p>
+<p>Tutorial นี้จะแสดงวิธีการวิเคราะห์ t-test และ one-way ANOVA
+ในรูปแบบของสมการถดถอย</p>
 <div id="t-test" class="section level1">
 <h1>t-test</h1>
-<p>ในตัวอย่าง t-test เราจะใช้ข้อมูล <code>genderweight</code> จาก datarium package</p>
+<p>ในตัวอย่าง t-test เราจะใช้ข้อมูล <code>genderweight</code> จาก
+datarium package</p>
 <p>ตัวแปรต่าง ๆ ถูกเข้ารหัสมาเป็น factor เรียบร้อยแล้ว</p>
 <pre class="r"><code>data(genderweight)
 str(genderweight)</code></pre>
@@ -457,7 +463,8 @@ str(genderweight)</code></pre>
 ##  $ id    : Factor w/ 40 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 2 3 4 5 6 7 8 9 10 ...
 ##  $ group : Factor w/ 2 levels &quot;F&quot;,&quot;M&quot;: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ weight: num [1:40] 61.6 64.6 66.2 59.3 64.9 ...</code></pre>
-<p>เราสามารถเขียนคำสั่ง <code>t.test</code> ได้สองแบบ คือแบบ formula หรือแบบเทียบ vector (เช่น เทียบกลุ่มหญิงกับชาย)</p>
+<p>เราสามารถเขียนคำสั่ง <code>t.test</code> ได้สองแบบ คือแบบ formula
+หรือแบบเทียบ vector (เช่น เทียบกลุ่มหญิงกับชาย)</p>
 <pre class="r"><code>g &lt;- t.test(weight ~ group, data = genderweight, var.equal = TRUE) # formula
 g</code></pre>
 <pre><code>## 
@@ -465,7 +472,7 @@ g</code></pre>
 ## 
 ## data:  weight by group
 ## t = -20.791, df = 38, p-value &lt; 2.2e-16
-## alternative hypothesis: true difference in means is not equal to 0
+## alternative hypothesis: true difference in means between group F and group M is not equal to 0
 ## 95 percent confidence interval:
 ##  -24.50140 -20.15349
 ## sample estimates:
@@ -484,12 +491,18 @@ with(genderweight, t.test(weight[group == &quot;F&quot;], weight[group == &quot;
 ## sample estimates:
 ## mean of x mean of y 
 ##  63.49867  85.82612</code></pre>
-<p>เมื่อวิเคราะห์ด้วย <code>t.test</code> เราจะพบว่าค่าเฉลี่ยกลุ่มผู้หญิง = 63.4986719 และค่าเฉลี่ยกลุ่มผู้ชาย = 85.8261153 ความแตกต่างของค่าเฉลี่ย = 22.3274435</p>
-<p>ค่าสถิติทดสอบ t = -20.7913777 พบผลว่าแตกต่างกันอย่างมีนัยสำคัญทางสถิติ</p>
+<p>เมื่อวิเคราะห์ด้วย <code>t.test</code>
+เราจะพบว่าค่าเฉลี่ยกลุ่มผู้หญิง = 63.4986719 และค่าเฉลี่ยกลุ่มผู้ชาย =
+85.8261153 ความแตกต่างของค่าเฉลี่ย = 22.3274435</p>
+<p>ค่าสถิติทดสอบ t = -20.7913777
+พบผลว่าแตกต่างกันอย่างมีนัยสำคัญทางสถิติ</p>
 <div id="manual-coding" class="section level2">
 <h2>Manual coding</h2>
-<p>โดยปกติแล้ว หากนำตัวแปรที่เป็น factor ใส่ในสมการเส้นตรง R จะทำการ dummy code ให้อัตโนมัติโดยใช้ level แรกเป็นกลุ่มอ้างอิง</p>
-<p>อย่างไรก็ดี เราสามารถเขียน dummy code ได้เอง โดยใช้คำสั่ง <code>recode</code> จาก dplyr package โดยกำหนดให้ผู้หญิงเป็นกลุ่มอ้างอิง</p>
+<p>โดยปกติแล้ว หากนำตัวแปรที่เป็น factor ใส่ในสมการเส้นตรง R จะทำการ
+dummy code ให้อัตโนมัติโดยใช้ level แรกเป็นกลุ่มอ้างอิง</p>
+<p>อย่างไรก็ดี เราสามารถเขียน dummy code ได้เอง โดยใช้คำสั่ง
+<code>recode</code> จาก dplyr package
+โดยกำหนดให้ผู้หญิงเป็นกลุ่มอ้างอิง</p>
 <pre class="r"><code>genderweight$dummy_gender &lt;- dplyr::recode(genderweight$group, &#39;F&#39; = 0, &#39;M&#39; = 1)
 str(genderweight) #notice that the dummy variable was treated as numeric</code></pre>
 <pre><code>## tibble [40 × 4] (S3: tbl_df/tbl/data.frame)
@@ -500,7 +513,9 @@ str(genderweight) #notice that the dummy variable was treated as numeric</code><
 </div>
 <div id="regression-model" class="section level2">
 <h2>Regression model</h2>
-<p>การสร้างสมการเส้นตรงทำโดยใช้คำสั่ง <code>lm(formula, data)</code> โดยเราจะใช้ตัวแปร <code>$dummy_gender</code> ที่เพิ่งสร้างเป็นตัวแปรทำนาย</p>
+<p>การสร้างสมการเส้นตรงทำโดยใช้คำสั่ง <code>lm(formula, data)</code>
+โดยเราจะใช้ตัวแปร <code>$dummy_gender</code>
+ที่เพิ่งสร้างเป็นตัวแปรทำนาย</p>
 <pre class="r"><code>mod1 &lt;- lm(weight ~ dummy_gender, data = genderweight)
 summary(mod1)</code></pre>
 <pre><code>## 
@@ -521,11 +536,20 @@ summary(mod1)</code></pre>
 ## Residual standard error: 3.396 on 38 degrees of freedom
 ## Multiple R-squared:  0.9192, Adjusted R-squared:  0.9171 
 ## F-statistic: 432.3 on 1 and 38 DF,  p-value: &lt; 2.2e-16</code></pre>
-<p>ผลจากการวิเคราะห์ regression จะแสดงการทดสอบค่าคงที่และความชันของตัวแปรแต่ละตัว</p>
-<p><code>(Intercept)</code> คือ ค่าทำนายตัวแปรตามเมื่อตัวแปรอิสระ (<code>dummy_gender</code>) เป็น 0 ในที่นี้คือ ค่าเฉลี่ยของเงื่อนไขอ้างอิง (<code>"F"</code>)</p>
-<p>Coefficient estimate ของ <code>dummy_gender</code> คือ ค่าความชัน หรือ ค่าทำนายตัวแปรตามที่เปลี่ยนไปเมื่อตัวแปรอิสระเปลี่ยนไป 1 หน่วย การที่ตัวแปรอิสระ <code>dummy_gender</code> เปลี่ยนไป 1 หน่วย (คือ 0 เป็น 1) คือการเปลี่ยนจากกลุ่ม <code>"F"</code> เป็น <code>"M"</code> ดังนั้นค่าความชัน ก็คือ ความแตกต่างของค่าเฉลี่ยทั้งสองกลุ่มนั่นเอง</p>
-<p>ค่า <code>t value</code> ของ <code>dummy_gender</code> ก็มีค่าเท่ากับการทดสอบ t-test ด้านบน</p>
-<p>นอกจากนี้ output ของ regression ยังมีค่าทดสอบ F มาด้วย ซึ่งจะมีค่าเท่ากับการวิเคราะห์ ANOVA ตามปกติ</p>
+<p>ผลจากการวิเคราะห์ regression
+จะแสดงการทดสอบค่าคงที่และความชันของตัวแปรแต่ละตัว</p>
+<p><code>(Intercept)</code> คือ ค่าทำนายตัวแปรตามเมื่อตัวแปรอิสระ
+(<code>dummy_gender</code>) เป็น 0 ในที่นี้คือ
+ค่าเฉลี่ยของเงื่อนไขอ้างอิง (<code>"F"</code>)</p>
+<p>Coefficient estimate ของ <code>dummy_gender</code> คือ ค่าความชัน
+หรือ ค่าทำนายตัวแปรตามที่เปลี่ยนไปเมื่อตัวแปรอิสระเปลี่ยนไป 1 หน่วย
+การที่ตัวแปรอิสระ <code>dummy_gender</code> เปลี่ยนไป 1 หน่วย (คือ 0
+เป็น 1) คือการเปลี่ยนจากกลุ่ม <code>"F"</code> เป็น <code>"M"</code>
+ดังนั้นค่าความชัน ก็คือ ความแตกต่างของค่าเฉลี่ยทั้งสองกลุ่มนั่นเอง</p>
+<p>ค่า <code>t value</code> ของ <code>dummy_gender</code>
+ก็มีค่าเท่ากับการทดสอบ t-test ด้านบน</p>
+<p>นอกจากนี้ output ของ regression ยังมีค่าทดสอบ F มาด้วย
+ซึ่งจะมีค่าเท่ากับการวิเคราะห์ ANOVA ตามปกติ</p>
 <pre class="r"><code>summary(aov(weight ~ group, data = genderweight))</code></pre>
 <pre><code>##             Df Sum Sq Mean Sq F value Pr(&gt;F)    
 ## group        1   4985    4985   432.3 &lt;2e-16 ***
@@ -535,8 +559,12 @@ summary(mod1)</code></pre>
 </div>
 <div id="default-coding-in-r" class="section level2">
 <h2>Default coding in R</h2>
-<p>ในทางปฏิบัติการสร้าง dummy coding เองนั้นอาจจะเสียเวลามาก การตั้งค่าพื้นฐานใน R จึงรองรับการใช้ตัวแปร factor ในสมการ และจะทำการ code รหัสให้เราอัตโนมัติ โดยใช้ level แรกของตัวแปร factor นั้น เป็นกลุ่มอ้างอิง (ในกรณีนี้คือ <code>"F"</code>)</p>
-<p>สังเกตว่าผลที่ได้เหมือนกับการวิเคราะห์ด้วย dummy code ที่สร้างเองทุกประการ</p>
+<p>ในทางปฏิบัติการสร้าง dummy coding เองนั้นอาจจะเสียเวลามาก
+การตั้งค่าพื้นฐานใน R จึงรองรับการใช้ตัวแปร factor ในสมการ และจะทำการ
+code รหัสให้เราอัตโนมัติ โดยใช้ level แรกของตัวแปร factor นั้น
+เป็นกลุ่มอ้างอิง (ในกรณีนี้คือ <code>"F"</code>)</p>
+<p>สังเกตว่าผลที่ได้เหมือนกับการวิเคราะห์ด้วย dummy code
+ที่สร้างเองทุกประการ</p>
 <pre class="r"><code>str(genderweight)</code></pre>
 <pre><code>## tibble [40 × 4] (S3: tbl_df/tbl/data.frame)
 ##  $ id          : Factor w/ 40 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 2 3 4 5 6 7 8 9 10 ...
@@ -566,7 +594,11 @@ summary(mod2) # notice that a coefficient showed which group it represented</cod
 </div>
 <div id="changing-levels" class="section level2">
 <h2>Changing levels</h2>
-<p>หากต้องการจะเปลี่ยนระดับที่เป็นกลุ่มอ้างอิง สามารถทำได้โดยกำหนด level ของตัวแปรนั้นใหม่ ในที่นี้ เราจะสร้างตัวแปรชื่อ <code>$gender2</code> ขึ้นมา แล้วใช้ option <code>level</code> ในคำสั่ง <code>factor()</code> เพื่อกำหนดให้ <code>"M"</code> เป็นระดับแรก และ <code>"F"</code> เป็นระดับสอง</p>
+<p>หากต้องการจะเปลี่ยนระดับที่เป็นกลุ่มอ้างอิง สามารถทำได้โดยกำหนด level
+ของตัวแปรนั้นใหม่ ในที่นี้ เราจะสร้างตัวแปรชื่อ <code>$gender2</code>
+ขึ้นมา แล้วใช้ option <code>level</code> ในคำสั่ง <code>factor()</code>
+เพื่อกำหนดให้ <code>"M"</code> เป็นระดับแรก และ <code>"F"</code>
+เป็นระดับสอง</p>
 <pre class="r"><code>genderweight$gender2 &lt;- factor(genderweight$group, levels = c(&quot;M&quot;, &quot;F&quot;))
 mod3 &lt;- lm(weight ~ gender2, data = genderweight)
 summary(mod3)</code></pre>
@@ -588,13 +620,23 @@ summary(mod3)</code></pre>
 ## Residual standard error: 3.396 on 38 degrees of freedom
 ## Multiple R-squared:  0.9192, Adjusted R-squared:  0.9171 
 ## F-statistic: 432.3 on 1 and 38 DF,  p-value: &lt; 2.2e-16</code></pre>
-<p>สังเกตว่า ค่าสถิติในภาพรวมอย่างค่า F และค่า t ไม่เปลี่ยนแปลง (ค่า t เปลี่ยนเฉพาะสัญลักษณ์จากบวกเป็นลบ) เนื่องจากเป็นการวิเคราะห์โมเดลเดียวกัน แต่ค่า intercept และ slope เปลี่ยนตามลำดับในการเข้ารหัส</p>
-<p>ค่า intercept จะกลายเป็นค่าเฉลี่ยของกลุ่ม <code>"M"</code> ซึ่งเป็นกลุ่มอ้างอิงในครั้งนี้ และค่า slope คือ การเปลี่ยนจาก <code>"M"</code> เป็น <code>"F"</code> ซึ่งเป็นการเปรียบเทียบกลุ่มค่าเฉลี่ยสูงไปค่าเฉลี่ยต่ำกว่า ดังนั้น ค่า slope จึงติดลบ แต่ยังมีขนาดความแตกต่างเท่าเดิม (การเปลี่ยนสัญลักษณ์นี้ ทำให้ค่า <em>t</em> เปลี่ยนสัญลักษณ์ตามไปด้วย)</p>
+<p>สังเกตว่า ค่าสถิติในภาพรวมอย่างค่า F และค่า t ไม่เปลี่ยนแปลง (ค่า t
+เปลี่ยนเฉพาะสัญลักษณ์จากบวกเป็นลบ)
+เนื่องจากเป็นการวิเคราะห์โมเดลเดียวกัน แต่ค่า intercept และ slope
+เปลี่ยนตามลำดับในการเข้ารหัส</p>
+<p>ค่า intercept จะกลายเป็นค่าเฉลี่ยของกลุ่ม <code>"M"</code>
+ซึ่งเป็นกลุ่มอ้างอิงในครั้งนี้ และค่า slope คือ การเปลี่ยนจาก
+<code>"M"</code> เป็น <code>"F"</code>
+ซึ่งเป็นการเปรียบเทียบกลุ่มค่าเฉลี่ยสูงไปค่าเฉลี่ยต่ำกว่า ดังนั้น ค่า
+slope จึงติดลบ แต่ยังมีขนาดความแตกต่างเท่าเดิม (การเปลี่ยนสัญลักษณ์นี้
+ทำให้ค่า <em>t</em> เปลี่ยนสัญลักษณ์ตามไปด้วย)</p>
 </div>
 </div>
 <div id="anvoa-as-regression" class="section level1">
 <h1>ANVOA as regression</h1>
-<p>การวิเคราะห์ ANOVA ก็อยู่ในรูปแบบของ regression ได้เช่นกัน โดยเราจะใช้ข้อมูล <code>PlantGrowth</code> เปรียบเทียบน้ำหนักของต้นไม้ในสามเงื่อนไขการทดลอง</p>
+<p>การวิเคราะห์ ANOVA ก็อยู่ในรูปแบบของ regression ได้เช่นกัน
+โดยเราจะใช้ข้อมูล <code>PlantGrowth</code>
+เปรียบเทียบน้ำหนักของต้นไม้ในสามเงื่อนไขการทดลอง</p>
 <pre class="r"><code>data(&quot;PlantGrowth&quot;)
 str(PlantGrowth)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    30 obs. of  2 variables:
@@ -602,10 +644,22 @@ str(PlantGrowth)</code></pre>
 ##  $ group : Factor w/ 3 levels &quot;ctrl&quot;,&quot;trt1&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
 <div id="manual-dummy-coding" class="section level2">
 <h2>Manual dummy coding</h2>
-<p>การเข้ารหัส dummy มีลักษณะเป็น binary คือ 0 หรือ 1 เท่านั้น การเข้ารหัสตัวเแปรจัดประเภทที่มีมากกว่า 2 เงื่อนไขจึงต้องใช้ ตัวแปร dummy เพิ่ม โดยตัวแปร dummy ที่ต้องใช้ คือ <span class="math inline">\(k -1\)</span> หรือเท่ากับ <em>df</em><sub>btw</sub> นั่นเอง</p>
-<p>ในกรณีที่มีสามระดับ เราจะต้องการตัวแปร dummy 2 ตัว โดยตัวแรกจะใช้แทนค่ากลุ่ม <code>trt1</code> โดยเข้ารหัสให้กลุ่มตัวอย่างที่อยู่ในกลุ่ม <code>tr1t</code>มีค่าตัวแปร dummy นี้ = 1 แต่ถ้าอยู่กลุ่มอื่นให้เป็น 0</p>
-<p>ตัวแปร dummy ตัวที่สองใช้แทนค่า <code>trt2</code> หากกลุ่มตัวอย่างอยู่เงื่อนไขนี้ จะแทนค่าด้วย 1 แต่ถ้าอยู่กลุ่มอื่นจะแทนค่าด้วย 0</p>
-<p>เนื่องจากตัวแปรกลุ่มนี้มี 3 ระดับจึงมี degrees of freedom = 2 กล่าว คือ หากไม่อยู่กลุ่ม <code>trt1</code> หรือ <code>trt2</code> ก็แสดงว่าต้องอยู่ <code>ctrl</code> เท่านั้น ดังนั้นกลุ่มตัวอย่างในเงื่อนไขอ้างอิงนี้ จะมีค่าตัวแปร dummy ทั้งสองตัวเป็น 0</p>
+<p>การเข้ารหัส dummy มีลักษณะเป็น binary คือ 0 หรือ 1 เท่านั้น
+การเข้ารหัสตัวเแปรจัดประเภทที่มีมากกว่า 2 เงื่อนไขจึงต้องใช้ ตัวแปร
+dummy เพิ่ม โดยตัวแปร dummy ที่ต้องใช้ คือ <span class="math inline">\(k
+-1\)</span> หรือเท่ากับ <em>df</em><sub>btw</sub> นั่นเอง</p>
+<p>ในกรณีที่มีสามระดับ เราจะต้องการตัวแปร dummy 2 ตัว
+โดยตัวแรกจะใช้แทนค่ากลุ่ม <code>trt1</code>
+โดยเข้ารหัสให้กลุ่มตัวอย่างที่อยู่ในกลุ่ม <code>tr1t</code>มีค่าตัวแปร
+dummy นี้ = 1 แต่ถ้าอยู่กลุ่มอื่นให้เป็น 0</p>
+<p>ตัวแปร dummy ตัวที่สองใช้แทนค่า <code>trt2</code>
+หากกลุ่มตัวอย่างอยู่เงื่อนไขนี้ จะแทนค่าด้วย 1
+แต่ถ้าอยู่กลุ่มอื่นจะแทนค่าด้วย 0</p>
+<p>เนื่องจากตัวแปรกลุ่มนี้มี 3 ระดับจึงมี degrees of freedom = 2 กล่าว
+คือ หากไม่อยู่กลุ่ม <code>trt1</code> หรือ <code>trt2</code>
+ก็แสดงว่าต้องอยู่ <code>ctrl</code> เท่านั้น
+ดังนั้นกลุ่มตัวอย่างในเงื่อนไขอ้างอิงนี้ จะมีค่าตัวแปร dummy
+ทั้งสองตัวเป็น 0</p>
 <pre class="r"><code>PlantGrowth$dummy_trt1 &lt;- dplyr::recode(PlantGrowth$group, &#39;ctrl&#39; = 0, &#39;trt1&#39; = 1, &#39;trt2&#39; = 0)
 PlantGrowth$dummy_trt2 &lt;- dplyr::recode(PlantGrowth$group, &#39;ctrl&#39; = 0, &#39;trt1&#39; = 0, &#39;trt2&#39; = 1)</code></pre>
 </div>
@@ -635,12 +689,16 @@ summary(plant.lm1)</code></pre>
 ## F-statistic: 4.846 on 2 and 27 DF,  p-value: 0.01591</code></pre>
 <p>ค่าสถิติ F คือค่าเดียวกับการวิเคราะห์ ANOVA ตามปกติ</p>
 <p>ค่า intercept คือ ค่าเฉลี่ยของกลุ่มอ้างอิง <code>ctrl</code></p>
-<p>ค่า <code>dummy_trt1</code> คือ ความแตกต่างของค่าเฉลี่ยระหว่าง <code>trt1</code> กับกลุ่มอ้างอิง <code>ctrl</code></p>
-<p>ค่า <code>dummy_trt2</code> คือ ความแตกต่างของค่าเฉลี่ยระหว่าง <code>trt2</code> กับกลุ่มอ้างอิง <code>ctrl</code></p>
+<p>ค่า <code>dummy_trt1</code> คือ ความแตกต่างของค่าเฉลี่ยระหว่าง
+<code>trt1</code> กับกลุ่มอ้างอิง <code>ctrl</code></p>
+<p>ค่า <code>dummy_trt2</code> คือ ความแตกต่างของค่าเฉลี่ยระหว่าง
+<code>trt2</code> กับกลุ่มอ้างอิง <code>ctrl</code></p>
 </div>
 <div id="default-coding" class="section level2">
 <h2>Default coding</h2>
-<p>หากเราปล่อยให้ R ทำการ code รหัสให้ โดยส่งตัวแปร factor <code>group</code> ลงไปในสมการเลย R จะใช้ระดับแรกในข้อมูลเป็นกลุ่มอ้างอิง <code>ctrl</code></p>
+<p>หากเราปล่อยให้ R ทำการ code รหัสให้ โดยส่งตัวแปร factor
+<code>group</code> ลงไปในสมการเลย R
+จะใช้ระดับแรกในข้อมูลเป็นกลุ่มอ้างอิง <code>ctrl</code></p>
 <p>ในกรณีนี้ค่าที่ได้จึงเหมือนกับการวิเคราะห์ด้านบนทุกประการ</p>
 <pre class="r"><code>plant.lm2 &lt;- lm(weight ~ group, data = PlantGrowth) # must be factor
 summary(plant.lm2)</code></pre>
@@ -663,8 +721,12 @@ summary(plant.lm2)</code></pre>
 ## Residual standard error: 0.6234 on 27 degrees of freedom
 ## Multiple R-squared:  0.2641, Adjusted R-squared:  0.2096 
 ## F-statistic: 4.846 on 2 and 27 DF,  p-value: 0.01591</code></pre>
-<p>เนื่องจาก ANOVA นั้นกรณีพิเศษของ linear model เราสามารถให้ R วิเคราะห์โมเดลจาก <code>lm()</code> ในแบบ ANOVA ได้ด้วยคำสั่ง <code>anova()</code></p>
-<p>(ในการทำงานของ R เมื่อเราสร้างโมเดลด้วย <code>aov()</code> R จะใช้คำสั่ง <code>lm()</code> ในเบื้องหลังการวิเคราะห์ จึงเรียกได้ว่า <code>aov()</code> เป็นกรณีเฉพาะของ <code>lm()</code>)</p>
+<p>เนื่องจาก ANOVA นั้นกรณีพิเศษของ linear model เราสามารถให้ R
+วิเคราะห์โมเดลจาก <code>lm()</code> ในแบบ ANOVA ได้ด้วยคำสั่ง
+<code>anova()</code></p>
+<p>(ในการทำงานของ R เมื่อเราสร้างโมเดลด้วย <code>aov()</code> R
+จะใช้คำสั่ง <code>lm()</code> ในเบื้องหลังการวิเคราะห์ จึงเรียกได้ว่า
+<code>aov()</code> เป็นกรณีเฉพาะของ <code>lm()</code>)</p>
 <pre class="r"><code>anova(plant.lm2)</code></pre>
 <pre><code>## Analysis of Variance Table
 ## 

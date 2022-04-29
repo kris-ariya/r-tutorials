@@ -13,8 +13,8 @@
 
 <title>Lab 10: Repeated-Measures ANOVA</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -308,7 +312,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -321,7 +325,7 @@ div.tocify {
   <a href="index.html">Home</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     RES MTHD/STAT PSY Lab
      
     <span class="caret"></span>
@@ -360,7 +364,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     EXPRM DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -402,7 +406,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     SURVEY DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -454,8 +458,11 @@ library(effectsize)
 library(emmeans)</code></pre>
 <div id="wide-format" class="section level1">
 <h1>Wide Format</h1>
-<p>ข้อมูลแบบวัดซ้ำ (repeated measures) สามารถจัดได้สองแบบ คือ แบบกว้าง (wide format) และแบบยาว (long format)</p>
-<p>ในการจัดข้อมูลแบบกว้าง แต่ละแถว (row) จะแทนกลุ่มตัวอย่างแต่ละคน ข้อมูลตัวแปรตามที่วัดซ้ำจะแทนด้วยคอลัมน์ตามจำนวนการวัด ดังตัวอย่างด้านล่าง</p>
+<p>ข้อมูลแบบวัดซ้ำ (repeated measures) สามารถจัดได้สองแบบ คือ แบบกว้าง
+(wide format) และแบบยาว (long format)</p>
+<p>ในการจัดข้อมูลแบบกว้าง แต่ละแถว (row) จะแทนกลุ่มตัวอย่างแต่ละคน
+ข้อมูลตัวแปรตามที่วัดซ้ำจะแทนด้วยคอลัมน์ตามจำนวนการวัด
+ดังตัวอย่างด้านล่าง</p>
 <pre class="r"><code>data(&quot;selfesteem&quot;, package = &quot;datarium&quot;)
 head(selfesteem)</code></pre>
 <pre><code>## # A tibble: 6 × 4
@@ -467,10 +474,12 @@ head(selfesteem)</code></pre>
 ## 4     4  3.42  4.71  8.35
 ## 5     5  2.87  3.91  6.46
 ## 6     6  2.05  5.34  6.65</code></pre>
-<p>ข้อมูลแบบกว้างเป็นการจัดข้อมูลที่นิยมใช้ใน repeated ANOVA ของโปรแกรมสถิติทั่วไป เช่น SPSS, jamovi</p>
+<p>ข้อมูลแบบกว้างเป็นการจัดข้อมูลที่นิยมใช้ใน repeated ANOVA
+ของโปรแกรมสถิติทั่วไป เช่น SPSS, jamovi</p>
 <div id="descriptive-statistics" class="section level2">
 <h2>Descriptive Statistics</h2>
-<p>การเรียกดูค่าสถิติพื้นฐานในข้อมูลแบบกว้างนี้สามารถทำเหมือนกับการเรียกดูข้อมูลของตัวแปร (คอลัมน์) แต่ละตัว</p>
+<p>การเรียกดูค่าสถิติพื้นฐานในข้อมูลแบบกว้างนี้สามารถทำเหมือนกับการเรียกดูข้อมูลของตัวแปร
+(คอลัมน์) แต่ละตัว</p>
 <pre class="r"><code>psych::describe(selfesteem[,c(&quot;t1&quot;, &quot;t2&quot;, &quot;t3&quot;)])</code></pre>
 <pre><code>##    vars  n mean   sd median trimmed  mad  min  max range  skew kurtosis   se
 ## t1    1 10 3.14 0.55   3.21    3.17 0.45 2.05 4.01  1.96 -0.45    -0.67 0.17
@@ -502,7 +511,8 @@ head(selfesteem)</code></pre>
 ## 
 ## data:  selfesteem$t3
 ## W = 0.92271, p-value = 0.3802</code></pre>
-<p>สำหรับ QQ plot เราจะใช้คำสั่ง <code>qqPlot</code> (P ตัวใหญ่) จาก package <code>car</code></p>
+<p>สำหรับ QQ plot เราจะใช้คำสั่ง <code>qqPlot</code> (P ตัวใหญ่) จาก
+package <code>car</code></p>
 <pre class="r"><code>car::qqPlot(selfesteem$t1)</code></pre>
 <p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <pre><code>## [1] 6 1</code></pre>
@@ -515,12 +525,19 @@ head(selfesteem)</code></pre>
 </div>
 <div id="jmv-package" class="section level2">
 <h2><code>jmv</code> Package</h2>
-<p>การวิเคราะห์ข้อมูลวัดซ้ำใน R นั้นมักจะวิเคราะห์ด้วย long format จึงไม่มีคำสั่ง Base R สำหรับวิเคราะห์ข้อมูลแบบ wide format</p>
-<p>ถ้าต้องการวิเคราะห์ด้วย wide format เราสามารถใช้คำสั่ง <code>anovaRM</code> ใน package <code>jmv</code> ได้</p>
-<p>โดยต้องกำหนด option หลัก 3 ตัว คือ <code>rm</code>, <code>rmCells</code>, และ <code>rmTerms</code></p>
-<p>ใน <code>rm</code> จะกำหนด <code>label</code> = ชื่อตัวแปรวัดซ้ำ เช่น เวลา/เงื่อนไข/ขนาดโดสยา/อื่นๆ และ <code>levels</code> = ชื่อระดับตัวแปรวัดซ้ำ</p>
-<p>ใน <code>rmCells</code> จะกำหนด <code>measure</code> = ชื่อตัวแปรในข้อมูล คู่กับ <code>cell</code> = ชื่อ level ที่ตรงกัน</p>
-<p>ส่วน <code>rmTerms</code> คือการกำหนดว่า effect ตัวไหนจะเป็นอิทธิพลแบบภายในบุคคล (within-subject)</p>
+<p>การวิเคราะห์ข้อมูลวัดซ้ำใน R นั้นมักจะวิเคราะห์ด้วย long format
+จึงไม่มีคำสั่ง Base R สำหรับวิเคราะห์ข้อมูลแบบ wide format</p>
+<p>ถ้าต้องการวิเคราะห์ด้วย wide format เราสามารถใช้คำสั่ง
+<code>anovaRM</code> ใน package <code>jmv</code> ได้</p>
+<p>โดยต้องกำหนด option หลัก 3 ตัว คือ <code>rm</code>,
+<code>rmCells</code>, และ <code>rmTerms</code></p>
+<p>ใน <code>rm</code> จะกำหนด <code>label</code> = ชื่อตัวแปรวัดซ้ำ เช่น
+เวลา/เงื่อนไข/ขนาดโดสยา/อื่นๆ และ <code>levels</code> =
+ชื่อระดับตัวแปรวัดซ้ำ</p>
+<p>ใน <code>rmCells</code> จะกำหนด <code>measure</code> =
+ชื่อตัวแปรในข้อมูล คู่กับ <code>cell</code> = ชื่อ level ที่ตรงกัน</p>
+<p>ส่วน <code>rmTerms</code> คือการกำหนดว่า effect
+ตัวไหนจะเป็นอิทธิพลแบบภายในบุคคล (within-subject)</p>
 <pre class="r"><code>jmv::anovaRM(data = selfesteem, 
             rm = list(
                       list(
@@ -624,10 +641,17 @@ head(selfesteem)</code></pre>
 </div>
 <div id="long-format" class="section level1">
 <h1>Long Format</h1>
-<p>ข้อมูลแบบยาวเป็นรูปแบบที่เหมาะสำหรับข้อมูลเชิงซ้อน (nested data) การออกแบบแบบวัดซ้ำก็นับว่าเป็นข้อมูลเชิงซ้อนแบบหนึ่ง นั่นคือ การสังเกตหรือการวัด (observation) แต่ละครั้งซ้อนอยู่ในตัวกลุ่มตัวอย่างแต่ละคน</p>
-<p>ในข้อมูลแบบยาว การสังเกตแต่ละครั้งจะแสดงในแต่ละแถว ข้อมูลจากกลุ่มตัวอย่างคนเดียวกันจะถูกระบุในคอลัมน์ <code>id</code> และการวัดซ้ำแต่ละครั้งจะแสดงด้วยคอลัมน์ <code>Time</code></p>
-<p>ในข้อมูลตัวอย่างนี้ กลุ่มตัวอย่างมีจำนวน 10 คน แต่ละคนถูกวัด 3 ครั้ง ดังนั้นข้อมูลแบบยาวจะมีทั้งหมด 30 แถว</p>
-<p>คำสั่งการวิเคราะห์ใน R เกือบทั้งหมดจะใช้รูปแบบ long format นี้เป็นหลัก</p>
+<p>ข้อมูลแบบยาวเป็นรูปแบบที่เหมาะสำหรับข้อมูลเชิงซ้อน (nested data)
+การออกแบบแบบวัดซ้ำก็นับว่าเป็นข้อมูลเชิงซ้อนแบบหนึ่ง นั่นคือ
+การสังเกตหรือการวัด (observation)
+แต่ละครั้งซ้อนอยู่ในตัวกลุ่มตัวอย่างแต่ละคน</p>
+<p>ในข้อมูลแบบยาว การสังเกตแต่ละครั้งจะแสดงในแต่ละแถว
+ข้อมูลจากกลุ่มตัวอย่างคนเดียวกันจะถูกระบุในคอลัมน์ <code>id</code>
+และการวัดซ้ำแต่ละครั้งจะแสดงด้วยคอลัมน์ <code>Time</code></p>
+<p>ในข้อมูลตัวอย่างนี้ กลุ่มตัวอย่างมีจำนวน 10 คน แต่ละคนถูกวัด 3 ครั้ง
+ดังนั้นข้อมูลแบบยาวจะมีทั้งหมด 30 แถว</p>
+<p>คำสั่งการวิเคราะห์ใน R เกือบทั้งหมดจะใช้รูปแบบ long format
+นี้เป็นหลัก</p>
 <pre class="r"><code>se_long &lt;- tidyr::pivot_longer(selfesteem, cols = c(&quot;t1&quot;, &quot;t2&quot;, &quot;t3&quot;), names_to = &quot;Time&quot;, values_to = &quot;selfesteem&quot;)
 
 se_long$Time &lt;- factor(se_long$Time)
@@ -656,16 +680,23 @@ se_long</code></pre>
 ## group: t1
 ##    vars  n mean   sd median trimmed  mad  min  max range  skew kurtosis   se
 ## X1    1 10 3.14 0.55   3.21    3.17 0.45 2.05 4.01  1.96 -0.45    -0.67 0.17
-## --------------------------------------------------------------------------------------------------------------- 
+## ------------------------------------------------------------------------------------------------------------------- 
 ## group: t2
 ##    vars  n mean   sd median trimmed mad  min  max range skew kurtosis   se
 ## X1    1 10 4.93 0.86    4.6    4.81 0.6 3.91 6.91     3 1.01     0.05 0.27
-## --------------------------------------------------------------------------------------------------------------- 
+## ------------------------------------------------------------------------------------------------------------------- 
 ## group: t3
 ##    vars  n mean   sd median trimmed mad  min  max range skew kurtosis   se
 ## X1    1 10 7.64 1.14   7.46    7.53 1.4 6.31 9.78  3.47  0.4     -1.3 0.36</code></pre>
-<p>เนื่องจากความคลาดเคลื่อนในข้อมูลมีที่มาจากทั้งภายในบุคคล (within-subject error) และระหว่างบุคคล (between-subject error) การประมาณค่า standard error ด้วยคำสั่งทั่วไปอย่าง <code>psych::describe</code> จึงไม่ได้สะท้อนค่าความคลาดเคลื่อนที่ใช้ในการวิเคราะห์แบบวัดซ้ำ (คือใช้เฉพาะ within error)</p>
-<p>คำสั่ง <code>summarySEwithin()</code> ใน package <code>Rmisc</code> จะแสดงค่า standard error และ CI ที่ปรับแก้ให้เหมาะสมกับการออกแบบแบบวัดซ้ำแล้ว</p>
+<p>เนื่องจากความคลาดเคลื่อนในข้อมูลมีที่มาจากทั้งภายในบุคคล
+(within-subject error) และระหว่างบุคคล (between-subject error)
+การประมาณค่า standard error ด้วยคำสั่งทั่วไปอย่าง
+<code>psych::describe</code>
+จึงไม่ได้สะท้อนค่าความคลาดเคลื่อนที่ใช้ในการวิเคราะห์แบบวัดซ้ำ
+(คือใช้เฉพาะ within error)</p>
+<p>คำสั่ง <code>summarySEwithin()</code> ใน package <code>Rmisc</code>
+จะแสดงค่า standard error และ CI
+ที่ปรับแก้ให้เหมาะสมกับการออกแบบแบบวัดซ้ำแล้ว</p>
 <pre class="r"><code>Rmisc::summarySEwithin(se_long, 
                        measurevar = &quot;selfesteem&quot;,
                        withinvars = &quot;Time&quot;,
@@ -687,9 +718,15 @@ se_long</code></pre>
 <h2>Repeated-Measures ANOVA</h2>
 <div id="base-r" class="section level3">
 <h3>Base R</h3>
-<p>โมเดล <code>aov</code> สำหรับข้อมูลวัดซ้ำจะมีรูปแบบทั่วไปคือ <code>y ~ x + Error(id/x)</code></p>
-<p><code>x</code> จะเป็นตัวแปรวัดซ้ำ ในตัวอย่างนี้คือ <code>Time</code></p>
-<p><code>Error()</code> ใช้เพื่อระบุข้อมูลเชิงซ้อน เช่น <code>id/x</code> แสดงว่า ตัวแปร <code>x</code> ซ้อนอยู่ใน <code>id</code> ในที่นี้คือ การวัดแต่ละครั้ง <code>Time</code> ซ้อนอยู่ในกลุ่มตัวอย่างแต่ละคน <code>id</code> แสดงด้วย <code>Error(id/Time)</code></p>
+<p>โมเดล <code>aov</code> สำหรับข้อมูลวัดซ้ำจะมีรูปแบบทั่วไปคือ
+<code>y ~ x + Error(id/x)</code></p>
+<p><code>x</code> จะเป็นตัวแปรวัดซ้ำ ในตัวอย่างนี้คือ
+<code>Time</code></p>
+<p><code>Error()</code> ใช้เพื่อระบุข้อมูลเชิงซ้อน เช่น
+<code>id/x</code> แสดงว่า ตัวแปร <code>x</code> ซ้อนอยู่ใน
+<code>id</code> ในที่นี้คือ การวัดแต่ละครั้ง <code>Time</code>
+ซ้อนอยู่ในกลุ่มตัวอย่างแต่ละคน <code>id</code> แสดงด้วย
+<code>Error(id/Time)</code></p>
 <pre class="r"><code>se.aov &lt;- aov(selfesteem ~ Time + Error(id/Time), data = se_long)
 summary(se.aov)</code></pre>
 <pre><code>## 
@@ -706,11 +743,18 @@ summary(se.aov)</code></pre>
 </div>
 <div id="afex-package" class="section level3">
 <h3><code>afex</code> package</h3>
-<p>คำสั่งใน <code>afex</code> จะให้รายละเอียดใน output มากกว่า base R</p>
-<p>เราสามารถใช้คำสั่ง <code>aov_car()</code> แล้วตามด้วยสูตรโมเดลเหมือนในคำสั่ง <code>aov()</code> ด้านบน</p>
-<p>ค่าสถิติทดสอบให้ดูที่บรรทัด Time ในบรรทัดนี้จะมีทั้งค่า <em>SS</em><sub>within</sub> และ <em>SS</em><sub>error</sub> ในบรรทัดเดียวกันเลย</p>
-<p>ส่วนค่า <em>SS</em><sub>between</sub> (ความเปลี่ยนแปรที่มาจากความแตกต่างบุคคล) จะอยู่ที่บรรทัด (Intercept) ในส่วนของ <code>Error SS</code></p>
-<p>นอกจากนี้ยังมีการทดสอบ sphericity ให้โดยใช้ Mauchly test รวมไปถึงค่า epsilon ที่ได้จากวิธีประมาณการของ Greenhouse-Geisser และ Huynh-Feldt</p>
+<p>คำสั่งใน <code>afex</code> จะให้รายละเอียดใน output มากกว่า base
+R</p>
+<p>เราสามารถใช้คำสั่ง <code>aov_car()</code>
+แล้วตามด้วยสูตรโมเดลเหมือนในคำสั่ง <code>aov()</code> ด้านบน</p>
+<p>ค่าสถิติทดสอบให้ดูที่บรรทัด Time ในบรรทัดนี้จะมีทั้งค่า
+<em>SS</em><sub>within</sub> และ <em>SS</em><sub>error</sub>
+ในบรรทัดเดียวกันเลย</p>
+<p>ส่วนค่า <em>SS</em><sub>between</sub>
+(ความเปลี่ยนแปรที่มาจากความแตกต่างบุคคล) จะอยู่ที่บรรทัด (Intercept)
+ในส่วนของ <code>Error SS</code></p>
+<p>นอกจากนี้ยังมีการทดสอบ sphericity ให้โดยใช้ Mauchly test รวมไปถึงค่า
+epsilon ที่ได้จากวิธีประมาณการของ Greenhouse-Geisser และ Huynh-Feldt</p>
 <pre class="r"><code>se.afex &lt;- aov_car(selfesteem ~ Time + Error(id/Time), data = se_long)
 summary(se.afex)</code></pre>
 <pre><code>## 
@@ -739,7 +783,10 @@ summary(se.afex)</code></pre>
 ## 
 ##         HF eps   Pr(&gt;F[HF])
 ## Time 0.7743711 6.032582e-07</code></pre>
-<p>หากต้องการค่าสถิติทดสอบที่ปรับแก้แล้วของ Greenhouse-Geisser ให้ใช้คำสั่ง <code>nice()</code> ซึ่งเป็นคำสั่งเฉพาะใน <code>afex</code>คล้ายกับ <code>summary()</code> หากใช้คำสั่งนี้ จะแสดงค่าทดสอบที่ปรับแก้แล้ว</p>
+<p>หากต้องการค่าสถิติทดสอบที่ปรับแก้แล้วของ Greenhouse-Geisser
+ให้ใช้คำสั่ง <code>nice()</code> ซึ่งเป็นคำสั่งเฉพาะใน
+<code>afex</code>คล้ายกับ <code>summary()</code> หากใช้คำสั่งนี้
+จะแสดงค่าทดสอบที่ปรับแก้แล้ว</p>
 <pre class="r"><code>nice(se.afex)</code></pre>
 <pre><code>## Anova Table (Type 3 tests)
 ## 
@@ -763,43 +810,56 @@ summary(se.afex)</code></pre>
 <pre class="r"><code>eta_squared(se.aov)</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type I)
 ## 
-## Group   | Parameter | Eta2 (partial) |       90% CI
+## Group   | Parameter | Eta2 (partial) |       95% CI
 ## ---------------------------------------------------
-## id:Time |      Time |           0.86 | [0.74, 0.91]</code></pre>
+## id:Time |      Time |           0.86 | [0.74, 1.00]
+## 
+## - One-sided CIs: upper bound fixed at (1).</code></pre>
 <pre class="r"><code>eta_squared(se.afex) #same as above</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type III)
 ## 
-## Parameter | Eta2 (partial) |       90% CI
+## Parameter | Eta2 (partial) |       95% CI
 ## -----------------------------------------
-## Time      |           0.86 | [0.74, 0.91]</code></pre>
+## Time      |           0.86 | [0.74, 1.00]
+## 
+## - One-sided CIs: upper bound fixed at (1).</code></pre>
 <pre class="r"><code>omega_squared(se.aov)</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type I)
 ## 
-## Group   | Parameter | Omega2 (partial) |       90% CI
+## Group   | Parameter | Omega2 (partial) |       95% CI
 ## -----------------------------------------------------
-## id:Time |      Time |             0.81 | [0.64, 0.88]</code></pre>
+## id:Time |      Time |             0.81 | [0.64, 1.00]
+## 
+## - One-sided CIs: upper bound fixed at (1).</code></pre>
 <pre class="r"><code>omega_squared(se.afex) #same as above</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type III)
 ## 
-## Parameter | Omega2 (partial) |       90% CI
+## Parameter | Omega2 (partial) |       95% CI
 ## -------------------------------------------
-## Time      |             0.81 | [0.64, 0.88]</code></pre>
+## Time      |             0.81 | [0.64, 1.00]
+## 
+## - One-sided CIs: upper bound fixed at (1).</code></pre>
 <pre class="r"><code>cohens_f(se.aov)</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type I)
 ## 
-## Group   | Parameter | Cohen&#39;s f (partial) |       90% CI
-## --------------------------------------------------------
-## id:Time |      Time |                2.48 | [1.67, 3.23]</code></pre>
+## Group   | Parameter | Cohen&#39;s f (partial) |      95% CI
+## -------------------------------------------------------
+## id:Time |      Time |                2.48 | [1.67, Inf]
+## 
+## - One-sided CIs: upper bound fixed at (Inf).</code></pre>
 <pre class="r"><code>cohens_f(se.afex) #same as above</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type III)
 ## 
-## Parameter | Cohen&#39;s f (partial) |       90% CI
-## ----------------------------------------------
-## Time      |                2.48 | [1.67, 3.23]</code></pre>
+## Parameter | Cohen&#39;s f (partial) |      95% CI
+## ---------------------------------------------
+## Time      |                2.48 | [1.67, Inf]
+## 
+## - One-sided CIs: upper bound fixed at (Inf).</code></pre>
 </div>
 <div id="post-hoc-analysis" class="section level2">
 <h2>Post-Hoc Analysis</h2>
-<p>ใช้คำสั่ง <code>emmeans</code> เพื่อสร้าง estimated marginal means ไว้สำหรับทดสอบรายคู่ โดยให้แบ่งการเปรียบเทียบด้วย <code>Time</code></p>
+<p>ใช้คำสั่ง <code>emmeans</code> เพื่อสร้าง estimated marginal means
+ไว้สำหรับทดสอบรายคู่ โดยให้แบ่งการเปรียบเทียบด้วย <code>Time</code></p>
 <pre class="r"><code>se.emm &lt;- emmeans(se.afex, ~ Time)
 se.emm</code></pre>
 <pre><code>##  Time emmean    SE df lower.CL upper.CL

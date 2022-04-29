@@ -14,8 +14,8 @@
 
 <title>Lab 09: Data Visualization</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -64,6 +64,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -84,6 +85,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -309,7 +313,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -322,7 +326,7 @@ div.tocify {
   <a href="index.html">Home</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     RES MTHD/STAT PSY Lab
      
     <span class="caret"></span>
@@ -361,7 +365,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     EXPRM DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -403,7 +407,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     SURVEY DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -444,16 +448,24 @@ div.tocify {
 </div>
 
 
-<p>การสร้างภาพข้อมูลหรือ Data Visualization ช่วยให้เราเข้าใจชุดข้อมูลที่มีความซับซ้อนได้ง่ายขึ้นและทำให้เราตัดสินใจในการจัดการกับข้อมูลเร็วขึ้น ซึ่ง Data Visualization สามารถทำได้ทั้งก่อนและหลังการวิเคราะห์เชิงสถิติ</p>
-<p>การสร้างภาพข้อมูลใน <code>R</code> สามารถทำได้จากหลากหลาย package ซึ่งใน tutorial นี้เราจะใช้ package <code>ggplot2</code> ซึ่งเป็น package ที่ช่วยให้เราสามารถสร้างกราฟิคได้หลากหลาย และสามารถปรับแต่งรูปแบบต่าง ๆ ได้ในแบบที่ต้องการ</p>
+<p>การสร้างภาพข้อมูลหรือ Data Visualization
+ช่วยให้เราเข้าใจชุดข้อมูลที่มีความซับซ้อนได้ง่ายขึ้นและทำให้เราตัดสินใจในการจัดการกับข้อมูลเร็วขึ้น
+ซึ่ง Data Visualization
+สามารถทำได้ทั้งก่อนและหลังการวิเคราะห์เชิงสถิติ</p>
+<p>การสร้างภาพข้อมูลใน <code>R</code> สามารถทำได้จากหลากหลาย package
+ซึ่งใน tutorial นี้เราจะใช้ package <code>ggplot2</code> ซึ่งเป็น
+package ที่ช่วยให้เราสามารถสร้างกราฟิคได้หลากหลาย
+และสามารถปรับแต่งรูปแบบต่าง ๆ ได้ในแบบที่ต้องการ</p>
 <pre class="r"><code>#load packages
 library(ggplot2)
 library(psych)
 library(Rmisc)</code></pre>
 <div id="mtcars-data" class="section level2">
 <h2>Mtcars data</h2>
-<p>ใน tutorial นี้เราจะใช้ข้อมูลที่มีอยู่แล้วใน package <code>ggplot2</code> ชื่อว่า <code>mtcars</code> ในการสร้างกราฟฟิค<br />
-หลังจาก import <code>mtcars</code> ลงมาแล้ว เราสามารถเซ็ตค่าตัวแปรได้ตามนี้</p>
+<p>ใน tutorial นี้เราจะใช้ข้อมูลที่มีอยู่แล้วใน package
+<code>ggplot2</code> ชื่อว่า <code>mtcars</code> ในการสร้างกราฟฟิค<br />
+หลังจาก import <code>mtcars</code> ลงมาแล้ว
+เราสามารถเซ็ตค่าตัวแปรได้ตามนี้</p>
 <pre class="r"><code>data(&quot;mtcars&quot;)
 
 mtcars$vs &lt;- factor(mtcars$vs, labels = c(&quot;V&quot;, &quot;S&quot;))
@@ -484,25 +496,35 @@ psych::describe(mtcars)</code></pre>
 <code>wt</code> - น้ำหนัก<br />
 <code>qsec</code> - ความเร่ง<br />
 <code>vs</code> - รูปร่างของเครื่องยนต์ ‘V’ หรือ ‘S’<br />
-<code>am</code> - ระบบเกียร์อัตโนมัติ (auto) หรือ เกียร์กระปุก (manual)<br />
+<code>am</code> - ระบบเกียร์อัตโนมัติ (auto) หรือ เกียร์กระปุก
+(manual)<br />
 <code>gear</code> - จำนวนเกียร์<br />
 <code>carb</code> - จำนวนตัวเผาไหม้เครื่องยนต์</p>
 </div>
 <div id="ggplot2-package" class="section level2">
 <h2>Ggplot2 Package</h2>
-<p>Ggplot2 เป็น package ในรูปแบบของ Grammar of Graphic ที่ความยืดหยุ่น ซึ่งในการเขียนคำสั่งของ <code>ggplot2</code> นั้น จะมีลักษณะเป็นการเรียงคำสั่งในแต่ละขั้น<br />
+<p>Ggplot2 เป็น package ในรูปแบบของ Grammar of Graphic ที่ความยืดหยุ่น
+ซึ่งในการเขียนคำสั่งของ <code>ggplot2</code> นั้น
+จะมีลักษณะเป็นการเรียงคำสั่งในแต่ละขั้น<br />
 โดยปกติแล้ว คำสั่งที่ใช้งานพื้นฐานจะประกอบไปด้วย</p>
 <ul>
 <li><p><code>data</code> - การเรียกข้อมูลที่ใช้งาน</p></li>
-<li><p><code>aesthetic mappings</code> - การเลือกตัวแปรที่จะปรากฎอยู่ในกราฟ</p></li>
-<li><p><code>geometric objects</code> - การเลือกวิธีการสร้างกราฟฟิค</p></li>
-<li><p><code>Customizing</code> เช่น การใส่ชื่อ เลือกธีม หรือลงสีให้กราฟ</p></li>
+<li><p><code>aesthetic mappings</code> -
+การเลือกตัวแปรที่จะปรากฎอยู่ในกราฟ</p></li>
+<li><p><code>geometric objects</code> -
+การเลือกวิธีการสร้างกราฟฟิค</p></li>
+<li><p><code>Customizing</code> เช่น การใส่ชื่อ เลือกธีม
+หรือลงสีให้กราฟ</p></li>
 </ul>
-<p>นอกจากนี้ยังมีคำสั่งอื่น ๆ ที่มีความซับซ้อนมากขึ้น หากเราเริ่มคุ้นเคยกับคำสั่งพื้นฐานแล้ว เราสามารถศึกษาเพิ่มเติมให้กราฟฟิคมีความสวยงามและตรงตามความต้องการของเรามากขึ้นได้</p>
+<p>นอกจากนี้ยังมีคำสั่งอื่น ๆ ที่มีความซับซ้อนมากขึ้น
+หากเราเริ่มคุ้นเคยกับคำสั่งพื้นฐานแล้ว
+เราสามารถศึกษาเพิ่มเติมให้กราฟฟิคมีความสวยงามและตรงตามความต้องการของเรามากขึ้นได้</p>
 </div>
 <div id="การสรางกราฟ" class="section level2">
 <h2>การสร้างกราฟ</h2>
-<p>ก่อนที่เราจะสร้างกราฟ เราควรสังเกตตัวแปรที่เราต้องการนำมาสร้างว่าเป็นตัวแปรลักษณะใด โดยสามารถใช้คำสั่ง <code>str()</code></p>
+<p>ก่อนที่เราจะสร้างกราฟ
+เราควรสังเกตตัวแปรที่เราต้องการนำมาสร้างว่าเป็นตัวแปรลักษณะใด
+โดยสามารถใช้คำสั่ง <code>str()</code></p>
 <pre class="r"><code>str(mtcars)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    32 obs. of  11 variables:
 ##  $ mpg : num  21 21 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 ...
@@ -516,65 +538,98 @@ psych::describe(mtcars)</code></pre>
 ##  $ am  : Factor w/ 2 levels &quot;automatic&quot;,&quot;manual&quot;: 2 2 2 1 1 1 1 1 1 1 ...
 ##  $ gear: Factor w/ 3 levels &quot;3&quot;,&quot;4&quot;,&quot;5&quot;: 2 2 2 1 1 1 1 2 2 2 ...
 ##  $ carb: Factor w/ 6 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 4 4 1 1 2 1 4 2 2 4 ...</code></pre>
-<p>หลักการในการสร้างกราฟฟิคคือ การสังเกตจำนวนตัวแปรและลักษณะของตัวแปรในแกน x และ y โดยลักษณะของตัวแปรนี้จะเป็นการคัดรูปแบบกราฟของเรา<br />
-ใน tutorial นี้เราจะเรียนรู้สร้าง boxplot, bar graph และ line graph ค่ะ</p>
+<p>หลักการในการสร้างกราฟฟิคคือ
+การสังเกตจำนวนตัวแปรและลักษณะของตัวแปรในแกน x และ y
+โดยลักษณะของตัวแปรนี้จะเป็นการคัดรูปแบบกราฟของเรา<br />
+ใน tutorial นี้เราจะเรียนรู้สร้าง boxplot, bar graph และ line graph
+ค่ะ</p>
 <div id="การสราง-boxplot" class="section level3">
 <h3>การสร้าง boxplot</h3>
-<p>ในการสร้าง boxplot (หรือกราฟลักษณะอื่น ๆ) เราจะเริ่มกันที่การสร้างคำสั่งพื้นฐาน คือ <code>data</code> และ <code>aesthetic mappings</code><br />
-โดยคำสั่งทั่วไปคือ <code>ggplot(data = ชื่อไฟล์, aes(x = ตัวแปรแกน x, y = ตัวแปรแกน y)</code></p>
+<p>ในการสร้าง boxplot (หรือกราฟลักษณะอื่น ๆ)
+เราจะเริ่มกันที่การสร้างคำสั่งพื้นฐาน คือ <code>data</code> และ
+<code>aesthetic mappings</code><br />
+โดยคำสั่งทั่วไปคือ
+<code>ggplot(data = ชื่อไฟล์, aes(x = ตัวแปรแกน x, y = ตัวแปรแกน y)</code></p>
 <p>คำสั่ง <code>aes()</code> สามารถเซ็ตค่าอื่น ๆ ได้ เช่น</p>
 <ul>
-<li><p>ตำแหน่งของตัวแปร (<code>x =</code> และ <code>y =</code> )</p></li>
-<li><p>สี: โดย <code>color=</code> เป็นสีเส้นขอบ และ <code>fill=</code> เป็นสีด้านใน</p></li>
-<li><p><code>shape =</code> รูปร่างของจุดข้อมูล และ <code>size =</code>ขนาดของจุดข้อมูล</p></li>
+<li><p>ตำแหน่งของตัวแปร (<code>x =</code> และ <code>y =</code>
+)</p></li>
+<li><p>สี: โดย <code>color=</code> เป็นสีเส้นขอบ และ <code>fill=</code>
+เป็นสีด้านใน</p></li>
+<li><p><code>shape =</code> รูปร่างของจุดข้อมูล และ
+<code>size =</code>ขนาดของจุดข้อมูล</p></li>
 </ul>
 <pre class="r"><code>ggplot(data = mtcars, aes(x = am, y = mpg))</code></pre>
 <p><img src="EXPRM_Lab09_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p>ถ้าเรา <code>run</code> คำสั่งข้างต้น เราจะพบว่า กราฟฟิคมีเพียง <code>background</code> (หรือ <code>coordinate system</code>) และชื่อตัวแปรของเราเท่านั้น ดังนั้นเราจึงจำเป็นต้องเขียนคำสั่งว่าเราต้องการให้กราฟออกมาเป็นรูปแบบใด (สามารถเข้าไปดูรูปแบบทั้งหมดได้ที่ <code>help.search("geom_", package = "ggplot2")</code></p>
-<p>สำหรับการสร้าง boxplot เราจะใช้คำสั่ง <code>geom_boxplot()</code> เพื่อเซ็ตค่า <code>geometric objects</code></p>
+<p>ถ้าเรา <code>run</code> คำสั่งข้างต้น เราจะพบว่า กราฟฟิคมีเพียง
+<code>background</code> (หรือ <code>coordinate system</code>)
+และชื่อตัวแปรของเราเท่านั้น
+ดังนั้นเราจึงจำเป็นต้องเขียนคำสั่งว่าเราต้องการให้กราฟออกมาเป็นรูปแบบใด
+(สามารถเข้าไปดูรูปแบบทั้งหมดได้ที่
+<code>help.search("geom_", package = "ggplot2")</code></p>
+<p>สำหรับการสร้าง boxplot เราจะใช้คำสั่ง <code>geom_boxplot()</code>
+เพื่อเซ็ตค่า <code>geometric objects</code></p>
 <pre class="r"><code>ggplot(data = mtcars, aes(x = am, y = mpg)) +
   geom_boxplot()</code></pre>
 <p><img src="EXPRM_Lab09_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<p>จะเห็นว่ากราฟ boxplot ที่สร้างขึ้นมามีเพียงตัวแปร x และ y หากเราต้องการจัดกลุ่มตัวแปร เราสามารถใช้คำสั่ง <code>fill = ตัวแปรจัดกลุ่ม</code> ใน <code>aesthetic mapping</code> เพื่อให้มีการจัดกลุ่มของตัวแปรในกราฟ</p>
+<p>จะเห็นว่ากราฟ boxplot ที่สร้างขึ้นมามีเพียงตัวแปร x และ y
+หากเราต้องการจัดกลุ่มตัวแปร เราสามารถใช้คำสั่ง
+<code>fill = ตัวแปรจัดกลุ่ม</code> ใน <code>aesthetic mapping</code>
+เพื่อให้มีการจัดกลุ่มของตัวแปรในกราฟ</p>
 <pre class="r"><code>ggplot(data = mtcars, aes(x = am, y = mpg, fill = vs)) +
   geom_boxplot()</code></pre>
 <p><img src="EXPRM_Lab09_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<p>หากเราต้องการให้กราฟมีสีสันและชื่อแกนตามที่เราต้องการ เราสามารถเขียนคำสั่งต่อจาก คำสั่ง geometric ได้</p>
+<p>หากเราต้องการให้กราฟมีสีสันและชื่อแกนตามที่เราต้องการ
+เราสามารถเขียนคำสั่งต่อจาก คำสั่ง geometric ได้</p>
 <p>ตัวอย่างคำสั่งอื่น ๆ ในการปรับแต่งกราฟ</p>
 <ul>
 <li><p><strong>เพิ่มลักษณะกราฟฟิค:</strong></p>
 <ul>
-<li>หากเราอยากให้ <code>ggplot2</code> สร้างจุดข้อมูลในกราฟของเรา เราสามารถสั่งคำสั่ง <code>geom_jitter()</code> หลังจาก geometric objects หลักของเราได้</li>
+<li>หากเราอยากให้ <code>ggplot2</code> สร้างจุดข้อมูลในกราฟของเรา
+เราสามารถสั่งคำสั่ง <code>geom_jitter()</code> หลังจาก geometric objects
+หลักของเราได้</li>
 </ul></li>
 <li><p><strong>ตกแต่งกราฟ:</strong></p>
 <ul>
-<li><p>ใช้คำสั่ง <code>alpha = ค่าโปรงใส</code> เพื่อเพิ่มความโปร่งใสของกราฟ</p></li>
-<li><p>ใช้คำสั่ง <code>width = ค่าความกว้างของกราฟ</code> ในการกำหนดความกว้างของกราฟ</p></li>
+<li><p>ใช้คำสั่ง <code>alpha = ค่าโปรงใส</code>
+เพื่อเพิ่มความโปร่งใสของกราฟ</p></li>
+<li><p>ใช้คำสั่ง <code>width = ค่าความกว้างของกราฟ</code>
+ในการกำหนดความกว้างของกราฟ</p></li>
 </ul></li>
 <li><p><strong>เพิ่มชื่อ:</strong></p>
 <ul>
-<li><p><strong>แกน x และ y</strong>: ใช้คำสั่ง <code>xlab = "ชื่อแกน x"</code> และ <code>ylab = "ชื่อแกน y"</code></p></li>
-<li><p><strong>ชื่อหัวกราฟ:</strong> ใช้คำสั่ง <code>ggtitle("ชื่อหัวกราฟ")</code></p></li>
+<li><p><strong>แกน x และ y</strong>: ใช้คำสั่ง
+<code>xlab = "ชื่อแกน x"</code> และ
+<code>ylab = "ชื่อแกน y"</code></p></li>
+<li><p><strong>ชื่อหัวกราฟ:</strong> ใช้คำสั่ง
+<code>ggtitle("ชื่อหัวกราฟ")</code></p></li>
 </ul></li>
 <li><p><strong>เลือกใช้ theme:</strong></p>
 <ul>
-<li><p><strong>ธีมของกราฟ:</strong> ใช้คำสั่ง <code>theme_</code> ในการเลือกใช้ theme โดย คำสั่ง <code>theme_classic</code> จะใกล้เคียงกับ APA</p></li>
+<li><p><strong>ธีมของกราฟ:</strong> ใช้คำสั่ง <code>theme_</code>
+ในการเลือกใช้ theme โดย คำสั่ง <code>theme_classic</code> จะใกล้เคียงกับ
+APA</p></li>
 <li><p><strong>สีของกราฟ:</strong></p>
 <ul>
 <li><p>เลือกจาก palette ที่มีชุดคำสั่งสี</p>
 <ul>
-<li><p>สีเส้นขอบ: <code>scale_color_brewer(palette = "ชื่อ palette ที่ต้องการ")</code></p></li>
-<li><p>สีช่องในกล่องหรือคอลัมน์: <code>scale_fill_brewer(palette = "ชื่อ palette ที่ต้องการ")</code></p></li>
+<li><p>สีเส้นขอบ:
+<code>scale_color_brewer(palette = "ชื่อ palette ที่ต้องการ")</code></p></li>
+<li><p>สีช่องในกล่องหรือคอลัมน์:
+<code>scale_fill_brewer(palette = "ชื่อ palette ที่ต้องการ")</code></p></li>
 </ul></li>
 <li><p>เลือกสีเอง</p>
 <ul>
-<li><p>สีเส้นขอบ: <code>scale_color_manual(values=c("สีที่1", "สีที่2", "สีที่3"))</code></p></li>
-<li><p>สีช่องในกลุ่มหรือคอลัมน์: <code>scale_fill_manual(values=c("สีที่1", "สีที่2", "สีที่3"))</code></p></li>
+<li><p>สีเส้นขอบ:
+<code>scale_color_manual(values=c("สีที่1", "สีที่2", "สีที่3"))</code></p></li>
+<li><p>สีช่องในกลุ่มหรือคอลัมน์:
+<code>scale_fill_manual(values=c("สีที่1", "สีที่2", "สีที่3"))</code></p></li>
 </ul></li>
 </ul></li>
 </ul></li>
 </ul>
-<p><em>Note</em>: หากเลือกสีเอง จำนวนสีต้องเท่ากับจำนวนกลุ่มตัวแปรที่ต้องการจะให้มีสี</p>
+<p><em>Note</em>: หากเลือกสีเอง
+จำนวนสีต้องเท่ากับจำนวนกลุ่มตัวแปรที่ต้องการจะให้มีสี</p>
 <pre class="r"><code>ggplot(data = mtcars, aes(x = am, y = mpg, fill = vs)) +
   geom_boxplot(alpha = 0.7, width = 0.6) +
   geom_jitter(alpha = 0.2, size = 2) +
@@ -585,18 +640,35 @@ psych::describe(mtcars)</code></pre>
   scale_color_brewer(palette=&quot;Accent&quot;) +
   scale_fill_brewer(palette=&quot;Accent&quot;)</code></pre>
 <p><img src="EXPRM_Lab09_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<p>จะเห็นได้ว่าสีของกล่องข้อมูลเปลี่ยนไปตามที่เราตั้งค่าไว้ และมีการแสดงของจุดข้อมูลที่มาจากชุดคำสั่ง <code>geom_jitter()</code> โดยมีความโปร่งใสของจุดข้อมูลให้เห็นในกราฟ</p>
+<p>จะเห็นได้ว่าสีของกล่องข้อมูลเปลี่ยนไปตามที่เราตั้งค่าไว้
+และมีการแสดงของจุดข้อมูลที่มาจากชุดคำสั่ง <code>geom_jitter()</code>
+โดยมีความโปร่งใสของจุดข้อมูลให้เห็นในกราฟ</p>
 </div>
 <div id="การสราง-bar-graph" class="section level3">
 <h3>การสร้าง Bar Graph</h3>
-<p>การสร้าง Bar Graph เหมาะสมกับตัวแปรต้นที่มีลักษณะเป็นกลุ่ม (discrete variable) ดังนั้นโครงสร้างของชุดคำสั่งจะคล้ายคลึงกับการสร้าง boxplot</p>
+<p>การสร้าง Bar Graph เหมาะสมกับตัวแปรต้นที่มีลักษณะเป็นกลุ่ม (discrete
+variable) ดังนั้นโครงสร้างของชุดคำสั่งจะคล้ายคลึงกับการสร้าง boxplot</p>
 <p>เราสามารถสร้าง bar graph ได้ 2 วิธีคือ</p>
 <ul>
-<li><p><code>geom_bar()</code> จะมีคำสั่งพื้นฐานโดยมีความสูงของกราฟจากสัดส่วนของ n ในข้อมูล</p></li>
-<li><p><code>geom_col()</code> จะมีคำสั่งพื้นฐานโดยมีความสูงของกราฟเป็นค่าของข้อมูลนั้น ๆ คำสั่งนี้จะเหมาะสมกับข้อมูลที่ผ่านการหาค่าสถิติเชิงพรรณามาแล้ว (เช่นค่า <em>n</em>, <em>mean</em>, <em>sd</em>, <em>se</em>) และนำไปใช้งานได้สะดวกกว่าเมื่อต้องการสร้าง <code>error_bar</code></p></li>
+<li><p><code>geom_bar()</code>
+จะมีคำสั่งพื้นฐานโดยมีความสูงของกราฟจากสัดส่วนของ n ในข้อมูล</p></li>
+<li><p><code>geom_col()</code>
+จะมีคำสั่งพื้นฐานโดยมีความสูงของกราฟเป็นค่าของข้อมูลนั้น ๆ
+คำสั่งนี้จะเหมาะสมกับข้อมูลที่ผ่านการหาค่าสถิติเชิงพรรณามาแล้ว (เช่นค่า
+<em>n</em>, <em>mean</em>, <em>sd</em>, <em>se</em>)
+และนำไปใช้งานได้สะดวกกว่าเมื่อต้องการสร้าง
+<code>error_bar</code></p></li>
 </ul>
-<p>ดังนั้น หากต้องการสร้าง bar graph อย่างง่าย เราสามารถใช้คำสั่ง <code>geom_bar()</code> ได้ โดยเพิ่มคำสั่ง <code>stat = "summary"</code> เมื่อต้องการค่าเฉลี่ย (mean) หรือ <code>stat = "identity"</code> เมื่อต้องการค่าผลรวม (sum)</p>
-<p>นอกจากนี้แล้ว การสร้าง bar graph ยังสามารถเลือกการวางตัวของกราฟได้ โดยใช้คำสั่ง <code>position =</code>โดยค่าพื้นฐานของ <code>geom_bar()</code> คือ <code>position = "stack"</code> โดยจะเป็นการต่อกันของข้อมูลในแต่ละกลุ่ม ถ้าต้องการให้กราฟอยู่แยกกัน เราจะใช้คำสั่ง <code>position = "dodge"</code> หรือ <code>position = position_dodge(ค่าความห่าง)</code></p>
+<p>ดังนั้น หากต้องการสร้าง bar graph อย่างง่าย เราสามารถใช้คำสั่ง
+<code>geom_bar()</code> ได้ โดยเพิ่มคำสั่ง <code>stat = "summary"</code>
+เมื่อต้องการค่าเฉลี่ย (mean) หรือ <code>stat = "identity"</code>
+เมื่อต้องการค่าผลรวม (sum)</p>
+<p>นอกจากนี้แล้ว การสร้าง bar graph ยังสามารถเลือกการวางตัวของกราฟได้
+โดยใช้คำสั่ง <code>position =</code>โดยค่าพื้นฐานของ
+<code>geom_bar()</code> คือ <code>position = "stack"</code>
+โดยจะเป็นการต่อกันของข้อมูลในแต่ละกลุ่ม ถ้าต้องการให้กราฟอยู่แยกกัน
+เราจะใช้คำสั่ง <code>position = "dodge"</code> หรือ
+<code>position = position_dodge(ค่าความห่าง)</code></p>
 <pre class="r"><code># x axis is am
 #  stack
 stack &lt;- ggplot(data = mtcars, aes(x = am, y = mpg, fill = vs)) +
@@ -625,28 +697,32 @@ describeBy(mpg ~ am * vs, data = mtcars)</code></pre>
 ##  Descriptive statistics by group 
 ## am: automatic
 ## vs: V
-##    vars  n  mean   sd median trimmed mad  min  max range  skew kurtosis  se
-## X1    1 12 15.05 2.77   15.2    15.1 2.3 10.4 19.2   8.8 -0.28    -0.96 0.8
-## --------------------------------------------------------------------------------------------------------------- 
+##     vars  n  mean   sd median trimmed mad  min  max range  skew kurtosis  se
+## mpg    1 12 15.05 2.77   15.2    15.1 2.3 10.4 19.2   8.8 -0.28    -0.96 0.8
+## ------------------------------------------------------------------------------------------------------------------- 
 ## am: manual
 ## vs: V
-##    vars n  mean   sd median trimmed  mad min max range skew kurtosis   se
-## X1    1 6 19.75 4.01  20.35   19.75 3.85  15  26    11 0.21    -1.53 1.64
-## --------------------------------------------------------------------------------------------------------------- 
+##     vars n  mean   sd median trimmed  mad min max range skew kurtosis   se
+## mpg    1 6 19.75 4.01  20.35   19.75 3.85  15  26    11 0.21    -1.53 1.64
+## ------------------------------------------------------------------------------------------------------------------- 
 ## am: automatic
 ## vs: S
-##    vars n  mean   sd median trimmed  mad  min  max range skew kurtosis   se
-## X1    1 7 20.74 2.47   21.4   20.74 3.26 17.8 24.4   6.6  0.1    -1.75 0.93
-## --------------------------------------------------------------------------------------------------------------- 
+##     vars n  mean   sd median trimmed  mad  min  max range skew kurtosis   se
+## mpg    1 7 20.74 2.47   21.4   20.74 3.26 17.8 24.4   6.6  0.1    -1.75 0.93
+## ------------------------------------------------------------------------------------------------------------------- 
 ## am: manual
 ## vs: S
-##    vars n  mean   sd median trimmed mad  min  max range  skew kurtosis  se
-## X1    1 7 28.37 4.76   30.4   28.37 4.6 21.4 33.9  12.5 -0.35    -1.73 1.8</code></pre>
+##     vars n  mean   sd median trimmed mad  min  max range  skew kurtosis  se
+## mpg    1 7 28.37 4.76   30.4   28.37 4.6 21.4 33.9  12.5 -0.35    -1.73 1.8</code></pre>
 <p><img src="EXPRM_Lab09_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="การสรางกราฟทม-error-bar" class="section level3">
 <h3>การสร้างกราฟที่มี Error Bar</h3>
-<p>ในการสร้างกราฟแบบ bar graph และ line graph เราสามารถที่จะแสดงผลความคลาดเคลื่อนข้อมูลโดยเพิ่มคำสั่ง <code>geom_errorbar()</code> โดยเราสามารถหาค่า <em>sd</em>, <em>se</em>, หรือ <em>ci</em> จากข้อมูลที่เรามีก่อนการสร้าง Error Bar โดยใช้คำสั่ง <code>summarySE()</code> จาก package <code>Rmisc</code>โดยใช้คำสั่ง</p>
+<p>ในการสร้างกราฟแบบ bar graph และ line graph
+เราสามารถที่จะแสดงผลความคลาดเคลื่อนข้อมูลโดยเพิ่มคำสั่ง
+<code>geom_errorbar()</code> โดยเราสามารถหาค่า <em>sd</em>, <em>se</em>,
+หรือ <em>ci</em> จากข้อมูลที่เรามีก่อนการสร้าง Error Bar โดยใช้คำสั่ง
+<code>summarySE()</code> จาก package <code>Rmisc</code>โดยใช้คำสั่ง</p>
 <p><code>summarySE(ชื่อไฟล์, measurevar = "ชื่อตัวแปรที่ต้องการหาค่ามาตรฐาน", groupvars = c("ชื่อกลุ่ม 1", "ชื่อกลุ่ม 2"))</code></p>
 <pre class="r"><code>library(Rmisc)
 
@@ -657,10 +733,23 @@ sum</code></pre>
 ## 2 automatic  S  7 20.74286 2.471071 0.9339769 2.285359
 ## 3    manual  V  6 19.75000 4.008865 1.6366124 4.207046
 ## 4    manual  S  7 28.37143 4.757701 1.7982418 4.400139</code></pre>
-<p>เมื่อได้ค่าความคลาดเคลื่อนออกมาแล้ว เราจะสร้างกราฟจาก object ที่มาจาก <code>summarySE()</code> นี้</p>
-<p>โดยในการสร้าง line graph เราจะใช้คำสั่ง <code>geom_point()</code> และ <code>geom_line()</code> โดย <code>geom_point()</code> จะเป็นการกำหนดให้กราฟมีจุดที่เป็นค่า mean และ <code>geom_line()</code>จะเป็นการใส่เส้นกราฟ ซึ่งเราสามารถเซ็ตให้กราฟมีการแยกกลุ่มตามที่เรากำหนดโดยใส่ <code>aes(group = ตัวแปรจัดกลุ่ม)</code></p>
-<p>จากนั้น เพิ่มคำสั่ง <code>geom_errorbar()</code> ในการสร้าง error bar โดยใช้คำสั่ง <code>aes(ymin = ชื่อตัวแปรค่า mean - ci, ymax = ชื่อตัวแปรค่า mean + ci)</code> (<em>Note</em>: เราสามารถใช้ค่า <em>sd</em> หรือ <em>se</em> ในการสร้าง error bar ได้โดยการเปลี่ยน <code>ci</code> เป็น <code>sd</code> หรือ <code>se</code>)</p>
-<p>หากกราฟที่ปรากฎออกมามีค่าแกน x และ y ที่ไม่สมดุล เราสามารถใช้คำสั่ง <code>xlim()</code> หรือ <code>ylim()</code> เพื่อปรับแก้สเกลให้เหมาะสมได้</p>
+<p>เมื่อได้ค่าความคลาดเคลื่อนออกมาแล้ว เราจะสร้างกราฟจาก object ที่มาจาก
+<code>summarySE()</code> นี้</p>
+<p>โดยในการสร้าง line graph เราจะใช้คำสั่ง <code>geom_point()</code> และ
+<code>geom_line()</code> โดย <code>geom_point()</code>
+จะเป็นการกำหนดให้กราฟมีจุดที่เป็นค่า mean และ
+<code>geom_line()</code>จะเป็นการใส่เส้นกราฟ
+ซึ่งเราสามารถเซ็ตให้กราฟมีการแยกกลุ่มตามที่เรากำหนดโดยใส่
+<code>aes(group = ตัวแปรจัดกลุ่ม)</code></p>
+<p>จากนั้น เพิ่มคำสั่ง <code>geom_errorbar()</code> ในการสร้าง error bar
+โดยใช้คำสั่ง
+<code>aes(ymin = ชื่อตัวแปรค่า mean - ci, ymax = ชื่อตัวแปรค่า mean + ci)</code>
+(<em>Note</em>: เราสามารถใช้ค่า <em>sd</em> หรือ <em>se</em> ในการสร้าง
+error bar ได้โดยการเปลี่ยน <code>ci</code> เป็น <code>sd</code> หรือ
+<code>se</code>)</p>
+<p>หากกราฟที่ปรากฎออกมามีค่าแกน x และ y ที่ไม่สมดุล เราสามารถใช้คำสั่ง
+<code>xlim()</code> หรือ <code>ylim()</code>
+เพื่อปรับแก้สเกลให้เหมาะสมได้</p>
 <pre class="r"><code>#only plot
 line.plot &lt;- ggplot(sum, aes(x = am, y = mpg, color = vs)) +
              geom_point(position = position_dodge(.2)) +
@@ -682,7 +771,12 @@ line.error &lt;- ggplot(sum, aes(x = am, y = mpg, color = vs)) +
              theme_classic() +
              scale_color_brewer(palette=&quot;Accent&quot;)</code></pre>
 <p><img src="EXPRM_Lab09_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
-<p>นอกจากนี้ การสร้าง error bar ด้วยคำสั่ง <code>geom_errorbar()</code> ยังสามารถนำไปประยุกต์กับ bar graph ได้เช่นกัน แต่ในกรณีรการสร้าง bar graph จากข้อมูลที่หาค่าสถิติจากคำสั่ง <code>summarySE()</code> มาแล้วนั้น สังเกตว่าจะมีค่า mean เฉลี่ยแต่ละกลุ่ม (และค่าความคลาดเคลื่อนอื่น ๆ) เท่านั้น ดังนั้นในกรณีนี้เราจะใช้คำสั่ง <code>geom_col()</code> ในการสร้าง bar graph</p>
+<p>นอกจากนี้ การสร้าง error bar ด้วยคำสั่ง <code>geom_errorbar()</code>
+ยังสามารถนำไปประยุกต์กับ bar graph ได้เช่นกัน แต่ในกรณีรการสร้าง bar
+graph จากข้อมูลที่หาค่าสถิติจากคำสั่ง <code>summarySE()</code>
+มาแล้วนั้น สังเกตว่าจะมีค่า mean เฉลี่ยแต่ละกลุ่ม
+(และค่าความคลาดเคลื่อนอื่น ๆ) เท่านั้น ดังนั้นในกรณีนี้เราจะใช้คำสั่ง
+<code>geom_col()</code> ในการสร้าง bar graph</p>
 <pre class="r"><code>bar.error &lt;- ggplot(sum, aes(x = am, y = mpg, color = vs)) + 
              geom_col(aes(fill = vs), alpha = .5, position = position_dodge(.9)) +
              geom_errorbar(aes(ymin=mpg-ci, ymax=mpg+ci), width = .3, 
@@ -696,7 +790,13 @@ bar.error</code></pre>
 </div>
 <div id="การสรางกราฟรปแบบอน-ๆ" class="section level3">
 <h3>การสร้างกราฟรูปแบบอื่น ๆ</h3>
-<p>นอกจาก boxplot, Bar Graph และ Line Graph แล้ว package <code>Ggplot2</code> ยังช่วยเราในการสร้างกราฟอื่น ๆ ได้ เช่น กราฟที่มีตัวแปรเป็นตัวแปรต่อเนื่อง (continuous variable) เราสามารถใช้คำสั่ง <code>geom_point()</code> ในการสร้างจุดข้อมูล และ <code>geom_smooth()</code> ในการหาเส้นตรงที่เหมาะสมระหว่างข้อมูลทั้งสองตัวแปร โดยเพิ่มคำสั่ง <code>geom_smooth(method = lm)</code></p>
+<p>นอกจาก boxplot, Bar Graph และ Line Graph แล้ว package
+<code>Ggplot2</code> ยังช่วยเราในการสร้างกราฟอื่น ๆ ได้ เช่น
+กราฟที่มีตัวแปรเป็นตัวแปรต่อเนื่อง (continuous variable)
+เราสามารถใช้คำสั่ง <code>geom_point()</code> ในการสร้างจุดข้อมูล และ
+<code>geom_smooth()</code>
+ในการหาเส้นตรงที่เหมาะสมระหว่างข้อมูลทั้งสองตัวแปร โดยเพิ่มคำสั่ง
+<code>geom_smooth(method = lm)</code></p>
 <pre class="r"><code>con.point &lt;- ggplot(mtcars, aes(x = hp, y = mpg, color = hp)) + 
              geom_point(aes(color = hp)) +
              geom_smooth(method = lm, color = &quot;darkblue&quot;) +
@@ -704,7 +804,9 @@ bar.error</code></pre>
 
 con.point</code></pre>
 <p><img src="EXPRM_Lab09_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
-<p>เรายังสามารถสร้างข้อมูลเชิงเส้นโดยการใช้คำสั่ง <code>geom_line()</code> และ <code>geom_jitter()</code> ในการสร้างกราฟเส้น</p>
+<p>เรายังสามารถสร้างข้อมูลเชิงเส้นโดยการใช้คำสั่ง
+<code>geom_line()</code> และ <code>geom_jitter()</code>
+ในการสร้างกราฟเส้น</p>
 <pre class="r"><code>con.line &lt;- ggplot(mtcars, aes(x = hp, y = mpg, group = vs)) + 
              geom_line(color = &quot;blue3&quot;, position = position_dodge(.9)) +
              geom_jitter(aes(color = vs), alpha = 0.6, size = 3) +
@@ -715,8 +817,14 @@ con.line</code></pre>
 </div>
 <div id="การปรบแตงสในกราฟ" class="section level3">
 <h3>การปรับแต่งสีในกราฟ</h3>
-<p>เราสามารถเลือกปรับแต่งกราฟได้โดยการใช้คำสั่ง <code>theme_</code> และการใส่สีของกราฟ<br />
-ทั้ง <code>R</code> และ <code>Ggplot2</code> มีระบบสีที่ช่วยให้เราเลือกสี 2 วิธี คือ 1. เราสามารถใส่ชื่อสีที่เราต้องการได้โดยเรียกดูชื่อสีในคำสั่ง <code>colors()</code> ซึ่งเป็นคำสั่งจาก Base R หรือ 2. คำสั่ง <code>display.brewer.all()</code>จาก package <code>RColorBrewer</code></p>
+<p>เราสามารถเลือกปรับแต่งกราฟได้โดยการใช้คำสั่ง <code>theme_</code>
+และการใส่สีของกราฟ<br />
+ทั้ง <code>R</code> และ <code>Ggplot2</code>
+มีระบบสีที่ช่วยให้เราเลือกสี 2 วิธี คือ 1.
+เราสามารถใส่ชื่อสีที่เราต้องการได้โดยเรียกดูชื่อสีในคำสั่ง
+<code>colors()</code> ซึ่งเป็นคำสั่งจาก Base R หรือ 2. คำสั่ง
+<code>display.brewer.all()</code>จาก package
+<code>RColorBrewer</code></p>
 <pre class="r"><code>colors()</code></pre>
 <pre><code>##   [1] &quot;white&quot;                &quot;aliceblue&quot;            &quot;antiquewhite&quot;         &quot;antiquewhite1&quot;        &quot;antiquewhite2&quot;        &quot;antiquewhite3&quot;       
 ##   [7] &quot;antiquewhite4&quot;        &quot;aquamarine&quot;           &quot;aquamarine1&quot;          &quot;aquamarine2&quot;          &quot;aquamarine3&quot;          &quot;aquamarine4&quot;         

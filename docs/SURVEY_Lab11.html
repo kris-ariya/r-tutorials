@@ -13,8 +13,8 @@
 
 <title>Lab 11: Mediation Analysis</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -308,7 +312,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -321,7 +325,7 @@ div.tocify {
   <a href="index.html">Home</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     RES MTHD/STAT PSY Lab
      
     <span class="caret"></span>
@@ -360,7 +364,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     EXPRM DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -402,7 +406,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     SURVEY DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -447,13 +451,17 @@ div.tocify {
 <pre class="r"><code># load all packages for this tutorial
 library(psych)
 library(lavaan)</code></pre>
-<pre><code>## Warning: package &#39;lavaan&#39; was built under R version 4.0.5</code></pre>
 <div id="mediation-analysis" class="section level1">
 <h1>Mediation Analysis</h1>
 <p>เราจะใช้ชุดข้อมูล <code>Tal.Or</code> จาก psych</p>
-<p>X = <code>cond</code> ตัวแปรเงื่อนไขการทดลอง 0 = low media importance; 1 = high media importance ตัวแปรนี้มีแค่สองระดับและถูกเขียนในรูป dummy code แล้ว จึงสามารถนำมาใส่สมการ regression ได้ แม้ไม่ได้แปลงเป็น factor</p>
-<p>M = <code>pmi</code> presumed media influence ความรู้สึกว่าตนเองได้รับอิทธิพลจากสื่อเพียงใด</p>
-<p>Y = <code>reaction</code> ปฏิกิริยาต่อเรื่องที่อ่านในการทดลอง (เช่น บทความบอกว่าน้ำตาลจะขาดตลาอด คุณจะไปซื้อน้ำตาลมาตุนไหม)</p>
+<p>X = <code>cond</code> ตัวแปรเงื่อนไขการทดลอง 0 = low media
+importance; 1 = high media importance
+ตัวแปรนี้มีแค่สองระดับและถูกเขียนในรูป dummy code แล้ว
+จึงสามารถนำมาใส่สมการ regression ได้ แม้ไม่ได้แปลงเป็น factor</p>
+<p>M = <code>pmi</code> presumed media influence
+ความรู้สึกว่าตนเองได้รับอิทธิพลจากสื่อเพียงใด</p>
+<p>Y = <code>reaction</code> ปฏิกิริยาต่อเรื่องที่อ่านในการทดลอง (เช่น
+บทความบอกว่าน้ำตาลจะขาดตลาอด คุณจะไปซื้อน้ำตาลมาตุนไหม)</p>
 <pre class="r"><code>data(Tal.Or)
 media &lt;- Tal.Or
 head(media)</code></pre>
@@ -466,7 +474,8 @@ head(media)</code></pre>
 ## 6    0 5.5      1     1.25      1  25</code></pre>
 <div id="calculation" class="section level2">
 <h2>Calculation</h2>
-<p>การวิเคราะห์ตัวแปรส่งผ่านแบบง่าย (มี X, Y, M อย่างละตัว) จะต้องใช้สมการถดถอย 2 สมการ</p>
+<p>การวิเคราะห์ตัวแปรส่งผ่านแบบง่าย (มี X, Y, M อย่างละตัว)
+จะต้องใช้สมการถดถอย 2 สมการ</p>
 <p>สมการแรกใช้หาความสัมพันธ์ระหว่างตัวแปรทำนาย X กับตัวแปรส่งผ่าน M</p>
 <p>เส้น a: M ~ X (M is regressed on X)</p>
 <pre class="r"><code>lm(pmi ~ cond, media) # if the model is called directly, a short output is shown. </code></pre>
@@ -477,8 +486,11 @@ head(media)</code></pre>
 ## Coefficients:
 ## (Intercept)         cond  
 ##      5.3769       0.4765</code></pre>
-<p>เนื่องจาก <code>cond</code> เป็นตัวแปรจัดประเภท (ทำเป็น dummy) ค่า coefficient จึงแสดงความแตกต่างระหว่างสองกลุ่ม เห็นได้ว่าเงื่อนไข high media importance มี pmi สูงกว่า</p>
-<p>สมการที่ 2 เป็นการทำนายตัวแปร Y โดยใช้ทั้งตัวแปร X และ M เพื่อหาเส้น b และ c’</p>
+<p>เนื่องจาก <code>cond</code> เป็นตัวแปรจัดประเภท (ทำเป็น dummy) ค่า
+coefficient จึงแสดงความแตกต่างระหว่างสองกลุ่ม เห็นได้ว่าเงื่อนไข high
+media importance มี pmi สูงกว่า</p>
+<p>สมการที่ 2 เป็นการทำนายตัวแปร Y โดยใช้ทั้งตัวแปร X และ M เพื่อหาเส้น
+b และ c’</p>
 <p>เส้น b และ c’ : <code>Y ~ b * M + c * X</code></p>
 <pre class="r"><code>lm(reaction ~ pmi + cond, media)</code></pre>
 <pre><code>## 
@@ -489,27 +501,33 @@ head(media)</code></pre>
 ## (Intercept)          pmi         cond  
 ##      0.5269       0.5064       0.2544</code></pre>
 <p>ค่า coefficient ของ pmi คือ เส้น b</p>
-<p>ค่า coefficient ของ cond คือ เส้น c’ หรือ direct effect เป็นความสัมพันธ์ที่ยังเหลืออยู่จาก X ไป Y เมื่อส่งผ่าน M ไปแล้ว</p>
+<p>ค่า coefficient ของ cond คือ เส้น c’ หรือ direct effect
+เป็นความสัมพันธ์ที่ยังเหลืออยู่จาก X ไป Y เมื่อส่งผ่าน M ไปแล้ว</p>
 <p>เส้นอิทธิพลทางอ้อม Indirect effect (ab)</p>
 <p>เกิดจากการนำค่า coefficient a และ b มาคูณกัน</p>
 <pre class="r"><code>ab &lt;- 0.4765 * 0.5064
 ab</code></pre>
 <pre><code>## [1] 0.2412996</code></pre>
-<p>การทดสอบ indirect effect จะใช้วิธี bootstrap ซึ่งจะทำได้ผ่านโปรแกรมต่าง ๆ</p>
+<p>การทดสอบ indirect effect จะใช้วิธี bootstrap
+ซึ่งจะทำได้ผ่านโปรแกรมต่าง ๆ</p>
 </div>
 </div>
 <div id="process-v4.1-for-r" class="section level1">
 <h1>PROCESS v4.1 for R</h1>
-<p>Macro โดย Andrew Hayes <a href="https://www.processmacro.org/download.html" class="uri">https://www.processmacro.org/download.html</a></p>
+<p>Macro โดย Andrew Hayes <a
+href="https://www.processmacro.org/download.html"
+class="uri">https://www.processmacro.org/download.html</a></p>
 <p>วิธีใช้</p>
 <ol style="list-style-type: decimal">
 <li>Download ไฟล์ และ unzip</li>
 <li>เปิดไฟล์ process.R</li>
 <li>Run All แล้วรอสักพัก</li>
-<li>จะมี Functions ที่ชื่อว่า <code>process</code> ขึ้นมาอยู่ใน environment</li>
+<li>จะมี Functions ที่ชื่อว่า <code>process</code> ขึ้นมาอยู่ใน
+environment</li>
 <li>ต้อง Run script นี้ใหม่ทุกครั้งหลังจากปิด R</li>
 </ol>
-<p>หรือ save process.R ไว้ใน working directory แล้วใช้คำสั่ง <code>source()</code></p>
+<p>หรือ save process.R ไว้ใน working directory แล้วใช้คำสั่ง
+<code>source()</code></p>
 <pre class="r"><code>source(&quot;process.R&quot;)</code></pre>
 <pre><code>## 
 ## ********************** PROCESS for R Version 4.1 ********************** 
@@ -523,7 +541,10 @@ ab</code></pre>
 ## Copyright 2022 by Andrew F. Hayes ALL RIGHTS RESERVED
 ## Workshop schedule at http://haskayne.ucalgary.ca/CCRAM
 ## </code></pre>
-<p>ในคำสั่งของ <code>process()</code> เราจะต้องระบุบทบาทของตัวแปรแต่ละตัว และเลือกรหัส <code>model</code> ที่ Hayes กำหนดไว้ (สามารถหาอ่านได้ในหนังสือของ Hayes) สำหรับ simple mediation ใช้ <code>model = 4</code></p>
+<p>ในคำสั่งของ <code>process()</code>
+เราจะต้องระบุบทบาทของตัวแปรแต่ละตัว และเลือกรหัส <code>model</code> ที่
+Hayes กำหนดไว้ (สามารถหาอ่านได้ในหนังสือของ Hayes) สำหรับ simple
+mediation ใช้ <code>model = 4</code></p>
 <pre class="r"><code>process(data = media, y = &quot;reaction&quot;, x = &quot;cond&quot;, m = &quot;pmi&quot;, model = 4, boot = 5000, seed = 17889)</code></pre>
 <pre><code>## 
 ## ********************** PROCESS for R Version 4.1 ********************** 
@@ -946,15 +967,22 @@ m &lt;- mediate(y = &quot;reaction&quot;, x = &quot;cond&quot;, m = &quot;pmi&qu
 ##     reaction  se    t  df     Prob
 ## pmi     0.51 0.1 5.22 120 7.66e-07
 ## 
-##  &#39;ab&#39;  effect estimates (through mediators)
+##  &#39;ab&#39;  effect estimates (through all  mediators)
 ##      reaction boot   sd lower upper
-## cond     0.24 0.24 0.13  0.01  0.51</code></pre>
+## cond     0.24 0.25 0.13  0.01  0.53</code></pre>
 </div>
 <div id="lavaan-package" class="section level1">
 <h1>lavaan package</h1>
-<p>แพ็คเกจนี้ใช้วิเคราะห์โมเดลสมการเชิงโครงสร้าง (Structural Equation Model; SEM)</p>
-<p>เราจะต้องเขียนโมเดลและกำหนดชื่อพารามิเตอร์ที่ต้องการจะทดสอบ จากนั้น fit model ด้วยคำสั่ง <code>sem()</code> และเลือกวิธีคำนวณ Standard Error ด้วย <code>"bootstrap"</code> และกำหนดจำนวนครั้งที่จะ <code>bootstrap = 5000</code></p>
-<p>ผลที่ได้จากคำสั่งนี้จะแตกต่างจาก packages ก่อนหน้าเล็กน้อย เนื่องจากมันจะคำนวณการทดสอบนัยสำคัญของพารามิเตอร์ทุกตัว (ทั้ง a, b, c, และ ab) ด้วยวิธี bootstrap ทั้งหมด ในขณะที่ package ก่อนหน้าจะใช้วิธี bootstrap เฉพาะ ab</p>
+<p>แพ็คเกจนี้ใช้วิเคราะห์โมเดลสมการเชิงโครงสร้าง (Structural Equation
+Model; SEM)</p>
+<p>เราจะต้องเขียนโมเดลและกำหนดชื่อพารามิเตอร์ที่ต้องการจะทดสอบ จากนั้น
+fit model ด้วยคำสั่ง <code>sem()</code> และเลือกวิธีคำนวณ Standard Error
+ด้วย <code>"bootstrap"</code> และกำหนดจำนวนครั้งที่จะ
+<code>bootstrap = 5000</code></p>
+<p>ผลที่ได้จากคำสั่งนี้จะแตกต่างจาก packages ก่อนหน้าเล็กน้อย
+เนื่องจากมันจะคำนวณการทดสอบนัยสำคัญของพารามิเตอร์ทุกตัว (ทั้ง a, b, c,
+และ ab) ด้วยวิธี bootstrap ทั้งหมด ในขณะที่ package ก่อนหน้าจะใช้วิธี
+bootstrap เฉพาะ ab</p>
 <pre class="r"><code>set.seed(17889)
 model = &quot; # Regression models
              pmi ~ a * cond
@@ -1020,7 +1048,11 @@ summary(media.fit, ci = TRUE, rsquare = TRUE)</code></pre>
 ## 7   direct :=        c   direct 0.254 0.258 0.984  0.325   -0.264    0.733
 ## 8 indirect :=      a*b indirect 0.241 0.131 1.844  0.065    0.002    0.517
 ## 9    total :=  c+(a*b)    total 0.496 0.274 1.807  0.071   -0.036    1.025</code></pre>
-<p>จะสังเกตได้ว่าค่า 95% bootstrap CI จาก lavaan จะแตกต่างไปจาก process หรือ psych ตรงนี้อาจะเป็นเพราะโค้ดมีวิธีการใช้ตัวเลขสุ่มแตกต่างกันเล็กน้อย แต่ไม่ส่งผลต่อความน่าเชื่อถือของผล เพื่อให้สามารถวิเคราะห์ผลซ้ำได้ เราจึงควรระบุชื่อโปรแกรม เวอร์ชัน และ seed ที่ใช้ในการวิเคราะห์ด้วย</p>
+<p>จะสังเกตได้ว่าค่า 95% bootstrap CI จาก lavaan จะแตกต่างไปจาก process
+หรือ psych
+ตรงนี้อาจะเป็นเพราะโค้ดมีวิธีการใช้ตัวเลขสุ่มแตกต่างกันเล็กน้อย
+แต่ไม่ส่งผลต่อความน่าเชื่อถือของผล เพื่อให้สามารถวิเคราะห์ผลซ้ำได้
+เราจึงควรระบุชื่อโปรแกรม เวอร์ชัน และ seed ที่ใช้ในการวิเคราะห์ด้วย</p>
 </div>
 
 &nbsp;

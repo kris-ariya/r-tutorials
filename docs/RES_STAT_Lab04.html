@@ -13,8 +13,8 @@
 
 <title>Lab 04: Describe Your Data</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -308,7 +312,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -321,7 +325,7 @@ div.tocify {
   <a href="index.html">Home</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     RES MTHD/STAT PSY Lab
      
     <span class="caret"></span>
@@ -360,7 +364,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     EXPRM DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -402,7 +406,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     SURVEY DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -445,8 +449,11 @@ div.tocify {
 
 <div id="การคำนวณความแปรปรวน-variance" class="section level1">
 <h1>1. การคำนวณความแปรปรวน (variance)</h1>
-<p>การคำนวณค่าความแปรปรวนใน R นั้นทำได้ง่าย ๆ ด้วยคำสั่ง <code>var()</code> อย่างไรก็ดีวัตถุประสงค์ของแบบฝึกหัดนี้ คือ แสดงให้เห็นถึงขั้นตอนในการคำนวณค่าความแปรปรวนไปทีละขั้นด้วยคำสั่ง R</p>
-<p>สมมติว่า เราเปิดร้านอาหารและเก็บข้อมูลการสั่งโอเลี้ยงของลูกค้าแต่ละโต๊ะ</p>
+<p>การคำนวณค่าความแปรปรวนใน R นั้นทำได้ง่าย ๆ ด้วยคำสั่ง
+<code>var()</code> อย่างไรก็ดีวัตถุประสงค์ของแบบฝึกหัดนี้ คือ
+แสดงให้เห็นถึงขั้นตอนในการคำนวณค่าความแปรปรวนไปทีละขั้นด้วยคำสั่ง R</p>
+<p>สมมติว่า
+เราเปิดร้านอาหารและเก็บข้อมูลการสั่งโอเลี้ยงของลูกค้าแต่ละโต๊ะ</p>
 <table style="width:21%;">
 <colgroup>
 <col width="9%" />
@@ -489,42 +496,60 @@ div.tocify {
 </tr>
 </tbody>
 </table>
-<p>เราจะเริ่มต้นด้วยการสร้างตัวแปร (variable) ชื่อ <code>drinks</code> เพื่อบันทึกข้อมูลจำนวนแก้วโอเลี้ยงจากแต่ละโต๊ะ</p>
+<p>เราจะเริ่มต้นด้วยการสร้างตัวแปร (variable) ชื่อ <code>drinks</code>
+เพื่อบันทึกข้อมูลจำนวนแก้วโอเลี้ยงจากแต่ละโต๊ะ</p>
 <pre class="r"><code>drinks &lt;- c(2, 4, 3, 1, 1, 2, 1)
 drinks</code></pre>
 <pre><code>## [1] 2 4 3 1 1 2 1</code></pre>
-<p>เราต้องการคำนวณค่าการกระจายตัวของการสั่งโอเลี้ยง โดยใช้ค่าความแปรปรวน (variance) ซึ่งมีสูตรคำนวณคือ <span class="math display">\[s^2 = \frac{\sum{(X - \bar{X})^2}}{N -1}\]</span></p>
+<p>เราต้องการคำนวณค่าการกระจายตัวของการสั่งโอเลี้ยง โดยใช้ค่าความแปรปรวน
+(variance) ซึ่งมีสูตรคำนวณคือ <span class="math display">\[s^2 =
+\frac{\sum{(X - \bar{X})^2}}{N -1}\]</span></p>
 <p>ในสมการนี้เรารู้ว่า<br />
-ค่า <span class="math inline">\(X\)</span> คือ ค่าของข้อมูลแต่ละตัว<br />
+ค่า <span class="math inline">\(X\)</span> คือ
+ค่าของข้อมูลแต่ละตัว<br />
 ค่า <span class="math inline">\(N\)</span> คือ ค่าจำนวนกลุ่มตัวอย่าง</p>
 <p>เราใช้คำสั่ง <code>length()</code> เพื่อหาจำนวนตัวอย่างในตัวแปร</p>
 <pre class="r"><code>n &lt;- length(drinks)
 n</code></pre>
 <pre><code>## [1] 7</code></pre>
-<p>จึงเหลือค่า <span class="math inline">\(\bar{X}\)</span> ที่ต้องคำนวณด้วยคำสั่ง <code>mean()</code></p>
+<p>จึงเหลือค่า <span class="math inline">\(\bar{X}\)</span>
+ที่ต้องคำนวณด้วยคำสั่ง <code>mean()</code></p>
 <pre class="r"><code>mean_drinks &lt;- mean(drinks)
 mean_drinks</code></pre>
 <pre><code>## [1] 2</code></pre>
-<p>การคำนวณการกระจายตัว คือ การหาว่าข้อมูลแต่ละตัวเบี่ยงเบนในจากค่ากลาง (ค่าเฉลี่ย) มากน้อยเพียงใด (deviation scores) เราจะนำค่าข้อมูลแต่ละตัวใน <code>drink</code> ไปลบด้วยค่าเฉลี่ยที่คำนวณได้ จากนั้นบันทึกลงในตัวแปรชื่อ <code>deviation_drinks</code></p>
+<p>การคำนวณการกระจายตัว คือ การหาว่าข้อมูลแต่ละตัวเบี่ยงเบนในจากค่ากลาง
+(ค่าเฉลี่ย) มากน้อยเพียงใด (deviation scores) เราจะนำค่าข้อมูลแต่ละตัวใน
+<code>drink</code> ไปลบด้วยค่าเฉลี่ยที่คำนวณได้
+จากนั้นบันทึกลงในตัวแปรชื่อ <code>deviation_drinks</code></p>
 <pre class="r"><code>deviation_drinks &lt;- drinks - mean_drinks 
 deviation_drinks</code></pre>
 <pre><code>## [1]  0  2  1 -1 -1  0 -1</code></pre>
-<p>ค่าความเบี่ยงเบนแบบนี้จะประกอบไปด้วยค่าที่สูงกว่าค่าเฉลี่ย (ติดบวก) หรือค่าที่ต่ำกว่าค่าเฉลี่ย (ติดลบ) และเมื่อรวมกันได้จะได้ 0 ซึ่งไม่สามารถนำไปใช้คำนวณอะไรต่อได้</p>
+<p>ค่าความเบี่ยงเบนแบบนี้จะประกอบไปด้วยค่าที่สูงกว่าค่าเฉลี่ย (ติดบวก)
+หรือค่าที่ต่ำกว่าค่าเฉลี่ย (ติดลบ) และเมื่อรวมกันได้จะได้ 0
+ซึ่งไม่สามารถนำไปใช้คำนวณอะไรต่อได้</p>
 <pre class="r"><code>sum(deviation_drinks)</code></pre>
 <pre><code>## [1] 0</code></pre>
-<p>เพื่อให้ได้ <em>ขนาด</em> (magnitude) ของความเบี่ยงเบนที่ไม่ติดลบ จึงนำค่าเบี่ยงเบนนี้ไปยกกำลังสอง</p>
+<p>เพื่อให้ได้ <em>ขนาด</em> (magnitude) ของความเบี่ยงเบนที่ไม่ติดลบ
+จึงนำค่าเบี่ยงเบนนี้ไปยกกำลังสอง</p>
 <pre class="r"><code>sqr_dev &lt;- deviation_drinks ^ 2
 sqr_dev</code></pre>
 <pre><code>## [1] 0 4 1 1 1 0 1</code></pre>
-<p>จากนั้นถึงหาผลรวม (sum) ตามสูตร <span class="math inline">\(\sum{(X - \bar{X})^2}\)</span><br />
-ค่าผลรวมนี้เรียกว่า sum of squares (<em>SS</em>) หรือที่เรียกเต็ม ๆ ว่า sum of squared deviations</p>
+<p>จากนั้นถึงหาผลรวม (sum) ตามสูตร <span class="math inline">\(\sum{(X -
+\bar{X})^2}\)</span><br />
+ค่าผลรวมนี้เรียกว่า sum of squares (<em>SS</em>) หรือที่เรียกเต็ม ๆ ว่า
+sum of squared deviations</p>
 <pre class="r"><code>sum(sqr_dev)</code></pre>
 <pre><code>## [1] 8</code></pre>
-<p>จากนั้นนำไปหารด้วย degrees of freedom (<span class="math inline">\(N - 1\)</span>) ซึ่งก็คือการคำนวณว่า โดยเฉลี่ยแล้วข้อมูลเบี่ยงเบนมากน้อยเพียงใด (mean of squares; <em>MS</em>) หรือที่เรียกว่าค่าความแปรปรวน<br />
+<p>จากนั้นนำไปหารด้วย degrees of freedom (<span class="math inline">\(N
+- 1\)</span>) ซึ่งก็คือการคำนวณว่า
+โดยเฉลี่ยแล้วข้อมูลเบี่ยงเบนมากน้อยเพียงใด (mean of squares;
+<em>MS</em>) หรือที่เรียกว่าค่าความแปรปรวน<br />
 </p>
 <pre class="r"><code>sum(sqr_dev)/(n-1)</code></pre>
 <pre><code>## [1] 1.333333</code></pre>
-<p>เนื่องจากเป็นค่าที่มีการคำนวณบ่อย R จึงมีคำสั่งเฉพาะสำหรับความแปรปรวน คือ <code>var()</code> (สามารถทดสอบได้ว่าทั้งสองค่าเท่ากันด้วย <code>==</code>)</p>
+<p>เนื่องจากเป็นค่าที่มีการคำนวณบ่อย R จึงมีคำสั่งเฉพาะสำหรับความแปรปรวน
+คือ <code>var()</code> (สามารถทดสอบได้ว่าทั้งสองค่าเท่ากันด้วย
+<code>==</code>)</p>
 <pre class="r"><code>var(drinks)</code></pre>
 <pre><code>## [1] 1.333333</code></pre>
 <pre class="r"><code>sum(sqr_dev)/(n-1) == var(drinks) #same value</code></pre>
@@ -538,7 +563,9 @@ sqr_dev</code></pre>
 <pre><code>## [1] 1.154701</code></pre>
 <div id="เทคนคการเขยนโคด" class="section level2">
 <h2>เทคนิคการเขียนโค้ด</h2>
-<p>เมื่อเราเริ่มชำนาญในการเรียกใช้คำสั่งต่าง ๆ แล้ว เราสามารถประหยัดบรรทัดการเขียนโค้ด ด้วยการซ้อนคำสั่งต่าง ๆ เข้าด้วย เช่น <code>sum((drinks-mean(drinks))^2)</code> จะได้ค่า sum of squares</p>
+<p>เมื่อเราเริ่มชำนาญในการเรียกใช้คำสั่งต่าง ๆ แล้ว
+เราสามารถประหยัดบรรทัดการเขียนโค้ด ด้วยการซ้อนคำสั่งต่าง ๆ เข้าด้วย เช่น
+<code>sum((drinks-mean(drinks))^2)</code> จะได้ค่า sum of squares</p>
 <p>หากต้องการซ้อนคำสั่งเพื่อคำนวณความแปรปรวนสามารถทำได้ดังนี้</p>
 <pre class="r"><code>sum((drinks-mean(drinks))^2)/(length(drinks)-1)</code></pre>
 <pre><code>## [1] 1.333333</code></pre>
@@ -550,11 +577,21 @@ sqr_dev</code></pre>
 <h2>2.1 นำเข้าข้อมูลและตั้งค่า working directory</h2>
 <div id="การนำเขาดวยโคด" class="section level3">
 <h3>การนำเข้าด้วยโค้ด</h3>
-<p>เพื่อให้โค้ดทำงานง่ายที่สุด แนะนำให้<a href="RES_STAT_Lab4_Data.csv">ดาวน์โหลดไฟล์ข้อมูล (csv)</a> นี้ลงใน working directory (สามารถดู working directory ได้ด้วย <code>getwd()</code> )</p>
-<p>หากไฟล์ R script ที่กำลังเปิดใช้งานอยู่ใน directory อื่น เราสามารถเปลี่ยน working directory ไปยัง folder ของไฟล์นั้นได้ โดยเลือกเมนู Session -&gt; Set working directory -&gt; To source file location (หรือใช้คำสั่ง R ด้านล่าง) และให้ save ไฟล์ข้อมูลไว้ใน folder เดียวกับ R script นั้น</p>
+<p>เพื่อให้โค้ดทำงานง่ายที่สุด แนะนำให้<a
+href="RES_STAT_Lab4_Data.csv">ดาวน์โหลดไฟล์ข้อมูล (csv)</a> นี้ลงใน
+working directory (สามารถดู working directory ได้ด้วย
+<code>getwd()</code> )</p>
+<p>หากไฟล์ R script ที่กำลังเปิดใช้งานอยู่ใน directory อื่น
+เราสามารถเปลี่ยน working directory ไปยัง folder ของไฟล์นั้นได้
+โดยเลือกเมนู Session -&gt; Set working directory -&gt; To source file
+location (หรือใช้คำสั่ง R ด้านล่าง) และให้ save ไฟล์ข้อมูลไว้ใน folder
+เดียวกับ R script นั้น</p>
 <pre class="r"><code>getwd() #see current working directory
 setwd(dirname(rstudioapi::getSourceEditorContext()$path)) #Use this code to set working directory to the source file location</code></pre>
-<p>เมื่อ set working directory เป็น folder ที่มีข้อมูลอยู่ เราจะสามารถโหลดข้อมูลเข้า R ได้โดยเรียกชื่อไฟล์นั้นโดยตรง ด้วยคำสั่ง <code>read.csv("path")</code> โดยให้บันทึกเป็น data frame ชื่อ solar_data</p>
+<p>เมื่อ set working directory เป็น folder ที่มีข้อมูลอยู่
+เราจะสามารถโหลดข้อมูลเข้า R ได้โดยเรียกชื่อไฟล์นั้นโดยตรง ด้วยคำสั่ง
+<code>read.csv("path")</code> โดยให้บันทึกเป็น data frame ชื่อ
+solar_data</p>
 <pre class="r"><code>solar_data &lt;- read.csv(&quot;RES_STAT_Lab4_Data.csv&quot;)
 head(solar_data) #look at top 5 rows</code></pre>
 <pre><code>##   X user deci sex age kno1 kno2 kno3 kno4 kno5 kno6 kno7 kno8 inno att1 att2 att3 att4 att5 att6 att7 att8 interest
@@ -567,9 +604,12 @@ head(solar_data) #look at top 5 rows</code></pre>
 </div>
 <div id="การนำเขาดวยปม-import-dataset" class="section level3">
 <h3>การนำเข้าด้วยปุ่ม Import Dataset</h3>
-<p>เราสามารถนำเข้าข้อมูลโดยกดปุ่ม Import Dataset ที่อยู่ในหน้าต่าง Environment (ปกติอยู่ที่ช่องขวาบนของ RStudio) เลือก <em>From Text (base)</em></p>
+<p>เราสามารถนำเข้าข้อมูลโดยกดปุ่ม Import Dataset ที่อยู่ในหน้าต่าง
+Environment (ปกติอยู่ที่ช่องขวาบนของ RStudio) เลือก <em>From Text
+(base)</em></p>
 <p>ตั้งชื่อ variable เป็น <code>solar_data</code></p>
-<p>แล้วเลือกตัวเลือก Heading เป็น <em>Yes</em> สำหรับข้อมูลที่มีหัวตาราง</p>
+<p>แล้วเลือกตัวเลือก Heading เป็น <em>Yes</em>
+สำหรับข้อมูลที่มีหัวตาราง</p>
 <div class="figure">
 <img src="images/RES_STAT/Lab04/Import.png" alt="" />
 <p class="caption">import dataset</p>
@@ -578,35 +618,57 @@ head(solar_data) #look at top 5 rows</code></pre>
 <div id="คำอธบายขอมล" class="section level3">
 <h3>คำอธิบายข้อมูล</h3>
 <p><code>user</code> กลุ่มผู้ใช้ไฟฟ้า (nominal 5 กลุ่ม)</p>
-<p><code>deci</code> เป็นผู้มีอำนาจตัดสินใจว่าจะติดตั้งโซลาร์เซลล์หรือไม่ (nominal 5 ระดับ)</p>
+<p><code>deci</code>
+เป็นผู้มีอำนาจตัดสินใจว่าจะติดตั้งโซลาร์เซลล์หรือไม่ (nominal 5
+ระดับ)</p>
 <p><code>sex</code> เพศของผู้ตอบ (nominal 3 ระดับ)</p>
 <p><code>age</code> อายุของผู้ตอบ (ratio scale)</p>
-<p><code>kno1</code> ถึง <code>kno8</code> ความรู้เกี่ยวกับเทคโนโลยีโซลาร์เซลล์ (ordinal 5 ระดับ)</p>
+<p><code>kno1</code> ถึง <code>kno8</code>
+ความรู้เกี่ยวกับเทคโนโลยีโซลาร์เซลล์ (ordinal 5 ระดับ)</p>
 <p><code>inno</code> ระดับการเปิดรับนวัตกรรม (ordinal 5 ระดับ)</p>
-<p><code>att1</code> ถึง <code>att8</code> เจตคติต่อการติดตั้งโซลาร์เซลล์เพื่อผลิตไฟฟ้าใช้เอง/ขาย (ordinal 5 ระดับ)</p>
-<p><code>interest</code> เจตนาที่จะติดตั้งโซลาร์เซลล์เพื่อผลิตไฟฟ้าใช้เอง/ขาย (ordinal 5 ระดับ)</p>
+<p><code>att1</code> ถึง <code>att8</code>
+เจตคติต่อการติดตั้งโซลาร์เซลล์เพื่อผลิตไฟฟ้าใช้เอง/ขาย (ordinal 5
+ระดับ)</p>
+<p><code>interest</code>
+เจตนาที่จะติดตั้งโซลาร์เซลล์เพื่อผลิตไฟฟ้าใช้เอง/ขาย (ordinal 5
+ระดับ)</p>
 </div>
 </div>
 <div id="data-cleaning" class="section level2">
 <h2>2.2 Data Cleaning</h2>
-<p>ตัวแปร user เป็นประเภทผู้ใช้ไฟฟ้า โดยค่า 1 และ 2 เป็นประเภทผู้ใช้ไฟฟ้าภาคครัวเรือน ส่วน 3-5 เป็นผู้ใช้ไฟฟ้าภาคธุรกิจ</p>
-<p>เราใช้คำสั่ง <code>table()</code> เพื่อดูตารางความถี่ของ user แต่ละประเภทได้</p>
+<p>ตัวแปร user เป็นประเภทผู้ใช้ไฟฟ้า โดยค่า 1 และ 2
+เป็นประเภทผู้ใช้ไฟฟ้าภาคครัวเรือน ส่วน 3-5 เป็นผู้ใช้ไฟฟ้าภาคธุรกิจ</p>
+<p>เราใช้คำสั่ง <code>table()</code> เพื่อดูตารางความถี่ของ user
+แต่ละประเภทได้</p>
 <pre class="r"><code>table(solar_data$user)</code></pre>
 <pre><code>## 
 ##   1   2   3   4   5 
 ##  82 222  50  13  17</code></pre>
-<p>ในตัวอย่างนี้เราจะใช้เฉพาะข้อมูลภาคครัวเรือน ดังนั้นเราจะเลือกเฉพาะข้อมูลของ user = 1 หรือ 2 ออกมาเท่านั้น</p>
-<p>โดยปกติแล้วข้อมูลประเภทนี้เป็นข้อมูลเชิงคุณภาพ และมักถูกบันทึกเป็นตัวอักษร (character strings) แต่ในกรณีนี้ ข้อมูลถูกเข้ารหัสเป็นตัวเลข (numeric) ดังนั้นเราจะให้ประโยชน์จากตรงนี้ในการเขียนสูตรเลือกกลุ่ม user 1-2 และคัด 3-5 ทิ้ง</p>
-<p>เราจะเลือก data frame <code>solar_data</code> เฉพาะ “แถว” ที่ user เป็น 1 หรือ 2 (นั่นคือน้อยกว่า 3) และเลือกทุก “คอลัมน์” จากนั้นบันทึกเป็นตัวแปรใหม่ชื่อ <code>household_solar_data</code></p>
+<p>ในตัวอย่างนี้เราจะใช้เฉพาะข้อมูลภาคครัวเรือน
+ดังนั้นเราจะเลือกเฉพาะข้อมูลของ user = 1 หรือ 2 ออกมาเท่านั้น</p>
+<p>โดยปกติแล้วข้อมูลประเภทนี้เป็นข้อมูลเชิงคุณภาพ
+และมักถูกบันทึกเป็นตัวอักษร (character strings) แต่ในกรณีนี้
+ข้อมูลถูกเข้ารหัสเป็นตัวเลข (numeric)
+ดังนั้นเราจะให้ประโยชน์จากตรงนี้ในการเขียนสูตรเลือกกลุ่ม user 1-2 และคัด
+3-5 ทิ้ง</p>
+<p>เราจะเลือก data frame <code>solar_data</code> เฉพาะ “แถว” ที่ user
+เป็น 1 หรือ 2 (นั่นคือน้อยกว่า 3) และเลือกทุก “คอลัมน์”
+จากนั้นบันทึกเป็นตัวแปรใหม่ชื่อ <code>household_solar_data</code></p>
 <pre class="r"><code>household_solar_data &lt;- solar_data[solar_data$user &lt; 3, ]
 table(household_solar_data$user)</code></pre>
 <pre><code>## 
 ##   1   2 
 ##  82 222</code></pre>
-<div id="การเปลยนประเภทขอมลจดประเภท-categorical-เปน-factor" class="section level3">
+<div id="การเปลยนประเภทขอมลจดประเภท-categorical-เปน-factor"
+class="section level3">
 <h3>การเปลี่ยนประเภทข้อมูลจัดประเภท (categorical) เป็น factor</h3>
-<p>ใช้คำสั่ง <code>factor()</code> เพื่อแปลง user เป็นตัวแปรประเภท factor พร้อมกับใส่ label ให้เรียบร้อย ลำดับของ labels จะต้องเรียงตามลำดับของรหัสตัวแปร เช่น 2 = regular residence และ 1 = small residence</p>
-<p>เนื่องจาก R จะติด labels โดยเรียงจากน้อยไปมาก เราจึงต้องใส่ลำดับในตัวเลือก labels โดยเอา small residence ขึ้นก่อน แล้วตามด้วย regular residence เพื่อให้ตรงกับ ค่า 1 และ 2</p>
+<p>ใช้คำสั่ง <code>factor()</code> เพื่อแปลง user เป็นตัวแปรประเภท
+factor พร้อมกับใส่ label ให้เรียบร้อย ลำดับของ labels
+จะต้องเรียงตามลำดับของรหัสตัวแปร เช่น 2 = regular residence และ 1 =
+small residence</p>
+<p>เนื่องจาก R จะติด labels โดยเรียงจากน้อยไปมาก
+เราจึงต้องใส่ลำดับในตัวเลือก labels โดยเอา small residence ขึ้นก่อน
+แล้วตามด้วย regular residence เพื่อให้ตรงกับ ค่า 1 และ 2</p>
 <pre class="r"><code>household_solar_data$user &lt;- factor(household_solar_data$user, labels = c(&quot;small residence&quot;, &quot;regular residence&quot;))
 table(household_solar_data$user) #always check your results</code></pre>
 <pre><code>## 
@@ -620,7 +682,8 @@ table(household_solar_data$user) #always check your results</code></pre>
 <h2>2.3 ข้อมูลจัดประเภท (Categorical Data)</h2>
 <div id="frequency-table" class="section level3">
 <h3>Frequency table</h3>
-<p>เปลี่ยนตัวแปร sex ให้เป็น factor (1 = Not answer; 2 = male; 3 = female)</p>
+<p>เปลี่ยนตัวแปร sex ให้เป็น factor (1 = Not answer; 2 = male; 3 =
+female)</p>
 <pre class="r"><code>table(household_solar_data$sex) #before</code></pre>
 <pre><code>## 
 ##   1   2   3 
@@ -629,8 +692,10 @@ table(household_solar_data$user) #always check your results</code></pre>
 
 str(household_solar_data$sex)</code></pre>
 <pre><code>##  Factor w/ 3 levels &quot;Not answer&quot;,&quot;male&quot;,..: 3 3 2 3 2 2 3 2 3 2 ...</code></pre>
-<p>การสร้างตารางความถี่ใช้คำสั่ง <code>table()</code> ซึ่งสามารถใช้ได้กับตัวแปร numeric หรือ factor ก็ได้<br />
-แต่ถ้าหากใช้คำสั่ง <code>summary()</code> กับตัวแปร factor ก็จะได้ผลเป็นตารางแจกแจงความถี่เช่นกัน</p>
+<p>การสร้างตารางความถี่ใช้คำสั่ง <code>table()</code>
+ซึ่งสามารถใช้ได้กับตัวแปร numeric หรือ factor ก็ได้<br />
+แต่ถ้าหากใช้คำสั่ง <code>summary()</code> กับตัวแปร factor
+ก็จะได้ผลเป็นตารางแจกแจงความถี่เช่นกัน</p>
 <pre class="r"><code>table(household_solar_data$sex)</code></pre>
 <pre><code>## 
 ## Not answer       male     female 
@@ -641,13 +706,17 @@ str(household_solar_data$sex)</code></pre>
 </div>
 <div id="bar-graph" class="section level3">
 <h3>Bar graph</h3>
-<p>แผนภูมิแท่งนิยมใช้เพื่อแสดงความถี่ของตัวแปร เราใช้คำสั่ง <code>plot()</code> เพื่อสร้างกราฟ หากตัวแปรเป็น factor โปรแกรมจะเลือก bar graph ให้โดยอัตโนมัติ</p>
+<p>แผนภูมิแท่งนิยมใช้เพื่อแสดงความถี่ของตัวแปร เราใช้คำสั่ง
+<code>plot()</code> เพื่อสร้างกราฟ หากตัวแปรเป็น factor โปรแกรมจะเลือก
+bar graph ให้โดยอัตโนมัติ</p>
 <pre class="r"><code>plot(household_solar_data$sex)</code></pre>
 <p><img src="RES_STAT_Lab04_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 </div>
 <div id="contingency-table" class="section level3">
 <h3>Contingency table</h3>
-<p>หากเราต้องการดูความถี่ของตัวแปรจัดประเภทตัวหนึ่งแบ่งตามตัวแปรอีกตัว เช่น ความถี่ของเพศแบ่งตามประเภทผู้ใช้ไฟฟ้า เราสามารถสร้างตารางไขว้แบบ contingency table โดยใช้คำสั่ง <code>table(var1, var2)</code></p>
+<p>หากเราต้องการดูความถี่ของตัวแปรจัดประเภทตัวหนึ่งแบ่งตามตัวแปรอีกตัว
+เช่น ความถี่ของเพศแบ่งตามประเภทผู้ใช้ไฟฟ้า เราสามารถสร้างตารางไขว้แบบ
+contingency table โดยใช้คำสั่ง <code>table(var1, var2)</code></p>
 <pre class="r"><code>table(household_solar_data$user, household_solar_data$sex)</code></pre>
 <pre><code>##                    
 ##                     Not answer male female
@@ -659,44 +728,63 @@ str(household_solar_data$sex)</code></pre>
 <h2>2.4 ข้อมูลเชิงตัวเลข (numerical data)</h2>
 <div id="คาเฉลย-mean-m" class="section level3">
 <h3>ค่าเฉลี่ย (mean; <em>M</em>)</h3>
-<p>ในการสรุปข้อมูลเชิงปริมาณ ค่ากลางของการกระจายตัวมักคำนวณโดยใช้ค่าเฉลี่ยเลขคณิต (mean) เช่น ค่าเฉลี่ยของอายุ</p>
+<p>ในการสรุปข้อมูลเชิงปริมาณ
+ค่ากลางของการกระจายตัวมักคำนวณโดยใช้ค่าเฉลี่ยเลขคณิต (mean) เช่น
+ค่าเฉลี่ยของอายุ</p>
 <pre class="r"><code>mean(household_solar_data$age)</code></pre>
 <pre><code>## [1] 43.64474</code></pre>
-<p>ค่ากลางอีกตัวหนึ่งที่ได้รับผลกระทบจากคะแนนสุดโต่ง (outliers) หรือความเบ้ของข้อมูลน้อยกว่าคือ ค่ามัธยฐาน (median)</p>
+<p>ค่ากลางอีกตัวหนึ่งที่ได้รับผลกระทบจากคะแนนสุดโต่ง (outliers)
+หรือความเบ้ของข้อมูลน้อยกว่าคือ ค่ามัธยฐาน (median)</p>
 <pre class="r"><code>median(household_solar_data$age)</code></pre>
 <pre><code>## [1] 42</code></pre>
-<p>หากเราใช้คำสั่ง <code>summary()</code> กับตัวแปรเชิงตัวเลข เราจะได้ตารางสรุปค่าในจุดต่าง ๆ ของข้อมูลออกมา</p>
+<p>หากเราใช้คำสั่ง <code>summary()</code> กับตัวแปรเชิงตัวเลข
+เราจะได้ตารางสรุปค่าในจุดต่าง ๆ ของข้อมูลออกมา</p>
 <pre class="r"><code>summary(household_solar_data$age)</code></pre>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 ##   19.00   32.00   42.00   43.64   54.25   80.00</code></pre>
 </div>
-<div id="สวนเบยงเบนมาตรฐาน-standard-deviation-sd-และความแปรปรวน-variance" class="section level3">
-<h3>ส่วนเบี่ยงเบนมาตรฐาน (standard deviation; <em>SD</em>) และความแปรปรวน (variance)</h3>
-<p>ส่วนเบี่ยงเบนมาตรฐานและความแปรปรวนคำนวณได้โดยคำสั่ง <code>sd()</code> และ <code>var()</code></p>
+<div
+id="สวนเบยงเบนมาตรฐาน-standard-deviation-sd-และความแปรปรวน-variance"
+class="section level3">
+<h3>ส่วนเบี่ยงเบนมาตรฐาน (standard deviation; <em>SD</em>)
+และความแปรปรวน (variance)</h3>
+<p>ส่วนเบี่ยงเบนมาตรฐานและความแปรปรวนคำนวณได้โดยคำสั่ง <code>sd()</code>
+และ <code>var()</code></p>
 <pre class="r"><code>sd(household_solar_data$age)</code></pre>
 <pre><code>## [1] 13.62458</code></pre>
 <pre class="r"><code>var(household_solar_data$age)</code></pre>
 <pre><code>## [1] 185.6291</code></pre>
 </div>
-<div id="ตารางสถตเชงพรรณา-descriptive-stats-table-ดวย-psych-package" class="section level3">
-<h3>ตารางสถิติเชิงพรรณา (Descriptive Stats Table) ด้วย psych package</h3>
-<p>คำสั่งมาตรฐานใน R ไม่มีคำสั่งเฉพาะในการสร้างตารางสถิติที่นิยมใช้กันในการรายงานผลการวิจัยทางจิตวิทยา จึงมีผู้เขียน package สำหรับการนี้โดยเฉพาะ</p>
-<p>เริ่มต้นด้วยการติดตั้ง (install) package (ทำเพียงแค่ครั้งเดียว) และเรียกใช้ (library) package ใน session R (ต้องทำทุกครั้งที่เปิด R ขึ้นมาใหม่)</p>
+<div id="ตารางสถตเชงพรรณา-descriptive-stats-table-ดวย-psych-package"
+class="section level3">
+<h3>ตารางสถิติเชิงพรรณา (Descriptive Stats Table) ด้วย psych
+package</h3>
+<p>คำสั่งมาตรฐานใน R
+ไม่มีคำสั่งเฉพาะในการสร้างตารางสถิติที่นิยมใช้กันในการรายงานผลการวิจัยทางจิตวิทยา
+จึงมีผู้เขียน package สำหรับการนี้โดยเฉพาะ</p>
+<p>เริ่มต้นด้วยการติดตั้ง (install) package (ทำเพียงแค่ครั้งเดียว)
+และเรียกใช้ (library) package ใน session R (ต้องทำทุกครั้งที่เปิด R
+ขึ้นมาใหม่)</p>
 <pre class="r"><code>install.packages(&quot;psych&quot;) # You need to only do this once. 
 library(psych) # must do this everytime you restart R. </code></pre>
-<p>เมื่อติดตั้งและเรียกใช้แล้ว เราจะใช้ทำสั่ง <code>desribe</code> ของ psych package เพื่อสร้างตารางสถิติ</p>
+<p>เมื่อติดตั้งและเรียกใช้แล้ว เราจะใช้ทำสั่ง <code>desribe</code> ของ
+psych package เพื่อสร้างตารางสถิติ</p>
 <p>เราลองใช้คำสั่งนี้กับคอลัมน์ที่ 4 และ 5 (sex และ age)</p>
 <pre class="r"><code>describe(household_solar_data[, 4:5])</code></pre>
 <pre><code>##      vars   n  mean    sd median trimmed   mad min max range  skew kurtosis   se
 ## sex*    1 304  2.59  0.51      3    2.61  0.00   1   3     2 -0.50    -1.39 0.03
 ## age     2 304 43.64 13.62     42   43.16 16.31  19  80    61  0.27    -0.92 0.78</code></pre>
-<p>สังเกตได้ว่า แม้ sex จะเป็นตัวแปรจัดประเภท คำสั่งก็พยายามจะคำนวณค่าให้ แต่มีเครื่องหมายดอกจัน (*) เตือนไว้ให้รู้ว่า ค่าสถิติเหล่านี้อาจไม่สามารถแปลความหมายได้ เนื่องจากค่าตัวเลขในตัวแปรจัดประเภทไม่ได้มีความหมายทางคณิตศาสตร์</p>
+<p>สังเกตได้ว่า แม้ sex จะเป็นตัวแปรจัดประเภท
+คำสั่งก็พยายามจะคำนวณค่าให้ แต่มีเครื่องหมายดอกจัน (*) เตือนไว้ให้รู้ว่า
+ค่าสถิติเหล่านี้อาจไม่สามารถแปลความหมายได้
+เนื่องจากค่าตัวเลขในตัวแปรจัดประเภทไม่ได้มีความหมายทางคณิตศาสตร์</p>
 <p>ชื่อเต็มของค่าต่าง ๆ ในตารางสามารถดูได้ในหัวข้อ Value ของตัวช่วย</p>
 <pre class="r"><code>?describe</code></pre>
 </div>
 <div id="histogram-และ-boxplot" class="section level3">
 <h3>Histogram และ Boxplot</h3>
-<p>Histrogram และ boxplot เป็นแผนภูมิที่เหมาะสำหรับแสดงการแจกแจงความถี่ (distribution) ของข้อมูลเชิงปริมาณ</p>
+<p>Histrogram และ boxplot เป็นแผนภูมิที่เหมาะสำหรับแสดงการแจกแจงความถี่
+(distribution) ของข้อมูลเชิงปริมาณ</p>
 <pre class="r"><code>hist(household_solar_data$age)</code></pre>
 <p><img src="RES_STAT_Lab04_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
 <pre class="r"><code>boxplot(household_solar_data$age)</code></pre>

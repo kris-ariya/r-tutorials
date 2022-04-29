@@ -13,8 +13,8 @@
 
 <title>Lab 02: Randomization</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -308,7 +312,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -321,7 +325,7 @@ div.tocify {
   <a href="index.html">Home</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     RES MTHD/STAT PSY Lab
      
     <span class="caret"></span>
@@ -360,7 +364,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     EXPRM DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -402,7 +406,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     SURVEY DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -444,33 +448,67 @@ div.tocify {
 
 <div id="random-assignment" class="section level1">
 <h1>Random Assignment</h1>
-<p>We could try to experimentally control all known potential confounds (e.g., gender, age, intelligence, personality, room temperature, etc.). Nonetheless, we could not pracically control for ALL variables (e.g., we might not know those variables or they are too expensive to control). Random assignment is one way to equalize those extraneous variables. When participants are randomly assigned to each group in an experiment, all person variables are equally likely to be assigned to any group (e.g., each group has about the same number of participants with high, averge, and low extraversion). Given that we have a large enough sample, as we sum up those values for each group, any variation around the means will cancel out each other (i.e., each group will have the same average extraversion). Nonetheless, random assignment does not gaurantee matched or equivalent groups. Any differences of pre-existing characteristics is due to chance. While random assignment does not completely eliminate pre-existing differences, it greatly reduce it.</p>
-<p>In this lab, we will learn how to conduct a random assignment with three tools: Microsoft Excel, R, and a randomizer website.</p>
+<p>We could try to experimentally control all known potential confounds
+(e.g., gender, age, intelligence, personality, room temperature, etc.).
+Nonetheless, we could not pracically control for ALL variables (e.g., we
+might not know those variables or they are too expensive to control).
+Random assignment is one way to equalize those extraneous variables.
+When participants are randomly assigned to each group in an experiment,
+all person variables are equally likely to be assigned to any group
+(e.g., each group has about the same number of participants with high,
+averge, and low extraversion). Given that we have a large enough sample,
+as we sum up those values for each group, any variation around the means
+will cancel out each other (i.e., each group will have the same average
+extraversion). Nonetheless, random assignment does not gaurantee matched
+or equivalent groups. Any differences of pre-existing characteristics is
+due to chance. While random assignment does not completely eliminate
+pre-existing differences, it greatly reduce it.</p>
+<p>In this lab, we will learn how to conduct a random assignment with
+three tools: Microsoft Excel, R, and a randomizer website.</p>
 <div id="excel" class="section level2">
 <h2>1. Excel</h2>
-<p>Let’s consider an example of randomizing 30 participants to 5 groups. We could just roll a dice for each participant at the beginning of the experiment. However, we could plan the randomization <em>before</em> the experiment.</p>
-<p>First, we will create two columns: group, and random number. Then fill out the group number from 1-6 and repeat this 5 times.</p>
+<p>Let’s consider an example of randomizing 30 participants to 5 groups.
+We could just roll a dice for each participant at the beginning of the
+experiment. However, we could plan the randomization <em>before</em> the
+experiment.</p>
+<p>First, we will create two columns: group, and random number. Then
+fill out the group number from 1-6 and repeat this 5 times.</p>
 <p><img src="images/Lab_randomization/fill_group_number.png" /></p>
-<p>Then, fill <code>random num</code> column with a <code>rand()</code> function. The function will generate a random number between 0 and 1 using a uniform distribution, i.e., each value has equal chance.</p>
+<p>Then, fill <code>random num</code> column with a <code>rand()</code>
+function. The function will generate a random number between 0 and 1
+using a uniform distribution, i.e., each value has equal chance.</p>
 <p><img src="images/Lab_randomization/rand.png" /></p>
 <p>Here are the results.</p>
 <p><img src="images/Lab_randomization/fill_rand.png" /></p>
-<p>Then, select the entire values for both <code>group</code> and <code>random num</code> column. <strong>This is VERY important. You need to select ALL values that you want to randomly sort.</strong></p>
+<p>Then, select the entire values for both <code>group</code> and
+<code>random num</code> column. <strong>This is VERY important. You need
+to select ALL values that you want to randomly sort.</strong></p>
 <p><img src="images/Lab_randomization/select_values.png" /></p>
 <p>Then, sort the data with <code>random num</code> column.</p>
 <p><img src="images/Lab_randomization/sort.png" /></p>
 <p>The results will be a randomized order of <code>group</code>.</p>
 <p><img src="images/Lab_randomization/resort.png" /></p>
-<p>Then you can add an <code>id</code> column to assign participant to the group. (As you type into Excel, the random values will keep changing, but you can ignore them at this point.)</p>
+<p>Then you can add an <code>id</code> column to assign participant to
+the group. (As you type into Excel, the random values will keep
+changing, but you can ignore them at this point.)</p>
 <p><img src="images/Lab_randomization/add_id.png" /></p>
 <div id="randomize-within-a-set" class="section level3">
 <h3>Randomize within a set</h3>
-<p>Sometimes you would like to run an experiment as a set, i.e., within each set you want to assign participants to every group before moving on. This setup will make sure that for each set that you run, you will have participants for all conditions.</p>
-<p>To do this, you need <code>group</code>, <code>set</code>, and <code>random num</code>. Groups within the same set will have the same <code>set</code> value.</p>
+<p>Sometimes you would like to run an experiment as a set, i.e., within
+each set you want to assign participants to every group before moving
+on. This setup will make sure that for each set that you run, you will
+have participants for all conditions.</p>
+<p>To do this, you need <code>group</code>, <code>set</code>, and
+<code>random num</code>. Groups within the same set will have the same
+<code>set</code> value.</p>
 <p><img src="images/Lab_randomization/set.png" /></p>
 <p>Next, fill the random numbers</p>
 <p><img src="images/Lab_randomization/set_rand.png" /></p>
-<p>Then, select all values and sort. In the sort option box, click + and choose the first option to sort by Column <code>set</code>, then by <code>random num</code>. This way, Excel will sort your data by <code>set</code>, then within each set, sort by <code>random num</code>.</p>
+<p>Then, select all values and sort. In the sort option box, click + and
+choose the first option to sort by Column <code>set</code>, then by
+<code>random num</code>. This way, Excel will sort your data by
+<code>set</code>, then within each set, sort by
+<code>random num</code>.</p>
 <p><img src="images/Lab_randomization/set_sort.png" /></p>
 <p>Here are the results.</p>
 <p><img src="images/Lab_randomization/set_result.png" /></p>
@@ -478,11 +516,13 @@ div.tocify {
 </div>
 <div id="r-code" class="section level2">
 <h2>2. R code</h2>
-<p>There are multiple ways to create a vector of random values in R. The ways shown here are not exhaustive.</p>
+<p>There are multiple ways to create a vector of random values in R. The
+ways shown here are not exhaustive.</p>
 </div>
 <div id="rep-function-sortation" class="section level2">
 <h2><code>rep()</code> function &amp; sortation</h2>
-<p>First, create a vector of group numbers (1-5) for 6 times (<em>N</em> = 30).</p>
+<p>First, create a vector of group numbers (1-5) for 6 times (<em>N</em>
+= 30).</p>
 <pre class="r"><code>unsorted_group &lt;- rep(1:5, times = 6)
 unsorted_group</code></pre>
 <pre><code>##  [1] 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5</code></pre>
@@ -495,15 +535,24 @@ random_vector</code></pre>
 <pre class="r"><code>random_sorted &lt;- unsorted_group[random_vector]
 random_sorted</code></pre>
 <pre><code>##  [1] 5 2 3 2 1 1 2 5 5 3 3 4 1 3 4 4 5 2 4 4 1 1 1 2 2 4 5 5 3 3</code></pre>
-<p>You can use <code>random_sorted</code> to assign participants into conditions. Also, check that all groups have equal <em>n</em>.</p>
+<p>You can use <code>random_sorted</code> to assign participants into
+conditions. Also, check that all groups have equal <em>n</em>.</p>
 <pre class="r"><code>table(random_sorted)</code></pre>
 <pre><code>## random_sorted
 ## 1 2 3 4 5 
 ## 6 6 6 6 6</code></pre>
 <div id="sample.int-function-and-for-loop" class="section level3">
 <h3><code>sample.int()</code> function and <code>for</code> loop</h3>
-<p>To randomize within each set, we will use <code>sample.int()</code> to randomize group 1-5, then repeat it with <code>for</code> loops for 6 times, then combine the results.</p>
-<p>We can use <code>sample.int()</code> function to pick integer values from 1 to 5 (<code>n</code> = 5) for <code>size</code> = 5 times. The function will randomly select an interger from 1 to 5 without replacement. By doing this 5 times, you will get a random oder of 1-5. However, because our total sample size has <em>N</em> = 30, we will need to use a <code>for</code> loop to repeat this process 6 times (<code>for (i in 1:6)</code>)</p>
+<p>To randomize within each set, we will use <code>sample.int()</code>
+to randomize group 1-5, then repeat it with <code>for</code> loops for 6
+times, then combine the results.</p>
+<p>We can use <code>sample.int()</code> function to pick integer values
+from 1 to 5 (<code>n</code> = 5) for <code>size</code> = 5 times. The
+function will randomly select an interger from 1 to 5 without
+replacement. By doing this 5 times, you will get a random oder of 1-5.
+However, because our total sample size has <em>N</em> = 30, we will need
+to use a <code>for</code> loop to repeat this process 6 times
+(<code>for (i in 1:6)</code>)</p>
 <pre class="r"><code>set.seed(2475)
 s &lt;- matrix(nrow = 5, ncol = 6) # Create a matrix, s, with 5 rows (for 5 groups) and 6 columns (for 6 sets) as a holder for future data.
 for (i in 1:6) {
@@ -527,8 +576,10 @@ s # results ini matrix</code></pre>
 <div id="randomizer-websites" class="section level2">
 <h2>3. Randomizer Websites</h2>
 <p>There are muliple websites that offer randomization. Try</p>
-<p><a href="https://www.randomizer.org" class="uri">https://www.randomizer.org</a></p>
-<p><a href="https://www.graphpad.com/quickcalcs/randomize2/" class="uri">https://www.graphpad.com/quickcalcs/randomize2/</a></p>
+<p><a href="https://www.randomizer.org"
+class="uri">https://www.randomizer.org</a></p>
+<p><a href="https://www.graphpad.com/quickcalcs/randomize2/"
+class="uri">https://www.graphpad.com/quickcalcs/randomize2/</a></p>
 </div>
 </div>
 

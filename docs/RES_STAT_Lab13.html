@@ -13,8 +13,8 @@
 
 <title>Lab 13: Independent Samples t-Test</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -308,7 +312,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -321,7 +325,7 @@ div.tocify {
   <a href="index.html">Home</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     RES MTHD/STAT PSY Lab
      
     <span class="caret"></span>
@@ -360,7 +364,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     EXPRM DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -402,7 +406,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     SURVEY DESIGN/ANA Lab
      
     <span class="caret"></span>
@@ -437,16 +441,27 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Lab 13: Independent Samples <em>t</em>-Test</h1>
+<h1 class="title toc-ignore">Lab 13: Independent Samples
+<em>t</em>-Test</h1>
 
 </div>
 
 
 <div id="basic-concepts" class="section level1">
 <h1>Basic concepts</h1>
-<p>An independent <em>t</em>-test is used to compare means of two groups that are independent from one another (think a between-subject design). For example, one group is an experimental condition, and the other is a control condition. One group is people who endorse a particular political view, the other group is people who disagree with the view. An observation (a sample) can only belong to one group; it cannot belong to both groups at the same time.</p>
-<p>Generally, datasets for independent <em>t</em>-tests will have at least two variables: a dependent variable and a grouping (independent) variable.</p>
-<p>Let’s consider the dataset <code>mtcars</code> in R. We are going to compare whether a car’s tranmission (<code>am</code>; 0 = automatic, 1 = manual) affects fuel economy <code>mpg</code>.</p>
+<p>An independent <em>t</em>-test is used to compare means of two groups
+that are independent from one another (think a between-subject design).
+For example, one group is an experimental condition, and the other is a
+control condition. One group is people who endorse a particular
+political view, the other group is people who disagree with the view. An
+observation (a sample) can only belong to one group; it cannot belong to
+both groups at the same time.</p>
+<p>Generally, datasets for independent <em>t</em>-tests will have at
+least two variables: a dependent variable and a grouping (independent)
+variable.</p>
+<p>Let’s consider the dataset <code>mtcars</code> in R. We are going to
+compare whether a car’s tranmission (<code>am</code>; 0 = automatic, 1 =
+manual) affects fuel economy <code>mpg</code>.</p>
 <pre class="r"><code>data(&quot;mtcars&quot;) #load dataset from R
 df &lt;- mtcars[, c(&quot;mpg&quot;, &quot;am&quot;)] #extract only two columns
 df</code></pre>
@@ -518,28 +533,58 @@ df</code></pre>
 ## Ferrari Dino        19.7    manual
 ## Maserati Bora       15.0    manual
 ## Volvo 142E          21.4    manual</code></pre>
-<p>The null hypothesis was that the means of group 1 and group 2 were not different, <span class="math inline">\(H_0: \mu_1 - \mu_2 = 0\)</span></p>
-<p>Because the samples in each group were not the same observation, we have to look at the difference at the group level. That is, to look at the difference between <span class="math inline">\(\bar{X}_1\)</span> and <span class="math inline">\(\bar{X}_2\)</span>.</p>
-<p>Then, we test whether the mean difference were more or less than zero. <span class="math inline">\((\bar{X}_1 - \bar{X}_2)-0\)</span></p>
-<p>If we take that mean difference and divide it by its standard error, we get a <em>t</em> value. <span class="math display">\[ t = \frac{(\bar{X}_1 - \bar{X}_2)-0}{SE_{\bar{X}_1 - \bar{X}_2}} \]</span> In a classical Student’s <em>t</em>-test, to estimate a standard error of a mean difference (<span class="math inline">\(SE_{\bar{X}_1 - \bar{X}_2}\)</span>), we need to make an assumption of <em>homogeneity of variance</em>. We assume that variances in Group 1 and Group 2 are NOT different. The idea behind this assumption was that if variances of both groups are the same, we can combine (<em>pooled</em>) that information together and have a better estimate of standard error.</p>
-<p>A <em>t</em>-test with pooled <em>SD</em> (<span class="math inline">\(s_p\)</span>) looks like this.</p>
-<p><span class="math display">\[ t = \frac{\bar{X}_1 - \bar{X}_2}{s_p \sqrt{\frac{1}{n_1} + \frac{1}{n_2}}} \]</span> The term, <span class="math inline">\(s_p \sqrt{\frac{1}{n_1} + \frac{1}{n_2}}\)</span>, is an estimated standard error (<span class="math inline">\(SE_{\bar{X}_1 - \bar{X}_2}\)</span>).</p>
-<p>We can find the pooled <em>SD</em> with this equation. <span class="math display">\[s_p = \sqrt{\frac{(n_1 -1)s_1^2 + (n_2 -1)s_2^2 }{n_1 + n_2 - 2}}\]</span> Conceptually, we combine the variances from both groups, then take a square root of the variance to get a pooled standard deviation (<span class="math inline">\(s_p\)</span>). The degrees of freedom for this test is <span class="math inline">\((n_1 - 1) + (n_2 -2) = n_1 + n_2 -2 = N -2\)</span></p>
+<p>The null hypothesis was that the means of group 1 and group 2 were
+not different, <span class="math inline">\(H_0: \mu_1 - \mu_2 =
+0\)</span></p>
+<p>Because the samples in each group were not the same observation, we
+have to look at the difference at the group level. That is, to look at
+the difference between <span class="math inline">\(\bar{X}_1\)</span>
+and <span class="math inline">\(\bar{X}_2\)</span>.</p>
+<p>Then, we test whether the mean difference were more or less than
+zero. <span class="math inline">\((\bar{X}_1 - \bar{X}_2)-0\)</span></p>
+<p>If we take that mean difference and divide it by its standard error,
+we get a <em>t</em> value. <span class="math display">\[ t =
+\frac{(\bar{X}_1 - \bar{X}_2)-0}{SE_{\bar{X}_1 - \bar{X}_2}} \]</span>
+In a classical Student’s <em>t</em>-test, to estimate a standard error
+of a mean difference (<span class="math inline">\(SE_{\bar{X}_1 -
+\bar{X}_2}\)</span>), we need to make an assumption of <em>homogeneity
+of variance</em>. We assume that variances in Group 1 and Group 2 are
+NOT different. The idea behind this assumption was that if variances of
+both groups are the same, we can combine (<em>pooled</em>) that
+information together and have a better estimate of standard error.</p>
+<p>A <em>t</em>-test with pooled <em>SD</em> (<span
+class="math inline">\(s_p\)</span>) looks like this.</p>
+<p><span class="math display">\[ t = \frac{\bar{X}_1 - \bar{X}_2}{s_p
+\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}} \]</span> The term, <span
+class="math inline">\(s_p \sqrt{\frac{1}{n_1} + \frac{1}{n_2}}\)</span>,
+is an estimated standard error (<span
+class="math inline">\(SE_{\bar{X}_1 - \bar{X}_2}\)</span>).</p>
+<p>We can find the pooled <em>SD</em> with this equation. <span
+class="math display">\[s_p = \sqrt{\frac{(n_1 -1)s_1^2 + (n_2 -1)s_2^2
+}{n_1 + n_2 - 2}}\]</span> Conceptually, we combine the variances from
+both groups, then take a square root of the variance to get a pooled
+standard deviation (<span class="math inline">\(s_p\)</span>). The
+degrees of freedom for this test is <span class="math inline">\((n_1 -
+1) + (n_2 -2) = n_1 + n_2 -2 = N -2\)</span></p>
 <div id="explore-data" class="section level2">
 <h2>Explore data</h2>
-<p>First, let’s look at descriptive stats for each group. We will use <code>describeBy(y ~ x, data)</code> from the <code>psych</code> package. The function will create descriptive stats of dependent variable <code>y</code> by the group variable <code>x</code>.</p>
+<p>First, let’s look at descriptive stats for each group. We will use
+<code>describeBy(y ~ x, data)</code> from the <code>psych</code>
+package. The function will create descriptive stats of dependent
+variable <code>y</code> by the group variable <code>x</code>.</p>
 <pre class="r"><code>library(psych)
 describeBy(mpg ~ am, data = df)</code></pre>
 <pre><code>## 
 ##  Descriptive statistics by group 
 ## am: automatic
-##    vars  n  mean   sd median trimmed  mad  min  max range skew kurtosis   se
-## X1    1 19 17.15 3.83   17.3   17.12 3.11 10.4 24.4    14 0.01     -0.8 0.88
-## --------------------------------------------------------------------------------------------------------------- 
+##     vars  n  mean   sd median trimmed  mad  min  max range skew kurtosis   se
+## mpg    1 19 17.15 3.83   17.3   17.12 3.11 10.4 24.4    14 0.01     -0.8 0.88
+## ------------------------------------------------------------------------------------------------------------------- 
 ## am: manual
-##    vars  n  mean   sd median trimmed  mad min  max range skew kurtosis   se
-## X1    1 13 24.39 6.17   22.8   24.38 6.67  15 33.9  18.9 0.05    -1.46 1.71</code></pre>
-<p>We can see that the means of the two groups were not quite the same, but we need a statistical test to determine that.</p>
+##     vars  n  mean   sd median trimmed  mad min  max range skew kurtosis   se
+## mpg    1 13 24.39 6.17   22.8   24.38 6.67  15 33.9  18.9 0.05    -1.46 1.71</code></pre>
+<p>We can see that the means of the two groups were not quite the same,
+but we need a statistical test to determine that.</p>
 </div>
 </div>
 <div id="manual-calculation" class="section level1">
@@ -553,7 +598,8 @@ mean_group # this is a dataframe with means values.</code></pre>
 <pre class="r"><code>mean_diff &lt;- mean_group$mpg[2] - mean_group$mpg[1] #manual - automatic
 mean_diff</code></pre>
 <pre><code>## [1] 7.244939</code></pre>
-<p>The mean difference is positive, suggesting that Group 2 is higher than Group 1.</p>
+<p>The mean difference is positive, suggesting that Group 2 is higher
+than Group 1.</p>
 <pre class="r"><code># Variances
 var_group &lt;- aggregate(mpg ~ am, data = df, var) # calculate variances, var(), for each group. 
 var_group</code></pre>
@@ -562,7 +608,8 @@ var_group</code></pre>
 ## 2    manual 38.02577</code></pre>
 <pre class="r"><code>var1 &lt;- var_group$mpg[1]
 var2 &lt;- var_group$mpg[2]</code></pre>
-<p>Note that the variances were quite different. We will come back to this issue later.</p>
+<p>Note that the variances were quite different. We will come back to
+this issue later.</p>
 <pre class="r"><code># Calculate n
 n1 &lt;- nrow(df[df$am == &quot;automatic&quot;,])
 n2 &lt;- nrow(df[df$am == &quot;manual&quot;,])
@@ -582,24 +629,36 @@ t</code></pre>
 </div>
 <div id="t.test" class="section level1">
 <h1><code>t.test()</code></h1>
-<p>To conduct a Student’s <em>t</em>-test in R, we use <code>t.test(y ~ x, var.equal = TRUE)</code>. The model <code>y ~ x</code> denotes a model with <code>y</code>, the dependent variable, and <code>x</code>, the independent (group) variable. The option <code>var.equal = TRUE</code> tells R to use a Student’s <em>t</em>-test.</p>
+<p>To conduct a Student’s <em>t</em>-test in R, we use
+<code>t.test(y ~ x, var.equal = TRUE)</code>. The model
+<code>y ~ x</code> denotes a model with <code>y</code>, the dependent
+variable, and <code>x</code>, the independent (group) variable. The
+option <code>var.equal = TRUE</code> tells R to use a Student’s
+<em>t</em>-test.</p>
 <pre class="r"><code>t.test(mpg ~ am, data = df, var.equal = TRUE)</code></pre>
 <pre><code>## 
 ##  Two Sample t-test
 ## 
 ## data:  mpg by am
 ## t = -4.1061, df = 30, p-value = 0.000285
-## alternative hypothesis: true difference in means is not equal to 0
+## alternative hypothesis: true difference in means between group automatic and group manual is not equal to 0
 ## 95 percent confidence interval:
 ##  -10.84837  -3.64151
 ## sample estimates:
 ## mean in group automatic    mean in group manual 
 ##                17.14737                24.39231</code></pre>
-<p>Note that the <em>t</em> value was the same as our manual calculation, but with a negative sign. This is because <code>t.test()</code> use <em>automatic</em> - <em>manual</em>, but our calculation above use <em>manual</em> - <em>automatic</em>. Nonetheless, they meant the same.</p>
-<p>The 95% CI was for the <em>mean difference</em>. Because the 95% CI did not include zero, we were confident to say that the mean differences was not zero, suggesting that the two groups were not the same.</p>
+<p>Note that the <em>t</em> value was the same as our manual
+calculation, but with a negative sign. This is because
+<code>t.test()</code> use <em>automatic</em> - <em>manual</em>, but our
+calculation above use <em>manual</em> - <em>automatic</em>. Nonetheless,
+they meant the same.</p>
+<p>The 95% CI was for the <em>mean difference</em>. Because the 95% CI
+did not include zero, we were confident to say that the mean differences
+was not zero, suggesting that the two groups were not the same.</p>
 <div id="effect-size-pooled-sd" class="section level2">
 <h2>Effect size (pooled <em>SD</em>)</h2>
-<p>We use <code>cohens_d()</code> from the package <code>effectsize</code>.</p>
+<p>We use <code>cohens_d()</code> from the package
+<code>effectsize</code>.</p>
 <pre class="r"><code>library(effectsize)
 effectsize::cohens_d(mpg ~ am, data = df, pooled_sd = TRUE)</code></pre>
 <pre><code>## Cohen&#39;s d |         95% CI
@@ -611,30 +670,48 @@ effectsize::cohens_d(mpg ~ am, data = df, pooled_sd = TRUE)</code></pre>
 </div>
 <div id="equal-variance-not-assumed" class="section level1">
 <h1>Equal variance NOT assumed</h1>
-<p>When the assumption of homegeneity is uncertain or violated. We should use another version of <em>t</em>-test that has been modified for this situation: The Welch <em>t</em>-test. In Welch’s formula, the standard error was calculate from each group variance instead of <span class="math inline">\(s_p\)</span>. <span class="math display">\[ t = \frac{\bar{X}_1 - \bar{X}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}} \]</span> The degrees of freedom were then adjusted with the following formula. <span class="math display">\[ \text{Welch&#39;s }df =\frac{\bigg(\cfrac{s_1^2}{n_1} + \cfrac{s_2^2}{n_2}\bigg)^2}   {\cfrac{\bigg(\frac{s_1^2}{n_1} \bigg)^2}{(n_1-1)} + \cfrac{\bigg(\frac{s_2^2}{n_2} \bigg)^2}{(n_2-1)} } \]</span> Actually the default for <code>t.test()</code> is a Welch’s <em>t</em>-test.</p>
+<p>When the assumption of homegeneity is uncertain or violated. We
+should use another version of <em>t</em>-test that has been modified for
+this situation: The Welch <em>t</em>-test. In Welch’s formula, the
+standard error was calculate from each group variance instead of <span
+class="math inline">\(s_p\)</span>. <span class="math display">\[ t =
+\frac{\bar{X}_1 - \bar{X}_2}{\sqrt{\frac{s_1^2}{n_1} +
+\frac{s_2^2}{n_2}}} \]</span> The degrees of freedom were then adjusted
+with the following formula. <span class="math display">\[
+\text{Welch&#39;s }df =\frac{\bigg(\cfrac{s_1^2}{n_1} +
+\cfrac{s_2^2}{n_2}\bigg)^2}   {\cfrac{\bigg(\frac{s_1^2}{n_1}
+\bigg)^2}{(n_1-1)} + \cfrac{\bigg(\frac{s_2^2}{n_2} \bigg)^2}{(n_2-1)} }
+\]</span> Actually the default for <code>t.test()</code> is a Welch’s
+<em>t</em>-test.</p>
 <pre class="r"><code>t.test(mpg ~ am, data = df)</code></pre>
 <pre><code>## 
 ##  Welch Two Sample t-test
 ## 
 ## data:  mpg by am
 ## t = -3.7671, df = 18.332, p-value = 0.001374
-## alternative hypothesis: true difference in means is not equal to 0
+## alternative hypothesis: true difference in means between group automatic and group manual is not equal to 0
 ## 95 percent confidence interval:
 ##  -11.280194  -3.209684
 ## sample estimates:
 ## mean in group automatic    mean in group manual 
 ##                17.14737                24.39231</code></pre>
-<p>In this example, the Welch’s <em>t</em> value was smaller than the Student’s <em>t</em>. Note that the Welch’s <em>df</em> was much lower than <em>N</em> - 2. This was because of the big difference in <em>variances</em> between the two groups.</p>
+<p>In this example, the Welch’s <em>t</em> value was smaller than the
+Student’s <em>t</em>. Note that the Welch’s <em>df</em> was much lower
+than <em>N</em> - 2. This was because of the big difference in
+<em>variances</em> between the two groups.</p>
 <pre class="r"><code>var_group</code></pre>
 <pre><code>##          am      mpg
 ## 1 automatic 14.69930
 ## 2    manual 38.02577</code></pre>
-<p>If we look at the distribution, we will see that the <code>mpg</code> in manual transmision had more variation than those in automatic transmission.</p>
+<p>If we look at the distribution, we will see that the <code>mpg</code>
+in manual transmision had more variation than those in automatic
+transmission.</p>
 <pre class="r"><code>library(ggplot2)
 ggplot(data = df, aes(x = am, y = mpg)) +
   geom_boxplot() +
   theme_classic()</code></pre>
-<p><img src="RES_STAT_Lab13_files/figure-html/unnamed-chunk-10-1.png" width="672" /> ## Effect size (un-pooled <em>SD</em>)</p>
+<p><img src="RES_STAT_Lab13_files/figure-html/unnamed-chunk-10-1.png" width="672" />
+## Effect size (un-pooled <em>SD</em>)</p>
 <pre class="r"><code>library(effectsize)
 effectsize::cohens_d(mpg ~ am, data = df, pooled_sd = FALSE)</code></pre>
 <pre><code>## Cohen&#39;s d |         95% CI
@@ -645,23 +722,40 @@ effectsize::cohens_d(mpg ~ am, data = df, pooled_sd = FALSE)</code></pre>
 </div>
 <div id="which-option" class="section level1">
 <h1>Which option?</h1>
-<p>Should you use Welch’s or Student’s <em>t</em>? Traditionally, you would, first, determine whether the homogeneity of variance assumption was violated. If it was not, choose Student’s <em>t</em>. But if it was violated (i.e., unequal variances) like this case, choose Welch’s.</p>
-<p>However, when the homogeneity of variance assumption is true, Welch’s and Student’s <em>t</em> produce very similar results. But in the case of violation, Welch’s procedure helps protect against Type I error. <em>Therefore, it is recommended that you should use</em> <strong>Welch’s</strong> <em>for all cases.</em></p>
+<p>Should you use Welch’s or Student’s <em>t</em>? Traditionally, you
+would, first, determine whether the homogeneity of variance assumption
+was violated. If it was not, choose Student’s <em>t</em>. But if it was
+violated (i.e., unequal variances) like this case, choose Welch’s.</p>
+<p>However, when the homogeneity of variance assumption is true, Welch’s
+and Student’s <em>t</em> produce very similar results. But in the case
+of violation, Welch’s procedure helps protect against Type I error.
+<em>Therefore, it is recommended that you should use</em>
+<strong>Welch’s</strong> <em>for all cases.</em></p>
 </div>
 <div id="assumption-check" class="section level1">
 <h1>Assumption Check</h1>
-<p>When conducting independent <em>t</em>-test, these assumptions should be checked.</p>
+<p>When conducting independent <em>t</em>-test, these assumptions should
+be checked.</p>
 <ul>
-<li>Independence of observations. Each observation are not related to any other observation.</li>
-<li>Normality. The values of DV for <strong>each group</strong> should be normally distributed.</li>
-<li>Homogeneity of variance. The variance of DV are equal in each group.</li>
+<li>Independence of observations. Each observation are not related to
+any other observation.</li>
+<li>Normality. The values of DV for <strong>each group</strong> should
+be normally distributed.</li>
+<li>Homogeneity of variance. The variance of DV are equal in each
+group.</li>
 </ul>
-<p>The assumption of independence must be ensure by the research design. In this case, we know that the group membership of each observation was mutually exclusive.</p>
-<p>The assumption of normality could be check by Q-Q plots and Shapiro-Wilk statistic. For Q-Q plots, the package <code>car</code> provides an easy to use function for checking Q-Q plot.</p>
+<p>The assumption of independence must be ensure by the research design.
+In this case, we know that the group membership of each observation was
+mutually exclusive.</p>
+<p>The assumption of normality could be check by Q-Q plots and
+Shapiro-Wilk statistic. For Q-Q plots, the package <code>car</code>
+provides an easy to use function for checking Q-Q plot.</p>
 <pre class="r"><code>#install.packages(&quot;car&quot;)
 library(&quot;car&quot;)
 qqPlot(mpg ~ am, data = df) #we use a model, mpg ~ am, here to create a QQ plot for each level of `am`.</code></pre>
-<p><img src="RES_STAT_Lab13_files/figure-html/unnamed-chunk-12-1.png" width="672" /> For Shapiro-Wilk test, we will apply the <code>shaprio.test()</code> function <em>by</em> each group level of <code>am</code>.</p>
+<p><img src="RES_STAT_Lab13_files/figure-html/unnamed-chunk-12-1.png" width="672" />
+For Shapiro-Wilk test, we will apply the <code>shaprio.test()</code>
+function <em>by</em> each group level of <code>am</code>.</p>
 <pre class="r"><code>by(df$mpg, df$am, shapiro.test)</code></pre>
 <pre><code>## df$am: automatic
 ## 
@@ -670,15 +764,20 @@ qqPlot(mpg ~ am, data = df) #we use a model, mpg ~ am, here to create a QQ plot 
 ## data:  dd[x, ]
 ## W = 0.97677, p-value = 0.8987
 ## 
-## --------------------------------------------------------------------------------------------------------------- 
+## ------------------------------------------------------------------------------------------------------------------- 
 ## df$am: manual
 ## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  dd[x, ]
 ## W = 0.9458, p-value = 0.5363</code></pre>
-<p>The tests for both groups were not significant (<em>p</em> &gt; .05), suggesting that <code>mpg</code> in each group were normally distributed.</p>
-<p>The assumption of homogeneity of variance could be check with Levene’s test. The <code>car</code>’s <code>leveneTest(y ~ x, data, center = mean)</code> provide a function to test this assumption.</p>
+<p>The tests for both groups were not significant (<em>p</em> &gt; .05),
+suggesting that <code>mpg</code> in each group were normally
+distributed.</p>
+<p>The assumption of homogeneity of variance could be check with
+Levene’s test. The <code>car</code>’s
+<code>leveneTest(y ~ x, data, center = mean)</code> provide a function
+to test this assumption.</p>
 <pre class="r"><code>leveneTest(mpg ~ am, data = df, center = mean) #An option `center = mean` uses original Levene&#39;s formula.</code></pre>
 <pre><code>## Levene&#39;s Test for Homogeneity of Variance (center = mean)
 ##       Df F value  Pr(&gt;F)  
@@ -686,10 +785,14 @@ qqPlot(mpg ~ am, data = df) #we use a model, mpg ~ am, here to create a QQ plot 
 ##       30                  
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>As expected, the test shows that the variances between the two groups were significantly different (<span class="math inline">\(\sigma^2_1 ≠ \sigma^2_2\)</span>), which violated the homogeneity of variance assumption. The Welch’s procedure is preferred in this case.</p>
+<p>As expected, the test shows that the variances between the two groups
+were significantly different (<span class="math inline">\(\sigma^2_1 ≠
+\sigma^2_2\)</span>), which violated the homogeneity of variance
+assumption. The Welch’s procedure is preferred in this case.</p>
 <div id="jmv" class="section level2">
 <h2><code>jmv</code></h2>
-<p>The jamovi’s R <code>jmv</code> package provides another way to do <em>t</em>-tests in R with <code>ttestIS()</code></p>
+<p>The jamovi’s R <code>jmv</code> package provides another way to do
+<em>t</em>-tests in R with <code>ttestIS()</code></p>
 <pre class="r"><code>library(jmv)
 ttestIS(formula = mpg ~ am, data = df,
         students = TRUE, #Student&#39;s t-test

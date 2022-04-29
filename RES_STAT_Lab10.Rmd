@@ -133,22 +133,6 @@ summary(std.lm)
 cor(mtcars$mpg, mtcars$wt)
 ```
 
-มีคำสั่งเฉพาะ `lm.beta()`
-
-```{r beta, message=FALSE}
-# install.packages("QuantPsyc")
-library(QuantPsyc)
-lm.beta(reg.lm)
-```
-
-*Update Mar 30, 2022*:
-
-Package 'QuantPsyc' was removed from the CRAN repository.\
-Formerly available versions can be obtained from the [archive](https://cran.r-project.org/src/contrib/Archive/QuantPsyc).\
-Archived on 2022-03-07 as check problems were not corrected despite reminders.\
-A summary of the most recent check results can be obtained from the [check results archive](https://cran-archive.r-project.org/web/checks/2022/2022-03-07_check_results_QuantPsyc.html).\
-Please use the canonical form <https://CRAN.R-project.org/package=QuantPsyc> to link to this page.
-
 ## Prediction
 
 เราสามารถใช้สมการนี้ทำนายค่า `mpg` สำหรับค่า `wt` ที่เราต้องการได้ เช่น หากมีรถที่หนัก 1.5 ตัน เราจะทำนายว่ารถคันนี้มีอัตราประหยัดน้ำมัน $$ \begin{aligned}

@@ -15,7 +15,7 @@ library(psych)
 #install.packages("careless")
 library(careless)
 library(carData)
-library(Hmisc)
+library(Hmisc) # if you have a trouble installing Hmisc, try answering "no" when asked whether you want to install sources that need compilation. 
 library(haven) # for SPSS import
 ```
 
@@ -248,23 +248,24 @@ psych::describe(big5_impute[, begin:end]) #notice that all n are equal.
 key ของมาตร Big Five นี้เป็นดังนี้
 
 \$agree
-: "-A1" "A2" "A3" "A4" "A5" 
 
+:   "-A1" "A2" "A3" "A4" "A5"
 
 \$conscientious
-: "C1" "C2" "C3" "-C4" "-C5"
 
+:   "C1" "C2" "C3" "-C4" "-C5"
 
 \$extraversion
-: "-E1" "-E2" "E3" "E4" "E5" 
 
+:   "-E1" "-E2" "E3" "E4" "E5"
 
 \$neuroticism
-: "N1" "N2" "N3" "N4" "N5"
 
+:   "N1" "N2" "N3" "N4" "N5"
 
 \$openness
-: "O1" "-O2" "O3" "O4" "-O5"
+
+:   "O1" "-O2" "O3" "O4" "-O5"
 
 ในที่นี้จะแสดงวิธีกลับและรวมคะแนนของมาตร agreeableness และ conscientiousness
 
