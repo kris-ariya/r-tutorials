@@ -478,9 +478,8 @@ head(depression)</code></pre>
 <pre class="r"><code>boxplot(depression)</code></pre>
 <p><img src="SURVEY_Lab12_files/figure-html/load%20data-1.png" width="672" /></p>
 <p>สังเกตว่าตัวแปรทั้งหมดอยู่ใน scale ใกล้เคียงกัน
-แสดงว่าผู้วิจัยน่าจะมีการแปลงคะแนนให้อยู่ในสเกลประมาณ 1 ตรงกลาง
-เพื่อให้อ่านค่าง่าย อย่างไรก็ดีการ scale
-นี้ไม่ส่งผลกระทบต่อการทดสอบความสัมพันธ์</p>
+แสดงว่าผู้วิจัยน่าจะมีการแปลงคะแนนให้อยู่ในสเกลประมาณ 1 ตรงกลาง เพื่อให้อ่านค่าง่าย
+อย่างไรก็ดีการ scale นี้ไม่ส่งผลกระทบต่อการทดสอบความสัมพันธ์</p>
 </div>
 <div id="base-r" class="section level1">
 <h1>Base R</h1>
@@ -513,9 +512,8 @@ summary(depression.lm, confint = TRUE)</code></pre>
 ## F-statistic: 34.05 on 3 and 78 DF,  p-value: 3.587e-14</code></pre>
 <pre class="r"><code>plot(depression.lm) # assumption checks</code></pre>
 <p><img src="SURVEY_Lab12_files/figure-html/a%20parameter-1.png" width="672" /><img src="SURVEY_Lab12_files/figure-html/a%20parameter-2.png" width="672" /><img src="SURVEY_Lab12_files/figure-html/a%20parameter-3.png" width="672" /><img src="SURVEY_Lab12_files/figure-html/a%20parameter-4.png" width="672" /></p>
-<p>แม้การทดสอบ assumptions จะไม่ได้ดูสมบูรณ์แบบแต่
-ไม่ได้มีการละเมิดอย่างร้ายแรง ด้วยความที่ regression นั้นแกร่ง (robust)
-ต่อการละเมิดอยู่แล้ว
+<p>แม้การทดสอบ assumptions จะไม่ได้ดูสมบูรณ์แบบแต่ ไม่ได้มีการละเมิดอย่างร้ายแรง
+ด้วยความที่ regression นั้นแกร่ง (robust) ต่อการละเมิดอยู่แล้ว
 เราจึงดำเนินการวิเคราะห์ต่อไปโดยไม่ได้ปรับแก้อะไร</p>
 <p>โดยรวมแล้วโมเดลนี้ทำนายภาวะซึมเศร้าได้ค่อนข้างดี สังเกตจากค่า <span
 class="math inline">\(R^2\)</span> ที่สูงถึง .57</p>
@@ -523,8 +521,8 @@ class="math inline">\(R^2\)</span> ที่สูงถึง .57</p>
 <div id="probing-interaction" class="section level2">
 <h2>Probing Interaction</h2>
 <p>เราพบว่าอิทธิพลปฏิสัมพันธ์นั้นมีนัยสำคัญทางสถิติ</p>
-<p>เนื่องจาก W เป็นตัวแปรต่อเนื่อง เราจะกำหนดให้โปรแกรมคำนวณค่า simple
-slope ที่ 3 ตำแหน่งของค่า W</p>
+<p>เนื่องจาก W เป็นตัวแปรต่อเนื่อง เราจะกำหนดให้โปรแกรมคำนวณค่า simple slope ที่ 3
+ตำแหน่งของค่า W</p>
 <pre class="r"><code>simp_minus1 &lt;- mean(depression$simplicity) - sd(depression$simplicity)
 simp_mean &lt;- mean(depression$simplicity)
 simp_plus1 &lt;- mean(depression$simplicity) + sd(depression$simplicity)
@@ -532,8 +530,8 @@ locations &lt;- list(simplicity = c(simp_minus1, simp_mean, simp_plus1))
 locations</code></pre>
 <pre><code>## $simplicity
 ## [1] 0.5000005 1.0000005 1.5000005</code></pre>
-<p>ใช้คำสั่ง <code>emtrends()</code> เพื่อคำนวณค่า simple slopes
-ของตัวแปรทำนาย <code>fatalism</code> ที่ตำแหน่งต่าง ๆ ของตัวแปรกำกับ (W)
+<p>ใช้คำสั่ง <code>emtrends()</code> เพื่อคำนวณค่า simple slopes ของตัวแปรทำนาย
+<code>fatalism</code> ที่ตำแหน่งต่าง ๆ ของตัวแปรกำกับ (W)
 <code>simplicity</code></p>
 <pre class="r"><code>emtrends(depression.lm, ~ simplicity , var = &quot;fatalism&quot;, at = locations)</code></pre>
 <pre><code>##  simplicity fatalism.trend     SE df lower.CL upper.CL
@@ -542,21 +540,20 @@ locations</code></pre>
 ##         1.5          0.220 0.1172 78  -0.0132    0.453
 ## 
 ## Confidence level used: 0.95</code></pre>
-<p>สังเกตว่าค่า slope ระหว่าง fatalism กับ depression ลดลงเมื่อ
-simplicity สูงขึ้น</p>
+<p>สังเกตว่าค่า slope ระหว่าง fatalism กับ depression ลดลงเมื่อ simplicity
+สูงขึ้น</p>
 </div>
 <div id="plotting-interaction" class="section level2">
 <h2>Plotting interaction</h2>
-<p>ใช้คำสั่ง <code>emmip()</code> ในการสร้างกราฟ โดยจะต้องระบุว่าจะให้
-plot ค่าตัวแปร x และ y ที่จุดใดบ้าง</p>
+<p>ใช้คำสั่ง <code>emmip()</code> ในการสร้างกราฟ โดยจะต้องระบุว่าจะให้ plot
+ค่าตัวแปร x และ y ที่จุดใดบ้าง</p>
 <p>เราจะสร้าง list กำหนดค่าแกน x ตั้งชื่อตามตัวแปร <code>fatalism</code>
 โดยกำหนดให้มีค่าตั้งแต่ <code>min()</code> ถึง <code>max()</code> ของ
 <code>fatalism</code> ขยับขึ้นทีละ 0.3 หน่วย</p>
 <p>กำหนดค่าตัวแปรกำกับ 3 ตำแหน่ง ที่ -1 SD, mean, +1SD ของตัวแปร
 <code>simplicity</code></p>
-<p>ในคำสั่ง <code>emmip()</code>
-กำหนดว่าตัวแปรใดเป็นตัวแปรทำนายหรือตัวแปรกำกับ ในรูปแบบ
-<code>W ~ X</code></p>
+<p>ในคำสั่ง <code>emmip()</code> กำหนดว่าตัวแปรใดเป็นตัวแปรทำนายหรือตัวแปรกำกับ
+ในรูปแบบ <code>W ~ X</code></p>
 <p>คำสั่ง <code>at =</code> ใช้บอกว่าจะให้สร้างกราฟที่ค่า x y เท่าใด และ
 <code>CIs =</code> กำหนดว่าจะสร้าง error bars หรือไม่</p>
 <pre class="r"><code>xy_value &lt;- list(fatalism = c(seq(min(depression$fatalism), max(depression$fatalism),
@@ -568,8 +565,7 @@ emmip(depression.lm, simplicity ~ fatalism, at = xy_value, CIs = TRUE)</code></p
 </div>
 <div id="rockchalk-package" class="section level1">
 <h1>rockchalk Package</h1>
-<p>แพ็คเกจ rockchalk มีคำสั่งที่ช่วยให้เราสร้าง simple slope plot
-ได้อย่างสะดวก
+<p>แพ็คเกจ rockchalk มีคำสั่งที่ช่วยให้เราสร้าง simple slope plot ได้อย่างสะดวก
 <code>plotSlopes(model, modx = moderator, plotx = predictorX, modxVals = Focal values of plot)</code></p>
 <p>คำสั่ง <code>testSlopes(plotSlopesObject)</code> จะคำนวณ t-test ของ
 simple slopes แต่ละเส้นตามที่กำหนดไว้ใน <code>plotSlopes()</code></p>
@@ -603,8 +599,7 @@ class="uri">https://www.processmacro.org/download.html</a></p>
 <li>Download ไฟล์ และ unzip</li>
 <li>เปิดไฟล์ process.R</li>
 <li>Run All แล้วรอสักพัก</li>
-<li>จะมี Functions ที่ชื่อว่า <code>process</code> ขึ้นมาอยู่ใน
-environment</li>
+<li>จะมี Functions ที่ชื่อว่า <code>process</code> ขึ้นมาอยู่ใน environment</li>
 <li>ต้อง Run script นี้ใหม่ทุกครั้งหลังจากปิด R</li>
 </ol>
 <p>หรือ save process.R ไว้ใน working directory แล้วใช้คำสั่ง
@@ -622,8 +617,8 @@ environment</li>
 ## Copyright 2022 by Andrew F. Hayes ALL RIGHTS RESERVED
 ## Workshop schedule at http://haskayne.ucalgary.ca/CCRAM
 ## </code></pre>
-<p>เราจะกำหนด <code>w =</code> ชื่อตัวแปรกำกับ และใช้
-<code>model = 1</code> ซึ่งเป็นโมเดลตัวแปรกำกับอย่างง่าย</p>
+<p>เราจะกำหนด <code>w =</code> ชื่อตัวแปรกำกับ และใช้ <code>model = 1</code>
+ซึ่งเป็นโมเดลตัวแปรกำกับอย่างง่าย</p>
 <pre class="r"><code>process(data = depression, y = &quot;depression&quot;, x = &quot;fatalism&quot;, w = &quot;simplicity&quot;, model = 1)</code></pre>
 <pre><code>## 
 ## ********************** PROCESS for R Version 4.1 ********************** 
@@ -677,17 +672,15 @@ environment</li>
 ## 
 ## W values in conditional tables are the 16th, 50th, and 84th percentiles.</code></pre>
 <p>สังเกตตำแหน่งในการคำนวณ simple slope (เรียกว่า conditional effect ใน
-output) จะอยู่ที่ 16 th, 50th, และ 84th percentile
-ซึ่งเป็นตำแหน่งที่ใกล้เคียงกับ -1SD, mean, +1SD
-แต่ก็ยังไม่ใช่ค่าเดียวกัน ผลจึงอาจแตกต่างจากวิธีด้านบน</p>
+output) จะอยู่ที่ 16 th, 50th, และ 84th percentile ซึ่งเป็นตำแหน่งที่ใกล้เคียงกับ
+-1SD, mean, +1SD แต่ก็ยังไม่ใช่ค่าเดียวกัน ผลจึงอาจแตกต่างจากวิธีด้านบน</p>
 </div>
 <div id="mean-centering" class="section level1">
 <h1>Mean Centering</h1>
 <p>การแปลงค่าศูนย์กลางจะช่วยลด multicollinearity
-ระหว่างตัวแปรทำนายกับพจน์ปฏิสัมพันธ์ (interaction term)
-ซึ่งจะทำให้ค่าจุดตัดแกน Y และสัมประสิทธิ์ของตัวแปรทำนาย X เปลี่ยนแปลงไป
-แต่ไม่ส่งผลต่อค่าสัมประสิทธิ์ของพจน์ปฏิสัมพันธ์ (coefficient of an
-interaction term; <code>X:W</code>)</p>
+ระหว่างตัวแปรทำนายกับพจน์ปฏิสัมพันธ์ (interaction term) ซึ่งจะทำให้ค่าจุดตัดแกน Y
+และสัมประสิทธิ์ของตัวแปรทำนาย X เปลี่ยนแปลงไป แต่ไม่ส่งผลต่อค่าสัมประสิทธิ์ของพจน์ปฏิสัมพันธ์
+(coefficient of an interaction term; <code>X:W</code>)</p>
 <p>การตัดสินใจแปลงค่าศูนย์กลางจึงขึ้นอยู่กับว่าคำถามในการวิเคราะห์สนใจตอบคำถามใดเป็นหลัก
 หากเป็นปฏิสัมพันธ์ก็อาจไม่จำเป็นต้องทำ mean centering ก็ได้</p>
 <pre class="r"><code># Mean centering
@@ -696,8 +689,8 @@ depression$cen.simplicity &lt;- depression$simplicity - mean(depression$simplici
 # Regression with centered variables
 dep.cen.lm &lt;- lm(depression ~  cen.fatalism + cen.simplicity + cen.fatalism:cen.simplicity, data = depression)</code></pre>
 <p>สังเกตว่าค่าสัมประสิทธิ์ของ <code>cen.fatalism</code> และ
-<code>cen.simplicity</code> จะแตกต่างไปจากโมเดลที่ไม่ได้ปรับค่าศูนย์กลาง
-แต่ <code>cen.fatialism:cen.simplicity</code> นั้นไม่แตกต่างจาก
+<code>cen.simplicity</code> จะแตกต่างไปจากโมเดลที่ไม่ได้ปรับค่าศูนย์กลาง แต่
+<code>cen.fatialism:cen.simplicity</code> นั้นไม่แตกต่างจาก
 <code>fatalism:simplicity</code> ในโมเดลก่อนหน้านี้</p>
 <pre class="r"><code>summary(dep.cen.lm)</code></pre>
 <pre><code>## 
@@ -738,8 +731,7 @@ cen.tps$hypotests</code></pre>
 ## (m-sd)             -0.5 0.6239285 0.11881347 5.251328 1.271671e-06
 ## (m)                 0.0 0.4219885 0.09607602 4.392235 3.490122e-05
 ## (m+sd)              0.5 0.2200485 0.11715431 1.878279 6.407987e-02</code></pre>
-<p>สังเกตว่า การปรับค่าศูนย์กลางไม่ส่งผลต่อการวิเคราะห์ simple
-slopes</p>
+<p>สังเกตว่า การปรับค่าศูนย์กลางไม่ส่งผลต่อการวิเคราะห์ simple slopes</p>
 </div>
 
 &nbsp;

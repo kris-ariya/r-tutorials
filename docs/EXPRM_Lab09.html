@@ -450,22 +450,20 @@ div.tocify {
 
 <p>การสร้างภาพข้อมูลหรือ Data Visualization
 ช่วยให้เราเข้าใจชุดข้อมูลที่มีความซับซ้อนได้ง่ายขึ้นและทำให้เราตัดสินใจในการจัดการกับข้อมูลเร็วขึ้น
-ซึ่ง Data Visualization
-สามารถทำได้ทั้งก่อนและหลังการวิเคราะห์เชิงสถิติ</p>
-<p>การสร้างภาพข้อมูลใน <code>R</code> สามารถทำได้จากหลากหลาย package
-ซึ่งใน tutorial นี้เราจะใช้ package <code>ggplot2</code> ซึ่งเป็น
-package ที่ช่วยให้เราสามารถสร้างกราฟิคได้หลากหลาย
-และสามารถปรับแต่งรูปแบบต่าง ๆ ได้ในแบบที่ต้องการ</p>
+ซึ่ง Data Visualization สามารถทำได้ทั้งก่อนและหลังการวิเคราะห์เชิงสถิติ</p>
+<p>การสร้างภาพข้อมูลใน <code>R</code> สามารถทำได้จากหลากหลาย package ซึ่งใน
+tutorial นี้เราจะใช้ package <code>ggplot2</code> ซึ่งเป็น package
+ที่ช่วยให้เราสามารถสร้างกราฟิคได้หลากหลาย และสามารถปรับแต่งรูปแบบต่าง ๆ
+ได้ในแบบที่ต้องการ</p>
 <pre class="r"><code>#load packages
 library(ggplot2)
 library(psych)
 library(Rmisc)</code></pre>
 <div id="mtcars-data" class="section level2">
 <h2>Mtcars data</h2>
-<p>ใน tutorial นี้เราจะใช้ข้อมูลที่มีอยู่แล้วใน package
-<code>ggplot2</code> ชื่อว่า <code>mtcars</code> ในการสร้างกราฟฟิค<br />
-หลังจาก import <code>mtcars</code> ลงมาแล้ว
-เราสามารถเซ็ตค่าตัวแปรได้ตามนี้</p>
+<p>ใน tutorial นี้เราจะใช้ข้อมูลที่มีอยู่แล้วใน package <code>ggplot2</code> ชื่อว่า
+<code>mtcars</code> ในการสร้างกราฟฟิค<br />
+หลังจาก import <code>mtcars</code> ลงมาแล้ว เราสามารถเซ็ตค่าตัวแปรได้ตามนี้</p>
 <pre class="r"><code>data(&quot;mtcars&quot;)
 
 mtcars$vs &lt;- factor(mtcars$vs, labels = c(&quot;V&quot;, &quot;S&quot;))
@@ -496,8 +494,7 @@ psych::describe(mtcars)</code></pre>
 <code>wt</code> - น้ำหนัก<br />
 <code>qsec</code> - ความเร่ง<br />
 <code>vs</code> - รูปร่างของเครื่องยนต์ ‘V’ หรือ ‘S’<br />
-<code>am</code> - ระบบเกียร์อัตโนมัติ (auto) หรือ เกียร์กระปุก
-(manual)<br />
+<code>am</code> - ระบบเกียร์อัตโนมัติ (auto) หรือ เกียร์กระปุก (manual)<br />
 <code>gear</code> - จำนวนเกียร์<br />
 <code>carb</code> - จำนวนตัวเผาไหม้เครื่องยนต์</p>
 </div>
@@ -511,19 +508,15 @@ psych::describe(mtcars)</code></pre>
 <li><p><code>data</code> - การเรียกข้อมูลที่ใช้งาน</p></li>
 <li><p><code>aesthetic mappings</code> -
 การเลือกตัวแปรที่จะปรากฎอยู่ในกราฟ</p></li>
-<li><p><code>geometric objects</code> -
-การเลือกวิธีการสร้างกราฟฟิค</p></li>
-<li><p><code>Customizing</code> เช่น การใส่ชื่อ เลือกธีม
-หรือลงสีให้กราฟ</p></li>
+<li><p><code>geometric objects</code> - การเลือกวิธีการสร้างกราฟฟิค</p></li>
+<li><p><code>Customizing</code> เช่น การใส่ชื่อ เลือกธีม หรือลงสีให้กราฟ</p></li>
 </ul>
-<p>นอกจากนี้ยังมีคำสั่งอื่น ๆ ที่มีความซับซ้อนมากขึ้น
-หากเราเริ่มคุ้นเคยกับคำสั่งพื้นฐานแล้ว
+<p>นอกจากนี้ยังมีคำสั่งอื่น ๆ ที่มีความซับซ้อนมากขึ้น หากเราเริ่มคุ้นเคยกับคำสั่งพื้นฐานแล้ว
 เราสามารถศึกษาเพิ่มเติมให้กราฟฟิคมีความสวยงามและตรงตามความต้องการของเรามากขึ้นได้</p>
 </div>
 <div id="การสรางกราฟ" class="section level2">
 <h2>การสร้างกราฟ</h2>
-<p>ก่อนที่เราจะสร้างกราฟ
-เราควรสังเกตตัวแปรที่เราต้องการนำมาสร้างว่าเป็นตัวแปรลักษณะใด
+<p>ก่อนที่เราจะสร้างกราฟ เราควรสังเกตตัวแปรที่เราต้องการนำมาสร้างว่าเป็นตัวแปรลักษณะใด
 โดยสามารถใช้คำสั่ง <code>str()</code></p>
 <pre class="r"><code>str(mtcars)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    32 obs. of  11 variables:
@@ -538,22 +531,18 @@ psych::describe(mtcars)</code></pre>
 ##  $ am  : Factor w/ 2 levels &quot;automatic&quot;,&quot;manual&quot;: 2 2 2 1 1 1 1 1 1 1 ...
 ##  $ gear: Factor w/ 3 levels &quot;3&quot;,&quot;4&quot;,&quot;5&quot;: 2 2 2 1 1 1 1 2 2 2 ...
 ##  $ carb: Factor w/ 6 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 4 4 1 1 2 1 4 2 2 4 ...</code></pre>
-<p>หลักการในการสร้างกราฟฟิคคือ
-การสังเกตจำนวนตัวแปรและลักษณะของตัวแปรในแกน x และ y
-โดยลักษณะของตัวแปรนี้จะเป็นการคัดรูปแบบกราฟของเรา<br />
-ใน tutorial นี้เราจะเรียนรู้สร้าง boxplot, bar graph และ line graph
-ค่ะ</p>
+<p>หลักการในการสร้างกราฟฟิคคือ การสังเกตจำนวนตัวแปรและลักษณะของตัวแปรในแกน x และ
+y โดยลักษณะของตัวแปรนี้จะเป็นการคัดรูปแบบกราฟของเรา<br />
+ใน tutorial นี้เราจะเรียนรู้สร้าง boxplot, bar graph และ line graph ค่ะ</p>
 <div id="การสราง-boxplot" class="section level3">
 <h3>การสร้าง boxplot</h3>
-<p>ในการสร้าง boxplot (หรือกราฟลักษณะอื่น ๆ)
-เราจะเริ่มกันที่การสร้างคำสั่งพื้นฐาน คือ <code>data</code> และ
-<code>aesthetic mappings</code><br />
+<p>ในการสร้าง boxplot (หรือกราฟลักษณะอื่น ๆ) เราจะเริ่มกันที่การสร้างคำสั่งพื้นฐาน คือ
+<code>data</code> และ <code>aesthetic mappings</code><br />
 โดยคำสั่งทั่วไปคือ
 <code>ggplot(data = ชื่อไฟล์, aes(x = ตัวแปรแกน x, y = ตัวแปรแกน y)</code></p>
 <p>คำสั่ง <code>aes()</code> สามารถเซ็ตค่าอื่น ๆ ได้ เช่น</p>
 <ul>
-<li><p>ตำแหน่งของตัวแปร (<code>x =</code> และ <code>y =</code>
-)</p></li>
+<li><p>ตำแหน่งของตัวแปร (<code>x =</code> และ <code>y =</code> )</p></li>
 <li><p>สี: โดย <code>color=</code> เป็นสีเส้นขอบ และ <code>fill=</code>
 เป็นสีด้านใน</p></li>
 <li><p><code>shape =</code> รูปร่างของจุดข้อมูล และ
@@ -567,20 +556,19 @@ psych::describe(mtcars)</code></pre>
 ดังนั้นเราจึงจำเป็นต้องเขียนคำสั่งว่าเราต้องการให้กราฟออกมาเป็นรูปแบบใด
 (สามารถเข้าไปดูรูปแบบทั้งหมดได้ที่
 <code>help.search("geom_", package = "ggplot2")</code></p>
-<p>สำหรับการสร้าง boxplot เราจะใช้คำสั่ง <code>geom_boxplot()</code>
-เพื่อเซ็ตค่า <code>geometric objects</code></p>
+<p>สำหรับการสร้าง boxplot เราจะใช้คำสั่ง <code>geom_boxplot()</code> เพื่อเซ็ตค่า
+<code>geometric objects</code></p>
 <pre class="r"><code>ggplot(data = mtcars, aes(x = am, y = mpg)) +
   geom_boxplot()</code></pre>
 <p><img src="EXPRM_Lab09_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>จะเห็นว่ากราฟ boxplot ที่สร้างขึ้นมามีเพียงตัวแปร x และ y
-หากเราต้องการจัดกลุ่มตัวแปร เราสามารถใช้คำสั่ง
-<code>fill = ตัวแปรจัดกลุ่ม</code> ใน <code>aesthetic mapping</code>
-เพื่อให้มีการจัดกลุ่มของตัวแปรในกราฟ</p>
+หากเราต้องการจัดกลุ่มตัวแปร เราสามารถใช้คำสั่ง <code>fill = ตัวแปรจัดกลุ่ม</code> ใน
+<code>aesthetic mapping</code> เพื่อให้มีการจัดกลุ่มของตัวแปรในกราฟ</p>
 <pre class="r"><code>ggplot(data = mtcars, aes(x = am, y = mpg, fill = vs)) +
   geom_boxplot()</code></pre>
 <p><img src="EXPRM_Lab09_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<p>หากเราต้องการให้กราฟมีสีสันและชื่อแกนตามที่เราต้องการ
-เราสามารถเขียนคำสั่งต่อจาก คำสั่ง geometric ได้</p>
+<p>หากเราต้องการให้กราฟมีสีสันและชื่อแกนตามที่เราต้องการ เราสามารถเขียนคำสั่งต่อจาก
+คำสั่ง geometric ได้</p>
 <p>ตัวอย่างคำสั่งอื่น ๆ ในการปรับแต่งกราฟ</p>
 <ul>
 <li><p><strong>เพิ่มลักษณะกราฟฟิค:</strong></p>
@@ -599,8 +587,7 @@ psych::describe(mtcars)</code></pre>
 <li><p><strong>เพิ่มชื่อ:</strong></p>
 <ul>
 <li><p><strong>แกน x และ y</strong>: ใช้คำสั่ง
-<code>xlab = "ชื่อแกน x"</code> และ
-<code>ylab = "ชื่อแกน y"</code></p></li>
+<code>xlab = "ชื่อแกน x"</code> และ <code>ylab = "ชื่อแกน y"</code></p></li>
 <li><p><strong>ชื่อหัวกราฟ:</strong> ใช้คำสั่ง
 <code>ggtitle("ชื่อหัวกราฟ")</code></p></li>
 </ul></li>
@@ -646,28 +633,26 @@ APA</p></li>
 </div>
 <div id="การสราง-bar-graph" class="section level3">
 <h3>การสร้าง Bar Graph</h3>
-<p>การสร้าง Bar Graph เหมาะสมกับตัวแปรต้นที่มีลักษณะเป็นกลุ่ม (discrete
-variable) ดังนั้นโครงสร้างของชุดคำสั่งจะคล้ายคลึงกับการสร้าง boxplot</p>
+<p>การสร้าง Bar Graph เหมาะสมกับตัวแปรต้นที่มีลักษณะเป็นกลุ่ม (discrete variable)
+ดังนั้นโครงสร้างของชุดคำสั่งจะคล้ายคลึงกับการสร้าง boxplot</p>
 <p>เราสามารถสร้าง bar graph ได้ 2 วิธีคือ</p>
 <ul>
-<li><p><code>geom_bar()</code>
-จะมีคำสั่งพื้นฐานโดยมีความสูงของกราฟจากสัดส่วนของ n ในข้อมูล</p></li>
+<li><p><code>geom_bar()</code> จะมีคำสั่งพื้นฐานโดยมีความสูงของกราฟจากสัดส่วนของ
+n ในข้อมูล</p></li>
 <li><p><code>geom_col()</code>
 จะมีคำสั่งพื้นฐานโดยมีความสูงของกราฟเป็นค่าของข้อมูลนั้น ๆ
-คำสั่งนี้จะเหมาะสมกับข้อมูลที่ผ่านการหาค่าสถิติเชิงพรรณามาแล้ว (เช่นค่า
-<em>n</em>, <em>mean</em>, <em>sd</em>, <em>se</em>)
-และนำไปใช้งานได้สะดวกกว่าเมื่อต้องการสร้าง
-<code>error_bar</code></p></li>
+คำสั่งนี้จะเหมาะสมกับข้อมูลที่ผ่านการหาค่าสถิติเชิงพรรณามาแล้ว (เช่นค่า <em>n</em>,
+<em>mean</em>, <em>sd</em>, <em>se</em>)
+และนำไปใช้งานได้สะดวกกว่าเมื่อต้องการสร้าง <code>error_bar</code></p></li>
 </ul>
 <p>ดังนั้น หากต้องการสร้าง bar graph อย่างง่าย เราสามารถใช้คำสั่ง
 <code>geom_bar()</code> ได้ โดยเพิ่มคำสั่ง <code>stat = "summary"</code>
 เมื่อต้องการค่าเฉลี่ย (mean) หรือ <code>stat = "identity"</code>
 เมื่อต้องการค่าผลรวม (sum)</p>
-<p>นอกจากนี้แล้ว การสร้าง bar graph ยังสามารถเลือกการวางตัวของกราฟได้
-โดยใช้คำสั่ง <code>position =</code>โดยค่าพื้นฐานของ
-<code>geom_bar()</code> คือ <code>position = "stack"</code>
-โดยจะเป็นการต่อกันของข้อมูลในแต่ละกลุ่ม ถ้าต้องการให้กราฟอยู่แยกกัน
-เราจะใช้คำสั่ง <code>position = "dodge"</code> หรือ
+<p>นอกจากนี้แล้ว การสร้าง bar graph ยังสามารถเลือกการวางตัวของกราฟได้ โดยใช้คำสั่ง
+<code>position =</code>โดยค่าพื้นฐานของ <code>geom_bar()</code> คือ
+<code>position = "stack"</code> โดยจะเป็นการต่อกันของข้อมูลในแต่ละกลุ่ม
+ถ้าต้องการให้กราฟอยู่แยกกัน เราจะใช้คำสั่ง <code>position = "dodge"</code> หรือ
 <code>position = position_dodge(ค่าความห่าง)</code></p>
 <pre class="r"><code># x axis is am
 #  stack
@@ -699,17 +684,17 @@ describeBy(mpg ~ am * vs, data = mtcars)</code></pre>
 ## vs: V
 ##     vars  n  mean   sd median trimmed mad  min  max range  skew kurtosis  se
 ## mpg    1 12 15.05 2.77   15.2    15.1 2.3 10.4 19.2   8.8 -0.28    -0.96 0.8
-## ------------------------------------------------------------------------------------------------------------------- 
+## -------------------------------------------------------------------------------- 
 ## am: manual
 ## vs: V
 ##     vars n  mean   sd median trimmed  mad min max range skew kurtosis   se
 ## mpg    1 6 19.75 4.01  20.35   19.75 3.85  15  26    11 0.21    -1.53 1.64
-## ------------------------------------------------------------------------------------------------------------------- 
+## -------------------------------------------------------------------------------- 
 ## am: automatic
 ## vs: S
 ##     vars n  mean   sd median trimmed  mad  min  max range skew kurtosis   se
 ## mpg    1 7 20.74 2.47   21.4   20.74 3.26 17.8 24.4   6.6  0.1    -1.75 0.93
-## ------------------------------------------------------------------------------------------------------------------- 
+## -------------------------------------------------------------------------------- 
 ## am: manual
 ## vs: S
 ##     vars n  mean   sd median trimmed mad  min  max range  skew kurtosis  se
@@ -748,8 +733,7 @@ sum</code></pre>
 error bar ได้โดยการเปลี่ยน <code>ci</code> เป็น <code>sd</code> หรือ
 <code>se</code>)</p>
 <p>หากกราฟที่ปรากฎออกมามีค่าแกน x และ y ที่ไม่สมดุล เราสามารถใช้คำสั่ง
-<code>xlim()</code> หรือ <code>ylim()</code>
-เพื่อปรับแก้สเกลให้เหมาะสมได้</p>
+<code>xlim()</code> หรือ <code>ylim()</code> เพื่อปรับแก้สเกลให้เหมาะสมได้</p>
 <pre class="r"><code>#only plot
 line.plot &lt;- ggplot(sum, aes(x = am, y = mpg, color = vs)) +
              geom_point(position = position_dodge(.2)) +
@@ -772,10 +756,9 @@ line.error &lt;- ggplot(sum, aes(x = am, y = mpg, color = vs)) +
              scale_color_brewer(palette=&quot;Accent&quot;)</code></pre>
 <p><img src="EXPRM_Lab09_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <p>นอกจากนี้ การสร้าง error bar ด้วยคำสั่ง <code>geom_errorbar()</code>
-ยังสามารถนำไปประยุกต์กับ bar graph ได้เช่นกัน แต่ในกรณีรการสร้าง bar
-graph จากข้อมูลที่หาค่าสถิติจากคำสั่ง <code>summarySE()</code>
-มาแล้วนั้น สังเกตว่าจะมีค่า mean เฉลี่ยแต่ละกลุ่ม
-(และค่าความคลาดเคลื่อนอื่น ๆ) เท่านั้น ดังนั้นในกรณีนี้เราจะใช้คำสั่ง
+ยังสามารถนำไปประยุกต์กับ bar graph ได้เช่นกัน แต่ในกรณีรการสร้าง bar graph
+จากข้อมูลที่หาค่าสถิติจากคำสั่ง <code>summarySE()</code> มาแล้วนั้น สังเกตว่าจะมีค่า
+mean เฉลี่ยแต่ละกลุ่ม (และค่าความคลาดเคลื่อนอื่น ๆ) เท่านั้น ดังนั้นในกรณีนี้เราจะใช้คำสั่ง
 <code>geom_col()</code> ในการสร้าง bar graph</p>
 <pre class="r"><code>bar.error &lt;- ggplot(sum, aes(x = am, y = mpg, color = vs)) + 
              geom_col(aes(fill = vs), alpha = .5, position = position_dodge(.9)) +
@@ -792,9 +775,8 @@ bar.error</code></pre>
 <h3>การสร้างกราฟรูปแบบอื่น ๆ</h3>
 <p>นอกจาก boxplot, Bar Graph และ Line Graph แล้ว package
 <code>Ggplot2</code> ยังช่วยเราในการสร้างกราฟอื่น ๆ ได้ เช่น
-กราฟที่มีตัวแปรเป็นตัวแปรต่อเนื่อง (continuous variable)
-เราสามารถใช้คำสั่ง <code>geom_point()</code> ในการสร้างจุดข้อมูล และ
-<code>geom_smooth()</code>
+กราฟที่มีตัวแปรเป็นตัวแปรต่อเนื่อง (continuous variable) เราสามารถใช้คำสั่ง
+<code>geom_point()</code> ในการสร้างจุดข้อมูล และ <code>geom_smooth()</code>
 ในการหาเส้นตรงที่เหมาะสมระหว่างข้อมูลทั้งสองตัวแปร โดยเพิ่มคำสั่ง
 <code>geom_smooth(method = lm)</code></p>
 <pre class="r"><code>con.point &lt;- ggplot(mtcars, aes(x = hp, y = mpg, color = hp)) + 
@@ -804,9 +786,8 @@ bar.error</code></pre>
 
 con.point</code></pre>
 <p><img src="EXPRM_Lab09_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
-<p>เรายังสามารถสร้างข้อมูลเชิงเส้นโดยการใช้คำสั่ง
-<code>geom_line()</code> และ <code>geom_jitter()</code>
-ในการสร้างกราฟเส้น</p>
+<p>เรายังสามารถสร้างข้อมูลเชิงเส้นโดยการใช้คำสั่ง <code>geom_line()</code> และ
+<code>geom_jitter()</code> ในการสร้างกราฟเส้น</p>
 <pre class="r"><code>con.line &lt;- ggplot(mtcars, aes(x = hp, y = mpg, group = vs)) + 
              geom_line(color = &quot;blue3&quot;, position = position_dodge(.9)) +
              geom_jitter(aes(color = vs), alpha = 0.6, size = 3) +
@@ -819,123 +800,176 @@ con.line</code></pre>
 <h3>การปรับแต่งสีในกราฟ</h3>
 <p>เราสามารถเลือกปรับแต่งกราฟได้โดยการใช้คำสั่ง <code>theme_</code>
 และการใส่สีของกราฟ<br />
-ทั้ง <code>R</code> และ <code>Ggplot2</code>
-มีระบบสีที่ช่วยให้เราเลือกสี 2 วิธี คือ 1.
-เราสามารถใส่ชื่อสีที่เราต้องการได้โดยเรียกดูชื่อสีในคำสั่ง
-<code>colors()</code> ซึ่งเป็นคำสั่งจาก Base R หรือ 2. คำสั่ง
-<code>display.brewer.all()</code>จาก package
-<code>RColorBrewer</code></p>
+ทั้ง <code>R</code> และ <code>Ggplot2</code> มีระบบสีที่ช่วยให้เราเลือกสี 2 วิธี คือ
+1. เราสามารถใส่ชื่อสีที่เราต้องการได้โดยเรียกดูชื่อสีในคำสั่ง <code>colors()</code>
+ซึ่งเป็นคำสั่งจาก Base R หรือ 2. คำสั่ง <code>display.brewer.all()</code>จาก
+package <code>RColorBrewer</code></p>
 <pre class="r"><code>colors()</code></pre>
-<pre><code>##   [1] &quot;white&quot;                &quot;aliceblue&quot;            &quot;antiquewhite&quot;         &quot;antiquewhite1&quot;        &quot;antiquewhite2&quot;        &quot;antiquewhite3&quot;       
-##   [7] &quot;antiquewhite4&quot;        &quot;aquamarine&quot;           &quot;aquamarine1&quot;          &quot;aquamarine2&quot;          &quot;aquamarine3&quot;          &quot;aquamarine4&quot;         
-##  [13] &quot;azure&quot;                &quot;azure1&quot;               &quot;azure2&quot;               &quot;azure3&quot;               &quot;azure4&quot;               &quot;beige&quot;               
-##  [19] &quot;bisque&quot;               &quot;bisque1&quot;              &quot;bisque2&quot;              &quot;bisque3&quot;              &quot;bisque4&quot;              &quot;black&quot;               
-##  [25] &quot;blanchedalmond&quot;       &quot;blue&quot;                 &quot;blue1&quot;                &quot;blue2&quot;                &quot;blue3&quot;                &quot;blue4&quot;               
-##  [31] &quot;blueviolet&quot;           &quot;brown&quot;                &quot;brown1&quot;               &quot;brown2&quot;               &quot;brown3&quot;               &quot;brown4&quot;              
-##  [37] &quot;burlywood&quot;            &quot;burlywood1&quot;           &quot;burlywood2&quot;           &quot;burlywood3&quot;           &quot;burlywood4&quot;           &quot;cadetblue&quot;           
-##  [43] &quot;cadetblue1&quot;           &quot;cadetblue2&quot;           &quot;cadetblue3&quot;           &quot;cadetblue4&quot;           &quot;chartreuse&quot;           &quot;chartreuse1&quot;         
-##  [49] &quot;chartreuse2&quot;          &quot;chartreuse3&quot;          &quot;chartreuse4&quot;          &quot;chocolate&quot;            &quot;chocolate1&quot;           &quot;chocolate2&quot;          
-##  [55] &quot;chocolate3&quot;           &quot;chocolate4&quot;           &quot;coral&quot;                &quot;coral1&quot;               &quot;coral2&quot;               &quot;coral3&quot;              
-##  [61] &quot;coral4&quot;               &quot;cornflowerblue&quot;       &quot;cornsilk&quot;             &quot;cornsilk1&quot;            &quot;cornsilk2&quot;            &quot;cornsilk3&quot;           
-##  [67] &quot;cornsilk4&quot;            &quot;cyan&quot;                 &quot;cyan1&quot;                &quot;cyan2&quot;                &quot;cyan3&quot;                &quot;cyan4&quot;               
-##  [73] &quot;darkblue&quot;             &quot;darkcyan&quot;             &quot;darkgoldenrod&quot;        &quot;darkgoldenrod1&quot;       &quot;darkgoldenrod2&quot;       &quot;darkgoldenrod3&quot;      
-##  [79] &quot;darkgoldenrod4&quot;       &quot;darkgray&quot;             &quot;darkgreen&quot;            &quot;darkgrey&quot;             &quot;darkkhaki&quot;            &quot;darkmagenta&quot;         
-##  [85] &quot;darkolivegreen&quot;       &quot;darkolivegreen1&quot;      &quot;darkolivegreen2&quot;      &quot;darkolivegreen3&quot;      &quot;darkolivegreen4&quot;      &quot;darkorange&quot;          
-##  [91] &quot;darkorange1&quot;          &quot;darkorange2&quot;          &quot;darkorange3&quot;          &quot;darkorange4&quot;          &quot;darkorchid&quot;           &quot;darkorchid1&quot;         
-##  [97] &quot;darkorchid2&quot;          &quot;darkorchid3&quot;          &quot;darkorchid4&quot;          &quot;darkred&quot;              &quot;darksalmon&quot;           &quot;darkseagreen&quot;        
-## [103] &quot;darkseagreen1&quot;        &quot;darkseagreen2&quot;        &quot;darkseagreen3&quot;        &quot;darkseagreen4&quot;        &quot;darkslateblue&quot;        &quot;darkslategray&quot;       
-## [109] &quot;darkslategray1&quot;       &quot;darkslategray2&quot;       &quot;darkslategray3&quot;       &quot;darkslategray4&quot;       &quot;darkslategrey&quot;        &quot;darkturquoise&quot;       
-## [115] &quot;darkviolet&quot;           &quot;deeppink&quot;             &quot;deeppink1&quot;            &quot;deeppink2&quot;            &quot;deeppink3&quot;            &quot;deeppink4&quot;           
-## [121] &quot;deepskyblue&quot;          &quot;deepskyblue1&quot;         &quot;deepskyblue2&quot;         &quot;deepskyblue3&quot;         &quot;deepskyblue4&quot;         &quot;dimgray&quot;             
-## [127] &quot;dimgrey&quot;              &quot;dodgerblue&quot;           &quot;dodgerblue1&quot;          &quot;dodgerblue2&quot;          &quot;dodgerblue3&quot;          &quot;dodgerblue4&quot;         
-## [133] &quot;firebrick&quot;            &quot;firebrick1&quot;           &quot;firebrick2&quot;           &quot;firebrick3&quot;           &quot;firebrick4&quot;           &quot;floralwhite&quot;         
-## [139] &quot;forestgreen&quot;          &quot;gainsboro&quot;            &quot;ghostwhite&quot;           &quot;gold&quot;                 &quot;gold1&quot;                &quot;gold2&quot;               
-## [145] &quot;gold3&quot;                &quot;gold4&quot;                &quot;goldenrod&quot;            &quot;goldenrod1&quot;           &quot;goldenrod2&quot;           &quot;goldenrod3&quot;          
-## [151] &quot;goldenrod4&quot;           &quot;gray&quot;                 &quot;gray0&quot;                &quot;gray1&quot;                &quot;gray2&quot;                &quot;gray3&quot;               
-## [157] &quot;gray4&quot;                &quot;gray5&quot;                &quot;gray6&quot;                &quot;gray7&quot;                &quot;gray8&quot;                &quot;gray9&quot;               
-## [163] &quot;gray10&quot;               &quot;gray11&quot;               &quot;gray12&quot;               &quot;gray13&quot;               &quot;gray14&quot;               &quot;gray15&quot;              
-## [169] &quot;gray16&quot;               &quot;gray17&quot;               &quot;gray18&quot;               &quot;gray19&quot;               &quot;gray20&quot;               &quot;gray21&quot;              
-## [175] &quot;gray22&quot;               &quot;gray23&quot;               &quot;gray24&quot;               &quot;gray25&quot;               &quot;gray26&quot;               &quot;gray27&quot;              
-## [181] &quot;gray28&quot;               &quot;gray29&quot;               &quot;gray30&quot;               &quot;gray31&quot;               &quot;gray32&quot;               &quot;gray33&quot;              
-## [187] &quot;gray34&quot;               &quot;gray35&quot;               &quot;gray36&quot;               &quot;gray37&quot;               &quot;gray38&quot;               &quot;gray39&quot;              
-## [193] &quot;gray40&quot;               &quot;gray41&quot;               &quot;gray42&quot;               &quot;gray43&quot;               &quot;gray44&quot;               &quot;gray45&quot;              
-## [199] &quot;gray46&quot;               &quot;gray47&quot;               &quot;gray48&quot;               &quot;gray49&quot;               &quot;gray50&quot;               &quot;gray51&quot;              
-## [205] &quot;gray52&quot;               &quot;gray53&quot;               &quot;gray54&quot;               &quot;gray55&quot;               &quot;gray56&quot;               &quot;gray57&quot;              
-## [211] &quot;gray58&quot;               &quot;gray59&quot;               &quot;gray60&quot;               &quot;gray61&quot;               &quot;gray62&quot;               &quot;gray63&quot;              
-## [217] &quot;gray64&quot;               &quot;gray65&quot;               &quot;gray66&quot;               &quot;gray67&quot;               &quot;gray68&quot;               &quot;gray69&quot;              
-## [223] &quot;gray70&quot;               &quot;gray71&quot;               &quot;gray72&quot;               &quot;gray73&quot;               &quot;gray74&quot;               &quot;gray75&quot;              
-## [229] &quot;gray76&quot;               &quot;gray77&quot;               &quot;gray78&quot;               &quot;gray79&quot;               &quot;gray80&quot;               &quot;gray81&quot;              
-## [235] &quot;gray82&quot;               &quot;gray83&quot;               &quot;gray84&quot;               &quot;gray85&quot;               &quot;gray86&quot;               &quot;gray87&quot;              
-## [241] &quot;gray88&quot;               &quot;gray89&quot;               &quot;gray90&quot;               &quot;gray91&quot;               &quot;gray92&quot;               &quot;gray93&quot;              
-## [247] &quot;gray94&quot;               &quot;gray95&quot;               &quot;gray96&quot;               &quot;gray97&quot;               &quot;gray98&quot;               &quot;gray99&quot;              
-## [253] &quot;gray100&quot;              &quot;green&quot;                &quot;green1&quot;               &quot;green2&quot;               &quot;green3&quot;               &quot;green4&quot;              
-## [259] &quot;greenyellow&quot;          &quot;grey&quot;                 &quot;grey0&quot;                &quot;grey1&quot;                &quot;grey2&quot;                &quot;grey3&quot;               
-## [265] &quot;grey4&quot;                &quot;grey5&quot;                &quot;grey6&quot;                &quot;grey7&quot;                &quot;grey8&quot;                &quot;grey9&quot;               
-## [271] &quot;grey10&quot;               &quot;grey11&quot;               &quot;grey12&quot;               &quot;grey13&quot;               &quot;grey14&quot;               &quot;grey15&quot;              
-## [277] &quot;grey16&quot;               &quot;grey17&quot;               &quot;grey18&quot;               &quot;grey19&quot;               &quot;grey20&quot;               &quot;grey21&quot;              
-## [283] &quot;grey22&quot;               &quot;grey23&quot;               &quot;grey24&quot;               &quot;grey25&quot;               &quot;grey26&quot;               &quot;grey27&quot;              
-## [289] &quot;grey28&quot;               &quot;grey29&quot;               &quot;grey30&quot;               &quot;grey31&quot;               &quot;grey32&quot;               &quot;grey33&quot;              
-## [295] &quot;grey34&quot;               &quot;grey35&quot;               &quot;grey36&quot;               &quot;grey37&quot;               &quot;grey38&quot;               &quot;grey39&quot;              
-## [301] &quot;grey40&quot;               &quot;grey41&quot;               &quot;grey42&quot;               &quot;grey43&quot;               &quot;grey44&quot;               &quot;grey45&quot;              
-## [307] &quot;grey46&quot;               &quot;grey47&quot;               &quot;grey48&quot;               &quot;grey49&quot;               &quot;grey50&quot;               &quot;grey51&quot;              
-## [313] &quot;grey52&quot;               &quot;grey53&quot;               &quot;grey54&quot;               &quot;grey55&quot;               &quot;grey56&quot;               &quot;grey57&quot;              
-## [319] &quot;grey58&quot;               &quot;grey59&quot;               &quot;grey60&quot;               &quot;grey61&quot;               &quot;grey62&quot;               &quot;grey63&quot;              
-## [325] &quot;grey64&quot;               &quot;grey65&quot;               &quot;grey66&quot;               &quot;grey67&quot;               &quot;grey68&quot;               &quot;grey69&quot;              
-## [331] &quot;grey70&quot;               &quot;grey71&quot;               &quot;grey72&quot;               &quot;grey73&quot;               &quot;grey74&quot;               &quot;grey75&quot;              
-## [337] &quot;grey76&quot;               &quot;grey77&quot;               &quot;grey78&quot;               &quot;grey79&quot;               &quot;grey80&quot;               &quot;grey81&quot;              
-## [343] &quot;grey82&quot;               &quot;grey83&quot;               &quot;grey84&quot;               &quot;grey85&quot;               &quot;grey86&quot;               &quot;grey87&quot;              
-## [349] &quot;grey88&quot;               &quot;grey89&quot;               &quot;grey90&quot;               &quot;grey91&quot;               &quot;grey92&quot;               &quot;grey93&quot;              
-## [355] &quot;grey94&quot;               &quot;grey95&quot;               &quot;grey96&quot;               &quot;grey97&quot;               &quot;grey98&quot;               &quot;grey99&quot;              
-## [361] &quot;grey100&quot;              &quot;honeydew&quot;             &quot;honeydew1&quot;            &quot;honeydew2&quot;            &quot;honeydew3&quot;            &quot;honeydew4&quot;           
-## [367] &quot;hotpink&quot;              &quot;hotpink1&quot;             &quot;hotpink2&quot;             &quot;hotpink3&quot;             &quot;hotpink4&quot;             &quot;indianred&quot;           
-## [373] &quot;indianred1&quot;           &quot;indianred2&quot;           &quot;indianred3&quot;           &quot;indianred4&quot;           &quot;ivory&quot;                &quot;ivory1&quot;              
-## [379] &quot;ivory2&quot;               &quot;ivory3&quot;               &quot;ivory4&quot;               &quot;khaki&quot;                &quot;khaki1&quot;               &quot;khaki2&quot;              
-## [385] &quot;khaki3&quot;               &quot;khaki4&quot;               &quot;lavender&quot;             &quot;lavenderblush&quot;        &quot;lavenderblush1&quot;       &quot;lavenderblush2&quot;      
-## [391] &quot;lavenderblush3&quot;       &quot;lavenderblush4&quot;       &quot;lawngreen&quot;            &quot;lemonchiffon&quot;         &quot;lemonchiffon1&quot;        &quot;lemonchiffon2&quot;       
-## [397] &quot;lemonchiffon3&quot;        &quot;lemonchiffon4&quot;        &quot;lightblue&quot;            &quot;lightblue1&quot;           &quot;lightblue2&quot;           &quot;lightblue3&quot;          
-## [403] &quot;lightblue4&quot;           &quot;lightcoral&quot;           &quot;lightcyan&quot;            &quot;lightcyan1&quot;           &quot;lightcyan2&quot;           &quot;lightcyan3&quot;          
-## [409] &quot;lightcyan4&quot;           &quot;lightgoldenrod&quot;       &quot;lightgoldenrod1&quot;      &quot;lightgoldenrod2&quot;      &quot;lightgoldenrod3&quot;      &quot;lightgoldenrod4&quot;     
-## [415] &quot;lightgoldenrodyellow&quot; &quot;lightgray&quot;            &quot;lightgreen&quot;           &quot;lightgrey&quot;            &quot;lightpink&quot;            &quot;lightpink1&quot;          
-## [421] &quot;lightpink2&quot;           &quot;lightpink3&quot;           &quot;lightpink4&quot;           &quot;lightsalmon&quot;          &quot;lightsalmon1&quot;         &quot;lightsalmon2&quot;        
-## [427] &quot;lightsalmon3&quot;         &quot;lightsalmon4&quot;         &quot;lightseagreen&quot;        &quot;lightskyblue&quot;         &quot;lightskyblue1&quot;        &quot;lightskyblue2&quot;       
-## [433] &quot;lightskyblue3&quot;        &quot;lightskyblue4&quot;        &quot;lightslateblue&quot;       &quot;lightslategray&quot;       &quot;lightslategrey&quot;       &quot;lightsteelblue&quot;      
-## [439] &quot;lightsteelblue1&quot;      &quot;lightsteelblue2&quot;      &quot;lightsteelblue3&quot;      &quot;lightsteelblue4&quot;      &quot;lightyellow&quot;          &quot;lightyellow1&quot;        
-## [445] &quot;lightyellow2&quot;         &quot;lightyellow3&quot;         &quot;lightyellow4&quot;         &quot;limegreen&quot;            &quot;linen&quot;                &quot;magenta&quot;             
-## [451] &quot;magenta1&quot;             &quot;magenta2&quot;             &quot;magenta3&quot;             &quot;magenta4&quot;             &quot;maroon&quot;               &quot;maroon1&quot;             
-## [457] &quot;maroon2&quot;              &quot;maroon3&quot;              &quot;maroon4&quot;              &quot;mediumaquamarine&quot;     &quot;mediumblue&quot;           &quot;mediumorchid&quot;        
-## [463] &quot;mediumorchid1&quot;        &quot;mediumorchid2&quot;        &quot;mediumorchid3&quot;        &quot;mediumorchid4&quot;        &quot;mediumpurple&quot;         &quot;mediumpurple1&quot;       
-## [469] &quot;mediumpurple2&quot;        &quot;mediumpurple3&quot;        &quot;mediumpurple4&quot;        &quot;mediumseagreen&quot;       &quot;mediumslateblue&quot;      &quot;mediumspringgreen&quot;   
-## [475] &quot;mediumturquoise&quot;      &quot;mediumvioletred&quot;      &quot;midnightblue&quot;         &quot;mintcream&quot;            &quot;mistyrose&quot;            &quot;mistyrose1&quot;          
-## [481] &quot;mistyrose2&quot;           &quot;mistyrose3&quot;           &quot;mistyrose4&quot;           &quot;moccasin&quot;             &quot;navajowhite&quot;          &quot;navajowhite1&quot;        
-## [487] &quot;navajowhite2&quot;         &quot;navajowhite3&quot;         &quot;navajowhite4&quot;         &quot;navy&quot;                 &quot;navyblue&quot;             &quot;oldlace&quot;             
-## [493] &quot;olivedrab&quot;            &quot;olivedrab1&quot;           &quot;olivedrab2&quot;           &quot;olivedrab3&quot;           &quot;olivedrab4&quot;           &quot;orange&quot;              
-## [499] &quot;orange1&quot;              &quot;orange2&quot;              &quot;orange3&quot;              &quot;orange4&quot;              &quot;orangered&quot;            &quot;orangered1&quot;          
-## [505] &quot;orangered2&quot;           &quot;orangered3&quot;           &quot;orangered4&quot;           &quot;orchid&quot;               &quot;orchid1&quot;              &quot;orchid2&quot;             
-## [511] &quot;orchid3&quot;              &quot;orchid4&quot;              &quot;palegoldenrod&quot;        &quot;palegreen&quot;            &quot;palegreen1&quot;           &quot;palegreen2&quot;          
-## [517] &quot;palegreen3&quot;           &quot;palegreen4&quot;           &quot;paleturquoise&quot;        &quot;paleturquoise1&quot;       &quot;paleturquoise2&quot;       &quot;paleturquoise3&quot;      
-## [523] &quot;paleturquoise4&quot;       &quot;palevioletred&quot;        &quot;palevioletred1&quot;       &quot;palevioletred2&quot;       &quot;palevioletred3&quot;       &quot;palevioletred4&quot;      
-## [529] &quot;papayawhip&quot;           &quot;peachpuff&quot;            &quot;peachpuff1&quot;           &quot;peachpuff2&quot;           &quot;peachpuff3&quot;           &quot;peachpuff4&quot;          
-## [535] &quot;peru&quot;                 &quot;pink&quot;                 &quot;pink1&quot;                &quot;pink2&quot;                &quot;pink3&quot;                &quot;pink4&quot;               
-## [541] &quot;plum&quot;                 &quot;plum1&quot;                &quot;plum2&quot;                &quot;plum3&quot;                &quot;plum4&quot;                &quot;powderblue&quot;          
-## [547] &quot;purple&quot;               &quot;purple1&quot;              &quot;purple2&quot;              &quot;purple3&quot;              &quot;purple4&quot;              &quot;red&quot;                 
-## [553] &quot;red1&quot;                 &quot;red2&quot;                 &quot;red3&quot;                 &quot;red4&quot;                 &quot;rosybrown&quot;            &quot;rosybrown1&quot;          
-## [559] &quot;rosybrown2&quot;           &quot;rosybrown3&quot;           &quot;rosybrown4&quot;           &quot;royalblue&quot;            &quot;royalblue1&quot;           &quot;royalblue2&quot;          
-## [565] &quot;royalblue3&quot;           &quot;royalblue4&quot;           &quot;saddlebrown&quot;          &quot;salmon&quot;               &quot;salmon1&quot;              &quot;salmon2&quot;             
-## [571] &quot;salmon3&quot;              &quot;salmon4&quot;              &quot;sandybrown&quot;           &quot;seagreen&quot;             &quot;seagreen1&quot;            &quot;seagreen2&quot;           
-## [577] &quot;seagreen3&quot;            &quot;seagreen4&quot;            &quot;seashell&quot;             &quot;seashell1&quot;            &quot;seashell2&quot;            &quot;seashell3&quot;           
-## [583] &quot;seashell4&quot;            &quot;sienna&quot;               &quot;sienna1&quot;              &quot;sienna2&quot;              &quot;sienna3&quot;              &quot;sienna4&quot;             
-## [589] &quot;skyblue&quot;              &quot;skyblue1&quot;             &quot;skyblue2&quot;             &quot;skyblue3&quot;             &quot;skyblue4&quot;             &quot;slateblue&quot;           
-## [595] &quot;slateblue1&quot;           &quot;slateblue2&quot;           &quot;slateblue3&quot;           &quot;slateblue4&quot;           &quot;slategray&quot;            &quot;slategray1&quot;          
-## [601] &quot;slategray2&quot;           &quot;slategray3&quot;           &quot;slategray4&quot;           &quot;slategrey&quot;            &quot;snow&quot;                 &quot;snow1&quot;               
-## [607] &quot;snow2&quot;                &quot;snow3&quot;                &quot;snow4&quot;                &quot;springgreen&quot;          &quot;springgreen1&quot;         &quot;springgreen2&quot;        
-## [613] &quot;springgreen3&quot;         &quot;springgreen4&quot;         &quot;steelblue&quot;            &quot;steelblue1&quot;           &quot;steelblue2&quot;           &quot;steelblue3&quot;          
-## [619] &quot;steelblue4&quot;           &quot;tan&quot;                  &quot;tan1&quot;                 &quot;tan2&quot;                 &quot;tan3&quot;                 &quot;tan4&quot;                
-## [625] &quot;thistle&quot;              &quot;thistle1&quot;             &quot;thistle2&quot;             &quot;thistle3&quot;             &quot;thistle4&quot;             &quot;tomato&quot;              
-## [631] &quot;tomato1&quot;              &quot;tomato2&quot;              &quot;tomato3&quot;              &quot;tomato4&quot;              &quot;turquoise&quot;            &quot;turquoise1&quot;          
-## [637] &quot;turquoise2&quot;           &quot;turquoise3&quot;           &quot;turquoise4&quot;           &quot;violet&quot;               &quot;violetred&quot;            &quot;violetred1&quot;          
-## [643] &quot;violetred2&quot;           &quot;violetred3&quot;           &quot;violetred4&quot;           &quot;wheat&quot;                &quot;wheat1&quot;               &quot;wheat2&quot;              
-## [649] &quot;wheat3&quot;               &quot;wheat4&quot;               &quot;whitesmoke&quot;           &quot;yellow&quot;               &quot;yellow1&quot;              &quot;yellow2&quot;             
-## [655] &quot;yellow3&quot;              &quot;yellow4&quot;              &quot;yellowgreen&quot;</code></pre>
+<pre><code>##   [1] &quot;white&quot;                &quot;aliceblue&quot;            &quot;antiquewhite&quot;         &quot;antiquewhite1&quot;       
+##   [5] &quot;antiquewhite2&quot;        &quot;antiquewhite3&quot;        &quot;antiquewhite4&quot;        &quot;aquamarine&quot;          
+##   [9] &quot;aquamarine1&quot;          &quot;aquamarine2&quot;          &quot;aquamarine3&quot;          &quot;aquamarine4&quot;         
+##  [13] &quot;azure&quot;                &quot;azure1&quot;               &quot;azure2&quot;               &quot;azure3&quot;              
+##  [17] &quot;azure4&quot;               &quot;beige&quot;                &quot;bisque&quot;               &quot;bisque1&quot;             
+##  [21] &quot;bisque2&quot;              &quot;bisque3&quot;              &quot;bisque4&quot;              &quot;black&quot;               
+##  [25] &quot;blanchedalmond&quot;       &quot;blue&quot;                 &quot;blue1&quot;                &quot;blue2&quot;               
+##  [29] &quot;blue3&quot;                &quot;blue4&quot;                &quot;blueviolet&quot;           &quot;brown&quot;               
+##  [33] &quot;brown1&quot;               &quot;brown2&quot;               &quot;brown3&quot;               &quot;brown4&quot;              
+##  [37] &quot;burlywood&quot;            &quot;burlywood1&quot;           &quot;burlywood2&quot;           &quot;burlywood3&quot;          
+##  [41] &quot;burlywood4&quot;           &quot;cadetblue&quot;            &quot;cadetblue1&quot;           &quot;cadetblue2&quot;          
+##  [45] &quot;cadetblue3&quot;           &quot;cadetblue4&quot;           &quot;chartreuse&quot;           &quot;chartreuse1&quot;         
+##  [49] &quot;chartreuse2&quot;          &quot;chartreuse3&quot;          &quot;chartreuse4&quot;          &quot;chocolate&quot;           
+##  [53] &quot;chocolate1&quot;           &quot;chocolate2&quot;           &quot;chocolate3&quot;           &quot;chocolate4&quot;          
+##  [57] &quot;coral&quot;                &quot;coral1&quot;               &quot;coral2&quot;               &quot;coral3&quot;              
+##  [61] &quot;coral4&quot;               &quot;cornflowerblue&quot;       &quot;cornsilk&quot;             &quot;cornsilk1&quot;           
+##  [65] &quot;cornsilk2&quot;            &quot;cornsilk3&quot;            &quot;cornsilk4&quot;            &quot;cyan&quot;                
+##  [69] &quot;cyan1&quot;                &quot;cyan2&quot;                &quot;cyan3&quot;                &quot;cyan4&quot;               
+##  [73] &quot;darkblue&quot;             &quot;darkcyan&quot;             &quot;darkgoldenrod&quot;        &quot;darkgoldenrod1&quot;      
+##  [77] &quot;darkgoldenrod2&quot;       &quot;darkgoldenrod3&quot;       &quot;darkgoldenrod4&quot;       &quot;darkgray&quot;            
+##  [81] &quot;darkgreen&quot;            &quot;darkgrey&quot;             &quot;darkkhaki&quot;            &quot;darkmagenta&quot;         
+##  [85] &quot;darkolivegreen&quot;       &quot;darkolivegreen1&quot;      &quot;darkolivegreen2&quot;      &quot;darkolivegreen3&quot;     
+##  [89] &quot;darkolivegreen4&quot;      &quot;darkorange&quot;           &quot;darkorange1&quot;          &quot;darkorange2&quot;         
+##  [93] &quot;darkorange3&quot;          &quot;darkorange4&quot;          &quot;darkorchid&quot;           &quot;darkorchid1&quot;         
+##  [97] &quot;darkorchid2&quot;          &quot;darkorchid3&quot;          &quot;darkorchid4&quot;          &quot;darkred&quot;             
+## [101] &quot;darksalmon&quot;           &quot;darkseagreen&quot;         &quot;darkseagreen1&quot;        &quot;darkseagreen2&quot;       
+## [105] &quot;darkseagreen3&quot;        &quot;darkseagreen4&quot;        &quot;darkslateblue&quot;        &quot;darkslategray&quot;       
+## [109] &quot;darkslategray1&quot;       &quot;darkslategray2&quot;       &quot;darkslategray3&quot;       &quot;darkslategray4&quot;      
+## [113] &quot;darkslategrey&quot;        &quot;darkturquoise&quot;        &quot;darkviolet&quot;           &quot;deeppink&quot;            
+## [117] &quot;deeppink1&quot;            &quot;deeppink2&quot;            &quot;deeppink3&quot;            &quot;deeppink4&quot;           
+## [121] &quot;deepskyblue&quot;          &quot;deepskyblue1&quot;         &quot;deepskyblue2&quot;         &quot;deepskyblue3&quot;        
+## [125] &quot;deepskyblue4&quot;         &quot;dimgray&quot;              &quot;dimgrey&quot;              &quot;dodgerblue&quot;          
+## [129] &quot;dodgerblue1&quot;          &quot;dodgerblue2&quot;          &quot;dodgerblue3&quot;          &quot;dodgerblue4&quot;         
+## [133] &quot;firebrick&quot;            &quot;firebrick1&quot;           &quot;firebrick2&quot;           &quot;firebrick3&quot;          
+## [137] &quot;firebrick4&quot;           &quot;floralwhite&quot;          &quot;forestgreen&quot;          &quot;gainsboro&quot;           
+## [141] &quot;ghostwhite&quot;           &quot;gold&quot;                 &quot;gold1&quot;                &quot;gold2&quot;               
+## [145] &quot;gold3&quot;                &quot;gold4&quot;                &quot;goldenrod&quot;            &quot;goldenrod1&quot;          
+## [149] &quot;goldenrod2&quot;           &quot;goldenrod3&quot;           &quot;goldenrod4&quot;           &quot;gray&quot;                
+## [153] &quot;gray0&quot;                &quot;gray1&quot;                &quot;gray2&quot;                &quot;gray3&quot;               
+## [157] &quot;gray4&quot;                &quot;gray5&quot;                &quot;gray6&quot;                &quot;gray7&quot;               
+## [161] &quot;gray8&quot;                &quot;gray9&quot;                &quot;gray10&quot;               &quot;gray11&quot;              
+## [165] &quot;gray12&quot;               &quot;gray13&quot;               &quot;gray14&quot;               &quot;gray15&quot;              
+## [169] &quot;gray16&quot;               &quot;gray17&quot;               &quot;gray18&quot;               &quot;gray19&quot;              
+## [173] &quot;gray20&quot;               &quot;gray21&quot;               &quot;gray22&quot;               &quot;gray23&quot;              
+## [177] &quot;gray24&quot;               &quot;gray25&quot;               &quot;gray26&quot;               &quot;gray27&quot;              
+## [181] &quot;gray28&quot;               &quot;gray29&quot;               &quot;gray30&quot;               &quot;gray31&quot;              
+## [185] &quot;gray32&quot;               &quot;gray33&quot;               &quot;gray34&quot;               &quot;gray35&quot;              
+## [189] &quot;gray36&quot;               &quot;gray37&quot;               &quot;gray38&quot;               &quot;gray39&quot;              
+## [193] &quot;gray40&quot;               &quot;gray41&quot;               &quot;gray42&quot;               &quot;gray43&quot;              
+## [197] &quot;gray44&quot;               &quot;gray45&quot;               &quot;gray46&quot;               &quot;gray47&quot;              
+## [201] &quot;gray48&quot;               &quot;gray49&quot;               &quot;gray50&quot;               &quot;gray51&quot;              
+## [205] &quot;gray52&quot;               &quot;gray53&quot;               &quot;gray54&quot;               &quot;gray55&quot;              
+## [209] &quot;gray56&quot;               &quot;gray57&quot;               &quot;gray58&quot;               &quot;gray59&quot;              
+## [213] &quot;gray60&quot;               &quot;gray61&quot;               &quot;gray62&quot;               &quot;gray63&quot;              
+## [217] &quot;gray64&quot;               &quot;gray65&quot;               &quot;gray66&quot;               &quot;gray67&quot;              
+## [221] &quot;gray68&quot;               &quot;gray69&quot;               &quot;gray70&quot;               &quot;gray71&quot;              
+## [225] &quot;gray72&quot;               &quot;gray73&quot;               &quot;gray74&quot;               &quot;gray75&quot;              
+## [229] &quot;gray76&quot;               &quot;gray77&quot;               &quot;gray78&quot;               &quot;gray79&quot;              
+## [233] &quot;gray80&quot;               &quot;gray81&quot;               &quot;gray82&quot;               &quot;gray83&quot;              
+## [237] &quot;gray84&quot;               &quot;gray85&quot;               &quot;gray86&quot;               &quot;gray87&quot;              
+## [241] &quot;gray88&quot;               &quot;gray89&quot;               &quot;gray90&quot;               &quot;gray91&quot;              
+## [245] &quot;gray92&quot;               &quot;gray93&quot;               &quot;gray94&quot;               &quot;gray95&quot;              
+## [249] &quot;gray96&quot;               &quot;gray97&quot;               &quot;gray98&quot;               &quot;gray99&quot;              
+## [253] &quot;gray100&quot;              &quot;green&quot;                &quot;green1&quot;               &quot;green2&quot;              
+## [257] &quot;green3&quot;               &quot;green4&quot;               &quot;greenyellow&quot;          &quot;grey&quot;                
+## [261] &quot;grey0&quot;                &quot;grey1&quot;                &quot;grey2&quot;                &quot;grey3&quot;               
+## [265] &quot;grey4&quot;                &quot;grey5&quot;                &quot;grey6&quot;                &quot;grey7&quot;               
+## [269] &quot;grey8&quot;                &quot;grey9&quot;                &quot;grey10&quot;               &quot;grey11&quot;              
+## [273] &quot;grey12&quot;               &quot;grey13&quot;               &quot;grey14&quot;               &quot;grey15&quot;              
+## [277] &quot;grey16&quot;               &quot;grey17&quot;               &quot;grey18&quot;               &quot;grey19&quot;              
+## [281] &quot;grey20&quot;               &quot;grey21&quot;               &quot;grey22&quot;               &quot;grey23&quot;              
+## [285] &quot;grey24&quot;               &quot;grey25&quot;               &quot;grey26&quot;               &quot;grey27&quot;              
+## [289] &quot;grey28&quot;               &quot;grey29&quot;               &quot;grey30&quot;               &quot;grey31&quot;              
+## [293] &quot;grey32&quot;               &quot;grey33&quot;               &quot;grey34&quot;               &quot;grey35&quot;              
+## [297] &quot;grey36&quot;               &quot;grey37&quot;               &quot;grey38&quot;               &quot;grey39&quot;              
+## [301] &quot;grey40&quot;               &quot;grey41&quot;               &quot;grey42&quot;               &quot;grey43&quot;              
+## [305] &quot;grey44&quot;               &quot;grey45&quot;               &quot;grey46&quot;               &quot;grey47&quot;              
+## [309] &quot;grey48&quot;               &quot;grey49&quot;               &quot;grey50&quot;               &quot;grey51&quot;              
+## [313] &quot;grey52&quot;               &quot;grey53&quot;               &quot;grey54&quot;               &quot;grey55&quot;              
+## [317] &quot;grey56&quot;               &quot;grey57&quot;               &quot;grey58&quot;               &quot;grey59&quot;              
+## [321] &quot;grey60&quot;               &quot;grey61&quot;               &quot;grey62&quot;               &quot;grey63&quot;              
+## [325] &quot;grey64&quot;               &quot;grey65&quot;               &quot;grey66&quot;               &quot;grey67&quot;              
+## [329] &quot;grey68&quot;               &quot;grey69&quot;               &quot;grey70&quot;               &quot;grey71&quot;              
+## [333] &quot;grey72&quot;               &quot;grey73&quot;               &quot;grey74&quot;               &quot;grey75&quot;              
+## [337] &quot;grey76&quot;               &quot;grey77&quot;               &quot;grey78&quot;               &quot;grey79&quot;              
+## [341] &quot;grey80&quot;               &quot;grey81&quot;               &quot;grey82&quot;               &quot;grey83&quot;              
+## [345] &quot;grey84&quot;               &quot;grey85&quot;               &quot;grey86&quot;               &quot;grey87&quot;              
+## [349] &quot;grey88&quot;               &quot;grey89&quot;               &quot;grey90&quot;               &quot;grey91&quot;              
+## [353] &quot;grey92&quot;               &quot;grey93&quot;               &quot;grey94&quot;               &quot;grey95&quot;              
+## [357] &quot;grey96&quot;               &quot;grey97&quot;               &quot;grey98&quot;               &quot;grey99&quot;              
+## [361] &quot;grey100&quot;              &quot;honeydew&quot;             &quot;honeydew1&quot;            &quot;honeydew2&quot;           
+## [365] &quot;honeydew3&quot;            &quot;honeydew4&quot;            &quot;hotpink&quot;              &quot;hotpink1&quot;            
+## [369] &quot;hotpink2&quot;             &quot;hotpink3&quot;             &quot;hotpink4&quot;             &quot;indianred&quot;           
+## [373] &quot;indianred1&quot;           &quot;indianred2&quot;           &quot;indianred3&quot;           &quot;indianred4&quot;          
+## [377] &quot;ivory&quot;                &quot;ivory1&quot;               &quot;ivory2&quot;               &quot;ivory3&quot;              
+## [381] &quot;ivory4&quot;               &quot;khaki&quot;                &quot;khaki1&quot;               &quot;khaki2&quot;              
+## [385] &quot;khaki3&quot;               &quot;khaki4&quot;               &quot;lavender&quot;             &quot;lavenderblush&quot;       
+## [389] &quot;lavenderblush1&quot;       &quot;lavenderblush2&quot;       &quot;lavenderblush3&quot;       &quot;lavenderblush4&quot;      
+## [393] &quot;lawngreen&quot;            &quot;lemonchiffon&quot;         &quot;lemonchiffon1&quot;        &quot;lemonchiffon2&quot;       
+## [397] &quot;lemonchiffon3&quot;        &quot;lemonchiffon4&quot;        &quot;lightblue&quot;            &quot;lightblue1&quot;          
+## [401] &quot;lightblue2&quot;           &quot;lightblue3&quot;           &quot;lightblue4&quot;           &quot;lightcoral&quot;          
+## [405] &quot;lightcyan&quot;            &quot;lightcyan1&quot;           &quot;lightcyan2&quot;           &quot;lightcyan3&quot;          
+## [409] &quot;lightcyan4&quot;           &quot;lightgoldenrod&quot;       &quot;lightgoldenrod1&quot;      &quot;lightgoldenrod2&quot;     
+## [413] &quot;lightgoldenrod3&quot;      &quot;lightgoldenrod4&quot;      &quot;lightgoldenrodyellow&quot; &quot;lightgray&quot;           
+## [417] &quot;lightgreen&quot;           &quot;lightgrey&quot;            &quot;lightpink&quot;            &quot;lightpink1&quot;          
+## [421] &quot;lightpink2&quot;           &quot;lightpink3&quot;           &quot;lightpink4&quot;           &quot;lightsalmon&quot;         
+## [425] &quot;lightsalmon1&quot;         &quot;lightsalmon2&quot;         &quot;lightsalmon3&quot;         &quot;lightsalmon4&quot;        
+## [429] &quot;lightseagreen&quot;        &quot;lightskyblue&quot;         &quot;lightskyblue1&quot;        &quot;lightskyblue2&quot;       
+## [433] &quot;lightskyblue3&quot;        &quot;lightskyblue4&quot;        &quot;lightslateblue&quot;       &quot;lightslategray&quot;      
+## [437] &quot;lightslategrey&quot;       &quot;lightsteelblue&quot;       &quot;lightsteelblue1&quot;      &quot;lightsteelblue2&quot;     
+## [441] &quot;lightsteelblue3&quot;      &quot;lightsteelblue4&quot;      &quot;lightyellow&quot;          &quot;lightyellow1&quot;        
+## [445] &quot;lightyellow2&quot;         &quot;lightyellow3&quot;         &quot;lightyellow4&quot;         &quot;limegreen&quot;           
+## [449] &quot;linen&quot;                &quot;magenta&quot;              &quot;magenta1&quot;             &quot;magenta2&quot;            
+## [453] &quot;magenta3&quot;             &quot;magenta4&quot;             &quot;maroon&quot;               &quot;maroon1&quot;             
+## [457] &quot;maroon2&quot;              &quot;maroon3&quot;              &quot;maroon4&quot;              &quot;mediumaquamarine&quot;    
+## [461] &quot;mediumblue&quot;           &quot;mediumorchid&quot;         &quot;mediumorchid1&quot;        &quot;mediumorchid2&quot;       
+## [465] &quot;mediumorchid3&quot;        &quot;mediumorchid4&quot;        &quot;mediumpurple&quot;         &quot;mediumpurple1&quot;       
+## [469] &quot;mediumpurple2&quot;        &quot;mediumpurple3&quot;        &quot;mediumpurple4&quot;        &quot;mediumseagreen&quot;      
+## [473] &quot;mediumslateblue&quot;      &quot;mediumspringgreen&quot;    &quot;mediumturquoise&quot;      &quot;mediumvioletred&quot;     
+## [477] &quot;midnightblue&quot;         &quot;mintcream&quot;            &quot;mistyrose&quot;            &quot;mistyrose1&quot;          
+## [481] &quot;mistyrose2&quot;           &quot;mistyrose3&quot;           &quot;mistyrose4&quot;           &quot;moccasin&quot;            
+## [485] &quot;navajowhite&quot;          &quot;navajowhite1&quot;         &quot;navajowhite2&quot;         &quot;navajowhite3&quot;        
+## [489] &quot;navajowhite4&quot;         &quot;navy&quot;                 &quot;navyblue&quot;             &quot;oldlace&quot;             
+## [493] &quot;olivedrab&quot;            &quot;olivedrab1&quot;           &quot;olivedrab2&quot;           &quot;olivedrab3&quot;          
+## [497] &quot;olivedrab4&quot;           &quot;orange&quot;               &quot;orange1&quot;              &quot;orange2&quot;             
+## [501] &quot;orange3&quot;              &quot;orange4&quot;              &quot;orangered&quot;            &quot;orangered1&quot;          
+## [505] &quot;orangered2&quot;           &quot;orangered3&quot;           &quot;orangered4&quot;           &quot;orchid&quot;              
+## [509] &quot;orchid1&quot;              &quot;orchid2&quot;              &quot;orchid3&quot;              &quot;orchid4&quot;             
+## [513] &quot;palegoldenrod&quot;        &quot;palegreen&quot;            &quot;palegreen1&quot;           &quot;palegreen2&quot;          
+## [517] &quot;palegreen3&quot;           &quot;palegreen4&quot;           &quot;paleturquoise&quot;        &quot;paleturquoise1&quot;      
+## [521] &quot;paleturquoise2&quot;       &quot;paleturquoise3&quot;       &quot;paleturquoise4&quot;       &quot;palevioletred&quot;       
+## [525] &quot;palevioletred1&quot;       &quot;palevioletred2&quot;       &quot;palevioletred3&quot;       &quot;palevioletred4&quot;      
+## [529] &quot;papayawhip&quot;           &quot;peachpuff&quot;            &quot;peachpuff1&quot;           &quot;peachpuff2&quot;          
+## [533] &quot;peachpuff3&quot;           &quot;peachpuff4&quot;           &quot;peru&quot;                 &quot;pink&quot;                
+## [537] &quot;pink1&quot;                &quot;pink2&quot;                &quot;pink3&quot;                &quot;pink4&quot;               
+## [541] &quot;plum&quot;                 &quot;plum1&quot;                &quot;plum2&quot;                &quot;plum3&quot;               
+## [545] &quot;plum4&quot;                &quot;powderblue&quot;           &quot;purple&quot;               &quot;purple1&quot;             
+## [549] &quot;purple2&quot;              &quot;purple3&quot;              &quot;purple4&quot;              &quot;red&quot;                 
+## [553] &quot;red1&quot;                 &quot;red2&quot;                 &quot;red3&quot;                 &quot;red4&quot;                
+## [557] &quot;rosybrown&quot;            &quot;rosybrown1&quot;           &quot;rosybrown2&quot;           &quot;rosybrown3&quot;          
+## [561] &quot;rosybrown4&quot;           &quot;royalblue&quot;            &quot;royalblue1&quot;           &quot;royalblue2&quot;          
+## [565] &quot;royalblue3&quot;           &quot;royalblue4&quot;           &quot;saddlebrown&quot;          &quot;salmon&quot;              
+## [569] &quot;salmon1&quot;              &quot;salmon2&quot;              &quot;salmon3&quot;              &quot;salmon4&quot;             
+## [573] &quot;sandybrown&quot;           &quot;seagreen&quot;             &quot;seagreen1&quot;            &quot;seagreen2&quot;           
+## [577] &quot;seagreen3&quot;            &quot;seagreen4&quot;            &quot;seashell&quot;             &quot;seashell1&quot;           
+## [581] &quot;seashell2&quot;            &quot;seashell3&quot;            &quot;seashell4&quot;            &quot;sienna&quot;              
+## [585] &quot;sienna1&quot;              &quot;sienna2&quot;              &quot;sienna3&quot;              &quot;sienna4&quot;             
+## [589] &quot;skyblue&quot;              &quot;skyblue1&quot;             &quot;skyblue2&quot;             &quot;skyblue3&quot;            
+## [593] &quot;skyblue4&quot;             &quot;slateblue&quot;            &quot;slateblue1&quot;           &quot;slateblue2&quot;          
+## [597] &quot;slateblue3&quot;           &quot;slateblue4&quot;           &quot;slategray&quot;            &quot;slategray1&quot;          
+## [601] &quot;slategray2&quot;           &quot;slategray3&quot;           &quot;slategray4&quot;           &quot;slategrey&quot;           
+## [605] &quot;snow&quot;                 &quot;snow1&quot;                &quot;snow2&quot;                &quot;snow3&quot;               
+## [609] &quot;snow4&quot;                &quot;springgreen&quot;          &quot;springgreen1&quot;         &quot;springgreen2&quot;        
+## [613] &quot;springgreen3&quot;         &quot;springgreen4&quot;         &quot;steelblue&quot;            &quot;steelblue1&quot;          
+## [617] &quot;steelblue2&quot;           &quot;steelblue3&quot;           &quot;steelblue4&quot;           &quot;tan&quot;                 
+## [621] &quot;tan1&quot;                 &quot;tan2&quot;                 &quot;tan3&quot;                 &quot;tan4&quot;                
+## [625] &quot;thistle&quot;              &quot;thistle1&quot;             &quot;thistle2&quot;             &quot;thistle3&quot;            
+## [629] &quot;thistle4&quot;             &quot;tomato&quot;               &quot;tomato1&quot;              &quot;tomato2&quot;             
+## [633] &quot;tomato3&quot;              &quot;tomato4&quot;              &quot;turquoise&quot;            &quot;turquoise1&quot;          
+## [637] &quot;turquoise2&quot;           &quot;turquoise3&quot;           &quot;turquoise4&quot;           &quot;violet&quot;              
+## [641] &quot;violetred&quot;            &quot;violetred1&quot;           &quot;violetred2&quot;           &quot;violetred3&quot;          
+## [645] &quot;violetred4&quot;           &quot;wheat&quot;                &quot;wheat1&quot;               &quot;wheat2&quot;              
+## [649] &quot;wheat3&quot;               &quot;wheat4&quot;               &quot;whitesmoke&quot;           &quot;yellow&quot;              
+## [653] &quot;yellow1&quot;              &quot;yellow2&quot;              &quot;yellow3&quot;              &quot;yellow4&quot;             
+## [657] &quot;yellowgreen&quot;</code></pre>
 <pre class="r"><code>RColorBrewer::display.brewer.all()</code></pre>
 <p><img src="EXPRM_Lab09_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 </div>

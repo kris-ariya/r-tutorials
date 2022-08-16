@@ -454,20 +454,27 @@ directory to Source File Location.
 Then, load the data.</p>
 <pre class="r"><code>solar_data &lt;- read.csv(&quot;data/RES_STAT_Lab5_Data.csv&quot;)
 head(solar_data) ## view the first part of the data frame.</code></pre>
-<pre><code>##   id              user deci    sex age kno1 kno2 kno3 kno4 kno5 kno6 kno7 kno8           inno att1 att2 att3 att4 att5 att6 att7 att8            interest
-## 1  1 regular residence    2 female  43    1    1    1    1    1    1    1    1 early majority    2    3    3    1    3    3    3    3        probably not
-## 2  2 regular residence    2 female  51    1    1    1    1    1    1    1    1       laggards    4    4    3    3    2    2    2    1      definitely not
-## 3  3 regular residence    2   male  28    4    4    4    4    2    3    4    2 early adopters    2    5    5    3    4    5    4    4           likely to
-## 4  4 regular residence    2 female  32    1    1    1    1    1    1    1    1  late majority    3    4    4    4    5    5    4    3       probably will
-## 5  5 regular residence    2   male  38    4    4    4    3    3    3    3    4     innovators    4    4    4    3    5    5    5    3           likely to
-## 6  6 regular residence    2   male  51    1    1    1    1    1    1    1    1 early adopters    5    5    3    2    5    5    5    4 definitely going to
-##   re_att1 re_att2 re_att3 re_att4 re_att5 re_att6 re_att7 re_att8 re_kno1 re_kno2 re_kno3 re_kno4 re_kno5 re_kno6 re_kno7 re_kno8 attitude knowledge
-## 1       1       2       2       0       2       2       2       2       0       0       0       0       0       0       0       0    1.625     0.000
-## 2       3       3       2       2       1       1       1       0       0       0       0       0       0       0       0       0    1.625     0.000
-## 3       1       4       4       2       3       4       3       3       3       3       3       3       1       2       3       1    3.000     2.375
-## 4       2       3       3       3       4       4       3       2       0       0       0       0       0       0       0       0    3.000     0.000
-## 5       3       3       3       2       4       4       4       2       3       3       3       2       2       2       2       3    3.125     2.500
-## 6       4       4       2       1       4       4       4       3       0       0       0       0       0       0       0       0    3.250     0.000</code></pre>
+<pre><code>##   id              user deci    sex age kno1 kno2 kno3 kno4 kno5 kno6 kno7 kno8           inno att1 att2
+## 1  1 regular residence    2 female  43    1    1    1    1    1    1    1    1 early majority    2    3
+## 2  2 regular residence    2 female  51    1    1    1    1    1    1    1    1       laggards    4    4
+## 3  3 regular residence    2   male  28    4    4    4    4    2    3    4    2 early adopters    2    5
+## 4  4 regular residence    2 female  32    1    1    1    1    1    1    1    1  late majority    3    4
+## 5  5 regular residence    2   male  38    4    4    4    3    3    3    3    4     innovators    4    4
+## 6  6 regular residence    2   male  51    1    1    1    1    1    1    1    1 early adopters    5    5
+##   att3 att4 att5 att6 att7 att8            interest re_att1 re_att2 re_att3 re_att4 re_att5 re_att6
+## 1    3    1    3    3    3    3        probably not       1       2       2       0       2       2
+## 2    3    3    2    2    2    1      definitely not       3       3       2       2       1       1
+## 3    5    3    4    5    4    4           likely to       1       4       4       2       3       4
+## 4    4    4    5    5    4    3       probably will       2       3       3       3       4       4
+## 5    4    3    5    5    5    3           likely to       3       3       3       2       4       4
+## 6    3    2    5    5    5    4 definitely going to       4       4       2       1       4       4
+##   re_att7 re_att8 re_kno1 re_kno2 re_kno3 re_kno4 re_kno5 re_kno6 re_kno7 re_kno8 attitude knowledge
+## 1       2       2       0       0       0       0       0       0       0       0    1.625     0.000
+## 2       1       0       0       0       0       0       0       0       0       0    1.625     0.000
+## 3       3       3       3       3       3       3       1       2       3       1    3.000     2.375
+## 4       3       2       0       0       0       0       0       0       0       0    3.000     0.000
+## 5       4       2       3       3       3       2       2       2       2       3    3.125     2.500
+## 6       4       3       0       0       0       0       0       0       0       0    3.250     0.000</code></pre>
 </div>
 <div id="data-preparation" class="section level1">
 <h1>Data Preparation</h1>
@@ -521,7 +528,7 @@ head(solar_data$z_kno_f)</code></pre>
 <p>Are all values in the manual method equal to values from
 <code>scale()</code>?</p>
 <pre class="r"><code>all(solar_data$z_kno_m == solar_data$z_kno_f)</code></pre>
-<pre><code>## [1] TRUE</code></pre>
+<pre><code>## [1] FALSE</code></pre>
 <p>Both methods lead to the same results.</p>
 </div>
 </div>
@@ -535,15 +542,18 @@ are in a unit of SD, any <em>z</em> beyond ±3 will be marked as
 outliers.</p>
 <pre class="r"><code>outliers &lt;- solar_data$z_kno_f &gt; 3 | solar_data$z_kno_f &lt; -3
 solar_data[outliers, ]</code></pre>
-<pre><code>##      id              user deci  sex age kno1 kno2 kno3 kno4 kno5 kno6 kno7 kno8           inno att1 att2 att3 att4 att5 att6 att7 att8      interest
-## 167 211 regular residence    2 male  47    5    5    5    5    5    5    5    5 early adopters    4    4    5    4    5    5    5    4     likely to
-## 264 332 regular residence    2 male  30    5    5    5    5    5    5    5    5 early adopters    5    5    5    5    5    5    5    5 probably will
-##     re_att1 re_att2 re_att3 re_att4 re_att5 re_att6 re_att7 re_att8 re_kno1 re_kno2 re_kno3 re_kno4 re_kno5 re_kno6 re_kno7 re_kno8 attitude knowledge
-## 167       3       3       4       3       4       4       4       3       4       4       4       4       4       4       4       4      3.5         4
-## 264       4       4       4       4       4       4       4       4       4       4       4       4       4       4       4       4      4.0         4
-##      z_kno_m  z_kno_f
-## 167 3.154265 3.154265
-## 264 3.154265 3.154265</code></pre>
+<pre><code>##      id              user deci  sex age kno1 kno2 kno3 kno4 kno5 kno6 kno7 kno8           inno att1 att2
+## 167 211 regular residence    2 male  47    5    5    5    5    5    5    5    5 early adopters    4    4
+## 264 332 regular residence    2 male  30    5    5    5    5    5    5    5    5 early adopters    5    5
+##     att3 att4 att5 att6 att7 att8      interest re_att1 re_att2 re_att3 re_att4 re_att5 re_att6 re_att7
+## 167    5    4    5    5    5    4     likely to       3       3       4       3       4       4       4
+## 264    5    5    5    5    5    5 probably will       4       4       4       4       4       4       4
+##     re_att8 re_kno1 re_kno2 re_kno3 re_kno4 re_kno5 re_kno6 re_kno7 re_kno8 attitude knowledge  z_kno_m
+## 167       3       4       4       4       4       4       4       4       4      3.5         4 3.154265
+## 264       4       4       4       4       4       4       4       4       4      4.0         4 3.154265
+##      z_kno_f
+## 167 3.154265
+## 264 3.154265</code></pre>
 </div>
 <div id="z-score-by-group" class="section level3">
 <h3><em>z</em>-score by group</h3>
@@ -575,7 +585,7 @@ an input value. The second argument is a grouping variable (a factor).
 The third argument is a function to apply.</p>
 <pre class="r"><code>tapply(solar_data$z_kno_g, solar_data$inno, mean)</code></pre>
 <pre><code>## early adopters early majority     innovators       laggards  late majority 
-##  -6.455541e-17  -6.450725e-17   4.979358e-17   2.100642e-19  -2.301871e-17</code></pre>
+##  -8.778508e-17  -6.073015e-17   1.240837e-16   0.000000e+00  -2.670157e-17</code></pre>
 <pre class="r"><code># The values contain very small decimals. Let&#39;s round them up to make them easier to read.
 round(tapply(solar_data$z_kno_g, solar_data$inno, mean))</code></pre>
 <pre><code>## early adopters early majority     innovators       laggards  late majority 
@@ -594,15 +604,18 @@ the <em>z-score-by-group</em> code works correctly.</p>
 beyond ±3 are outliers for that group.</p>
 <pre class="r"><code>outliers_g &lt;- solar_data$z_kno_g &gt; 3 | solar_data$z_kno_g &lt; -3
 solar_data[outliers_g, ]</code></pre>
-<pre><code>##      id            user deci    sex age kno1 kno2 kno3 kno4 kno5 kno6 kno7 kno8     inno att1 att2 att3 att4 att5 att6 att7 att8     interest re_att1
-## 115 136 small residence    2 female  55    3    3    4    3    3    3    4    3 laggards    4    4    5    4    4    5    5    5 probably not       3
-## 166 210 small residence    2   male  37    4    4    4    4    4    4    4    4 laggards    3    3    3    3    3    3    3    3    likely to       2
-##     re_att2 re_att3 re_att4 re_att5 re_att6 re_att7 re_att8 re_kno1 re_kno2 re_kno3 re_kno4 re_kno5 re_kno6 re_kno7 re_kno8 attitude knowledge  z_kno_m
-## 115       3       4       3       3       4       4       4       2       2       3       2       2       2       3       2      3.5      2.25 1.407868
-## 166       2       2       2       2       2       2       2       3       3       3       3       3       3       3       3      2.0      3.00 2.156324
-##      z_kno_f  z_kno_g
-## 115 1.407868 3.038717
-## 166 2.156324 4.249160</code></pre>
+<pre><code>##      id            user deci    sex age kno1 kno2 kno3 kno4 kno5 kno6 kno7 kno8     inno att1 att2 att3
+## 115 136 small residence    2 female  55    3    3    4    3    3    3    4    3 laggards    4    4    5
+## 166 210 small residence    2   male  37    4    4    4    4    4    4    4    4 laggards    3    3    3
+##     att4 att5 att6 att7 att8     interest re_att1 re_att2 re_att3 re_att4 re_att5 re_att6 re_att7 re_att8
+## 115    4    4    5    5    5 probably not       3       3       4       3       3       4       4       4
+## 166    3    3    3    3    3    likely to       2       2       2       2       2       2       2       2
+##     re_kno1 re_kno2 re_kno3 re_kno4 re_kno5 re_kno6 re_kno7 re_kno8 attitude knowledge  z_kno_m  z_kno_f
+## 115       2       2       3       2       2       2       3       2      3.5      2.25 1.407868 1.407868
+## 166       3       3       3       3       3       3       3       3      2.0      3.00 2.156324 2.156324
+##      z_kno_g
+## 115 3.038717
+## 166 4.249160</code></pre>
 <p>In this case, we will remove outliers from the data. We will choose
 rows that are <strong>NOT</strong> outliers
 <code>!outliers_g</code>.</p>
@@ -626,19 +639,19 @@ by(solar_data_new$knowledge, solar_data_new$inno, psych::describe)</code></pre>
 <pre><code>## solar_data_new$inno: early adopters
 ##    vars  n mean   sd median trimmed  mad min max range skew kurtosis   se
 ## X1    1 43 1.28 1.22   1.12    1.15 1.67   0   4     4 0.58    -0.78 0.19
-## ------------------------------------------------------------------------------------------------------------------- 
+## -------------------------------------------------------------------------------- 
 ## solar_data_new$inno: early majority
 ##    vars   n mean   sd median trimmed  mad min max range skew kurtosis   se
 ## X1    1 117 0.93 1.01   0.62    0.79 0.93   0 3.5   3.5 0.87    -0.36 0.09
-## ------------------------------------------------------------------------------------------------------------------- 
+## -------------------------------------------------------------------------------- 
 ## solar_data_new$inno: innovators
 ##    vars  n mean   sd median trimmed mad min max range skew kurtosis   se
 ## X1    1 17 1.08 0.98   1.12    1.06 1.3   0 2.5   2.5  0.2    -1.66 0.24
-## ------------------------------------------------------------------------------------------------------------------- 
+## -------------------------------------------------------------------------------- 
 ## solar_data_new$inno: laggards
 ##    vars  n mean  sd median trimmed mad min  max range skew kurtosis   se
 ## X1    1 46 0.27 0.4      0     0.2   0   0 1.25  1.25  1.3     0.37 0.06
-## ------------------------------------------------------------------------------------------------------------------- 
+## -------------------------------------------------------------------------------- 
 ## solar_data_new$inno: late majority
 ##    vars  n mean   sd median trimmed  mad min max range skew kurtosis   se
 ## X1    1 79 0.71 0.94   0.25    0.54 0.37   0 3.5   3.5 1.37     0.85 0.11</code></pre>

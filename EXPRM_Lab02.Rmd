@@ -7,121 +7,128 @@ output:
     toc_float: TRUE
 ---
 
-# Random Assignment
+# การสุ่มเข้าเงื่อนไข (Random Assignment)
 
-We could try to experimentally control all known potential confounds (e.g., gender, age, intelligence, personality, room temperature, etc.). Nonetheless, we could not pracically control for ALL variables (e.g., we might not know those variables or they are too expensive to control). Random assignment is one way to equalize those extraneous variables. When participants are randomly assigned to each group in an experiment, all person variables are equally likely to be assigned to any group (e.g., each group has about the same number of participants with high, averge, and low extraversion). Given that we have a large enough sample, as we sum up those values for each group, any variation around the means will cancel out each other (i.e., each group will have the same average extraversion). Nonetheless, random assignment does not gaurantee matched or equivalent groups. Any differences of pre-existing characteristics is due to chance. While random assignment does not completely eliminate pre-existing differences, it greatly reduce it. 
+ในอุดมคติ ผู้ทำการทดลองพยายามควบคุมปัจจัยแทรกซ้อนทั้งหมดให้คงที่ระหว่างกลุ่มทดลองและกลุ่มควบคุม (เช่น กลุ่มตัวอย่างมีน้ำหนัก ส่วนสูง ความฉลาด พื้นฐานการเลี้ยงดู อุณหภูมิห้อง ขั้นตอนการขอความยินยอม ฯลฯ) แต่ในทางปฏิบัติแล้ว ผู้ทดลองมักไม่สามารถควบคุมปัจจัยแทรกซ้อนได้ทั้งหมด โดยเฉพาะปัจจัยส่วนบุคคล (person variables; individual differences) เนื่องจากปัญหาทางด้านต้นทุนในการควบคุม ความเป็นไปได้ รวมไปถึงจริยธรรม การสุ่มเข้าเงื่อนไข (random assignment) จึงเป็นทางออกหนึ่งที่ใช้หลักการความน่าจะเป็นเข้ามาช่วย*เฉลี่ย*ให้เงื่อนไขทดลองและเงื่อนไขควบคุม*เท่าเทียม*กัน หลักการของการสุ่มเข้าเงื่อนไขทำให้ลักษณะส่วนตัวของกลุ่มตัวอย่างมีโอกาสถูกกระจายไปในแต่ละเงื่อนไขอย่างเท่าเทียมกัน (เช่น แต่ละเงื่อนไขจะผู้เข้าร่วมการวิจัยที่มีบุคคลิกภาพแบบเปิดรับประสบการณ์สูง กลาง หรือต่ำ ในสัดส่วนใกล้เคียงกัน) ในทางสถิติแล้วเรียกว่าค่าความคาดหวัง (expectancy value) ของความแตกต่างระหว่างกลุ่มจะเป็น 0
 
-In this lab, we will learn how to conduct a random assignment with three tools: Microsoft Excel, R, and a randomizer website. 
+ในทางปฏิบัติแล้ว การสุ่มเข้าเงื่อนไขไม่ได้ทำให้กลุ่มมีค่าที่สังเกตได้ (observed value) เท่ากัน เพราะความคลาดเคลื่อนทางสถิติ ปัญหานี้จะเบาบางลงถ้าผู้วิจัยสามารถมีกลุ่มตัวอย่างขนาดใหญ่ ซึ่งจะช่วยลดอิทธิพลของค่าคลาดเคลื่อนที่สุดโต่ง (เช่น บังเอิญมีผู้เข้าร่วมการวิจัยที่บุคลิกภาพเปิดตัวสูงมาก) ด้วยค่ากลางหรือค่าสุดโต่งอีกทาง (เช่น กลุ่มตัวอย่างส่วนใหญ่มีบุคลิกภาพเปิดตัวกลาง ๆ หรือ มีคนที่บุคลิกภาพปิดตัวถูกสุ่มมาอยู่ในกลุ่มเดียวกัน) ทำให้ค่าเฉลี่ยของกลุ่มควบคุมกับกลุ่มทดลองนั้นใกล้เคียงกันมากขึ้น ความแตกต่างใด ๆ ระหว่างกลุ่มที่เราพบก่อนเริ่มการทดลองนั้นเกิดจากความบังเอิญ/กระบวนการสุ่ม การทดสอบทางสถิติต่าง ๆ ก็จะคำนึงถึงความคลาดเคลื่อนนี้เอาไว้เพื่อตัดสินว่า "หากพบความแตกต่างระหว่างสองกลุ่ม ความแตกต่างดังกล่าวจะมี*นัยสำคัญทางสถิติ*หรือไม่" (นั่นคือ หากเราคาดหวังว่าความแตกต่างระหว่างกลุ่มเท่ากับ 0 จะมีความน่าจะเป็น (probability) เท่าใดที่เราจะพบค่าความแตกต่างเท่ากับหรือมากกว่าที่สังเกตได้จากข้อมูล)
+
+ปัจจุบันโปรแกรมการเก็บข้อมูลด้วยคอมพิวเตอร์มักจะมีคำสั่งสุ่มเข้าเงื่อนไขอยู่ด้วย แต่ในกรณีที่เราไม่ได้ใช้โปรแกรมเหล่านั้น เราสามารถสร้างการสุ่มเข้าเงื่อนไขด้วยโปรแกรมอื่น ๆ ได้ ในแบบฝึกหัดนี้เราจะพูดถึงการสุ่มด้วย Microsoft Excel, R, และเว็บไซต์
 
 ## 1. Excel
 
-Let's consider an example of randomizing 30 participants to 5 groups. We could just roll a dice for each participant at the beginning of the experiment. However, we could plan the randomization *before* the experiment. 
+สมมติว่าเราต้องการสุ่มกลุ่มตัวอย่าง 30 ตัวอย่างเข้า 3 เงื่อนไข เงื่อนไขละ 10 คน เราอาจจะใช้วิธีง่าย ๆ เช่น ทอยลูกเต๋าสุ่มเข้าเงื่อนไขเมื่อเก็บข้อมูลแต่ละตัวอย่าง แต่เราอาจจะได้กลุ่มตัวอย่างในแต่ละเงื่อนไขไม่เท่ากันเนื่องจากกระบวนการสุ่ม เพื่อให้เรามั่นใจว่าเราจะได้กลุ่มตัวอย่างในแต่ละกลุ่มเท่า ๆ กัน เราควรจะสุ่มเงื่อนไขไว้ตั้งแต่ก่อนเริ่มการเก็บข้อมูล
 
-First, we will create two columns: group, and random number. Then fill out the group number from 1-6 and repeat this 5 times. 
+### 1.1 Simple Sort
 
-![](images/Lab_randomization/fill_group_number.png)
+1.1.1 เริ่มต้นโดยสร้างคอลัมน์ที่ชื่อว่า group และ random number จากนั้นใส่เงื่อนไขทั้งสาม (exp1, exp2, ctrl) ซ้ำไป 10 ครั้ง
 
-Then, fill `random num` column with a `rand()` function. The function will generate a random number between 0 and 1 using a uniform distribution, i.e., each value has equal chance. 
+1.1.2 สร้าง id ของกลุ่มตัวอย่างเพื่อตรวจสอบว่าครบ 30 ตัวอย่าง
 
-![](images/Lab_randomization/rand.png)
+1.1.3 ใส่คำสั่ง `rand()` ในคอลัมน์ random number คำสั่งนี้จะสร้างตัวเลขสุ่มระหว่าง 0 ถึง 1 โดยใช้ uniform distribution (ทุกค่ามีโอกาสถูกเลือกเท่า ๆ กัน) ใช้เมาส์จับที่มุมขวาของ cell แล้วลากเพิ่มเติมคำสั่งให้ครบทุกแถว (หรือ double-click ที่มุมขวา ก็ได้)
 
-Here are the results. 
+1.1.4 เลือก**เฉพาะ** group และ random number ทั้งตารางเพื่อเตรียมเรียงลำดับเงื่อนไขโดยใช้เลขสุ่ม **สำคัญมาก คำสั่ง sort จะเรียงลำดับเฉพาะข้อมูลที่ถูกเลือก ดังนั้นต้องเลือกข้อมูลที่ต้องการเรียงทั้งหมด และไม่เลือกข้อมูลที่ไม่ต้องการเรียง**
 
-![](images/Lab_randomization/fill_rand.png)
+1.1.5 เลือกเมนู Sort & Filter -\> Custom Sort เลือก Sort By คอลัมน์ random number
 
-Then, select the entire values for both `group` and `random num` column. 
-**This is VERY important. You need to select ALL values that you want to randomly sort.**
+![Simple random sort with Excel](images/Lab_randomization/excel_simple_rand.png)
 
+### 1.2 Randomize within a set
 
-![](images/Lab_randomization/select_values.png)
+ผู้วิจัยอาจต้องการเก็บข้อมูลเป็นเซ็ต เช่น สุ่มกลุ่มตัวอย่างเข้าเงื่อนไขให้ครบทุกเงื่อนไขเซ็ตนึงก่อนค่อยเริ่มเก็บข้อมูลเซ็ตถัดไป วิธีการนี้จะช่วยให้มั่นใจได้ว่าหากผู้วิจัยต้องหยุดเก็บข้อมูลกลางคัน จะมีข้อมูลในแต่ละเงื่อนไขเท่ากันหรือเกือบเท่ากัน
 
-Then, sort the data with `random num` column. 
+1.2.1 สร้างคอลัมน์ id, group, set, และ random number ใส่ค่า set เพื่อให้กลุ่มตัวอย่างอยู่ในเซ็ตเดียวกัน (เช่น เซ็ตละ 3 ตัวอย่าง)
 
-![](images/Lab_randomization/sort.png)
+1.2.2 ใช้คำสั่ง rand() เติมในช่อง random number
 
-The results will be a randomized order of `group`. 
+1.2.3 เลือก Sort & Filter -\> Custom Sort แล้ว Sort By set ก่อน จากนั้นกด + เพิ่มการ sort ด้วย random number (เรียงลำดับ set ก่อน แล้วภายในแต่ละ set ให้สุ่มเรียงด้วย random number)
 
-![](images/Lab_randomization/resort.png)
-
-Then you can add an `id` column to assign participant to the group. (As you type into Excel, the random values will keep changing, but you can ignore them at this point.)
-
-![](images/Lab_randomization/add_id.png)
-
-### Randomize within a set
-Sometimes you would like to run an experiment as a set, i.e., within each set you want to assign participants to every group before moving on. This setup will make sure that for each set that you run, you will have participants for all conditions. 
-
-To do this, you need `group`, `set`, and `random num`. Groups within the same set will have the same `set` value. 
-
-![](images/Lab_randomization/set.png)
-
-Next, fill the random numbers
-
-![](images/Lab_randomization/set_rand.png)
-
-Then, select all values and sort. In the sort option box, click + and choose the first option to sort by Column `set`, then by `random num`. This way, Excel will sort your data by `set`, then within each set, sort by `random num`. 
-
-![](images/Lab_randomization/set_sort.png)
-
-Here are the results.
-
-![](images/Lab_randomization/set_result.png)
-
+![Set random sort with Excel](images/Lab_randomization/excel_set_rand.png)
 
 ## 2. R code
 
-There are multiple ways to create a vector of random values in R. The ways shown here are not exhaustive. 
+การสร้าง vector ของค่าสุ่มใน R นั้นมีหลากหลายวิธีมาก วิธีที่จะแสดงต่อไปนี้เป็นการเลียนแบบการ sort ใน Excel
 
-## `rep()` function & sortation
-First, create a vector of group numbers (1-5) for 6 times (*N* = 30).
-```{r}
-unsorted_group <- rep(1:5, times = 6)
-unsorted_group
+### 2.1 Simple Sort
+
+เริ่มจากการสร้าง vector ของ `id`, `group`, และ `random_vector`
+
+```{r simple_id}
+id <- 1:30
 ```
 
-Then, create a random vector with `sample.int()`.
-```{r}
+เราจะใช้ `c()` เพื่อรวม (combine) ค่าตัวอักษรที่เป็นชื่อเงื่อนไขเข้าด้วยกัน แล้วใช้คำสั่ง `rep()` เพื่อทำซ้ำ (replicate) เงื่อนไขการทดลอง 3 เงื่อนไข จำนวน 10 ครั้ง
+
+```{r simple_group}
+group <- rep(c("exp1", "exp2", "ctrl"), times = 10)
+group
+```
+
+ในการสร้าง `random_vector` เราจะใช้คำสั่งสุ่มตัวเลขจำนวนเต็ม (integer) `sample.int()` โดยกำหนดให้สุ่มตัวเลข 30 ตัว size คือ 30 (สุ่มระหว่าง 1-30) และสุ่มแบบไม่แทนที่ `replace = FALSE`
+
+นอกจากนี้เพื่อให้การสุ่มนี้สามารถทำซ้ำได้ ให้ใช้คำสั่ง `set.seed()` เพื่อกำหนดค่าที่ใช้อ้างอิงในการสร้างตัวเลขสุ่ม (หากคนอื่นมาใช้ seed นี้ จะได้ค่าสุ่มเดียวกัน)
+
+```{r simple_random}
 set.seed(2475) # you can pick any value for a seed. This will help when you need to replicate the results.
 random_vector <- sample.int(30, size = 30, replace = FALSE)
 random_vector
 ```
 
-Sort the group with `random_vector`.
+เรียงลำดับเงื่อนไขการทดลองด้วย `random_vector`
 
-```{r}
-random_sorted <- unsorted_group[random_vector]
-random_sorted
+```{r simple_sort}
+random_group <- group[random_vector]
+random_group
 ```
 
-You can use `random_sorted` to assign participants into conditions. 
-Also, check that all groups have equal *n*. 
-```{r}
-table(random_sorted)
+ใช้คำสั่ง `cbind()` เพื่อรวม vector `id` และ `random_group` ให้เป็น column อ่านง่าย
+
+```{r simple_bind}
+cbind(id, random_group)
 ```
 
+ในการสุ่มแบบนี้ ผู้วิจัยต้องเก็บกลุ่มตัวอย่างให้ครบ 30 ตัวอย่าง เพื่อให้ได้ตัวอย่างเท่ากันในทุกเงื่อนไข
 
-### `sample.int()` function and `for` loop
+### 2.2 Randomized within a set
 
-To randomize within each set, we will use `sample.int()` to randomize group 1-5, then repeat it with `for` loops for 6 times, then combine the results. 
+เพื่อสุ่มเป็น set ให้เราสร้าง `id`, `group` , `set`, และ `random_vector`
 
-We can use `sample.int()` function to pick integer values from 1 to 5 (`n` = 5) for `size` = 5 times. The function will randomly select an interger from 1 to 5 without replacement. By doing this 5 times, you will get a random oder of 1-5. However, because our total sample size has *N* = 30, we will need to use a `for` loop to repeat this process 6 times (`for (i in 1:6)`)
-
-```{r}
-set.seed(2475)
-s <- matrix(nrow = 5, ncol = 6) # Create a matrix, s, with 5 rows (for 5 groups) and 6 columns (for 6 sets) as a holder for future data.
-for (i in 1:6) {
-  s[,i] <- sample.int(n = 5, size = 5, replace = FALSE) #randomize 5 groups then put them in each column
-}
-s # results ini matrix
-as.integer(s) #show the matrix as interger vector. 
+```{r set_idgrouprendom}
+id <- 1:30
+group <- rep(c("exp1", "exp2", "ctrl"), times = 10)
+set.seed(2475) # set.seed before a random function.
+random_vector <- sample.int(30, size = 30, replace = FALSE)
 ```
 
-```{r}
-table(as.integer(s)) #check if n are equal in all groups. 
+สำหรับตัวแปร `set` ให้ใช้คำสั่ง `rep(x, each = )` option `each` เป็นตัวบอกว่าจะให้ทำซ้ำแต่ละ element ใน x กี่ครั้ง ในตัวอย่างนี้เราต้องการให้ตัวเลขเซ็ตปรากฏเลขละ 3 ครั้ง เพราะแต่ละเซ็ตการทดลองจะมีสามเงื่อนไข สำหรับ *N* = 30 เราจะมีทั้งหมด 10 เซ็ต
+
+```{r set_set}
+set <- rep(1:10, each = 3)
+set
 ```
+
+ในการสุ่มนี้เราต้องการให้ เรียง set 1-10 แล้วสุ่มลำดับภายใน set เราจะใช้คำสั่ง `order()` เพื่อสร้าง vector ของลำดับการสุ่ม โดยใส่ `set` ก่อนแล้วตามด้วย `random_vector` เพื่อให้เรียงลำดับจาก set 1-10 ก่อน แล้วเรียงสุ่มภายใน set แล้วบันทึกลำดับนี้ลงตัวแปรชื่อ `random_within_set`
+
+```{r set_order}
+random_within_set <- order(set, random_vector)
+random_within_set
+```
+
+จาก output ด้านบนจะเป็นได้ว่า ลำดับจะถูกสุ่มภายในทุก ๆ เซ็ต (เช่น Set ที่ 1 จะกลุ่มได้ลำดับ 2 3 1, Set ที่ 2 คือ 6 4 5, ...)
+
+จากนั้นเราจะนำ vector `random_within_set` นี้ไปใช้เรียงลำดับ vector `group` เพื่อให้เงื่อนไขเรียงตามการสุ่ม
+
+```{r set_sortbind}
+random_set_group <- group[random_within_set] # sort group with random_within_set
+cbind(id, random_set_group)
+```
+
+จะเห็นได้ว่า เงื่อนไขการทดลองทั้ง 3 กลุ่ม จะปรากฏในทุก ๆ 3 ตัวอย่าง แม้ว่าผู้วิจัยจะต้องหยุดเก็บข้อมูลกลางคัน (เช่น 15 ตัวอย่าง) ก็ยังได้กลุ่มตัวอย่างในแต่ละเงื่อนไขจำนวนเท่า ๆ กัน
 
 ## 3. Randomizer Websites
-There are muliple websites that offer randomization. Try
 
-https://www.randomizer.org
+นอกจากนี้ยังมีเว็บไซต์ที่ช่วยสุ่มเข้าเงื่อนไขตามลักษณะที่เรากำหนดได้ ตัวอย่างเช่น
 
-https://www.graphpad.com/quickcalcs/randomize2/
+<https://www.randomizer.org>
+
+<https://www.graphpad.com/quickcalcs/randomize2/>

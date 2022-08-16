@@ -495,8 +495,15 @@ dat</code></pre>
 ## 10   10   5    7  2</code></pre>
 <pre class="r"><code>library(psych)
 describe(dat$D)</code></pre>
-<pre><code>##    vars  n mean   sd median trimmed  mad min max range  skew kurtosis   se
-## X1    1 10  1.3 1.49      2    1.38 1.48  -1   3     4 -0.46    -1.47 0.47</code></pre>
+<pre><code>## dat$D 
+##        n  missing distinct     Info     Mean      Gmd 
+##       10        0        5    0.927      1.3    1.711 
+## 
+## lowest : -1  0  1  2  3, highest: -1  0  1  2  3
+##                               
+## Value       -1   0   1   2   3
+## Frequency    2   1   1   4   2
+## Proportion 0.2 0.1 0.1 0.4 0.2</code></pre>
 <p>On average, the scores went up by 1.3 points (<em>SD</em> =
 1.4944341). We would like to test whether this score increase was
 statistically significant. The null hypothesis for this test was that
@@ -786,13 +793,13 @@ Cohen’s <em>d</em>.</p>
 effectsize::cohens_d(dat$post, dat$pre, paired = TRUE)</code></pre>
 <pre><code>## Cohen&#39;s d |       95% CI
 ## ------------------------
-## 0.87      | [0.12, 1.67]</code></pre>
+## 0.87      | [0.12, 1.59]</code></pre>
 <pre class="r"><code># OR save a t-test as an R object and put it into the function. 
 mypair_t.test &lt;- t.test(dat$post, dat$pre, paired = TRUE)
 effectsize::cohens_d(mypair_t.test)</code></pre>
 <pre><code>## Cohen&#39;s d |       95% CI
 ## ------------------------
-## 0.87      | [0.12, 1.67]</code></pre>
+## 0.87      | [0.12, 1.59]</code></pre>
 </div>
 </div>
 

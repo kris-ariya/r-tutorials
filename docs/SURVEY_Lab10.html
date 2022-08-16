@@ -456,8 +456,7 @@ library(carData)
 library(fastDummies)</code></pre>
 <div id="explore-data" class="section level1">
 <h1>1. Explore Data</h1>
-<p><code>pmi</code> = presumed media influence
-รู้สึกว่าสื่อมีอิทธิพลแค่ไหน</p>
+<p><code>pmi</code> = presumed media influence รู้สึกว่าสื่อมีอิทธิพลแค่ไหน</p>
 <p><code>import</code> = ความสำคัญของประเด็น (น้ำตาลขาดตลาด)</p>
 <p><code>reaction</code> =
 ผู้เข้าร่วมการวิจัยเห็นว่าตนเองมีโอกาสจะตอบสนองมากน้อยแค่ไหน (เช่น
@@ -490,8 +489,8 @@ str(media$gender)</code></pre>
 <pre class="r"><code>media$genderDum &lt;- ifelse(media$gender == &quot;female&quot;, 1, 0)
 # if you have more levels
 # media$genderDum2 &lt;- ifelse(media$gender == &quot;other&quot;, 1, 0)</code></pre>
-<p>จำนวนตัวแปร dummy = k -1 ถ้ามี 3 ระดับต้องสร้าง 2ตัว ถ้ามี 4
-ระดับต้องสร้าง 3 ตัว</p>
+<p>จำนวนตัวแปร dummy = k -1 ถ้ามี 3 ระดับต้องสร้าง 2ตัว ถ้ามี 4 ระดับต้องสร้าง 3
+ตัว</p>
 </div>
 <div id="option-2-dummy_cols" class="section level2">
 <h2>Option 2: <code>dummy_cols</code></h2>
@@ -658,8 +657,7 @@ summary(media1.lm)</code></pre>
 class="section level2">
 <h2>Let R codes categorical variables for you</h2>
 <p>เราสามารถใส่ตัวแปร factor ลงไปในสมการได้เลย R จะทำการ code ให้เราเอง
-(ในขั้นนี้ต้องระวัง ตัวแปรที่เป็น factor ต้องแปลงเป็น factor
-ให้เรียบร้อยก่อน)</p>
+(ในขั้นนี้ต้องระวัง ตัวแปรที่เป็น factor ต้องแปลงเป็น factor ให้เรียบร้อยก่อน)</p>
 <p>R แต่ละ version อาจจะมีวิธี code ให้แตกต่างกัน จึงควรกำหนด
 <code>contrasts = list(*var_name* = "contr.treatment")</code> เพื่อให้ R
 ใช้วิธี dummy code (ref level = 0) ใน R เรียกวิธีนี้ว่า
