@@ -120,7 +120,7 @@ random_within_set
 
 ```{r set_sortbind}
 random_set_group <- group[random_within_set] # sort group with random_within_set
-cbind(id, random_set_group)
+cbind(id, random_set_group, set)
 ```
 
 จะเห็นได้ว่า เงื่อนไขการทดลองทั้ง 3 กลุ่ม จะปรากฏในทุก ๆ 3 ตัวอย่าง แม้ว่าผู้วิจัยจะต้องหยุดเก็บข้อมูลกลางคัน (เช่น 15 ตัวอย่าง) ก็ยังได้กลุ่มตัวอย่างในแต่ละเงื่อนไขจำนวนเท่า ๆ กัน
