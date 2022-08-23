@@ -443,136 +443,247 @@ div.tocify {
 
 <h1 class="title toc-ignore">Lab 03: Power &amp; Sample Size
 Planning</h1>
+<h4 class="date">Aug 24, 2022</h4>
 
 </div>
 
 
-<p>There are two types of error a researcher can make when conductin a
-null hypothesis significance testing: Type I (<span
-class="math inline">\(\alpha\)</span>) and Type II (<span
-class="math inline">\(\beta\)</span>) errors. Type I error is the
-probability of rejecting the null hypothesis, <span
-class="math inline">\(H_0\)</span>, when it is true. In other words, it
-is the false positive rate. Conventionally, type I error is set at <span
-class="math inline">\(\alpha = .05\)</span>. Type II error is the
-probability of failing to detect a significant result, when <span
-class="math inline">\(H_0\)</span> is false; i.e., the false negative
-rate. Power is defined as <span class="math inline">\(1-\beta\)</span>
-or the probability of successfully detecting an effect, when <span
-class="math inline">\(H_0\)</span> is false.</p>
-<p>There are four parameters in power analysis.</p>
+<div id="เกรนนำ" class="section level1">
+<h1>เกริ่นนำ</h1>
+<p>ในการทดสอบสมมติฐานว่าง (null hypothesis significant testing)
+อิทธิพลที่ผู้วิจัยกำลังศึกษาอาจมีอยู่จริง (<span class="math inline">\(H_0\)</span>
+เป็นเท็จ) แต่ผลการวิเคราะห์ทางสถิติกลับไม่ถึงระดับนัยสำคัญ
+จึงไม่สามารถปฏิเสธสมมติฐานว่างได้ (fail to reject $H_0$)
+กรณีที่การวิเคราะห์ทางสถิติมีกำลังไม่พอที่จะปฏิเสธสมมติฐานว่างนี้ เรียกว่า Type II error
+เราใช้ <span class="math inline">\(\beta\)</span>
+เป็นสัญลักษณ์แทนความน่าจะเป็นที่ว่า หากสมมติฐานว่างไม่เป็นจริง
+มีความน่าจะเป็นเท่าใดที่เราจะสังเกตได้ค่าสถิติที่ไม่ถึงระดับนัยสำคัญทางสถิติ การเกิด Type II
+error ทำให้ผู้วิจัยสรุปว่าไม่พบความแตกต่างทั้งที่ความแตกต่างมีอยู่จริง หรือ ที่เรียกว่า ผลลบลวง
+(false negative)</p>
+<p>การลด Type II error (<span class="math inline">\(\beta\)</span>)
+ก็คือการเพิ่มกำลังทางสถิติ (power; <span
+class="math inline">\(1-\beta\)</span>) ในขณะที่ค่า Type I error (<span
+class="math inline">\(\alpha\)</span>) มีธรรมเนียมกำหนดไว้ที่ .05
+<em>ค่ากำลังทางสถิติมักถูกกำหนดอยู่ระหว่าง .80 - .90 ขึ้นอยู่กับผู้วิจัย</em></p>
+<p>เพื่อให้ได้กำลังทางสถิติที่เพียงพอต่อการทดสอบสมมติฐาน
+นักวิจัยสามารถดำเนินการได้หลายอย่าง เช่น
+พยายามควบคุมปัจจัยแทรกซ้อนเพื่อให้ได้ผลที่คงที่มากขึ้น
+พยายามให้กระบวนการจัดกระทำที่ทำให้เกิดผลชัดเจนหรือเกิดความแตกต่างมาก ๆ
+หรือพยายามเพิ่มกลุ่มตัวอย่างให้มากขึ้นเพื่อลดความคลาดเคลื่อนจากการสุ่มตัวอย่าง เป็นต้น</p>
+<p>การวิเคราะห์กำลังทางสถิติ(power analysis) ขึ้นอยู่กับพารามิเตอร์ 4 ตัวได้แก่</p>
 <ol style="list-style-type: decimal">
-<li>Sample size</li>
-<li>Effect size</li>
-<li>Alpha level</li>
-<li>Power level</li>
+<li>ขนาดกลุ่มตัวอย่าง</li>
+<li>ขนาดอิทธิพล</li>
+<li>ระดับค่า <span class="math inline">\(\alpha\)</span></li>
+<li>ระดับค่ากำลัง</li>
 </ol>
-<p>Knowing 3 of these 4, we can determine the remaining one. For
-example, we can conduct a priori power analysis to determine a sample
-size for a study with an effect size <span class="math inline">\(d =
-.50\)</span>, power = .80, and alpha = .05.</p>
-<p>The current practice increasingly requires researchers to justify
-their sample size before conducting a study. This was done to encourage
-a better research practice as well as reducing wasteful resource in
-doing underpowered studies.</p>
-<p>We will look at two programs for power analysis G*Power and
-<code>pwr</code> package in R.</p>
+<p>โดยปกติผู้วิจัยจะกำหนดค่า alpha และค่า power ที่ต้องการไว้ เช่น <span
+class="math inline">\(\alpha = .05\)</span> และ power = .80 เป็นต้น
+ดังนั้นผู้วิจัยจึงเหลือต้องควบคุมพารามิเตอร์อีกสองตัวที่เหลือเพื่อให้ได้ค่า power ที่ต้องการ</p>
+<p>ในการออกแบบการทดลอง ผู้วิจัยมักจะอ้างอิงรูปแบบการทดลองจากงานวิจัยที่ผ่านมา
+ด้วยเหตุนี้ผู้วิจัยจึงพอจะทราบได้ว่าผลการทดลองที่ผ่าน ๆ มีขนาดอิทธิพลประมาณเท่าใด
+(บางครั้งก็อ้างอิงได้จากการวิเคราะห์อภิมาน meta-analysis)
+ดังนั้นจึงเหลือพารามิเตอร์ตัวสุดท้าย นั่นคือ
+เราต้องใช้กลุ่มตัวอย่างขนาดเท่าใดจึงจะได้ขนาดกำลังที่ต้องการ</p>
+<p>ด้วยเหตุนี้ การวางแผนออกแบบการวิจัยเพื่อทดสอบสมมติฐาน
+ผู้วิจัยจึงควรต้องศึกษาขนาดอิทธิพลของงานวิจัยในอดีตเพื่อใช้วิเคราะห์กำลังทางสถิติ
+แล้วกำหนดว่างานวิจัยของตนนั้นจำเป็นต้องใช้กลุ่มตัวอย่างขนาดเท่าใด (งานวิจัยที่มีกำลังไม่พอ
+มีความเป็นไปได้สูงที่จะทำแล้วเสียเปล่า เพราะแม้ว่าจะมีอิทธิพลอยู่จริง
+ก็มีโอกาสสูงที่จะไม่พบความแตกต่างที่มีนัยสำคัญ)</p>
+<p>ในแบบฝึกหัดนี้เราจะได้เรียนรู้การวิเคราะห์กำลังทางสถิติเพื่อกำหนดจำนวนกลุ่มตัวอย่างโดยใช้
+G*Power และ <code>pwr</code> package ใน R</p>
+</div>
 <div id="gpower" class="section level1">
 <h1>1. G*Power</h1>
-<p>G*Power, developed by a group of researchers at
-Heinrich-Heine-Universität Düsseldorf, provides a user-friendly GUI for
-conducting power analysis. It covers wide range of statistical analysis,
-although some complicated design are still missing. You can download the
-program <a
-href="https://www.psychologie.hhu.de/arbeitsgruppen/allgemeine-psychologie-und-arbeitspsychologie/gpower">here</a>.</p>
+<p>G*Power เป็นโปรแกรมที่พัฒนาโดยกลุ่มนักวิจัยจาก Heinrich-Heine-Universität
+Düsseldorf โปรแกรมนี้มี GUI (graphic user interface) ที่ใช้งานง่ายเน้นการคลิก
+ไม่ต้องเขียนโค้ด และครอบคลุมการวิเคราะห์กำลังสำหรับสถิติที่เป็นที่นิยมค่อนข้างครบถ้วน <a
+href="https://www.psychologie.hhu.de/arbeitsgruppen/allgemeine-psychologie-und-arbeitspsychologie/gpower">ดาวน์โหลดโปรแกรมที่นี่</a></p>
 <div class="figure">
 <img src="images/Lab_power/gpower.png" alt="" />
 <p class="caption">G*Power</p>
 </div>
+<p>องค์ประกอบในหน้าต่าง</p>
 <ol style="list-style-type: decimal">
-<li>Select the test family, e.g., <em>t</em> tests, <em>F</em> tests,
-<span class="math inline">\(\chi^2\)</span> test. For this example, we
-will do an independent <em>t</em> test.</li>
-<li>Select a specific statistical test. For example, <em>t</em> tests
-can be used in many sitations: between-subject design, within-subject
-design, one-sample test, testing slopes or intercepts for regression. In
-this case, we will use “Means: Difference between two independent means
-(two groups)” for an independent <em>t</em> test.</li>
-<li>Select a type of power analysis. We will choose “A priori: Compute
-required sample size”</li>
-<li>Input relevant parameters
+<li>เมนู Test family ใช้สำหรับเลือกกลุ่มของสถิติทดสอบ เช่น <em>t</em> tests,
+<em>F</em> tests, <span class="math inline">\(\chi^2\)</span> test
+เป็นต้น</li>
+<li>เมนูสถิติทดสอบ Statistical test
+ใช้เลือกสถิติที่เฉพาะเจาะจงกับการวิเคราะห์ที่ผู้วิจัยต้องการ เช่น independent
+<em>t</em>-test, one sample <em>t</em>-test, paired <em>t</em>-test, หรือ
+การทดสอบสัมประสิทธิ์ถดถอยแต่ละตัว เป็นต้น</li>
+<li>เมนูเลือกชนิดการวิเคราะห์กำลัง (Type of power analysis) โดยปกติแล้วเราจะเลือก
+“A priori: Compute required sample size” เพื่อคำนวณจำนวนกลุ่มตัวอย่าง</li>
+<li>Input parameters
 <ol style="list-style-type: lower-roman">
-<li>Tail(s): Choose whether you use a one-tailed or two-tailed
-hypothesis.</li>
-<li>Effect size d: Cohen’<em>d</em>; hover the pointer above the box, it
-will show the conventional values. <strong>4.1</strong> The program can
-help you calculate <em>d</em> if you have information on <em>M</em> and
-<em>SD</em> for each group.</li>
-<li><span class="math inline">\(\alpha\)</span> err prob: set alpha to
-.05</li>
-<li>Power: set to .80</li>
-<li>Allocation ration N2/N1: If you will use balanced design (equal
-<em>n</em>), use 1.</li>
+<li>Tail(s): เลือกว่าการทดสอบเป็นแบบหางเดียว หรือสองหาง</li>
+<li>Effect size: ค่านี้จะแตกต่างกันไปตามสถิติที่ต้องการ
+ในตัวอย่างด้านบนเป็นการทดสอบความแตกต่างของค่าเฉลี่ยด้วย <em>t</em>-test
+ขนาดอิทธิพลที่โปรแกรมนี้ใช้คือ ค่า Cohen’<em>d</em> (หากนำเมาส์ไปวางบนกล่อง
+จะปรากฏขนาดอิทธิพลตามธรรมเนียมปฏิบัติไว้ใช้อ้างอิง) <strong>4.1</strong> ปุ่ม
+Determine หากเราไม่ทราบค่า effect size โปรแกรมสามารถช่วยคำนวณให้จากข้อมูลอื่น ๆ
+เช่น <em>M</em>, <em>SD</em>, <em>n</em> ของแต่ละกลุ่ม
+ซึ่งมักหาได้ไม่ยากจากบทความ (เช่น ตาราง descriptive statistics)</li>
+<li><span class="math inline">\(\alpha\)</span> err prob: กำหนดค่า alpha
+โดยปกติจะเป็น .05</li>
+<li>Power: กำหนดค่า power ที่ต้องการใช้ในการวิจัยของเรา โดยมากมักจะอยู่ระหว่าง .80
+- .90</li>
+<li>Allocation ration N2/N1: เมนูหลังจากนี้จะเปลี่ยนไปตามสถิติที่ใช้ ในตัวอย่างนี้ คือ
+การระบุสัดส่วนของกลุ่มตัวอย่างในสองเงื่อนไข หากสองเงื่อนไขมีกลุ่มตัวอย่างเท่ากัน ให้ค่านี้เป็น
+1</li>
 </ol></li>
-<li>Click calculate</li>
-<li>The required sample size will appear here.</li>
+<li>ปุ่ม Calculate</li>
+<li>จำนวนกลุ่มตัวอย่างที่ต้องใช้และพารามิเตอร์อื่น ๆ จะปรากฏที่กล่องนี้</li>
 </ol>
+<div id="independent-t-test-with-known-effect-size"
+class="section level2">
+<h2>1.1 Independent <em>t</em>-test with known effect size</h2>
+<p>สมมติว่าผู้วิจัยต้องการศึกษาปรากฏการณ์ ego-depletion โดยใช้งานขีดฆ่าตัวอักษร
+(crossing out letters task) ซึ่งมีการวิเคราะห์อภิมานว่ามีขนาดอิทธิพลเท่ากับ .77
+(Hagger et al., 2010)
+ผู้วิจัยจำเป็นต้องใช้กลุ่มตัวอย่างเท่าใดเพื่อที่จะพบผลที่มีนัยสำคัญทางสถิติ
+หากปรากฏการณ์นี้มีอยู่จริง</p>
+<ol style="list-style-type: decimal">
+<li>เลือก t-test ในช่อง Test family</li>
+<li>สมมติให้ออกแบบการทดลองแบบระหว่าง 2 กลุ่ม (ทดลอง-ควบคุม) ให้เลือก “Means:
+Difference between two independent means (two groups)”
+ซึ่งเป็นคำอธิบายของการทดสอบ independent <em>t</em>-test</li>
+<li>เลือก Type of power analysis เป็น “A priori: Compute required sample
+size - given <span class="math inline">\(\alpha\)</span>, power, and
+effect size”</li>
+<li>ใน input parameters
+<ol style="list-style-type: lower-roman">
+<li><p>Tail(s): เลือกเป็น One เนื่องจากเรามีทิศทางที่ตั้งสมมติฐานชัดเจน
+(หากไม่แน่ใจให้เลือก Two)</p></li>
+<li><p>Effect size d = .77 ตามค่าที่ค้นคว้าได้จากงานวิจัย</p></li>
+<li><p><span class="math inline">\(\alpha\)</span> err prob = .05
+ตามธรรมเนียม</p></li>
+<li><p>Power (1 - <span class="math inline">\(\beta\)</span> err prob) =
+.90</p></li>
+<li><p>Allocation ration N2/N1 = 1 ออกแบบเป็น balanced design
+กลุ่มตัวอย่างในสองเงื่อนไขเท่ากัน</p></li>
+</ol></li>
+</ol>
+<div class="figure">
+<img src="images/Lab_power/gpowerknownd.png" alt="" />
+<p class="caption">G*Power with known effect size <em>d</em></p>
+</div>
+<p>เพื่อให้ได้ power = .90 โดยเชื่อว่า effect size <em>d</em> = .77
+จะต้องใช้กลุ่มตัวอย่างเงื่อนไขละ 30 คน ค่าวิกฤติของสถิติทดสอบ t คือ 1.672</p>
+</div>
+</div>
+<div id="independent-t-test-with-known-m-and-sd" class="section level1">
+<h1>1.2 Independent t-test with known <em>M</em> and <em>SD</em></h1>
+<p>หากงานวิจัยที่เราใช้อ้างอิงไม่ได้รายงานค่า effect size <em>d</em>
+เราสามารถคำนวณขนาดอิทธิพลได้จากค่าเฉลี่ยและส่วนเบี่ยงเบนมาตรฐานของแต่ละกลุ่ม
+สมมติว่าในการทดสอบจำนวนคำที่ผู้เข้าร่วมการทดลองจำได้ เปรียบเทียบระหว่างเงื่อนไขทดลอง
+(<em>M</em> = 13.46 คำ, <em>SD</em> = 4.35) และเงื่อนไขควบคุม (<em>M</em> =
+11.23 คำ, <em>SD</em> = 3.85) ให้</p>
+<ol style="list-style-type: decimal">
+<li>กดปุ่ม Determine ข้างหน้าช่อง Effect size d</li>
+<li>กรอกค่า M และ SD</li>
+<li>กดปุ่ม Calculate เพื่อดูขนาด effect size หรือ กด Calculate and transfer to
+main window เพื่อนำข้อมูลไปกรอกในช่อง Effect size d</li>
+<li>กด Calculate ในหน้าต่างหลักเพื่อคำนวณ Sample size</li>
+</ol>
+<div class="figure">
+<img src="images/Lab_power/gpowerdetermine.png" alt="" />
+<p class="caption">G*Power with <em>M</em> and <em>SD</em></p>
+</div>
 </div>
 <div id="pwr-package" class="section level1">
 <h1>2. <code>pwr</code> package</h1>
 <pre class="r"><code>#install.packages(&quot;pwr&quot;)
 library(pwr)</code></pre>
-<p>You can read more about the package <a
-href="https://cran.r-project.org/web/packages/pwr/vignettes/pwr-vignette.html">here</a>.</p>
-<p>The <code>pwr</code> package provides functions for power analysis of
-many statistical tests. However, for more complex design, e.g.,
-factorial or repeated-measure, we will need to use a diferent
-package.</p>
-<p>We will take a look at <code>pwr.t.test</code> function, which is
-used to analyze power for <em>t</em> tests with two-sample(equal
-<em>n</em>), one-sample, and paired <em>t</em> tests.</p>
-<p>The function takes multiple arguments:</p>
+<p>อ่านคำแนะนำ package <a
+href="https://cran.r-project.org/web/packages/pwr/vignettes/pwr-vignette.html">ได้ที่นี่</a>.</p>
+<p><code>pwr</code> package มีคำสั่งวิเคราะห์กำลังสำหรับสถิติทดสอบหลัก ๆ ได้แก่</p>
+<ul>
+<li><code>pwr.p.test</code>: one-sample proportion test</li>
+<li><code>pwr.2p.test</code>: two-sample proportion test</li>
+<li><code>pwr.2p2n.test</code>: two-sample proportion test (unequal
+sample sizes)</li>
+<li><code>pwr.t.test</code>: two-sample, one-sample and paired
+t-tests</li>
+<li><code>pwr.t2n.test</code>: two-sample t-tests (unequal sample
+sizes)</li>
+<li><code>pwr.anova.test</code>: one-way balanced ANOVA</li>
+<li><code>pwr.r.test</code>: correlation test</li>
+<li><code>pwr.chisq.test</code>: chi-squared test (goodness of fit and
+association)</li>
+<li><code>pwr.f2.test</code>: test for the general linear model</li>
+</ul>
+<p>สำหรับการออกแบบที่ซับซ้อน เช่น factorial design หรือ repeated-measure design
+เราจะต้องใช้ package อื่น</p>
+<div id="known-effect-size" class="section level2">
+<h2>2.1 Known effect size</h2>
+<p>เราจะใช้คำสั่ง <code>pwr.t.test</code> สำหรับตัวอย่าง independent
+<em>t</em>-test เรื่อง ego-depletion ด้านบน</p>
+<p>คำสั่งนี้เรามี argument ตามด้านล่าง</p>
 <pre><code>pwr.t.test(n = NULL, 
 d = NULL, 
 sig.level = 0.05, 
 power = NULL, 
 type = c(&quot;two.sample&quot;, &quot;one.sample&quot;, &quot;paired&quot;),
 alternative = c(&quot;two.sided&quot;, &quot;less&quot;, &quot;greater&quot;))</code></pre>
-<p>To determine <code>n</code>, you will leave it out and enter only
-<code>d</code> and <code>power</code>. You also need to specify
-<code>type</code> (of <em>t</em> test) and <code>alternative</code>
-(two-tail or one-tail tests).</p>
-<p>Following the same example.</p>
-<pre class="r"><code>pwr.t.test(d=.5, sig.level=.05, power = .8, type = &quot;two.sample&quot;, alternative = &quot;two.sided&quot;)</code></pre>
+<p>เนื่องจากเราต้องการกำหนดจำนวนกลุ่มตัวอย่าง <code>n</code> เราจะไม่ใส่ argument
+นี้ในคำสั่ง</p>
+<p>กำหนดเฉพาะ <code>d</code>, <code>power</code>, <code>type</code>, และ
+<code>alternative</code> ตามตัวอย่างด้านล่าง</p>
+<pre class="r"><code>pwr.t.test(d=.77, sig.level=.05, power = .9, type = &quot;two.sample&quot;, alternative = &quot;greater&quot;)</code></pre>
 <pre><code>## 
 ##      Two-sample t test power calculation 
 ## 
-##               n = 63.76561
-##               d = 0.5
+##               n = 29.58978
+##               d = 0.77
 ##       sig.level = 0.05
-##           power = 0.8
-##     alternative = two.sided
+##           power = 0.9
+##     alternative = greater
 ## 
 ## NOTE: n is number in *each* group</code></pre>
-<p>The n in the output tells us how many participants we need for each
-group.</p>
+<p>เราจะได้ค่า <em>n</em> ออกมา (สำหรับ<strong>แต่ละ</strong>เงื่อนไข)
+จากนั้นปัดเศษ จะได้เท่ากับที่คำนวณด้วย G*Power</p>
 </div>
-<div id="plotting-a-power-graph" class="section level1">
-<h1>Plotting a power graph</h1>
-<p>You can also plot the graph showing power level and sample size for a
-certain parameters.</p>
+<div id="known-m-and-sd" class="section level2">
+<h2>2.2 Known <em>M</em> and <em>SD</em></h2>
+<p>เริ่มต้นด้วยการคำนวณ effect size Cohen’s <em>d</em> ด้วยสูตรด้านล่าง
+(กรณีกลุ่มตัวอย่างเท่ากัน)</p>
+<p><span class="math display">\[
+d = \frac{\bar{X}_1 - \bar{X}_2}{s_{p}} = \frac{\bar{X}_1 -
+\bar{X}_2}{\sqrt{\frac{s_1^2+s_2^2}{2}}}
+\]</span></p>
+<pre class="r"><code>d &lt;- (13.46 - 11.23)/sqrt((4.35^2 + 3.85^2)/2)
+d</code></pre>
+<pre><code>## [1] 0.5428941</code></pre>
+<pre class="r"><code>pwr.t.test(d=d, sig.level=.05, power = .9, type = &quot;two.sample&quot;, alternative = &quot;greater&quot;)</code></pre>
+<pre><code>## 
+##      Two-sample t test power calculation 
+## 
+##               n = 58.80131
+##               d = 0.5428941
+##       sig.level = 0.05
+##           power = 0.9
+##     alternative = greater
+## 
+## NOTE: n is number in *each* group</code></pre>
+</div>
+<div id="plotting-a-power-graph" class="section level2">
+<h2>2.3 Plotting a power graph</h2>
+<p>เราสามาถใช้คำสั่ง <code>plot()</code>
+เพื่อแสดงภาพความสัมพันธ์ระหว่างจำนวนกลุ่มตัวอย่างกับขนาดกำลัง
+ภายใต้เงื่อนไขพารามิเตอร์ที่กำหนด</p>
 <pre class="r"><code>medium_power &lt;- pwr.t.test(d=.5, sig.level=.05, power = .8, type = &quot;two.sample&quot;, alternative = &quot;two.sided&quot;)
 plot(medium_power)</code></pre>
-<p><img src="EXPRM_Lab03_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="EXPRM_Lab03_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
 </div>
 <div id="other-power-functions" class="section level1">
-<h1>Other power functions</h1>
+<h1>4. Other power functions</h1>
 <div id="one-way-anova" class="section level2">
 <h2>One-way ANOVA</h2>
-<p>We can use <code>pwr.anova.test</code> to calculate required sample
-size for a particular effect size. We will need to specify
-<code>k</code> (number of groups), <code>f</code> (Cohen’s <em>f</em>),
-and <code>power</code> (desired power level).</p>
+<p>คำสั่ง <code>pwr.anova.test</code> ใช้คำนวณกลุ่มตัวอย่างสำหรับ one-way ANOVA
+ได้ โดยเราจะต้องกำหนดจำนวนกลุ่มในการเปรียบเทียบ <code>k</code>, effect size
+แบบ Cohen’s <code>f</code> , และระดับ <code>power</code> ที่ต้องการ</p>
 <pre class="r"><code>library(pwr)
 pwr.anova.test(k = 3, f = .25, power = .8) # An example of medium effect size with three conditions. </code></pre>
 <pre><code>## 
