@@ -23,7 +23,7 @@ There are multiple functions from many packages that provide descriptive statist
 
 ```{r}
 library(psych)
-describeBy(weight ~ group, data = PlantGrowth) # This will give us detailed descriptive stats by group
+psych::describeBy(weight ~ group, data = PlantGrowth) # This will give us detailed descriptive stats by group
 
 library(apaTables)
 apa.1way.table(dv = weight, iv = group, data = PlantGrowth)
@@ -111,9 +111,9 @@ For a contrast that combine groups together, their mean and *SD* would not be re
 
 ```{r}
 trt1.trt2 <- subset(PlantGrowth, group == "trt1" | group == "trt2")
-describe(trt1.trt2$weight)
+psych::describe(trt1.trt2$weight)
 ctrl <- subset(PlantGrowth, group == "ctrl")
-describe(ctrl$weight)
+psych::describe(ctrl$weight)
 ```
 
 # Post hoc
