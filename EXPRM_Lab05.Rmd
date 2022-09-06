@@ -66,8 +66,12 @@ library(emmeans)
 First, we need to specify how many comparions do we want and represent each comparison in a coefficient matrix. Each row in the matrix represent level of a factor, in this case, `ctrl`, `trt1`, and `trt2`. It is important to note that an order of coefficients must correspond to levels of a factor. Each column represents our comparisons/contrasts.
 
 ```{r}
-contrast_m <- data.frame("trt1trt2.vs.ctrl"  = c(-1,  1/2, 1/2), # trt1 and trt2 were averaged (each weight 1/2) to compare against crl (-1)
-                         "trt1.vs.trt2"      = c( 0,    1,  -1)) # trt1 (+1) against trt2 (-1). ctrl is leftout (0).
+contrast_m <- data.frame("trt1trt2.vs.ctrl"  = c(-1,  1/2, 1/2), 
+                         "trt1.vs.trt2"      = c( 0,    1,  -1), 
+                          row.names = levels(PlantGrowth$group)) 
+# trt1 and trt2 were averaged (each weight 1/2) to compare against crl (-1)
+# trt1 (+1) against trt2 (-1). ctrl is leftout (0).
+# row.names is to make it easier to see conditions' name.
 contrast_m
 ```
 
@@ -158,10 +162,14 @@ plot(plant.pairs)
 
 If a homogeneity of variance assumption is violated, you should use Welch's one-way test instead of ANOVA. For post-hoc, you can use Game-Howell Post-hoc test from the `rstatix` package.
 
-```{r}
+```{r message=FALSE}
 # install.packages("rstatix")
 library(rstatix)
 games_howell_test(PlantGrowth, weight ~ group) # input arguments are (data, model)
+
+```
+
+```{r detach rstatix, include=FALSE}
 detach(package:rstatix)
 ```
 
@@ -171,7 +179,7 @@ To create a plot for a report, `ggplot2` is prefered over the Base R graphic.
 
 ## Bar graph
 
-```{r}
+```{r bar plot, message=FALSE}
 plant.summary <- summary(plant.emm) # create a variable containing means and SDs for each condition
 plant.summary
 
