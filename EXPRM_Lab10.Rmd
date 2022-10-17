@@ -10,10 +10,9 @@ output:
 ```{r message=FALSE, warning=FALSE}
 # load all libraries for this tutorial
 #install.packages("datarium")
-library(datarium)
-library(jmv)
-library(psych)
 library(car)
+library(datarium)
+library(psych)
 library(tidyverse)
 library(afex)
 library(effectsize)
@@ -21,7 +20,168 @@ library(emmeans)
 
 ```
 
-# Wide Format
+# Data Preparation
+
+ข้อมูลแบบวัดซ้ำ จัดเป็นข้อมูลเชิงซ้อน (nested data) ประเภทหนึ่ง กล่าวคือ การสังเกตหรือการวัด (observation) แต่ละครั้งซ้อนอยู่ในตัวกลุ่มตัวอย่างแต่ละคน การจัดการข้อมูลเชิงซ้อนนิยมทำในรูปแบบยาว (long format)
+
+ในข้อมูลแบบยาว การสังเกตแต่ละครั้งจะแสดงในแต่ละแถว ข้อมูลจากกลุ่มตัวอย่างคนเดียวกันจะถูกระบุในคอลัมน์ `id` และการวัดซ้ำแต่ละครั้งจะแสดงด้วยคอลัมน์ `Time`
+
+ในข้อมูลตัวอย่างนี้ เราใช้ชุดข้อมูล `"selfesteem"` จาก datarium ซึ่งเป็นข้อมูลคะแนนความภาคภูมิใจในตนเองของกลุ่มตัวอย่างมีจำนวน 10 คน แต่ละคนถูกวัด 3 ครั้ง
+
+*หมายเหตุ คำสั่งการวิเคราะห์ใน R เกือบทั้งหมดจะใช้รูปแบบ long format นี้เป็นหลัก ในขณะที่การวิเคราะห์แบบวัดซ้อนในโปรแกรมสถิติอื่น ๆ มักนิยมใช้แบบ wide format (หากสนใจสามารถดูรายละเอียดได้ตอนท้ายของหน้านี้)*
+
+## Restructure to long format
+
+ข้อมูลแบบกว้างจะวางคะแนนการวัดแต่ละครั้งเป็นคอลัมน์ตัวแปรเรียงต่อกันไป เราจำเป็นต้องแปลงข้อมูลนี้เป็นรูปแบบยาวก่อน
+
+```{r}
+data("selfesteem", package = "datarium")
+head(selfesteem) #wide format 
+```
+
+ข้อมูลแบบยาว (long format) นี้จะมีตัวแปรอย่างน้อย 3 ตัว ได้แต่ `id` ของกลุ่มตัวอย่างแต่ละคน `Time` ครั้งที่วัด และ `selfesteem` ตัวแปรตามที่ศึกษา
+
+เนื่องจากในกลุ่มตัวอย่าง 10 คน แต่ละคนจะถูกวัด 3 ครั้ง ข้อมูลแบบยาวจะมีทั้งหมด 30 แถว ในรูปแบบ
+
+| id  | Time  | selfesteem |
+|:----|:------|:-----------|
+| 1   | Time1 | DV_time1   |
+| 1   | Time2 | DV_time2   |
+| 1   | Time3 | DV_time3   |
+| 2   | Time1 | DV_time1   |
+| 2   | Time2 | DV_time2   |
+| 2   | Time3 | DV_time3   |
+| 3   | ...   | ...        |
+| 3   | ...   | ...        |
+| 3   | ...   | ...        |
+| 4   | ...   | ...        |
+| ... | ...   | ...        |
+
+การแปลงข้อมูลแบบกว้างเป็นแบบยาว สามารถทำได้ด้วยคำสั่ง `pivot_longer` จาก tidyr
+
+```{r}
+se_long <- tidyr::pivot_longer(selfesteem, cols = c("t1", "t2", "t3"), names_to = "Time", values_to = "selfesteem")
+
+se_long$Time <- factor(se_long$Time)
+se_long$id <- factor(se_long$id) #VERY IMPORTANT!!! If ID is numerical, the results will be incorrect.
+se_long
+```
+
+# Descriptive Statistics
+
+การดูสถิติพื้นฐานทำโดยแบ่งข้อมูลตามตัวแปรวัดซ้ำ `Time`
+
+```{r}
+describeBy(se_long$selfesteem, group = se_long$Time)
+```
+
+## Visualization
+
+```{r}
+# Base R
+boxplot(selfesteem ~ Time, data = se_long) 
+# ggplot2
+ggplot(se_long, aes(x = Time, y = selfesteem)) +
+  geom_boxplot() +
+  theme_classic()
+```
+
+# Repeated-Measures ANOVA
+
+## `afex` package
+
+การวิเคราะห์ด้วยคำสั่งในแพ็คเกจ `afex` จะให้รายละเอียดใน output มากกว่า base R
+
+เราสามารถใช้คำสั่ง `aov_car()` แล้วตามด้วยสูตรโมเดล โดยมีรูปแบบทั่วไปคือ `y ~ x + Error(id/x)`
+
+-   `x` จะเป็นตัวแปรวัดซ้ำ ในตัวอย่างนี้คือ `Time`
+
+-   `Error()` ใช้เพื่อระบุข้อมูลเชิงซ้อน เช่น `id/x` แสดงว่า ตัวแปร `x` ซ้อนอยู่ใน `id` ในที่นี้คือ การวัดแต่ละครั้ง `Time` ซ้อนอยู่ในกลุ่มตัวอย่างแต่ละคน `id` แสดงด้วย `Error(id/Time)`
+
+```{r}
+se.afex <- aov_car(selfesteem ~ Time + Error(id/Time), data = se_long)
+summary(se.afex)
+```
+
+ค่าสถิติทดสอบให้ดูที่บรรทัด Time ในบรรทัดนี้จะมีทั้งค่า *SS*~within~ (`Sum Sq`) และ *SS*~error~ (`Error SS`)ในบรรทัดเดียวกันเลย
+
+ส่วนค่า *SS*~between~ (ความเปลี่ยนแปรที่มาจากความแตกต่างบุคคล) จะอยู่ที่บรรทัด (Intercept) ในส่วนของ `Error SS`
+
+นอกจากนี้ยังมีการทดสอบ sphericity ให้โดยใช้ Mauchly test รวมไปถึงค่า epsilon ที่ได้จากวิธีประมาณการของ Greenhouse-Geisser และ Huynh-Feldt
+
+หากต้องการค่าสถิติทดสอบที่ปรับแก้แล้วของ Greenhouse-Geisser ให้ใช้คำสั่ง `nice()` ซึ่งเป็นคำสั่งเฉพาะใน `afex`คล้ายกับ `summary()` หากใช้คำสั่งนี้ จะแสดงค่าทดสอบที่ปรับแก้แล้ว (สังเกตว่า df จะถูกปรับให้มีทศนิยม)
+
+```{r}
+nice(se.afex)
+```
+
+## Normality Assumption with QQ Plot
+
+ใช้คำสั่ง `qqPlot()` จาก car
+
+```{r}
+qqPlot(residuals(se.afex))
+```
+
+# Effect size
+
+```{r}
+eta_squared(se.afex) 
+omega_squared(se.afex) 
+cohens_f(se.afex)
+```
+
+# Post-Hoc Analysis
+
+ใช้คำสั่ง `emmeans` เพื่อสร้าง estimated marginal means ไว้สำหรับทดสอบรายคู่ โดยให้แบ่งการเปรียบเทียบด้วย `Time`
+
+```{r}
+se.emm <- emmeans(se.afex, ~ Time)
+se.emm
+```
+
+คำสั่งเปรียบเทียบรายคู่
+
+```{r}
+pairs(se.emm)
+```
+
+# Contrast
+
+การทดสอบ contrast เฉพาะรายคู่ที่กำหนด ให้สร้าง contrast matrix `contrast_m` ขึ้นมาเพื่อกำหนดคู่ที่ต้องการจะเทียบ
+
+*หมายเหตุ การเรียงลำดับน้ำหนัก ต้องเรียงตาม level ของ factor ดูคำสั่ง str()*
+
+```{r}
+contrast_m <- data.frame("t1 vs t23"  = c(-1,  1/2, 1/2),
+                         "t1 vs t3"   = c( 1,    0,  -1),
+                         row.names = c("t1", "t2", "t3"))
+contrast_m
+contrast(se.emm, method = contrast_m, adjust = "sidak", infer = TRUE)
+```
+
+# Extra
+
+## Long Format with Base R `aov()`
+
+โมเดล `aov` สำหรับข้อมูลวัดซ้ำจะมีรูปแบบทั่วไปคือ `y ~ x + Error(id/x)`
+
+`x` จะเป็นตัวแปรวัดซ้ำ ในตัวอย่างนี้คือ `Time`
+
+`Error()` ใช้เพื่อระบุข้อมูลเชิงซ้อน เช่น `id/x` แสดงว่า ตัวแปร `x` ซ้อนอยู่ใน `id` ในที่นี้คือ การวัดแต่ละครั้ง `Time` ซ้อนอยู่ในกลุ่มตัวอย่างแต่ละคน `id` แสดงด้วย `Error(id/Time)`
+
+```{r}
+se.aov <- aov(selfesteem ~ Time + Error(id/Time), data = se_long)
+summary(se.aov)
+```
+
+อย่างไรก็ดีคำสั่ง `aov_car` จาก afex ให้ผล summary ที่ละเอียดกว่า จึงแนะนำให้ใช้ afex แทน
+
+## Wide Format
+
+```{r message=FALSE}
+library(jmv)
+```
 
 ข้อมูลแบบวัดซ้ำ (repeated measures) สามารถจัดได้สองแบบ คือ แบบกว้าง (wide format) และแบบยาว (long format)
 
@@ -34,7 +194,7 @@ head(selfesteem)
 
 ข้อมูลแบบกว้างเป็นการจัดข้อมูลที่นิยมใช้ใน repeated ANOVA ของโปรแกรมสถิติทั่วไป เช่น SPSS, jamovi
 
-## Descriptive Statistics
+### Descriptive Statistics
 
 การเรียกดูค่าสถิติพื้นฐานในข้อมูลแบบกว้างนี้สามารถทำเหมือนกับการเรียกดูข้อมูลของตัวแปร (คอลัมน์) แต่ละตัว
 
@@ -42,13 +202,13 @@ head(selfesteem)
 psych::describe(selfesteem[,c("t1", "t2", "t3")])
 ```
 
-## Boxplot
+### Boxplot
 
 ```{r}
 boxplot(selfesteem[,c("t1", "t2", "t3")])
 ```
 
-## Normality Assumption
+### Normality Assumption
 
 ```{r}
 shapiro.test(selfesteem$t1)
@@ -64,7 +224,7 @@ qqPlot(selfesteem$t2)
 qqPlot(selfesteem$t3)
 ```
 
-## `jmv` Package
+### `jmv` Package
 
 การวิเคราะห์ข้อมูลวัดซ้ำใน R นั้นมักจะวิเคราะห์ด้วย long format จึงไม่มีคำสั่ง Base R สำหรับวิเคราะห์ข้อมูลแบบ wide format
 
@@ -122,130 +282,4 @@ jmv::anovaRM(data = selfesteem,
              rmTerms = ~ Time,
              spherTest = TRUE,
              spherCorr = "GG")
-```
-
-# Long Format
-
-ข้อมูลแบบยาวเป็นรูปแบบที่เหมาะสำหรับข้อมูลเชิงซ้อน (nested data) การออกแบบแบบวัดซ้ำก็นับว่าเป็นข้อมูลเชิงซ้อนแบบหนึ่ง นั่นคือ การสังเกตหรือการวัด (observation) แต่ละครั้งซ้อนอยู่ในตัวกลุ่มตัวอย่างแต่ละคน
-
-ในข้อมูลแบบยาว การสังเกตแต่ละครั้งจะแสดงในแต่ละแถว ข้อมูลจากกลุ่มตัวอย่างคนเดียวกันจะถูกระบุในคอลัมน์ `id` และการวัดซ้ำแต่ละครั้งจะแสดงด้วยคอลัมน์ `Time`
-
-ในข้อมูลตัวอย่างนี้ กลุ่มตัวอย่างมีจำนวน 10 คน แต่ละคนถูกวัด 3 ครั้ง ดังนั้นข้อมูลแบบยาวจะมีทั้งหมด 30 แถว
-
-คำสั่งการวิเคราะห์ใน R เกือบทั้งหมดจะใช้รูปแบบ long format นี้เป็นหลัก
-
-```{r}
-se_long <- tidyr::pivot_longer(selfesteem, cols = c("t1", "t2", "t3"), names_to = "Time", values_to = "selfesteem")
-
-se_long$Time <- factor(se_long$Time)
-se_long$id <- factor(se_long$id) #very important. If ID is numerical, the results will be incorrect.
-se_long
-```
-
-## Descriptive Statistics
-
-การดูสถิติพื้นฐานทำโดยแบ่งข้อมูลตามตัวแปรวัดซ้ำ `Time`
-
-```{r}
-describeBy(se_long$selfesteem, group = se_long$Time)
-```
-
-เนื่องจากความคลาดเคลื่อนในข้อมูลมีที่มาจากทั้งภายในบุคคล (within-subject error) และระหว่างบุคคล (between-subject error) การประมาณค่า standard error ด้วยคำสั่งทั่วไปอย่าง `psych::describe` จึงไม่ได้สะท้อนค่าความคลาดเคลื่อนที่ใช้ในการวิเคราะห์แบบวัดซ้ำ (คือใช้เฉพาะ within error)
-
-คำสั่ง `summarySEwithin()` ใน package `Rmisc` จะแสดงค่า standard error และ CI ที่ปรับแก้ให้เหมาะสมกับการออกแบบแบบวัดซ้ำแล้ว
-
-```{r}
-Rmisc::summarySEwithin(se_long, 
-                       measurevar = "selfesteem",
-                       withinvars = "Time",
-                       idvar = "id")
-```
-
-## Visualization
-
-```{r}
-boxplot(selfesteem ~ Time, data = se_long)
-
-ggplot(se_long, aes(x = Time, y = selfesteem)) +
-  geom_boxplot()
-```
-
-## Repeated-Measures ANOVA
-
-### Base R
-
-โมเดล `aov` สำหรับข้อมูลวัดซ้ำจะมีรูปแบบทั่วไปคือ `y ~ x + Error(id/x)`
-
-`x` จะเป็นตัวแปรวัดซ้ำ ในตัวอย่างนี้คือ `Time`
-
-`Error()` ใช้เพื่อระบุข้อมูลเชิงซ้อน เช่น `id/x` แสดงว่า ตัวแปร `x` ซ้อนอยู่ใน `id` ในที่นี้คือ การวัดแต่ละครั้ง `Time` ซ้อนอยู่ในกลุ่มตัวอย่างแต่ละคน `id` แสดงด้วย `Error(id/Time)`
-
-```{r}
-se.aov <- aov(selfesteem ~ Time + Error(id/Time), data = se_long)
-summary(se.aov)
-```
-
-### `afex` package
-
-คำสั่งใน `afex` จะให้รายละเอียดใน output มากกว่า base R
-
-เราสามารถใช้คำสั่ง `aov_car()` แล้วตามด้วยสูตรโมเดลเหมือนในคำสั่ง `aov()` ด้านบน
-
-ค่าสถิติทดสอบให้ดูที่บรรทัด Time ในบรรทัดนี้จะมีทั้งค่า *SS*~within~ และ *SS*~error~ ในบรรทัดเดียวกันเลย
-
-ส่วนค่า *SS*~between~ (ความเปลี่ยนแปรที่มาจากความแตกต่างบุคคล) จะอยู่ที่บรรทัด (Intercept) ในส่วนของ `Error SS`
-
-นอกจากนี้ยังมีการทดสอบ sphericity ให้โดยใช้ Mauchly test รวมไปถึงค่า epsilon ที่ได้จากวิธีประมาณการของ Greenhouse-Geisser และ Huynh-Feldt
-
-```{r}
-se.afex <- aov_car(selfesteem ~ Time + Error(id/Time), data = se_long)
-summary(se.afex)
-```
-
-หากต้องการค่าสถิติทดสอบที่ปรับแก้แล้วของ Greenhouse-Geisser ให้ใช้คำสั่ง `nice()` ซึ่งเป็นคำสั่งเฉพาะใน `afex`คล้ายกับ `summary()` หากใช้คำสั่งนี้ จะแสดงค่าทดสอบที่ปรับแก้แล้ว
-
-```{r}
-nice(se.afex)
-```
-
-## QQ Plot
-
-```{r}
-qqPlot(residuals(se.afex))
-```
-
-## Effect size
-
-```{r}
-eta_squared(se.aov)
-eta_squared(se.afex) #same as above
-omega_squared(se.aov)
-omega_squared(se.afex) #same as above
-cohens_f(se.aov)
-cohens_f(se.afex) #same as above
-```
-
-## Post-Hoc Analysis
-
-ใช้คำสั่ง `emmeans` เพื่อสร้าง estimated marginal means ไว้สำหรับทดสอบรายคู่ โดยให้แบ่งการเปรียบเทียบด้วย `Time`
-
-```{r}
-se.emm <- emmeans(se.afex, ~ Time)
-se.emm
-```
-
-คำสั่งเปรียบเทียบรายคู่
-
-```{r}
-contrast(se.emm, "pairwise") 
-pairs(se.emm) #same as above
-```
-
-## Contrast
-
-```{r}
-contrast_m <- data.frame("t1 vs t23"  = c(-1,  1/2, 1/2),
-                         "t1 vs t3"   = c( 1,    0,  -1))
-contrast_m
-contrast(se.emm, method = contrast_m, adjust = "sidak", infer = TRUE)
 ```

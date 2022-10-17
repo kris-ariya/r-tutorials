@@ -448,16 +448,342 @@ div.tocify {
 
 <pre class="r"><code># load all libraries for this tutorial
 #install.packages(&quot;datarium&quot;)
-library(datarium)
-library(jmv)
-library(psych)
 library(car)
+library(datarium)
+library(psych)
 library(tidyverse)
 library(afex)
 library(effectsize)
 library(emmeans)</code></pre>
-<div id="wide-format" class="section level1">
-<h1>Wide Format</h1>
+<div id="data-preparation" class="section level1">
+<h1>Data Preparation</h1>
+<p>ข้อมูลแบบวัดซ้ำ จัดเป็นข้อมูลเชิงซ้อน (nested data) ประเภทหนึ่ง กล่าวคือ
+การสังเกตหรือการวัด (observation) แต่ละครั้งซ้อนอยู่ในตัวกลุ่มตัวอย่างแต่ละคน
+การจัดการข้อมูลเชิงซ้อนนิยมทำในรูปแบบยาว (long format)</p>
+<p>ในข้อมูลแบบยาว การสังเกตแต่ละครั้งจะแสดงในแต่ละแถว
+ข้อมูลจากกลุ่มตัวอย่างคนเดียวกันจะถูกระบุในคอลัมน์ <code>id</code>
+และการวัดซ้ำแต่ละครั้งจะแสดงด้วยคอลัมน์ <code>Time</code></p>
+<p>ในข้อมูลตัวอย่างนี้ เราใช้ชุดข้อมูล <code>"selfesteem"</code> จาก datarium
+ซึ่งเป็นข้อมูลคะแนนความภาคภูมิใจในตนเองของกลุ่มตัวอย่างมีจำนวน 10 คน แต่ละคนถูกวัด 3
+ครั้ง</p>
+<p><em>หมายเหตุ คำสั่งการวิเคราะห์ใน R เกือบทั้งหมดจะใช้รูปแบบ long format นี้เป็นหลัก
+ในขณะที่การวิเคราะห์แบบวัดซ้อนในโปรแกรมสถิติอื่น ๆ มักนิยมใช้แบบ wide format
+(หากสนใจสามารถดูรายละเอียดได้ตอนท้ายของหน้านี้)</em></p>
+<div id="restructure-to-long-format" class="section level2">
+<h2>Restructure to long format</h2>
+<p>ข้อมูลแบบกว้างจะวางคะแนนการวัดแต่ละครั้งเป็นคอลัมน์ตัวแปรเรียงต่อกันไป
+เราจำเป็นต้องแปลงข้อมูลนี้เป็นรูปแบบยาวก่อน</p>
+<pre class="r"><code>data(&quot;selfesteem&quot;, package = &quot;datarium&quot;)
+head(selfesteem) #wide format </code></pre>
+<pre><code>## # A tibble: 6 × 4
+##      id    t1    t2    t3
+##   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1     1  4.01  5.18  7.11
+## 2     2  2.56  6.91  6.31
+## 3     3  3.24  4.44  9.78
+## 4     4  3.42  4.71  8.35
+## 5     5  2.87  3.91  6.46
+## 6     6  2.05  5.34  6.65</code></pre>
+<p>ข้อมูลแบบยาว (long format) นี้จะมีตัวแปรอย่างน้อย 3 ตัว ได้แต่ <code>id</code>
+ของกลุ่มตัวอย่างแต่ละคน <code>Time</code> ครั้งที่วัด และ <code>selfesteem</code>
+ตัวแปรตามที่ศึกษา</p>
+<p>เนื่องจากในกลุ่มตัวอย่าง 10 คน แต่ละคนจะถูกวัด 3 ครั้ง ข้อมูลแบบยาวจะมีทั้งหมด 30 แถว
+ในรูปแบบ</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">id</th>
+<th align="left">Time</th>
+<th align="left">selfesteem</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left">Time1</td>
+<td align="left">DV_time1</td>
+</tr>
+<tr class="even">
+<td align="left">1</td>
+<td align="left">Time2</td>
+<td align="left">DV_time2</td>
+</tr>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left">Time3</td>
+<td align="left">DV_time3</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="left">Time1</td>
+<td align="left">DV_time1</td>
+</tr>
+<tr class="odd">
+<td align="left">2</td>
+<td align="left">Time2</td>
+<td align="left">DV_time2</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="left">Time3</td>
+<td align="left">DV_time3</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="left">…</td>
+<td align="left">…</td>
+</tr>
+<tr class="even">
+<td align="left">3</td>
+<td align="left">…</td>
+<td align="left">…</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="left">…</td>
+<td align="left">…</td>
+</tr>
+<tr class="even">
+<td align="left">4</td>
+<td align="left">…</td>
+<td align="left">…</td>
+</tr>
+<tr class="odd">
+<td align="left">…</td>
+<td align="left">…</td>
+<td align="left">…</td>
+</tr>
+</tbody>
+</table>
+<p>การแปลงข้อมูลแบบกว้างเป็นแบบยาว สามารถทำได้ด้วยคำสั่ง
+<code>pivot_longer</code> จาก tidyr</p>
+<pre class="r"><code>se_long &lt;- tidyr::pivot_longer(selfesteem, cols = c(&quot;t1&quot;, &quot;t2&quot;, &quot;t3&quot;), names_to = &quot;Time&quot;, values_to = &quot;selfesteem&quot;)
+
+se_long$Time &lt;- factor(se_long$Time)
+se_long$id &lt;- factor(se_long$id) #VERY IMPORTANT!!! If ID is numerical, the results will be incorrect.
+se_long</code></pre>
+<pre><code>## # A tibble: 30 × 3
+##    id    Time  selfesteem
+##    &lt;fct&gt; &lt;fct&gt;      &lt;dbl&gt;
+##  1 1     t1          4.01
+##  2 1     t2          5.18
+##  3 1     t3          7.11
+##  4 2     t1          2.56
+##  5 2     t2          6.91
+##  6 2     t3          6.31
+##  7 3     t1          3.24
+##  8 3     t2          4.44
+##  9 3     t3          9.78
+## 10 4     t1          3.42
+## # … with 20 more rows
+## # ℹ Use `print(n = ...)` to see more rows</code></pre>
+</div>
+</div>
+<div id="descriptive-statistics" class="section level1">
+<h1>Descriptive Statistics</h1>
+<p>การดูสถิติพื้นฐานทำโดยแบ่งข้อมูลตามตัวแปรวัดซ้ำ <code>Time</code></p>
+<pre class="r"><code>describeBy(se_long$selfesteem, group = se_long$Time)</code></pre>
+<pre><code>## 
+##  Descriptive statistics by group 
+## group: t1
+##    vars  n mean   sd median trimmed  mad  min  max range  skew kurtosis   se
+## X1    1 10 3.14 0.55   3.21    3.17 0.45 2.05 4.01  1.96 -0.45    -0.67 0.17
+## ------------------------------------------------------------ 
+## group: t2
+##    vars  n mean   sd median trimmed mad  min  max range skew kurtosis   se
+## X1    1 10 4.93 0.86    4.6    4.81 0.6 3.91 6.91     3 1.01     0.05 0.27
+## ------------------------------------------------------------ 
+## group: t3
+##    vars  n mean   sd median trimmed mad  min  max range skew kurtosis   se
+## X1    1 10 7.64 1.14   7.46    7.53 1.4 6.31 9.78  3.47  0.4     -1.3 0.36</code></pre>
+<div id="visualization" class="section level2">
+<h2>Visualization</h2>
+<pre class="r"><code># Base R
+boxplot(selfesteem ~ Time, data = se_long) </code></pre>
+<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code># ggplot2
+ggplot(se_long, aes(x = Time, y = selfesteem)) +
+  geom_boxplot() +
+  theme_classic()</code></pre>
+<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+</div>
+</div>
+<div id="repeated-measures-anova" class="section level1">
+<h1>Repeated-Measures ANOVA</h1>
+<div id="afex-package" class="section level2">
+<h2><code>afex</code> package</h2>
+<p>การวิเคราะห์ด้วยคำสั่งในแพ็คเกจ <code>afex</code> จะให้รายละเอียดใน output
+มากกว่า base R</p>
+<p>เราสามารถใช้คำสั่ง <code>aov_car()</code> แล้วตามด้วยสูตรโมเดล
+โดยมีรูปแบบทั่วไปคือ <code>y ~ x + Error(id/x)</code></p>
+<ul>
+<li><p><code>x</code> จะเป็นตัวแปรวัดซ้ำ ในตัวอย่างนี้คือ
+<code>Time</code></p></li>
+<li><p><code>Error()</code> ใช้เพื่อระบุข้อมูลเชิงซ้อน เช่น <code>id/x</code>
+แสดงว่า ตัวแปร <code>x</code> ซ้อนอยู่ใน <code>id</code> ในที่นี้คือ การวัดแต่ละครั้ง
+<code>Time</code> ซ้อนอยู่ในกลุ่มตัวอย่างแต่ละคน <code>id</code> แสดงด้วย
+<code>Error(id/Time)</code></p></li>
+</ul>
+<pre class="r"><code>se.afex &lt;- aov_car(selfesteem ~ Time + Error(id/Time), data = se_long)
+summary(se.afex)</code></pre>
+<pre><code>## 
+## Univariate Type III Repeated-Measures ANOVA Assuming Sphericity
+## 
+##             Sum Sq num Df Error SS den Df  F value    Pr(&gt;F)    
+## (Intercept) 822.72      1   4.5704      9 1620.085 1.795e-11 ***
+## Time        102.46      2  16.6237     18   55.469 2.014e-08 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## 
+## Mauchly Tests for Sphericity
+## 
+##      Test statistic  p-value
+## Time        0.55085 0.092076
+## 
+## 
+## Greenhouse-Geisser and Huynh-Feldt Corrections
+##  for Departure from Sphericity
+## 
+##       GG eps Pr(&gt;F[GG])    
+## Time 0.69006  2.161e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##         HF eps   Pr(&gt;F[HF])
+## Time 0.7743711 6.032582e-07</code></pre>
+<p>ค่าสถิติทดสอบให้ดูที่บรรทัด Time ในบรรทัดนี้จะมีทั้งค่า <em>SS</em><sub>within</sub>
+(<code>Sum Sq</code>) และ <em>SS</em><sub>error</sub>
+(<code>Error SS</code>)ในบรรทัดเดียวกันเลย</p>
+<p>ส่วนค่า <em>SS</em><sub>between</sub>
+(ความเปลี่ยนแปรที่มาจากความแตกต่างบุคคล) จะอยู่ที่บรรทัด (Intercept) ในส่วนของ
+<code>Error SS</code></p>
+<p>นอกจากนี้ยังมีการทดสอบ sphericity ให้โดยใช้ Mauchly test รวมไปถึงค่า epsilon
+ที่ได้จากวิธีประมาณการของ Greenhouse-Geisser และ Huynh-Feldt</p>
+<p>หากต้องการค่าสถิติทดสอบที่ปรับแก้แล้วของ Greenhouse-Geisser ให้ใช้คำสั่ง
+<code>nice()</code> ซึ่งเป็นคำสั่งเฉพาะใน <code>afex</code>คล้ายกับ
+<code>summary()</code> หากใช้คำสั่งนี้ จะแสดงค่าทดสอบที่ปรับแก้แล้ว (สังเกตว่า df
+จะถูกปรับให้มีทศนิยม)</p>
+<pre class="r"><code>nice(se.afex)</code></pre>
+<pre><code>## Anova Table (Type 3 tests)
+## 
+## Response: selfesteem
+##   Effect          df  MSE         F  ges p.value
+## 1   Time 1.38, 12.42 1.34 55.47 *** .829   &lt;.001
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;+&#39; 0.1 &#39; &#39; 1
+## 
+## Sphericity correction method: GG</code></pre>
+</div>
+<div id="normality-assumption-with-qq-plot" class="section level2">
+<h2>Normality Assumption with QQ Plot</h2>
+<p>ใช้คำสั่ง <code>qqPlot()</code> จาก car</p>
+<pre class="r"><code>qqPlot(residuals(se.afex))</code></pre>
+<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre><code>## [1] 12  8</code></pre>
+</div>
+</div>
+<div id="effect-size" class="section level1">
+<h1>Effect size</h1>
+<pre class="r"><code>eta_squared(se.afex) </code></pre>
+<pre><code>## # Effect Size for ANOVA (Type III)
+## 
+## Parameter | Eta2 (partial) |       95% CI
+## -----------------------------------------
+## Time      |           0.86 | [0.74, 1.00]
+## 
+## - One-sided CIs: upper bound fixed at [1.00].</code></pre>
+<pre class="r"><code>omega_squared(se.afex) </code></pre>
+<pre><code>## # Effect Size for ANOVA (Type III)
+## 
+## Parameter | Omega2 (partial) |       95% CI
+## -------------------------------------------
+## Time      |             0.81 | [0.64, 1.00]
+## 
+## - One-sided CIs: upper bound fixed at [1.00].</code></pre>
+<pre class="r"><code>cohens_f(se.afex)</code></pre>
+<pre><code>## # Effect Size for ANOVA (Type III)
+## 
+## Parameter | Cohen&#39;s f (partial) |      95% CI
+## ---------------------------------------------
+## Time      |                2.48 | [1.67, Inf]
+## 
+## - One-sided CIs: upper bound fixed at [Inf].</code></pre>
+</div>
+<div id="post-hoc-analysis" class="section level1">
+<h1>Post-Hoc Analysis</h1>
+<p>ใช้คำสั่ง <code>emmeans</code> เพื่อสร้าง estimated marginal means
+ไว้สำหรับทดสอบรายคู่ โดยให้แบ่งการเปรียบเทียบด้วย <code>Time</code></p>
+<pre class="r"><code>se.emm &lt;- emmeans(se.afex, ~ Time)
+se.emm</code></pre>
+<pre><code>##  Time emmean    SE df lower.CL upper.CL
+##  t1     3.14 0.174  9     2.75     3.53
+##  t2     4.93 0.273  9     4.32     5.55
+##  t3     7.64 0.361  9     6.82     8.45
+## 
+## Confidence level used: 0.95</code></pre>
+<p>คำสั่งเปรียบเทียบรายคู่</p>
+<pre class="r"><code>pairs(se.emm)</code></pre>
+<pre><code>##  contrast estimate    SE df t.ratio p.value
+##  t1 - t2     -1.79 0.361  9  -4.968  0.0020
+##  t1 - t3     -4.50 0.340  9 -13.228  &lt;.0001
+##  t2 - t3     -2.70 0.555  9  -4.868  0.0023
+## 
+## P value adjustment: tukey method for comparing a family of 3 estimates</code></pre>
+</div>
+<div id="contrast" class="section level1">
+<h1>Contrast</h1>
+<p>การทดสอบ contrast เฉพาะรายคู่ที่กำหนด ให้สร้าง contrast matrix
+<code>contrast_m</code> ขึ้นมาเพื่อกำหนดคู่ที่ต้องการจะเทียบ</p>
+<p><em>หมายเหตุ การเรียงลำดับน้ำหนัก ต้องเรียงตาม level ของ factor ดูคำสั่ง
+str()</em></p>
+<pre class="r"><code>contrast_m &lt;- data.frame(&quot;t1 vs t23&quot;  = c(-1,  1/2, 1/2),
+                         &quot;t1 vs t3&quot;   = c( 1,    0,  -1),
+                         row.names = c(&quot;t1&quot;, &quot;t2&quot;, &quot;t3&quot;))
+contrast_m</code></pre>
+<pre><code>##    t1.vs.t23 t1.vs.t3
+## t1      -1.0        1
+## t2       0.5        0
+## t3       0.5       -1</code></pre>
+<pre class="r"><code>contrast(se.emm, method = contrast_m, adjust = &quot;sidak&quot;, infer = TRUE)</code></pre>
+<pre><code>##  contrast  estimate    SE df lower.CL upper.CL t.ratio p.value
+##  t1.vs.t23     3.15 0.214  9     2.57     3.72  14.678  &lt;.0001
+##  t1.vs.t3     -4.50 0.340  9    -5.41    -3.59 -13.228  &lt;.0001
+## 
+## Confidence level used: 0.95 
+## Conf-level adjustment: sidak method for 2 estimates 
+## P value adjustment: sidak method for 2 tests</code></pre>
+</div>
+<div id="extra" class="section level1">
+<h1>Extra</h1>
+<div id="long-format-with-base-r-aov" class="section level2">
+<h2>Long Format with Base R <code>aov()</code></h2>
+<p>โมเดล <code>aov</code> สำหรับข้อมูลวัดซ้ำจะมีรูปแบบทั่วไปคือ
+<code>y ~ x + Error(id/x)</code></p>
+<p><code>x</code> จะเป็นตัวแปรวัดซ้ำ ในตัวอย่างนี้คือ <code>Time</code></p>
+<p><code>Error()</code> ใช้เพื่อระบุข้อมูลเชิงซ้อน เช่น <code>id/x</code> แสดงว่า
+ตัวแปร <code>x</code> ซ้อนอยู่ใน <code>id</code> ในที่นี้คือ การวัดแต่ละครั้ง
+<code>Time</code> ซ้อนอยู่ในกลุ่มตัวอย่างแต่ละคน <code>id</code> แสดงด้วย
+<code>Error(id/Time)</code></p>
+<pre class="r"><code>se.aov &lt;- aov(selfesteem ~ Time + Error(id/Time), data = se_long)
+summary(se.aov)</code></pre>
+<pre><code>## 
+## Error: id
+##           Df Sum Sq Mean Sq F value Pr(&gt;F)
+## Residuals  9   4.57  0.5078               
+## 
+## Error: id:Time
+##           Df Sum Sq Mean Sq F value   Pr(&gt;F)    
+## Time       2 102.46   51.23   55.47 2.01e-08 ***
+## Residuals 18  16.62    0.92                     
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>อย่างไรก็ดีคำสั่ง <code>aov_car</code> จาก afex ให้ผล summary ที่ละเอียดกว่า
+จึงแนะนำให้ใช้ afex แทน</p>
+</div>
+<div id="wide-format" class="section level2">
+<h2>Wide Format</h2>
+<pre class="r"><code>library(jmv)</code></pre>
 <p>ข้อมูลแบบวัดซ้ำ (repeated measures) สามารถจัดได้สองแบบ คือ แบบกว้าง (wide
 format) และแบบยาว (long format)</p>
 <p>ในการจัดข้อมูลแบบกว้าง แต่ละแถว (row) จะแทนกลุ่มตัวอย่างแต่ละคน
@@ -475,8 +801,8 @@ head(selfesteem)</code></pre>
 ## 6     6  2.05  5.34  6.65</code></pre>
 <p>ข้อมูลแบบกว้างเป็นการจัดข้อมูลที่นิยมใช้ใน repeated ANOVA ของโปรแกรมสถิติทั่วไป เช่น
 SPSS, jamovi</p>
-<div id="descriptive-statistics" class="section level2">
-<h2>Descriptive Statistics</h2>
+<div id="descriptive-statistics-1" class="section level3">
+<h3>Descriptive Statistics</h3>
 <p>การเรียกดูค่าสถิติพื้นฐานในข้อมูลแบบกว้างนี้สามารถทำเหมือนกับการเรียกดูข้อมูลของตัวแปร
 (คอลัมน์) แต่ละตัว</p>
 <pre class="r"><code>psych::describe(selfesteem[,c(&quot;t1&quot;, &quot;t2&quot;, &quot;t3&quot;)])</code></pre>
@@ -485,13 +811,13 @@ SPSS, jamovi</p>
 ## t2    2 10 4.93 0.86   4.60    4.81 0.60 3.91 6.91  3.00  1.01     0.05 0.27
 ## t3    3 10 7.64 1.14   7.46    7.53 1.40 6.31 9.78  3.47  0.40    -1.30 0.36</code></pre>
 </div>
-<div id="boxplot" class="section level2">
-<h2>Boxplot</h2>
+<div id="boxplot" class="section level3">
+<h3>Boxplot</h3>
 <pre class="r"><code>boxplot(selfesteem[,c(&quot;t1&quot;, &quot;t2&quot;, &quot;t3&quot;)])</code></pre>
-<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 </div>
-<div id="normality-assumption" class="section level2">
-<h2>Normality Assumption</h2>
+<div id="normality-assumption" class="section level3">
+<h3>Normality Assumption</h3>
 <pre class="r"><code>shapiro.test(selfesteem$t1)</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
@@ -513,17 +839,17 @@ SPSS, jamovi</p>
 <p>สำหรับ QQ plot เราจะใช้คำสั่ง <code>qqPlot</code> (P ตัวใหญ่) จาก package
 <code>car</code></p>
 <pre class="r"><code>car::qqPlot(selfesteem$t1)</code></pre>
-<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 <pre><code>## [1] 6 1</code></pre>
 <pre class="r"><code>qqPlot(selfesteem$t2)</code></pre>
-<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-19-2.png" width="672" /></p>
 <pre><code>## [1] 2 5</code></pre>
 <pre class="r"><code>qqPlot(selfesteem$t3)</code></pre>
-<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-6-3.png" width="672" /></p>
+<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-19-3.png" width="672" /></p>
 <pre><code>## [1] 3 2</code></pre>
 </div>
-<div id="jmv-package" class="section level2">
-<h2><code>jmv</code> Package</h2>
+<div id="jmv-package" class="section level3">
+<h3><code>jmv</code> Package</h3>
 <p>การวิเคราะห์ข้อมูลวัดซ้ำใน R นั้นมักจะวิเคราะห์ด้วย long format จึงไม่มีคำสั่ง Base R
 สำหรับวิเคราะห์ข้อมูลแบบ wide format</p>
 <p>ถ้าต้องการวิเคราะห์ด้วย wide format เราสามารถใช้คำสั่ง <code>anovaRM</code>
@@ -636,261 +962,6 @@ SPSS, jamovi</p>
 ##    Time      0.5508534    0.0920755               0.6900613        0.7743711   
 ##  ─────────────────────────────────────────────────────────────────────────────</code></pre>
 </div>
-</div>
-<div id="long-format" class="section level1">
-<h1>Long Format</h1>
-<p>ข้อมูลแบบยาวเป็นรูปแบบที่เหมาะสำหรับข้อมูลเชิงซ้อน (nested data)
-การออกแบบแบบวัดซ้ำก็นับว่าเป็นข้อมูลเชิงซ้อนแบบหนึ่ง นั่นคือ การสังเกตหรือการวัด
-(observation) แต่ละครั้งซ้อนอยู่ในตัวกลุ่มตัวอย่างแต่ละคน</p>
-<p>ในข้อมูลแบบยาว การสังเกตแต่ละครั้งจะแสดงในแต่ละแถว
-ข้อมูลจากกลุ่มตัวอย่างคนเดียวกันจะถูกระบุในคอลัมน์ <code>id</code>
-และการวัดซ้ำแต่ละครั้งจะแสดงด้วยคอลัมน์ <code>Time</code></p>
-<p>ในข้อมูลตัวอย่างนี้ กลุ่มตัวอย่างมีจำนวน 10 คน แต่ละคนถูกวัด 3 ครั้ง
-ดังนั้นข้อมูลแบบยาวจะมีทั้งหมด 30 แถว</p>
-<p>คำสั่งการวิเคราะห์ใน R เกือบทั้งหมดจะใช้รูปแบบ long format นี้เป็นหลัก</p>
-<pre class="r"><code>se_long &lt;- tidyr::pivot_longer(selfesteem, cols = c(&quot;t1&quot;, &quot;t2&quot;, &quot;t3&quot;), names_to = &quot;Time&quot;, values_to = &quot;selfesteem&quot;)
-
-se_long$Time &lt;- factor(se_long$Time)
-se_long$id &lt;- factor(se_long$id) #very important. If ID is numerical, the results will be incorrect.
-se_long</code></pre>
-<pre><code>## # A tibble: 30 × 3
-##    id    Time  selfesteem
-##    &lt;fct&gt; &lt;fct&gt;      &lt;dbl&gt;
-##  1 1     t1          4.01
-##  2 1     t2          5.18
-##  3 1     t3          7.11
-##  4 2     t1          2.56
-##  5 2     t2          6.91
-##  6 2     t3          6.31
-##  7 3     t1          3.24
-##  8 3     t2          4.44
-##  9 3     t3          9.78
-## 10 4     t1          3.42
-## # … with 20 more rows
-## # ℹ Use `print(n = ...)` to see more rows</code></pre>
-<div id="descriptive-statistics-1" class="section level2">
-<h2>Descriptive Statistics</h2>
-<p>การดูสถิติพื้นฐานทำโดยแบ่งข้อมูลตามตัวแปรวัดซ้ำ <code>Time</code></p>
-<pre class="r"><code>describeBy(se_long$selfesteem, group = se_long$Time)</code></pre>
-<pre><code>## 
-##  Descriptive statistics by group 
-## group: t1
-##    vars  n mean   sd median trimmed  mad  min  max range  skew kurtosis   se
-## X1    1 10 3.14 0.55   3.21    3.17 0.45 2.05 4.01  1.96 -0.45    -0.67 0.17
-## -------------------------------------------------------------------------------- 
-## group: t2
-##    vars  n mean   sd median trimmed mad  min  max range skew kurtosis   se
-## X1    1 10 4.93 0.86    4.6    4.81 0.6 3.91 6.91     3 1.01     0.05 0.27
-## -------------------------------------------------------------------------------- 
-## group: t3
-##    vars  n mean   sd median trimmed mad  min  max range skew kurtosis   se
-## X1    1 10 7.64 1.14   7.46    7.53 1.4 6.31 9.78  3.47  0.4     -1.3 0.36</code></pre>
-<p>เนื่องจากความคลาดเคลื่อนในข้อมูลมีที่มาจากทั้งภายในบุคคล (within-subject error)
-และระหว่างบุคคล (between-subject error) การประมาณค่า standard error
-ด้วยคำสั่งทั่วไปอย่าง <code>psych::describe</code>
-จึงไม่ได้สะท้อนค่าความคลาดเคลื่อนที่ใช้ในการวิเคราะห์แบบวัดซ้ำ (คือใช้เฉพาะ within
-error)</p>
-<p>คำสั่ง <code>summarySEwithin()</code> ใน package <code>Rmisc</code>
-จะแสดงค่า standard error และ CI ที่ปรับแก้ให้เหมาะสมกับการออกแบบแบบวัดซ้ำแล้ว</p>
-<pre class="r"><code>Rmisc::summarySEwithin(se_long, 
-                       measurevar = &quot;selfesteem&quot;,
-                       withinvars = &quot;Time&quot;,
-                       idvar = &quot;id&quot;)</code></pre>
-<pre><code>##   Time  N selfesteem       sd        se        ci
-## 1   t1 10   3.140122 0.553252 0.1749536 0.3957727
-## 2   t2 10   4.933942 1.126689 0.3562904 0.8059850
-## 3   t3 10   7.636342 1.093209 0.3457030 0.7820346</code></pre>
-</div>
-<div id="visualization" class="section level2">
-<h2>Visualization</h2>
-<pre class="r"><code>boxplot(selfesteem ~ Time, data = se_long)</code></pre>
-<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
-<pre class="r"><code>ggplot(se_long, aes(x = Time, y = selfesteem)) +
-  geom_boxplot()</code></pre>
-<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
-</div>
-<div id="repeated-measures-anova" class="section level2">
-<h2>Repeated-Measures ANOVA</h2>
-<div id="base-r" class="section level3">
-<h3>Base R</h3>
-<p>โมเดล <code>aov</code> สำหรับข้อมูลวัดซ้ำจะมีรูปแบบทั่วไปคือ
-<code>y ~ x + Error(id/x)</code></p>
-<p><code>x</code> จะเป็นตัวแปรวัดซ้ำ ในตัวอย่างนี้คือ <code>Time</code></p>
-<p><code>Error()</code> ใช้เพื่อระบุข้อมูลเชิงซ้อน เช่น <code>id/x</code> แสดงว่า
-ตัวแปร <code>x</code> ซ้อนอยู่ใน <code>id</code> ในที่นี้คือ การวัดแต่ละครั้ง
-<code>Time</code> ซ้อนอยู่ในกลุ่มตัวอย่างแต่ละคน <code>id</code> แสดงด้วย
-<code>Error(id/Time)</code></p>
-<pre class="r"><code>se.aov &lt;- aov(selfesteem ~ Time + Error(id/Time), data = se_long)
-summary(se.aov)</code></pre>
-<pre><code>## 
-## Error: id
-##           Df Sum Sq Mean Sq F value Pr(&gt;F)
-## Residuals  9   4.57  0.5078               
-## 
-## Error: id:Time
-##           Df Sum Sq Mean Sq F value   Pr(&gt;F)    
-## Time       2 102.46   51.23   55.47 2.01e-08 ***
-## Residuals 18  16.62    0.92                     
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-</div>
-<div id="afex-package" class="section level3">
-<h3><code>afex</code> package</h3>
-<p>คำสั่งใน <code>afex</code> จะให้รายละเอียดใน output มากกว่า base R</p>
-<p>เราสามารถใช้คำสั่ง <code>aov_car()</code> แล้วตามด้วยสูตรโมเดลเหมือนในคำสั่ง
-<code>aov()</code> ด้านบน</p>
-<p>ค่าสถิติทดสอบให้ดูที่บรรทัด Time ในบรรทัดนี้จะมีทั้งค่า <em>SS</em><sub>within</sub>
-และ <em>SS</em><sub>error</sub> ในบรรทัดเดียวกันเลย</p>
-<p>ส่วนค่า <em>SS</em><sub>between</sub>
-(ความเปลี่ยนแปรที่มาจากความแตกต่างบุคคล) จะอยู่ที่บรรทัด (Intercept) ในส่วนของ
-<code>Error SS</code></p>
-<p>นอกจากนี้ยังมีการทดสอบ sphericity ให้โดยใช้ Mauchly test รวมไปถึงค่า epsilon
-ที่ได้จากวิธีประมาณการของ Greenhouse-Geisser และ Huynh-Feldt</p>
-<pre class="r"><code>se.afex &lt;- aov_car(selfesteem ~ Time + Error(id/Time), data = se_long)
-summary(se.afex)</code></pre>
-<pre><code>## 
-## Univariate Type III Repeated-Measures ANOVA Assuming Sphericity
-## 
-##             Sum Sq num Df Error SS den Df  F value    Pr(&gt;F)    
-## (Intercept) 822.72      1   4.5704      9 1620.085 1.795e-11 ***
-## Time        102.46      2  16.6237     18   55.469 2.014e-08 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## 
-## Mauchly Tests for Sphericity
-## 
-##      Test statistic  p-value
-## Time        0.55085 0.092076
-## 
-## 
-## Greenhouse-Geisser and Huynh-Feldt Corrections
-##  for Departure from Sphericity
-## 
-##       GG eps Pr(&gt;F[GG])    
-## Time 0.69006  2.161e-06 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-##         HF eps   Pr(&gt;F[HF])
-## Time 0.7743711 6.032582e-07</code></pre>
-<p>หากต้องการค่าสถิติทดสอบที่ปรับแก้แล้วของ Greenhouse-Geisser ให้ใช้คำสั่ง
-<code>nice()</code> ซึ่งเป็นคำสั่งเฉพาะใน <code>afex</code>คล้ายกับ
-<code>summary()</code> หากใช้คำสั่งนี้ จะแสดงค่าทดสอบที่ปรับแก้แล้ว</p>
-<pre class="r"><code>nice(se.afex)</code></pre>
-<pre><code>## Anova Table (Type 3 tests)
-## 
-## Response: selfesteem
-##   Effect          df  MSE         F  ges p.value
-## 1   Time 1.38, 12.42 1.34 55.47 *** .829   &lt;.001
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;+&#39; 0.1 &#39; &#39; 1
-## 
-## Sphericity correction method: GG</code></pre>
-</div>
-</div>
-<div id="qq-plot" class="section level2">
-<h2>QQ Plot</h2>
-<pre class="r"><code>qqPlot(residuals(se.afex))</code></pre>
-<p><img src="EXPRM_Lab10_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
-<pre><code>## [1] 12  8</code></pre>
-</div>
-<div id="effect-size" class="section level2">
-<h2>Effect size</h2>
-<pre class="r"><code>eta_squared(se.aov)</code></pre>
-<pre><code>## # Effect Size for ANOVA (Type I)
-## 
-## Group   | Parameter | Eta2 (partial) |       95% CI
-## ---------------------------------------------------
-## id:Time |      Time |           0.86 | [0.74, 1.00]
-## 
-## - One-sided CIs: upper bound fixed at [1.00].</code></pre>
-<pre class="r"><code>eta_squared(se.afex) #same as above</code></pre>
-<pre><code>## # Effect Size for ANOVA (Type III)
-## 
-## Parameter | Eta2 (partial) |       95% CI
-## -----------------------------------------
-## Time      |           0.86 | [0.74, 1.00]
-## 
-## - One-sided CIs: upper bound fixed at [1.00].</code></pre>
-<pre class="r"><code>omega_squared(se.aov)</code></pre>
-<pre><code>## # Effect Size for ANOVA (Type I)
-## 
-## Group   | Parameter | Omega2 (partial) |       95% CI
-## -----------------------------------------------------
-## id:Time |      Time |             0.81 | [0.64, 1.00]
-## 
-## - One-sided CIs: upper bound fixed at [1.00].</code></pre>
-<pre class="r"><code>omega_squared(se.afex) #same as above</code></pre>
-<pre><code>## # Effect Size for ANOVA (Type III)
-## 
-## Parameter | Omega2 (partial) |       95% CI
-## -------------------------------------------
-## Time      |             0.81 | [0.64, 1.00]
-## 
-## - One-sided CIs: upper bound fixed at [1.00].</code></pre>
-<pre class="r"><code>cohens_f(se.aov)</code></pre>
-<pre><code>## # Effect Size for ANOVA (Type I)
-## 
-## Group   | Parameter | Cohen&#39;s f (partial) |      95% CI
-## -------------------------------------------------------
-## id:Time |      Time |                2.48 | [1.67, Inf]
-## 
-## - One-sided CIs: upper bound fixed at [Inf].</code></pre>
-<pre class="r"><code>cohens_f(se.afex) #same as above</code></pre>
-<pre><code>## # Effect Size for ANOVA (Type III)
-## 
-## Parameter | Cohen&#39;s f (partial) |      95% CI
-## ---------------------------------------------
-## Time      |                2.48 | [1.67, Inf]
-## 
-## - One-sided CIs: upper bound fixed at [Inf].</code></pre>
-</div>
-<div id="post-hoc-analysis" class="section level2">
-<h2>Post-Hoc Analysis</h2>
-<p>ใช้คำสั่ง <code>emmeans</code> เพื่อสร้าง estimated marginal means
-ไว้สำหรับทดสอบรายคู่ โดยให้แบ่งการเปรียบเทียบด้วย <code>Time</code></p>
-<pre class="r"><code>se.emm &lt;- emmeans(se.afex, ~ Time)
-se.emm</code></pre>
-<pre><code>##  Time emmean    SE df lower.CL upper.CL
-##  t1     3.14 0.174  9     2.75     3.53
-##  t2     4.93 0.273  9     4.32     5.55
-##  t3     7.64 0.361  9     6.82     8.45
-## 
-## Confidence level used: 0.95</code></pre>
-<p>คำสั่งเปรียบเทียบรายคู่</p>
-<pre class="r"><code>contrast(se.emm, &quot;pairwise&quot;) </code></pre>
-<pre><code>##  contrast estimate    SE df t.ratio p.value
-##  t1 - t2     -1.79 0.361  9  -4.968  0.0020
-##  t1 - t3     -4.50 0.340  9 -13.228  &lt;.0001
-##  t2 - t3     -2.70 0.555  9  -4.868  0.0023
-## 
-## P value adjustment: tukey method for comparing a family of 3 estimates</code></pre>
-<pre class="r"><code>pairs(se.emm) #same as above</code></pre>
-<pre><code>##  contrast estimate    SE df t.ratio p.value
-##  t1 - t2     -1.79 0.361  9  -4.968  0.0020
-##  t1 - t3     -4.50 0.340  9 -13.228  &lt;.0001
-##  t2 - t3     -2.70 0.555  9  -4.868  0.0023
-## 
-## P value adjustment: tukey method for comparing a family of 3 estimates</code></pre>
-</div>
-<div id="contrast" class="section level2">
-<h2>Contrast</h2>
-<pre class="r"><code>contrast_m &lt;- data.frame(&quot;t1 vs t23&quot;  = c(-1,  1/2, 1/2),
-                         &quot;t1 vs t3&quot;   = c( 1,    0,  -1))
-contrast_m</code></pre>
-<pre><code>##   t1.vs.t23 t1.vs.t3
-## 1      -1.0        1
-## 2       0.5        0
-## 3       0.5       -1</code></pre>
-<pre class="r"><code>contrast(se.emm, method = contrast_m, adjust = &quot;sidak&quot;, infer = TRUE)</code></pre>
-<pre><code>##  contrast  estimate    SE df lower.CL upper.CL t.ratio p.value
-##  t1.vs.t23     3.15 0.214  9     2.57     3.72  14.678  &lt;.0001
-##  t1.vs.t3     -4.50 0.340  9    -5.41    -3.59 -13.228  &lt;.0001
-## 
-## Confidence level used: 0.95 
-## Conf-level adjustment: sidak method for 2 estimates 
-## P value adjustment: sidak method for 2 tests</code></pre>
 </div>
 </div>
 
