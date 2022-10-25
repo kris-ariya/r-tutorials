@@ -13,7 +13,7 @@
 
 <title>Lab 11: Factorial ANOVA in Repeated-Measures Design</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -144,11 +144,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -177,8 +181,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -186,16 +190,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -456,9 +453,8 @@ library(afex)
 library(effectsize)
 library(emmeans)
 library(datarium)</code></pre>
-<div id="mixed-anova-between--within-subjects-factor"
-class="section level1">
-<h1>Mixed ANOVA (Between- &amp; Within-Subjects Factor)</h1>
+<div id="mixed-anova-within-between-design" class="section level1">
+<h1>Mixed ANOVA (Within-Between Design)</h1>
 <div id="data-preparation" class="section level2">
 <h2>Data Preparation</h2>
 <p>ใน tutorial นี้เราจะใช้ข้อมูล <code>ChickWeight</code> จาก dataset ของ R
@@ -539,7 +535,8 @@ III ดังนั้นเราจะใช้ afex ในการคำน�
 <pre><code>## Warning: Missing values for following ID(s):
 ## 18, 16, 15, 8, 44
 ## Removing those cases from the analysis.</code></pre>
-<pre class="r"><code>summary(chick.afex) # regular ANOVA</code></pre>
+<pre><code>## Contrasts set to contr.sum for the following variables: Diet</code></pre>
+<pre class="r"><code>summary(chick.afex) # RM ANOVA</code></pre>
 <pre><code>## 
 ## Univariate Type III Repeated-Measures ANOVA Assuming Sphericity
 ## 
@@ -571,7 +568,7 @@ III ดังนั้นเราจะใช้ afex ในการคำน�
 ##              HF eps   Pr(&gt;F[HF])
 ## Time      0.1160483 8.633944e-25
 ## Diet:Time 0.1160483 1.001674e-02</code></pre>
-<pre class="r"><code>nice(chick.afex, es = &quot;pes&quot;) # GG correction + partial eta squared</code></pre>
+<pre class="r"><code>nice(chick.afex, correction = &quot;GG&quot;, es = &quot;pes&quot;) # GG correction + partial eta squared</code></pre>
 <pre><code>## Anova Table (Type 3 tests)
 ## 
 ## Response: weight
@@ -586,6 +583,11 @@ III ดังนั้นเราจะใช้ afex ในการคำน�
 </div>
 <div id="effect-size" class="section level2">
 <h2>Effect size</h2>
+<p>ค่า partial eta squared ได้แสดงในคอลัมน์ <code>pes</code> จากคำสั่ง
+<code>nice()</code> แล้ว แต่ถ้าหากต้องการคำนวณแยกสามารถใช้คำสั่งจาก effectsize
+package ได้</p>
+<p>โดยทั่วไปแล้ว สำหรับ Repeated-Measure ANOVA จะนิยมรายงานค่า partial <span
+class="math inline">\(\eta^2\)</span></p>
 <pre class="r"><code>eta_squared(chick.afex)</code></pre>
 <pre><code>## # Effect Size for ANOVA (Type III)
 ## 
@@ -847,120 +849,6 @@ chick.emm.summary</code></pre>
   theme_classic()</code></pre>
 <p><img src="EXPRM_Lab11_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
-<div id="jmv" class="section level2">
-<h2>jmv</h2>
-<div id="convert-to-wide-format" class="section level3">
-<h3>Convert to wide format</h3>
-<p>เพื่อใช้คำสั่งใน jmv จะต้องเปลี่ยนข้อมูลเป็นแบบกว้าง (wide format)</p>
-<p>ในข้อมูลแบบกว้าง แต่ละแถวจะแทนกลุ่มตัวอย่าง ตัวแปรตาม (น้ำหนัก)
-จะถูกแสดงแยกคอลัมน์ตามจำนวนการวัดซ้ำ (เช่น weight.time0 ถึง time21 จำนวน 12
-คอลัมน์)</p>
-<p>ตัวแปรระหว่างบุคคล (between-subjects)
-จะถูกแสดงด้วยคอลัมน์ตัวแปรตามตัวจำนวนตัวแปรระหว่างบุคคล เช่น เงื่อนไข Diet 1
-คอลัมน์</p>
-<p>คำสั่งที่ใช้คือ <code>tidyr::pivot_wider</code> โดยกำหนด option ดังนี้</p>
-<p><code>data</code> = data frame ข้อมูลแบบยาวที่ต้องการแปลงเป็นกว้าง</p>
-<p><code>id_cols</code> = ข้อมูลที่เป็นระหว่างบุคคล (เช่น รหัสประจำตัว
-<code>Chick</code> และ เงื่อนไขอาหาร <code>Diet</code>)</p>
-<p><code>names_from</code> = ชื่อของตัวแปรที่วัดซ้ำ (ปกติคือ ​level ของ
-within-subject factor เช่น <code>Time</code> มีระดับ Time0, Time2, Time4,
-…</p>
-<p><code>names_prefix</code> = string ที่ต้องการใส่หน้าชื่อ level ที่มาจาก
-<code>names_from</code> เช่น “weight.” จะนำหน้า 0, 2, 4, .., 21 ซึ่งเป็น
-level ของตัวแปร <code>Time</code> ทำให้ได้ชื่อตัวแปร เช่น
-<code>weight.Time2</code> เป็นต้น</p>
-<p><code>values_from</code> = ค่าของตัวแปรตามที่มีการวัดซ้ำ เช่น
-<code>weight</code></p>
-<pre class="r"><code>chick_wide &lt;- pivot_wider(data = ChickWeight, id_cols = c(Chick, Diet), names_from = Time, names_prefix = &quot;weight.&quot;, values_from = weight)
-head(chick_wide)</code></pre>
-<pre><code>## # A tibble: 6 × 14
-##   Chick Diet  weight.Time0 weight…¹ weigh…² weigh…³ weigh…⁴ weigh…⁵ weigh…⁶ weigh…⁷ weigh…⁸ weigh…⁹ weigh…˟
-##   &lt;ord&gt; &lt;fct&gt;        &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-## 1 1     1               42       51      59      64      76      93     106     125     149     171     199
-## 2 2     1               40       49      58      72      84     103     122     138     162     187     209
-## 3 3     1               43       39      55      67      84      99     115     138     163     187     198
-## 4 4     1               42       49      56      67      74      87     102     108     136     154     160
-## 5 5     1               41       42      48      60      79     106     141     164     197     199     220
-## 6 6     1               41       49      59      74      97     124     141     148     155     160     160
-## # … with 1 more variable: weight.Time21 &lt;dbl&gt;, and abbreviated variable names ¹​weight.Time2,
-## #   ²​weight.Time4, ³​weight.Time6, ⁴​weight.Time8, ⁵​weight.Time10, ⁶​weight.Time12, ⁷​weight.Time14,
-## #   ⁸​weight.Time16, ⁹​weight.Time18, ˟​weight.Time20
-## # ℹ Use `colnames()` to see all variable names</code></pre>
-<p>วิเคราะห์ด้วย <code>anovaRM</code></p>
-<pre class="r"><code>anovaRM(chick_wide, 
-        rm = list(list(
-                       label = &quot;Time&quot;,
-                       levels = levels(ChickWeight$Time)
-                       )),
-        rmCells=list(
-                     list(measure=&quot;weight.Time0&quot;,
-                           cell = &quot;Time0&quot;),
-                     list(measure=&quot;weight.Time2&quot;,
-                           cell = &quot;Time2&quot;),
-                     list(measure=&quot;weight.Time4&quot;,
-                           cell = &quot;Time4&quot;),
-                     list(measure=&quot;weight.Time6&quot;,
-                           cell = &quot;Time6&quot;),
-                     list(measure=&quot;weight.Time8&quot;,
-                           cell = &quot;Time8&quot;),
-                     list(measure=&quot;weight.Time10&quot;,
-                           cell = &quot;Time10&quot;),
-                     list(measure=&quot;weight.Time12&quot;,
-                           cell = &quot;Time12&quot;),
-                     list(measure=&quot;weight.Time14&quot;,
-                           cell = &quot;Time14&quot;),
-                     list(measure=&quot;weight.Time16&quot;,
-                           cell = &quot;Time16&quot;),
-                     list(measure=&quot;weight.Time18&quot;,
-                           cell = &quot;Time18&quot;),
-                     list(measure=&quot;weight.Time20&quot;,
-                           cell = &quot;Time20&quot;),
-                     list(measure=&quot;weight.Time21&quot;,
-                           cell = &quot;Time21&quot;)
-                     ),
-             bs = list(&quot;Diet&quot;),
-             rmTerms = list(&quot;Time&quot;),
-             bsTerms = list(&quot;Diet&quot;),
-             spherTest = TRUE,
-             effectSize = &quot;partEta&quot;,
-             emMeans = list(list(&quot;Time&quot;, &quot;Diet&quot;)),     
-             emmPlots = TRUE  
-            )</code></pre>
-<pre><code>## 
-##  REPEATED MEASURES ANOVA
-## 
-##  Within Subjects Effects                                                                        
-##  ────────────────────────────────────────────────────────────────────────────────────────────── 
-##                 Sum of Squares    df     Mean Square    F             p             η²-p        
-##  ────────────────────────────────────────────────────────────────────────────────────────────── 
-##    Time             2023644.28     11    183967.6621    280.945086    &lt; .0000001    0.8726491   
-##    Time:Diet          81375.09     33      2465.9119      3.765802    &lt; .0000001    0.2160223   
-##    Residual          295322.54    451       654.8172                                            
-##  ────────────────────────────────────────────────────────────────────────────────────────────── 
-##    Note. Type 3 Sums of Squares
-## 
-## 
-##  Between Subjects Effects                                                                  
-##  ───────────────────────────────────────────────────────────────────────────────────────── 
-##                Sum of Squares    df    Mean Square    F           p            η²-p        
-##  ───────────────────────────────────────────────────────────────────────────────────────── 
-##    Diet              116403.6     3      38801.191    5.074559    0.0044283    0.2707698   
-##    Residual          313495.0    41       7646.220                                         
-##  ───────────────────────────────────────────────────────────────────────────────────────── 
-##    Note. Type 3 Sums of Squares
-## 
-## 
-##  ASSUMPTIONS
-## 
-##  Tests of Sphericity                                                             
-##  ─────────────────────────────────────────────────────────────────────────────── 
-##            Mauchly&#39;s W     p             Greenhouse-Geisser ε    Huynh-Feldt ε   
-##  ─────────────────────────────────────────────────────────────────────────────── 
-##    Time    2.675410e-17    &lt; .0000001               0.1141450        0.1160483   
-##  ───────────────────────────────────────────────────────────────────────────────</code></pre>
-<p><img src="EXPRM_Lab11_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
-</div>
-</div>
 </div>
 <div id="two-way-repeated-anova-within--within-subjects-factor"
 class="section level1">
@@ -988,8 +876,7 @@ selfesteem2</code></pre>
 ##  8 8     ctr          92    87    81
 ##  9 9     ctr          95    91    84
 ## 10 10    ctr          92    84    81
-## # … with 14 more rows
-## # ℹ Use `print(n = ...)` to see more rows</code></pre>
+## # … with 14 more rows</code></pre>
 <pre class="r"><code>selfesteem_long &lt;- pivot_longer(selfesteem2, cols = c(&quot;t1&quot;, &quot;t2&quot;, &quot;t3&quot;), names_to = &quot;time&quot;, values_to = &quot;se&quot; )
 selfesteem_long</code></pre>
 <pre><code>## # A tibble: 72 × 4
@@ -1005,8 +892,7 @@ selfesteem_long</code></pre>
 ##  8 3     ctr       t2       92
 ##  9 3     ctr       t3       89
 ## 10 4     ctr       t1       92
-## # … with 62 more rows
-## # ℹ Use `print(n = ...)` to see more rows</code></pre>
+## # … with 62 more rows</code></pre>
 <pre class="r"><code>str(selfesteem_long) # check for variable types</code></pre>
 <pre><code>## tibble [72 × 4] (S3: tbl_df/tbl/data.frame)
 ##  $ id       : Factor w/ 12 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 1 2 2 2 3 3 3 4 ...
@@ -1020,7 +906,7 @@ selfesteem_long</code></pre>
 <p>เนื่องจากมีตัวแปรภายในบุคคล 2 ตัว ความคลาดเคลื่อนจึงเป็น
 <code>Error(id/treatment * time)</code></p>
 <pre class="r"><code>self.afex &lt;- aov_car(se ~ treatment * time + Error(id/treatment * time), data = selfesteem_long)
-summary(self.afex)</code></pre>
+summary(self.afex) #RM ANOVA</code></pre>
 <pre><code>## 
 ## Univariate Type III Repeated-Measures ANOVA Assuming Sphericity
 ## 
@@ -1119,6 +1005,120 @@ ggplot(self.emm.summary, aes(x = time, y = emmean, color = treatment)) +
   xlab(&quot;Time&quot;) +
   ylab(&quot;Self esteem&quot;) +
   theme_classic()</code></pre>
+<p><img src="EXPRM_Lab11_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+</div>
+<div id="optional" class="section level1">
+<h1>Optional</h1>
+<div id="jmv" class="section level2">
+<h2>jmv</h2>
+<p>เพื่อใช้คำสั่งใน jmv จะต้องเปลี่ยนข้อมูลเป็นแบบกว้าง (wide format)</p>
+<p>ในข้อมูลแบบกว้าง แต่ละแถวจะแทนกลุ่มตัวอย่าง ตัวแปรตาม (น้ำหนัก)
+จะถูกแสดงแยกคอลัมน์ตามจำนวนการวัดซ้ำ (เช่น weight.time0 ถึง time21 จำนวน 12
+คอลัมน์)</p>
+<p>ตัวแปรระหว่างบุคคล (between-subjects)
+จะถูกแสดงด้วยคอลัมน์ตัวแปรตามตัวจำนวนตัวแปรระหว่างบุคคล เช่น เงื่อนไข Diet 1
+คอลัมน์</p>
+<p>คำสั่งที่ใช้คือ <code>tidyr::pivot_wider</code> โดยกำหนด option ดังนี้</p>
+<p><code>data</code> = data frame ข้อมูลแบบยาวที่ต้องการแปลงเป็นกว้าง</p>
+<p><code>id_cols</code> = ข้อมูลที่เป็นระหว่างบุคคล (เช่น รหัสประจำตัว
+<code>Chick</code> และ เงื่อนไขอาหาร <code>Diet</code>)</p>
+<p><code>names_from</code> = ชื่อของตัวแปรที่วัดซ้ำ (ปกติคือ ​level ของ
+within-subject factor เช่น <code>Time</code> มีระดับ Time0, Time2, Time4,
+…</p>
+<p><code>names_prefix</code> = string ที่ต้องการใส่หน้าชื่อ level ที่มาจาก
+<code>names_from</code> เช่น “weight.” จะนำหน้า 0, 2, 4, .., 21 ซึ่งเป็น
+level ของตัวแปร <code>Time</code> ทำให้ได้ชื่อตัวแปร เช่น
+<code>weight.Time2</code> เป็นต้น</p>
+<p><code>values_from</code> = ค่าของตัวแปรตามที่มีการวัดซ้ำ เช่น
+<code>weight</code></p>
+<pre class="r"><code>chick_wide &lt;- pivot_wider(data = ChickWeight, id_cols = c(Chick, Diet), names_from = Time, names_prefix = &quot;weight.&quot;, values_from = weight)
+head(chick_wide)</code></pre>
+<pre><code>## # A tibble: 6 × 14
+##   Chick Diet  weight.T…¹ weigh…² weigh…³ weigh…⁴ weigh…⁵ weigh…⁶ weigh…⁷ weigh…⁸
+##   &lt;ord&gt; &lt;fct&gt;      &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1 1     1             42      51      59      64      76      93     106     125
+## 2 2     1             40      49      58      72      84     103     122     138
+## 3 3     1             43      39      55      67      84      99     115     138
+## 4 4     1             42      49      56      67      74      87     102     108
+## 5 5     1             41      42      48      60      79     106     141     164
+## 6 6     1             41      49      59      74      97     124     141     148
+## # … with 4 more variables: weight.Time16 &lt;dbl&gt;, weight.Time18 &lt;dbl&gt;,
+## #   weight.Time20 &lt;dbl&gt;, weight.Time21 &lt;dbl&gt;, and abbreviated variable names
+## #   ¹​weight.Time0, ²​weight.Time2, ³​weight.Time4, ⁴​weight.Time6, ⁵​weight.Time8,
+## #   ⁶​weight.Time10, ⁷​weight.Time12, ⁸​weight.Time14</code></pre>
+<p>วิเคราะห์ด้วย <code>anovaRM</code></p>
+<pre class="r"><code>anovaRM(chick_wide, 
+        rm = list(list(
+                       label = &quot;Time&quot;,
+                       levels = levels(ChickWeight$Time)
+                       )),
+        rmCells=list(
+                     list(measure=&quot;weight.Time0&quot;,
+                           cell = &quot;Time0&quot;),
+                     list(measure=&quot;weight.Time2&quot;,
+                           cell = &quot;Time2&quot;),
+                     list(measure=&quot;weight.Time4&quot;,
+                           cell = &quot;Time4&quot;),
+                     list(measure=&quot;weight.Time6&quot;,
+                           cell = &quot;Time6&quot;),
+                     list(measure=&quot;weight.Time8&quot;,
+                           cell = &quot;Time8&quot;),
+                     list(measure=&quot;weight.Time10&quot;,
+                           cell = &quot;Time10&quot;),
+                     list(measure=&quot;weight.Time12&quot;,
+                           cell = &quot;Time12&quot;),
+                     list(measure=&quot;weight.Time14&quot;,
+                           cell = &quot;Time14&quot;),
+                     list(measure=&quot;weight.Time16&quot;,
+                           cell = &quot;Time16&quot;),
+                     list(measure=&quot;weight.Time18&quot;,
+                           cell = &quot;Time18&quot;),
+                     list(measure=&quot;weight.Time20&quot;,
+                           cell = &quot;Time20&quot;),
+                     list(measure=&quot;weight.Time21&quot;,
+                           cell = &quot;Time21&quot;)
+                     ),
+             bs = list(&quot;Diet&quot;),
+             rmTerms = list(&quot;Time&quot;),
+             bsTerms = list(&quot;Diet&quot;),
+             spherTest = TRUE,
+             effectSize = &quot;partEta&quot;,
+             emMeans = list(list(&quot;Time&quot;, &quot;Diet&quot;)),     
+             emmPlots = TRUE  
+            )</code></pre>
+<pre><code>## 
+##  REPEATED MEASURES ANOVA
+## 
+##  Within Subjects Effects                                                                        
+##  ────────────────────────────────────────────────────────────────────────────────────────────── 
+##                 Sum of Squares    df     Mean Square    F             p             η²-p        
+##  ────────────────────────────────────────────────────────────────────────────────────────────── 
+##    Time             2023644.28     11    183967.6621    280.945086    &lt; .0000001    0.8726491   
+##    Time:Diet          81375.09     33      2465.9119      3.765802    &lt; .0000001    0.2160223   
+##    Residual          295322.54    451       654.8172                                            
+##  ────────────────────────────────────────────────────────────────────────────────────────────── 
+##    Note. Type 3 Sums of Squares
+## 
+## 
+##  Between Subjects Effects                                                                  
+##  ───────────────────────────────────────────────────────────────────────────────────────── 
+##                Sum of Squares    df    Mean Square    F           p            η²-p        
+##  ───────────────────────────────────────────────────────────────────────────────────────── 
+##    Diet              116403.6     3      38801.191    5.074559    0.0044283    0.2707698   
+##    Residual          313495.0    41       7646.220                                         
+##  ───────────────────────────────────────────────────────────────────────────────────────── 
+##    Note. Type 3 Sums of Squares
+## 
+## 
+##  ASSUMPTIONS
+## 
+##  Tests of Sphericity                                                             
+##  ─────────────────────────────────────────────────────────────────────────────── 
+##            Mauchly&#39;s W     p             Greenhouse-Geisser ε    Huynh-Feldt ε   
+##  ─────────────────────────────────────────────────────────────────────────────── 
+##    Time    2.675410e-17    &lt; .0000001               0.1141450        0.1160483   
+##  ───────────────────────────────────────────────────────────────────────────────</code></pre>
 <p><img src="EXPRM_Lab11_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 </div>
 </div>

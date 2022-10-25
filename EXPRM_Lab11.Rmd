@@ -20,7 +20,7 @@ library(datarium)
 
 ```
 
-# Mixed ANOVA (Between- & Within-Subjects Factor)
+# Mixed ANOVA (Within-Between Design)
 
 ## Data Preparation
 
@@ -53,11 +53,15 @@ str(ChickWeight)
 
 ```{r}
 chick.afex <- aov_car(weight ~ Diet*Time + Error(Chick/Time), data = ChickWeight) 
-summary(chick.afex) # regular ANOVA
-nice(chick.afex, es = "pes") # GG correction + partial eta squared
+summary(chick.afex) # RM ANOVA
+nice(chick.afex, correction = "GG", es = "pes") # GG correction + partial eta squared
 ```
 
 ## Effect size
+
+ค่า partial eta squared ได้แสดงในคอลัมน์ `pes` จากคำสั่ง `nice()` แล้ว แต่ถ้าหากต้องการคำนวณแยกสามารถใช้คำสั่งจาก effectsize package ได้
+
+โดยทั่วไปแล้ว สำหรับ Repeated-Measure ANOVA จะนิยมรายงานค่า partial $\eta^2$
 
 ```{r}
 eta_squared(chick.afex)
@@ -85,9 +89,60 @@ ggplot(chick.emm.summary, aes(x = Time, y = emmean, color = Diet)) +
   theme_classic()
 ```
 
-## jmv
+# Two-Way Repeated ANOVA (Within- & Within-Subjects Factor)
 
-### Convert to wide format
+## Data preparation
+
+`selfesteem2` เป็นข้อมูล $2 \times 3$ repeated measures
+
+กลุ่มตัวอย่าง 12 คน ผ่าน 2 เงื่อนไข คือ Diet `Diet` และ control `ctr` และวัดซ้ำ 3 ครั้ง
+
+ข้อมูลชุดนี้อยู่ในรูปแบบผสมระหว่างแบบกว้าง (เวลา) และแบบยาว (เงื่อนไข) จึงจำเป็นต้องเปลี่ยนให้อยู่ในแบบยาวทั้งหมดก่อน
+
+```{r}
+data("selfesteem2")
+selfesteem2
+selfesteem_long <- pivot_longer(selfesteem2, cols = c("t1", "t2", "t3"), names_to = "time", values_to = "se" )
+selfesteem_long
+str(selfesteem_long) # check for variable types
+selfesteem_long$time <- factor(selfesteem_long$time) #convert to factor
+```
+
+## afex
+
+เนื่องจากมีตัวแปรภายในบุคคล 2 ตัว ความคลาดเคลื่อนจึงเป็น `Error(id/treatment * time)`
+
+```{r}
+self.afex <- aov_car(se ~ treatment * time + Error(id/treatment * time), data = selfesteem_long)
+summary(self.afex) #RM ANOVA
+nice(self.afex, es = "pes") # GG correction + partial eta square
+```
+
+## Estimated marginal means
+
+```{r}
+self.emm <- emmeans(self.afex, ~ time | treatment)
+self.emm
+contrast(self.emm, method = "pairwise", simple = "time") #simple effect of time at each treatment level
+pairs(self.emm, simple = "treatment") #simple effect of treatment at each time level
+```
+
+## Plot
+
+```{r}
+self.emm.summary <- summary(self.emm)
+ggplot(self.emm.summary, aes(x = time, y = emmean, color = treatment)) + 
+  geom_point(position = position_dodge(.2)) +
+  geom_line(aes(group = treatment), position = position_dodge(.2)) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = .3, position = position_dodge(.2)) + 
+  xlab("Time") +
+  ylab("Self esteem") +
+  theme_classic()
+```
+
+# Optional
+
+## jmv
 
 เพื่อใช้คำสั่งใน jmv จะต้องเปลี่ยนข้อมูลเป็นแบบกว้าง (wide format)
 
@@ -154,55 +209,4 @@ anovaRM(chick_wide,
              emMeans = list(list("Time", "Diet")),     
              emmPlots = TRUE  
             )
-```
-
-# Two-Way Repeated ANOVA (Within- & Within-Subjects Factor)
-
-## Data preparation
-
-`selfesteem2` เป็นข้อมูล $2 \times 3$ repeated measures
-
-กลุ่มตัวอย่าง 12 คน ผ่าน 2 เงื่อนไข คือ Diet `Diet` และ control `ctr` และวัดซ้ำ 3 ครั้ง
-
-ข้อมูลชุดนี้อยู่ในรูปแบบผสมระหว่างแบบกว้าง (เวลา) และแบบยาว (เงื่อนไข) จึงจำเป็นต้องเปลี่ยนให้อยู่ในแบบยาวทั้งหมดก่อน
-
-```{r}
-data("selfesteem2")
-selfesteem2
-selfesteem_long <- pivot_longer(selfesteem2, cols = c("t1", "t2", "t3"), names_to = "time", values_to = "se" )
-selfesteem_long
-str(selfesteem_long) # check for variable types
-selfesteem_long$time <- factor(selfesteem_long$time) #convert to factor
-```
-
-## afex
-
-เนื่องจากมีตัวแปรภายในบุคคล 2 ตัว ความคลาดเคลื่อนจึงเป็น `Error(id/treatment * time)`
-
-```{r}
-self.afex <- aov_car(se ~ treatment * time + Error(id/treatment * time), data = selfesteem_long)
-summary(self.afex)
-nice(self.afex, es = "pes") # GG correction + partial eta square
-```
-
-## Estimated marginal means
-
-```{r}
-self.emm <- emmeans(self.afex, ~ time | treatment)
-self.emm
-contrast(self.emm, method = "pairwise", simple = "time") #simple effect of time at each treatment level
-pairs(self.emm, simple = "treatment") #simple effect of treatment at each time level
-```
-
-## Plot
-
-```{r}
-self.emm.summary <- summary(self.emm)
-ggplot(self.emm.summary, aes(x = time, y = emmean, color = treatment)) + 
-  geom_point(position = position_dodge(.2)) +
-  geom_line(aes(group = treatment), position = position_dodge(.2)) +
-  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = .3, position = position_dodge(.2)) + 
-  xlab("Time") +
-  ylab("Self esteem") +
-  theme_classic()
 ```
