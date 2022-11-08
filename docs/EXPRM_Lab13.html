@@ -13,7 +13,7 @@
 
 <title>Lab 13: Analysis of Covariance</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -141,11 +141,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -174,8 +178,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -183,16 +187,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -378,10 +375,11 @@ library(afex)
 library(ggplot2)</code></pre>
 <p>Tutorial นี้จะแสดงวิธีการวิเคราะห์ความแปรปรวนร่วม (ANCOVA)</p>
 <div id="one-way-ancova" class="section level1">
-<h1>One-way ANCOVA</h1>
+<h1>One-Way ANCOVA</h1>
 <p>ในตัวอย่างนี้ เราจะใช้ข้อมูล <code>stress</code> จาก datarium package</p>
 <p>ข้อมูลนี้เป็นการทดลองว่า <code>treatment</code> และ <code>exercise</code>
-มีผลต่อ <code>score</code> หรือไม่ โดยมี <code>age</code> เป็น covariate</p>
+มีผลต่อ <code>score</code> หรือไม่ โดยมี <code>age</code> เป็นตัวแปรร่วม
+(covariate)</p>
 <p>ตัวแปรทุกตัวได้รับตั้งค่าประเภทตัวแปรแล้ว</p>
 <pre class="r"><code>data(stress)
 str(stress)</code></pre>
@@ -396,19 +394,22 @@ str(stress)</code></pre>
 ##  $ age      : num [1:60] 59 65 70 66 61 65 57 61 58 55 ...
 ##   ..- attr(*, &quot;label&quot;)= chr &quot;Body weight (in kg)&quot;
 ##   ..- attr(*, &quot;format.spss&quot;)= chr &quot;F8.2&quot;</code></pre>
-<div id="afex" class="section level2">
-<h2>afex</h2>
-<p>ในการวิเคราะห์ความแปรปรวนร่วมทางเดียว เราจะใช้ <code>treatment</code>
-เป็นตัวแปรอิสระ และ <code>age</code> เป็น covariate</p>
-<p>โมเดลคือ ตัวแปรสองตัวนี้ร่วมกันอธิบายตัวแปรตาม <code>score</code> จึงใช้
+<div id="model" class="section level2">
+<h2>Model</h2>
+<p>เราจะใช้ทำสั่ง <code>aov_car</code> จาก afex package
+ในการวิเคราะห์ความแปรปรวนร่วมทางเดียว</p>
+<p>เราจะใช้ <code>treatment</code> เป็นตัวแปรอิสระ และ <code>age</code> เป็น
+covariate (ยังไม่ต้องสนตัวแปร <code>exercise</code>)</p>
+<p>โมเดล คือ ตัวแปรสองตัวนี้ร่วมกันอธิบายตัวแปรตาม <code>score</code> จึงใช้
 <code>treatment + age</code></p>
 <p>ใช้ option <code>factorize = FALSE</code> เนื่องจากคำสั่ง
-<code>aov_car</code> จะแปลงตัวแปรเป็น factor โดยอัตโนมัติ
-เผื่อในกรณีที่ผู้ใช้ลืมแปลงตัวแปรเป็น factor (ถ้าหากไม่กำหนด option นี้
-<code>aov_car</code> จะพยายามแปลง <code>age</code> เป็น factor แล้วทำให้เกิด
-error)</p>
+<code>aov_car</code> จะแปลงตัวแปรทุกตัวในโมเดลเป็น factor โดยอัตโนมัติ
+เผื่อในกรณีที่ผู้ใช้ลืมแปลงตัวแปรเป็น factor (ถ้าหากไม่กำหนด
+<code>factorize = FALSE</code> คำสั่ง <code>aov_car</code> จะพยายามแปลง
+<code>age</code> เป็น factor แล้วทำให้เกิด error)</p>
 <pre class="r"><code>one.ancova.afex &lt;- aov_car(score ~ treatment + age + Error(id), data = stress, factorize = FALSE)</code></pre>
 <pre><code>## Warning: Numerical variables NOT centered on 0 (i.e., likely bogus results): age</code></pre>
+<pre><code>## Contrasts set to contr.sum for the following variables: treatment</code></pre>
 <pre class="r"><code>summary(one.ancova.afex)</code></pre>
 <pre><code>## Anova Table (Type 3 tests)
 ## 
@@ -432,14 +433,44 @@ error)</p>
 แสดงถึงค่าเฉลี่ยของกลุ่มอ้างอิง (reference group) เมื่อควบคุมให้ covariate อยู่ที่ค่าเฉลี่ย
 ซึ่งไม่ใช่สิ่งที่เราสนใจในกรณีนี้ เราจึงไม่ต้องสนใจคำเตือนนี้ก็ได้
 (หากต้องการลองวิเคราะห์โดยใช้ค่าที่ center แล้ว สามารถใช้คำสั่ง
-<code>scale()</code> เพื่อแปลงตัวแปร <code>age</code>
-เป็นค่ากึ่งกลางก่อนนำไปวิเคราะห์ข้อมูล)</p>
-<div id="emmeans" class="section level3">
-<h3>EMMEANS</h3>
+<code>scale(x, center = TRUE, scale = FALSE)</code> เพื่อแปลงตัวแปร
+<code>age</code> เป็นค่ากึ่งกลางก่อนนำไปวิเคราะห์ข้อมูล)</p>
+<pre class="r"><code># In one-way ANCOVA, centered covariate produce the same result as uncentered covariate.
+stress$cen.age &lt;- scale(stress$age, scale = FALSE)
+center.afex &lt;- aov_car(score ~ treatment + cen.age + Error(id), data = stress, factorize = FALSE)</code></pre>
+<pre><code>## Contrasts set to contr.sum for the following variables: treatment</code></pre>
+<pre class="r"><code>summary(center.afex)</code></pre>
+<pre><code>## Anova Table (Type 3 tests)
+## 
+## Response: score
+##           num Df den Df    MSE       F      ges    Pr(&gt;F)    
+## treatment      1     57 45.132  4.9182 0.079431   0.03058 *  
+## cen.age        1     57 45.132 21.3676 0.272658 2.218e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>nice(center.afex, es = &quot;pes&quot;) #short summary with partial eta square</code></pre>
+<pre><code>## Anova Table (Type 3 tests)
+## 
+## Response: score
+##      Effect    df   MSE         F  pes p.value
+## 1 treatment 1, 57 45.13    4.92 * .079    .031
+## 2   cen.age 1, 57 45.13 21.37 *** .273   &lt;.001
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;+&#39; 0.1 &#39; &#39; 1</code></pre>
+</div>
+<div id="pairwise-comparisons" class="section level2">
+<h2>Pairwise Comparisons</h2>
 <p>ค่าเฉลี่ยประมาณตามขอบ (estimated marginal means)
 เป็นค่าเฉลี่ยของเงื่อนไขแต่ละกลุ่มเมื่อควบคุมค่าตัวแปรร่วม <code>age</code>
-ให้คงที่ที่ค่าเฉลี่ยของตัวมันเอง</p>
+ให้คงที่ที่ค่าเฉลี่ยของตัวมันเอง นั่นคือ หากทั้งสองเงื่อนไขมีอายุเท่ากันที่ 59.95 ปี
+ค่าเฉลี่ยของตัวแปรตาม <code>score</code> ของแต่ละกลุ่มจะเป็นเท่าใด</p>
 <p>สังเกตว่าค่า emmeans และค่าเฉลี่ยที่ยังไม่ปรับของแต่ละกลุ่ม จะแตกต่างกันเล็กน้อย</p>
+<pre class="r"><code>by(stress$score, stress$treatment, mean) # raw (unadjusted mean)</code></pre>
+<pre><code>## stress$treatment: yes
+## [1] 82.15667
+## ------------------------------------------------------------ 
+## stress$treatment: no
+## [1] 86.99667</code></pre>
 <pre class="r"><code>one.ancova.emm &lt;- emmeans(one.ancova.afex, ~ treatment)
 summary(one.ancova.emm)  # estimated (adjusted) mean</code></pre>
 <pre><code>##  treatment emmean   SE df lower.CL upper.CL
@@ -447,72 +478,22 @@ summary(one.ancova.emm)  # estimated (adjusted) mean</code></pre>
 ##  no          86.5 1.23 57     84.0     89.0
 ## 
 ## Confidence level used: 0.95</code></pre>
-<pre class="r"><code>by(stress$score, stress$treatment, mean) # raw (unadjusted mean)</code></pre>
-<pre><code>## stress$treatment: yes
-## [1] 82.15667
-## -------------------------------------------------------------------------------- 
-## stress$treatment: no
-## [1] 86.99667</code></pre>
-<pre class="r"><code>pairs(one.ancova.emm) #pariwise comparison</code></pre>
+<pre class="r"><code>pairs(one.ancova.emm) #pairwise comparison of adjusted means</code></pre>
 <pre><code>##  contrast estimate   SE df t.ratio p.value
 ##  yes - no    -3.87 1.75 57  -2.218  0.0306</code></pre>
 </div>
-<div id="plot" class="section level3">
-<h3>Plot</h3>
+<div id="plot" class="section level2">
+<h2>Plot</h2>
 <pre class="r"><code>emm.summary &lt;- summary(one.ancova.emm)
 ggplot(emm.summary, aes(x = treatment, y = emmean)) + 
-  geom_col(alpha = .5, position = position_dodge(.9)) +
-  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = .3, position = position_dodge(.9)) + 
+  geom_point() +
+  geom_line(aes(group = 1), linetype = &quot;dashed&quot;) + #group = 1 for having only one factor (treatment) in the plot
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = .3) + 
   xlab(&quot;Treatment&quot;) +
   ylab(&quot;Score&quot;) +
-  ylim(c(0,100)) +
+  ylim(c(50,100)) + #start Y-axid at score = 50
   theme_classic()</code></pre>
-<p><img src="EXPRM_Lab13_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-</div>
-</div>
-<div id="base-r-lm" class="section level2">
-<h2>base R: lm()</h2>
-<p>การวิเคราะห์ ANCOVA เป็นกรณีพิเศษของ regression เราสามารถใช้
-<code>lm()</code> ในการวิเคราะห์ได้เช่นกัน</p>
-<p>แต่ผลการวิเคราะห์จาก <code>summary()</code> ของ <code>lm()</code>
-นั้นจะอยู่ในรูปแบบ output สำหรับ regression</p>
-<p>ค่า coefficient ของ <code>treatment</code>
-คือความแตกต่างของค่าเฉลี่ยในสองเงื่อนไขโดยมี <code>no</code> เป็นกลุ่มอ้างอิง
-ค่านี้จะสอดคล้องกับการเปรียบเทียบรายคู่ด้านบน (แต่กลับทิศทางเป็นบวก)</p>
-<pre class="r"><code>one.ancova.lm &lt;- lm(score ~ treatment + age, data = stress)
-summary(one.ancova.lm) # summary in regression styled output</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = score ~ treatment + age, data = stress)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -13.1490  -5.1796   0.2194   4.6729  13.8482 
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  28.5673    12.1477   2.352   0.0222 *  
-## treatment1   -1.9373     0.8736  -2.218   0.0306 *  
-## age           0.9343     0.2021   4.623 2.22e-05 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 6.718 on 57 degrees of freedom
-## Multiple R-squared:  0.3384, Adjusted R-squared:  0.3152 
-## F-statistic: 14.58 on 2 and 57 DF,  p-value: 7.712e-06</code></pre>
-<pre class="r"><code>anova(one.ancova.lm) # use type I sum of squares ##AVOID this for most of the time</code></pre>
-<pre><code>## Analysis of Variance Table
-## 
-## Response: score
-##           Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
-## treatment  1  351.38  351.38  7.7857   0.00715 ** 
-## age        1  964.36  964.36 21.3676 2.218e-05 ***
-## Residuals 57 2572.52   45.13                      
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>หากเราใช้ <code>anova</code> วิเคราะห์โมเดลนี้ เราจะได้ค่า <em>F</em>
-ที่แตกต่างจากผลด้านบน เนื่องจากคำสั่ง <code>anova()</code> ของ R นั้นใช้ Type I
-SS</p>
+<p><img src="EXPRM_Lab13_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 <div id="homogeneity-of-regression-assumptions" class="section level2">
 <h2>Homogeneity of Regression Assumptions</h2>
@@ -525,6 +506,7 @@ covariate และ DV ในแต่ละเงื่อนไขการท
 <code>treatment * age</code></p>
 <pre class="r"><code>one.ancova.afex2 &lt;- aov_car(score ~ treatment * age + Error(id), data = stress, factorize = FALSE)</code></pre>
 <pre><code>## Warning: Numerical variables NOT centered on 0 (i.e., likely bogus results): age</code></pre>
+<pre><code>## Contrasts set to contr.sum for the following variables: treatment</code></pre>
 <pre class="r"><code>summary(one.ancova.afex2)</code></pre>
 <pre><code>## Anova Table (Type 3 tests)
 ## 
@@ -542,11 +524,14 @@ covariate และ DV ในแต่ละเงื่อนไขการท
 </div>
 <div id="two-way-ancova" class="section level1">
 <h1>Two-way ANCOVA</h1>
+<div id="model-1" class="section level2">
+<h2>Model</h2>
 <p>การวิเคราะห์ตัวแปรร่วมสามารถทำใน factorial design ก็ได้ ใน factorial design
 นี้มีตัวแปรอิสระแบบจัดประเภทสองตัว คือ <code>treatment</code> และ
 <code>exercise</code> ส่วนตัวแปรร่วมคือ <code>age</code></p>
 <pre class="r"><code>two.ancova &lt;- aov_car(score ~ treatment * exercise + age + Error(id), data = stress, factorize = FALSE)</code></pre>
 <pre><code>## Warning: Numerical variables NOT centered on 0 (i.e., likely bogus results): age</code></pre>
+<pre><code>## Contrasts set to contr.sum for the following variables: treatment, exercise</code></pre>
 <pre class="r"><code>summary(two.ancova)</code></pre>
 <pre><code>## Anova Table (Type 3 tests)
 ## 
@@ -569,10 +554,12 @@ covariate และ DV ในแต่ละเงื่อนไขการท
 ## 4 treatment:exercise 2, 53 24.85    4.45 * .144    .016
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;+&#39; 0.1 &#39; &#39; 1</code></pre>
-<div id="homogeneity-of-regression" class="section level3">
-<h3>Homogeneity of regression</h3>
+</div>
+<div id="homogeneity-of-regression" class="section level2">
+<h2>Homogeneity of regression</h2>
 <pre class="r"><code>two.ancova2 &lt;- aov_car(score ~ treatment * exercise * age + Error(id), data = stress, factorize = FALSE)</code></pre>
 <pre><code>## Warning: Numerical variables NOT centered on 0 (i.e., likely bogus results): age</code></pre>
+<pre><code>## Contrasts set to contr.sum for the following variables: treatment, exercise</code></pre>
 <pre class="r"><code>summary(two.ancova2)</code></pre>
 <pre><code>## Anova Table (Type 3 tests)
 ## 
@@ -591,16 +578,14 @@ covariate และ DV ในแต่ละเงื่อนไขการท
 homogeneity of regression เราจึงเลือกใช้ผลการวิเคราะห์จาก โมเดล ANCOVA
 <code>treatment * exercise + age</code> ได้</p>
 </div>
-<div id="emmeans-1" class="section level3">
-<h3>EMMEANS</h3>
+<div id="simple-effects" class="section level2">
+<h2>Simple Effects</h2>
 <p>ค่าเฉลี่ยประมาณตามขอบในการวิเคราะห์นี้เป็นค่าตัวแปรตามที่ถูกควบคุมเมื่อตัวแปรร่วม
 <code>age</code> คงที่อยู่ที่ค่าเฉลี่ย</p>
 <p>วิธีการสร้าง emmeans และการเปรียบเทียบรายคู่ ทำเหมือน factorial ANOVA ตามปกติ
 ค่าที่ได้จะเป็นค่าจากโมเดลซึ่งควบคุมตัวแปรร่วมแล้ว</p>
 <pre class="r"><code>two.ancova.emm &lt;- emmeans(two.ancova, ~ treatment | exercise)
-mean(stress$age) # control age at its mean</code></pre>
-<pre><code>## [1] 59.95</code></pre>
-<pre class="r"><code>summary(two.ancova.emm)</code></pre>
+summary(two.ancova.emm) #adjusted (estimated) marginal means</code></pre>
 <pre><code>## exercise = low:
 ##  treatment emmean   SE df lower.CL upper.CL
 ##  yes         87.0 1.60 53     83.8     90.2
@@ -617,7 +602,7 @@ mean(stress$age) # control age at its mean</code></pre>
 ##  no          83.0 1.61 53     79.8     86.3
 ## 
 ## Confidence level used: 0.95</code></pre>
-<pre class="r"><code>pairs(two.ancova.emm)</code></pre>
+<pre class="r"><code>pairs(two.ancova.emm, simple = &quot;treatment&quot;) #simple effect of treatment by exercise groups</code></pre>
 <pre><code>## exercise = low:
 ##  contrast estimate   SE df t.ratio p.value
 ##  yes - no    -1.53 2.23 53  -0.685  0.4961
@@ -629,10 +614,28 @@ mean(stress$age) # control age at its mean</code></pre>
 ## exercise = high:
 ##  contrast estimate   SE df t.ratio p.value
 ##  yes - no    -9.75 2.23 53  -4.362  0.0001</code></pre>
+<pre class="r"><code>pairs(two.ancova.emm, simple = &quot;exercise&quot;) #simple effect of treatment by exercise groups</code></pre>
+<pre><code>## treatment = yes:
+##  contrast        estimate   SE df t.ratio p.value
+##  low - moderate   -0.0175 2.26 53  -0.008  1.0000
+##  low - high       13.7033 2.36 53   5.799  &lt;.0001
+##  moderate - high  13.7208 2.27 53   6.042  &lt;.0001
+## 
+## treatment = no:
+##  contrast        estimate   SE df t.ratio p.value
+##  low - moderate   -0.1725 2.23 53  -0.077  0.9967
+##  low - high        5.4851 2.34 53   2.347  0.0579
+##  moderate - high   5.6576 2.30 53   2.455  0.0451
+## 
+## P value adjustment: tukey method for comparing a family of 3 estimates</code></pre>
+</div>
+<div id="customize-covariate-value" class="section level2">
+<h2>Customize Covariate Value</h2>
 <p>หากต้องการประมาณค่าเฉลี่ยตามขอบ (ค่าเฉลี่ยของแต่ละเงื่อนไข)
 โดยกำหนดค่าตัวแปรควบคุมเป็นค่าอื่น สามารถใช้ option <code>at = list()</code>
 กำหนดค่าของตัวแปรควบคุมที่ต้องการได้</p>
-<pre class="r"><code>emmeans(two.ancova, ~ treatment | exercise, at = list(age = 30))</code></pre>
+<pre class="r"><code>at30.emm &lt;- emmeans(two.ancova, ~ treatment | exercise, at = list(age = 30))
+at30.emm #notice slight changes in emmeans</code></pre>
 <pre><code>## exercise = low:
 ##  treatment emmean   SE df lower.CL upper.CL
 ##  yes         71.9 5.52 53     60.8     83.0
@@ -649,6 +652,25 @@ mean(stress$age) # control age at its mean</code></pre>
 ##  no          67.9 4.91 53     58.1     77.8
 ## 
 ## Confidence level used: 0.95</code></pre>
+<pre class="r"><code>pairs(at30.emm, simple = &quot;treatment&quot;) #but the model is linear. All estimated means differences will be the same at any value of covariate. </code></pre>
+<pre><code>## exercise = low:
+##  contrast estimate   SE df t.ratio p.value
+##  yes - no    -1.53 2.23 53  -0.685  0.4961
+## 
+## exercise = moderate:
+##  contrast estimate   SE df t.ratio p.value
+##  yes - no    -1.68 2.25 53  -0.748  0.4575
+## 
+## exercise = high:
+##  contrast estimate   SE df t.ratio p.value
+##  yes - no    -9.75 2.23 53  -4.362  0.0001</code></pre>
+<p>สังเกตว่าค่า <code>emmean</code> ของแต่ละกลุ่มเปลี่ยนไปจากด้านบน
+เนื่องจากเรากำหนดให้ค่า covariate เป็น 30 ปี (แทนที่จะเป็นค่าเฉลี่ย 59.95 ปี)</p>
+<p>อย่างไรก็ดีการทดสอบ simple effect จะได้ผลเท่าเดิม เนื่องจากในโมเดลนี้ covariate
+ถูกกำหนดให้สัมพันธ์เชิงเส้นตรงกับตัวแปรตามและไม่มีปฏิสัมพันธ์กับตัวแปรอิสระ
+ดังนั้นอิทธิพลของตัวแปรอิสระจะมีค่าคงเดิมในทุก ๆ ค่าของตัวเแปร covariate
+(ไม่ว่าอายุจะเป็นเท่าไหร่ อิทธิพลของ <code>treatment</code> และ
+<code>exercise</code> ต่อ <code>score</code> ก็ยังเท่าเดิมเสมอในทุกช่วงอายุ)</p>
 </div>
 </div>
 
